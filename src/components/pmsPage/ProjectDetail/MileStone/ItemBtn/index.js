@@ -417,141 +417,132 @@ class ItemBtn extends React.Component {
       });
       this.getLink(params, 'lbModalUrl');
     };
-    // if (done) {
-    //   if (item.sxmc === '软件合同信息录入') {
-    //     const htxxck = async () => {
-    //       try {
-    //         this.setState({
-    //           rjhtxxData: {
-    //             ...this.state.rjhtxxData,
-    //             loading: true,
-    //           },
-    //         });
-    //         // 查询供应商下拉列表、合同信息
-    //         const htxxRes = await FetchQueryHTXXByXQTC({
-    //           xmmc: Number(item.xmid),
-    //         });
-    //         if (htxxRes.success) {
-    //           const htxxData = [...htxxRes.record];
-    //           let htxxList = htxxData.reduce((acc, cur) => {
-    //             if (acc.findIndex(x => x.htxxid === cur.htxxid) === -1) {
-    //               return [...acc, cur];
-    //             }
-    //             return acc;
-    //           }, []);
-    //           this.setState({
-    //             rjhtxxData: {
-    //               ...this.state.rjhtxxData,
-    //               list: htxxList,
-    //               loading: false,
-    //             },
-    //           });
-    //           console.log('🚀 ~ htxxList:', htxxList);
-    //         }
-    //       } catch (error) {
-    //         console.error('查询供应商下拉列表、合同信息', error);
-    //         this.setState({
-    //           rjhtxxData: {
-    //             ...this.state.rjhtxxData,
-    //             loading: false,
-    //           },
-    //         });
-    //       }
-    //     };
+    if (done) {
+      if (item.sxmc === '软件合同信息录入') {
+        const htxxck = async () => {
+          try {
+            this.setState({
+              rjhtxxData: {
+                ...this.state.rjhtxxData,
+                loading: true,
+              },
+            });
+            // 查询供应商下拉列表、合同信息
+            const htxxRes = await FetchQueryHTXXByXQTC({
+              xmmc: Number(item.xmid),
+            });
+            if (htxxRes.success) {
+              const htxxData = [...htxxRes.record];
+              let htxxList = htxxData.reduce((acc, cur) => {
+                if (acc.findIndex(x => x.htxxid === cur.htxxid) === -1) {
+                  return [...acc, cur];
+                }
+                return acc;
+              }, []);
+              this.setState({
+                rjhtxxData: {
+                  ...this.state.rjhtxxData,
+                  list: htxxList,
+                  loading: false,
+                },
+              });
+              console.log('🚀 ~ htxxList:', htxxList);
+            }
+          } catch (error) {
+            console.error('查询供应商下拉列表、合同信息', error);
+            this.setState({
+              rjhtxxData: {
+                ...this.state.rjhtxxData,
+                loading: false,
+              },
+            });
+          }
+        };
 
-    //     const htxxxg = id => {
-    //       this.setState({
-    //         editMessageVisible: true,
-    //         rjhtxxData: {
-    //           ...this.state.rjhtxxData,
-    //           curHtxxid: id,
-    //           popoverVisible: false,
-    //         },
-    //       });
-    //     };
-    //     const reoprMoreContent = (
-    //       <div className="list">
-    //         <div className="item" onClick={() => xxlrxg(item)} key="录入">
-    //           录入
-    //         </div>
-    //       </div>
-    //     );
-    //     const documentContent = (
-    //       <Spin tip="加载中" spinning={this.state.rjhtxxData.loading} size="small">
-    //         <div className="list" style={this.state.rjhtxxData.loading ? { minHeight: 40 } : {}}>
-    //           {this.state.rjhtxxData.list?.map(x => (
-    //             <div
-    //               className="item"
-    //               key={x.htxxid}
-    //               style={{
-    //                 height: 'unset',
-    //                 lineHeight: 'unset',
-    //                 marginBottom: 0,
-    //                 paddingTop: 4,
-    //                 paddingBottom: 4,
-    //                 display: 'flex',
-    //                 alignItems: 'center',
-    //               }}
-    //             >
-    //               <Tooltip title={x.htbt} placement="topLeft" key={x.htxxid}>
-    //                 <div className="subject" style={{ color: '#1f1f1f' }}>
-    //                   {x.htbt}
-    //                 </div>
-    //               </Tooltip>
-    //               <div className="opr-btn" onClick={() => htxxxg(x.htxxid)}>
-    //                 修改
-    //               </div>
-    //             </div>
-    //           ))}
-    //           {this.state.rjhtxxData.list.length === 0 && (
-    //             <Empty
-    //               style={{ margin: 0 }}
-    //               image={Empty.PRESENTED_IMAGE_SIMPLE}
-    //               description="暂无数据"
-    //             />
-    //           )}
-    //         </div>
-    //       </Spin>
-    //     );
-    //     return (
-    //       <div className="opr-more">
-    //         <Popover
-    //           placement="bottomRight"
-    //           title={null}
-    //           content={documentContent}
-    //           overlayClassName="document-list-content-popover"
-    //           trigger="click"
-    //           visible={this.state.rjhtxxData.popoverVisible}
-    //           onVisibleChange={v =>
-    //             this.setState({ rjhtxxData: { ...this.state.rjhtxxData, popoverVisible: v } })
-    //           }
-    //         >
-    //           <div className="reopr-btn" onClick={() => htxxck(item)}>
-    //             查看
-    //           </div>
-    //         </Popover>
-    //         <Popover
-    //           placement="bottom"
-    //           title={null}
-    //           content={reoprMoreContent}
-    //           overlayClassName="btn-more-content-popover"
-    //         >
-    //           <div className="reopr-more">
-    //             <i className="iconfont icon-more2" />
-    //           </div>
-    //         </Popover>
-    //       </div>
-    //     );
-    //   }
-    //   return (
-    //     <div className="opr-more">
-    //       <div className="reopr-btn" onClick={() => xxlrxg(item, 'MOD')}>
-    //         修改
-    //       </div>
-    //     </div>
-    //   );
-    // }
-    if (done)
+        const htxxxg = id => {
+          this.setState({
+            editMessageVisible: true,
+            rjhtxxData: {
+              ...this.state.rjhtxxData,
+              curHtxxid: id,
+              popoverVisible: false,
+            },
+          });
+        };
+        const reoprMoreContent = (
+          <div className="list">
+            <div className="item" onClick={() => xxlrxg(item)} key="录入">
+              录入
+            </div>
+          </div>
+        );
+        const documentContent = (
+          <Spin tip="加载中" spinning={this.state.rjhtxxData.loading} size="small">
+            <div className="list" style={this.state.rjhtxxData.loading ? { minHeight: 40 } : {}}>
+              {this.state.rjhtxxData.list?.map(x => (
+                <div
+                  className="item"
+                  key={x.htxxid}
+                  style={{
+                    height: 'unset',
+                    lineHeight: 'unset',
+                    marginBottom: 0,
+                    paddingTop: 4,
+                    paddingBottom: 4,
+                    display: 'flex',
+                    alignItems: 'center',
+                  }}
+                >
+                  <Tooltip title={x.htbt} placement="topLeft" key={x.htxxid}>
+                    <div className="subject" style={{ color: '#1f1f1f' }}>
+                      {x.htbt}
+                    </div>
+                  </Tooltip>
+                  <div className="opr-btn" onClick={() => htxxxg(x.htxxid)}>
+                    修改
+                  </div>
+                </div>
+              ))}
+              {this.state.rjhtxxData.list.length === 0 && (
+                <Empty
+                  style={{ margin: 0 }}
+                  image={Empty.PRESENTED_IMAGE_SIMPLE}
+                  description="暂无数据"
+                />
+              )}
+            </div>
+          </Spin>
+        );
+        return (
+          <div className="opr-more">
+            <Popover
+              placement="bottomRight"
+              title={null}
+              content={documentContent}
+              overlayClassName="document-list-content-popover"
+              trigger="click"
+              visible={this.state.rjhtxxData.popoverVisible}
+              onVisibleChange={v =>
+                this.setState({ rjhtxxData: { ...this.state.rjhtxxData, popoverVisible: v } })
+              }
+            >
+              <div className="reopr-btn" onClick={() => htxxck(item)}>
+                查看
+              </div>
+            </Popover>
+            <Popover
+              placement="bottom"
+              title={null}
+              content={reoprMoreContent}
+              overlayClassName="btn-more-content-popover"
+            >
+              <div className="reopr-more">
+                <i className="iconfont icon-more2" />
+              </div>
+            </Popover>
+          </div>
+        );
+      }
       return (
         <div className="opr-more">
           <div className="reopr-btn" onClick={() => xxlrxg(item, 'MOD')}>
@@ -559,6 +550,7 @@ class ItemBtn extends React.Component {
           </div>
         </div>
       );
+    }
     return (
       <div className="opr-btn" onClick={() => xxlrxg(item)}>
         录入
@@ -601,161 +593,134 @@ class ItemBtn extends React.Component {
             </div>
           </div>
         );
-      return (
-        <div className="opr-more">
-          <div className="reopr-btn" onClick={() => lrxg(item, isBid, 'ADD')}>
-            录入
-          </div>
-          <Popover
-            placement="bottom"
-            title={null}
-            content={reoprMoreCotent}
-            overlayClassName="btn-more-content-popover"
-          >
-            <div className="reopr-more">
-              <i className="iconfont icon-more2" />
+      else {
+        const htxxck = () => {
+          FetchQueryHardwareTendersAndContract({
+            xmmc: Number(item.xmid),
+            flowId: -1,
+            type: 'HTXX',
+            flowType: 'CK',
+          })
+            .then(res => {
+              if (res.success) {
+                const { htxx = '[]', lcxx = '[]' } = res;
+                const htxxData = [...JSON.parse(htxx)];
+                const lcxxData = [...JSON.parse(lcxx)];
+                let htxxList = htxxData.map(x => ({
+                  htxxid: x.ID,
+                  flowid: x.GLLC,
+                  htbt: `${lcxxData.find(l => l.ID === x.GLLC)?.BT}-${x.QSRQ}`,
+                }));
+                this.setState({
+                  yjhtxxData: {
+                    ...this.state.yjhtxxData,
+                    list: htxxList,
+                    loading: false,
+                  },
+                });
+                console.log('🚀 ~ htxxList:', htxxList);
+              }
+            })
+            .catch(error => {
+              console.error('查询合同信息', error);
+              this.setState({
+                yjhtxxData: {
+                  ...this.state.yjhtxxData,
+                  loading: false,
+                },
+              });
+            });
+        };
+
+        const htxxxg = (id, flowId) => {
+          this.setState({
+            hardWareContrastModalVisible: true,
+            yjhtxxData: {
+              ...this.state.yjhtxxData,
+              curHtxxid: id,
+              curFlowid: flowId,
+              popoverVisible: false,
+            },
+            lbModalUrl: 'UPDATE',
+            lbModalTitle: '硬件合同信息修改',
+          });
+        };
+
+        const reoprMoreContent = (
+          <div className="list">
+            <div className="item" onClick={() => lrxg(item, isBid, 'ADD')} key="录入">
+              录入
             </div>
-          </Popover>
-        </div>
-      );
+          </div>
+        );
+        const documentContent = (
+          <Spin tip="加载中" spinning={this.state.yjhtxxData.loading} size="small">
+            <div className="list" style={this.state.yjhtxxData.loading ? { minHeight: 40 } : {}}>
+              {this.state.yjhtxxData.list?.map(x => (
+                <div
+                  className="item"
+                  key={x.htxxid}
+                  style={{
+                    height: 'unset',
+                    lineHeight: 'unset',
+                    marginBottom: 0,
+                    paddingTop: 4,
+                    paddingBottom: 4,
+                    display: 'flex',
+                    alignItems: 'center',
+                  }}
+                >
+                  <Tooltip title={x.htbt} placement="topLeft" key={x.htxxid}>
+                    <div className="subject" style={{ color: '#1f1f1f' }}>
+                      {x.htbt}
+                    </div>
+                  </Tooltip>
+                  <div className="opr-btn" onClick={() => htxxxg(x.htxxid, x.flowid)}>
+                    修改
+                  </div>
+                </div>
+              ))}
+              {this.state.yjhtxxData.list.length === 0 && (
+                <Empty
+                  style={{ margin: 0 }}
+                  image={Empty.PRESENTED_IMAGE_SIMPLE}
+                  description="暂无数据"
+                />
+              )}
+            </div>
+          </Spin>
+        );
+        return (
+          <div className="opr-more">
+            <Popover
+              placement="bottomRight"
+              title={null}
+              content={documentContent}
+              overlayClassName="document-list-content-popover"
+              trigger="click"
+              visible={this.state.yjhtxxData.popoverVisible}
+              onVisibleChange={v =>
+                this.setState({ yjhtxxData: { ...this.state.yjhtxxData, popoverVisible: v } })
+              }
+            >
+              <div className="reopr-btn" onClick={() => htxxck(item)}>
+                查看
+              </div>
+            </Popover>
+            <Popover
+              placement="bottom"
+              title={null}
+              content={reoprMoreContent}
+              overlayClassName="btn-more-content-popover"
+            >
+              <div className="reopr-more">
+                <i className="iconfont icon-more2" />
+              </div>
+            </Popover>
+          </div>
+        );
+      }
     }
-    // if (done) {
-    //   if (isBid)
-    //     return (
-    //       <div className="opr-more">
-    //         <div className="reopr-btn" onClick={() => lrxg(item, isBid, 'UPDATE')}>
-    //           修改
-    //         </div>
-    //       </div>
-    //     );
-    //   else {
-    //     const htxxck = () => {
-    //       FetchQueryHardwareTendersAndContract({
-    //         xmmc: Number(item.xmid),
-    //         flowId: -1,
-    //         type: 'HTXX',
-    //         flowType: 'CK',
-    //       })
-    //         .then(res => {
-    //           if (res.success) {
-    //             const { htxx = '[]', lcxx = '[]' } = res;
-    //             const htxxData = [...JSON.parse(htxx)];
-    //             const lcxxData = [...JSON.parse(lcxx)];
-    //             let htxxList = htxxData.map(x => ({
-    //               htxxid: x.ID,
-    //               flowid: x.GLLC,
-    //               htbt: `${lcxxData.find(l => l.ID === x.GLLC)?.BT}-${x.QSRQ}`,
-    //             }));
-    //             this.setState({
-    //               yjhtxxData: {
-    //                 ...this.state.yjhtxxData,
-    //                 list: htxxList,
-    //                 loading: false,
-    //               },
-    //             });
-    //             console.log('🚀 ~ htxxList:', htxxList);
-    //           }
-    //         })
-    //         .catch(error => {
-    //           console.error('查询合同信息', error);
-    //           this.setState({
-    //             yjhtxxData: {
-    //               ...this.state.yjhtxxData,
-    //               loading: false,
-    //             },
-    //           });
-    //         });
-    //     };
-
-    //     const htxxxg = (id, flowId) => {
-    //       this.setState({
-    //         hardWareContrastModalVisible: true,
-    //         yjhtxxData: {
-    //           ...this.state.yjhtxxData,
-    //           curHtxxid: id,
-    //           curFlowid: flowId,
-    //           popoverVisible: false,
-    //         },
-    //         lbModalUrl: 'UPDATE',
-    //         lbModalTitle: '硬件合同信息修改',
-    //       });
-    //     };
-
-    //     const reoprMoreContent = (
-    //       <div className="list">
-    //         <div className="item" onClick={() => lrxg(item, isBid, 'ADD')} key="录入">
-    //           录入
-    //         </div>
-    //       </div>
-    //     );
-    //     const documentContent = (
-    //       <Spin tip="加载中" spinning={this.state.yjhtxxData.loading} size="small">
-    //         <div className="list" style={this.state.yjhtxxData.loading ? { minHeight: 40 } : {}}>
-    //           {this.state.yjhtxxData.list?.map(x => (
-    //             <div
-    //               className="item"
-    //               key={x.htxxid}
-    //               style={{
-    //                 height: 'unset',
-    //                 lineHeight: 'unset',
-    //                 marginBottom: 0,
-    //                 paddingTop: 4,
-    //                 paddingBottom: 4,
-    //                 display: 'flex',
-    //                 alignItems: 'center',
-    //               }}
-    //             >
-    //               <Tooltip title={x.htbt} placement="topLeft" key={x.htxxid}>
-    //                 <div className="subject" style={{ color: '#1f1f1f' }}>
-    //                   {x.htbt}
-    //                 </div>
-    //               </Tooltip>
-    //               <div className="opr-btn" onClick={() => htxxxg(x.htxxid, x.flowid)}>
-    //                 修改
-    //               </div>
-    //             </div>
-    //           ))}
-    //           {this.state.yjhtxxData.list.length === 0 && (
-    //             <Empty
-    //               style={{ margin: 0 }}
-    //               image={Empty.PRESENTED_IMAGE_SIMPLE}
-    //               description="暂无数据"
-    //             />
-    //           )}
-    //         </div>
-    //       </Spin>
-    //     );
-    //     return (
-    //       <div className="opr-more">
-    //         <Popover
-    //           placement="bottomRight"
-    //           title={null}
-    //           content={documentContent}
-    //           overlayClassName="document-list-content-popover"
-    //           trigger="click"
-    //           visible={this.state.yjhtxxData.popoverVisible}
-    //           onVisibleChange={v =>
-    //             this.setState({ yjhtxxData: { ...this.state.yjhtxxData, popoverVisible: v } })
-    //           }
-    //         >
-    //           <div className="reopr-btn" onClick={() => htxxck(item)}>
-    //             查看
-    //           </div>
-    //         </Popover>
-    //         <Popover
-    //           placement="bottom"
-    //           title={null}
-    //           content={reoprMoreContent}
-    //           overlayClassName="btn-more-content-popover"
-    //         >
-    //           <div className="reopr-more">
-    //             <i className="iconfont icon-more2" />
-    //           </div>
-    //         </Popover>
-    //       </div>
-    //     );
-    //   }
-    // }
 
     return (
       <div className="opr-btn" onClick={() => lrxg(item, isBid, 'ADD')}>
