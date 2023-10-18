@@ -44,6 +44,11 @@ import LBDialog from 'livebos-frame/dist/LBDialog';
 import RiskOutline from './RiskOutline';
 import PrizeInfo from '../../../../components/pmsPage/EditProjectInfoModel/OthersInfos/PrizeInfo';
 import SubItemInfo from './SubItemInfo';
+import {
+  InitIterationProjectInfo,
+  QueryProjectListPara,
+  QueryUserRole,
+} from '../../../../services/pmsServices';
 
 const { Option, OptGroup } = Select;
 const { api } = config;
@@ -64,6 +69,7 @@ class NewProjectModelV2 extends React.Component {
     height: 0, // 人员信息下拉框高度设置
     softwareList: [], // 软件清单列表
     projectLabelList: [], // 项目标签列表
+    projectLabelOriginList: [], //项目标签列表 原数据，用于取labelTxt
     projectTypeList: [], //项目类型列表
     projectTypeZY: [], //自研项目下的项目类型
     projectTypeZYFlag: false, //是否选中自研项目下的类型
@@ -86,10 +92,10 @@ class NewProjectModelV2 extends React.Component {
       singleBudget: 0,
       year: moment(new Date()), // 年份
       budgetProjectId: '', // 预算项目id
-      budgetProjectName: '', // 预算项目名称
+      budgetProjectName: '', // 预算项目id+预算类型id 作value用
       totalBudget: 0, // 总预算(元)
-      relativeBudget: 0, // 可关联总预算(元)
-      projectBudget: 0, // 本项目预算
+      relativeBudget: 0, // 可关联总预算(元) - 剩余预算
+      projectBudget: 0, // 本项目预算 - 本项目金额
       budgetType: '',
     },
     staffList: [], // 人员信息列表
@@ -165,6 +171,9 @@ class NewProjectModelV2 extends React.Component {
     //标签是否展开
     isDownLabel: true,
     haveType: 1,
+    glddxmData: [], //关联迭代项目下拉框数据
+    glddxmId: undefined, //关联迭代项目ID
+    grayTest_DDMK: false, //灰度测试后去掉
   };
 
   componentWillMount() {
@@ -177,9 +186,38 @@ class NewProjectModelV2 extends React.Component {
 
   componentDidMount = async () => {
     const _this = this;
-    const { xmid, projectType, type } = _this.props;
+    const { xmid, projectType, type, scddProps = {} } = _this.props;
     console.log('propsprops', xmid, projectType);
     // const params = this.getUrlParams();
+    //灰度测试 - DDMK
+    let LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
+    //获取登录角色数据 - 判断用户是否为领导
+    const roleRes =
+      (await QueryUserRole({
+        userId: Number(LOGIN_USER_INFO.id),
+      })) || {};
+    const testRole = JSON.parse(roleRes.testRole || '{}');
+    const { DDXM = '' } = testRole;
+    const DDXM_IDArr = DDXM === '' ? [] : DDXM.split(',');
+    const DDXM_Auth = DDXM_IDArr.includes(String(LOGIN_USER_INFO.id));
+    console.log(
+      '🚀 ~ file: index.js:253 ~ handlePromiseAll ~ DDXM_Auth:',
+      DDXM_Auth,
+      DDXM_IDArr,
+      String(LOGIN_USER_INFO.id),
+    );
+    this.setState({
+      grayTest_DDMK: DDXM_Auth,
+    });
+
+    if (DDXM_Auth) {
+      //取消灰度测试时去掉条件
+      if (scddProps.glddxmId) {
+        this.setState({
+          glddxmId: scddProps.glddxmId,
+        });
+      }
+    }
     if (xmid && xmid !== -1) {
       // //console.log("paramsparams", params)
       // 修改项目操作
@@ -206,7 +244,7 @@ class NewProjectModelV2 extends React.Component {
       this.setState({ type: true });
     }
     setTimeout(function() {
-      _this.fetchInterface();
+      _this.fetchInterface(scddProps.glddxmId, DDXM_Auth);
     }, 300);
   };
 
@@ -356,11 +394,13 @@ class NewProjectModelV2 extends React.Component {
           isFinish: 0,
         });
         basicFlag = true;
+        console.log('aaaaa');
       } else if (budgetInfo.budgetProjectId === '0') {
         this.setState({
           isFinish: 0,
         });
         basicFlag = true;
+        console.log('ddddd');
       } else {
         this.setState({
           isFinish: -1,
@@ -427,24 +467,29 @@ class NewProjectModelV2 extends React.Component {
     // //console.log("current", this.state.current)
   }
 
-  fetchInterface = async () => {
+  fetchInterface = async (glddxmId, DDMK = false) => {
     // 查询软件清单
-    this.fetchQuerySoftwareList();
+    await this.fetchQuerySoftwareList();
     // 查询项目标签
-    this.fetchQueryProjectLabel();
+    await this.fetchQueryProjectLabel();
+
+    if (glddxmId !== undefined || DDMK) {
+      // 获取关联迭代项目下拉框数据
+      await this.getGlddxmData();
+    }
 
     // 查询组织机构信息-应用部门
-    this.fetchQueryOrganizationYYBMInfo();
+    await this.fetchQueryOrganizationYYBMInfo();
 
     // 查询里程碑阶段信息
-    this.fetchQueryMilestoneStageInfo({ type: 'ALL' });
+    await this.fetchQueryMilestoneStageInfo({ type: 'ALL' });
     // 查询里程碑事项信息
-    this.fetchQueryMatterUnderMilepost({ type: 'ALL', lcbid: 0 });
+    await this.fetchQueryMatterUnderMilepost({ type: 'ALL', lcbid: 0 });
     // 查询里程碑信息
-    this.fetchQueryMilepostInfo({
+    await this.fetchQueryMilepostInfo({
       type: Number(this.state.basicInfo.projectType),
       isShortListed: Number(this.state.budgetInfo.frameBudget) > 0 ? '1' : '2',
-      xmid: this.state.basicInfo.projectId,
+      xmid: glddxmId ? glddxmId : this.state.basicInfo.projectId,
       biddingMethod: 1,
       budget: 0,
       label: this.state.basicInfo.labelTxt,
@@ -468,20 +513,26 @@ class NewProjectModelV2 extends React.Component {
     await this.fetchQueryOrganizationInfo();
     // 查询人员信息
     await this.fetchQueryMemberInfo();
-    // 修改加载状态
-    this.setState({ loading: false });
 
     // 修改项目时查询项目详细信息
     if (this.state.basicInfo.projectId && this.state.basicInfo.projectId !== -1) {
       await this.fetchQueryProjectDetails({ projectId: this.state.basicInfo.projectId });
     }
 
+    //glddxmId不为undefined时调用 - 生成迭代时
+    if (glddxmId !== undefined && DDMK) {
+      await this.fetchQueryProjectDetails({ projectId: glddxmId }, true);
+    }
+
     //判断完成状态
     this.isFinish();
+
+    // 修改加载状态
+    this.setState({ loading: false });
   };
 
-  // 处理岗位数据
-  fetchQueryStationInfo() {
+  // 处理岗位数据  isDDXM - 与关联迭代项目有关时调用的
+  fetchQueryStationInfo(xmid = -1, isDDXM = false) {
     const params = {
       current: 1,
       pageSize: 999,
@@ -507,14 +558,20 @@ class NewProjectModelV2 extends React.Component {
           arr[9] = [loginUser.id];
           let nameArr = [];
           nameArr[9] = [loginUser.name + '(' + this.state.loginUser.orgName + ')'];
-          this.setState({
-            searchStaffList: [loginUser],
-            // loginUser: loginUser,
-            staffJobList: rec,
-            rygwDictionary: rec,
-            rygwSelectDictionary: rec,
-            staffInfo: { ...this.state.staffInfo, jobStaffList: arr, jobStaffName: nameArr },
-          });
+          console.log('🚀 ~ jobStaffList ~ jobStaffName:', arr, nameArr);
+          this.setState(
+            {
+              searchStaffList: [loginUser],
+              // loginUser: loginUser,
+              staffJobList: rec,
+              rygwDictionary: rec,
+              rygwSelectDictionary: rec,
+              staffInfo: { ...this.state.staffInfo, jobStaffList: arr, jobStaffName: nameArr },
+            },
+            () => {
+              if (isDDXM) this.fetchQueryProjectDetails({ projectId: xmid }, true);
+            },
+          );
         }
       })
       .catch(error => {
@@ -522,8 +579,8 @@ class NewProjectModelV2 extends React.Component {
       });
   }
 
-  // 查询里程碑信息
-  fetchQueryMilepostInfo(params) {
+  // 查询里程碑信息  isDDXM - 与关联迭代项目有关时调用的
+  fetchQueryMilepostInfo(params, isDDXM = false) {
     return FetchQueryMilepostInfo(params)
       .then(record => {
         const { code = -1, result = '' } = record;
@@ -929,6 +986,8 @@ class NewProjectModelV2 extends React.Component {
             }
             this.setState({ milePostInfo, mileInfo: { ...this.state.mileInfo, milePostInfo } });
           }
+          //与关联迭代项目有关时调用的，停止加载
+          if (isDDXM) this.setState({ loading: false });
         }
       })
       .catch(error => {
@@ -1212,10 +1271,11 @@ class NewProjectModelV2 extends React.Component {
       });
   }
 
-  // 修改项目时查询项目详细信息
-  fetchQueryProjectDetails(params) {
+  // 修改项目时查询项目详细信息  isDDXM - 与关联迭代项目有关时调用的
+  fetchQueryProjectDetails(params, isDDXM = false) {
     const { staffJobList = [], rygwSelectDictionary = [], projectTypeZY = [] } = this.state;
     let newStaffJobList = [];
+    let loginUser = JSON.parse(window.sessionStorage.getItem('user'));
     return FetchQueryProjectDetails(params)
       .then(result => {
         const { code = -1, record = [] } = result;
@@ -1224,10 +1284,12 @@ class NewProjectModelV2 extends React.Component {
           let jobArr = [];
           let searchStaffList = [];
           let memberInfo = JSON.parse(result.memberInfo);
-          memberInfo.push({ gw: '10', rymc: result.projectManager });
+          memberInfo.push({
+            gw: '10',
+            rymc: isDDXM ? String(loginUser.id) : result.projectManager,
+          });
           let arr = [];
-          //console.log("memberInfomemberInfo", memberInfo)
-          //console.log("this.state.staffList", this.state.staffList)
+          // console.log('memberInfomemberInfo', memberInfo);
           let nameArr = [];
           memberInfo.forEach(item => {
             let rymc = item.rymc.split(',').map(String);
@@ -1254,7 +1316,6 @@ class NewProjectModelV2 extends React.Component {
               // staffJobList: RYGW,
               staffInfo: { ...this.state.staffInfo, jobStaffList: arr, jobStaffName: nameArr },
             });
-            ////console.log("searchStaffListsearchStaffList", this.state.searchStaffList)
             staffJobList.map(i => {
               if (String(i.ibm) === String(item.gw)) {
                 newStaffJobList.push(i);
@@ -1267,30 +1328,28 @@ class NewProjectModelV2 extends React.Component {
           let newArray = rygwSelectDictionary.filter(function(item) {
             return newArr.indexOf(item) === -1;
           });
-          // ////console.log("rygwSelectDictionary",newArray)
-          // this.setState({rygwSelectDictionary: newArray, staffJobList: this.sortByKey(newStaffJobList, 'ibm', true)})
           this.setState({ rygwSelectDictionary: newArray, staffJobList: newStaffJobList });
-          // ////console.log("arr",arr)
-          // ////console.log("budgetProjectList",this.state.budgetProjectList)
           let totalBudget = 0;
           let relativeBudget = 0;
           let ysKZX = 0;
-          let budgetProjectName = '';
+          let budgetProjectName =
+            Number(result.budgetProject) <= 0
+              ? result.budgetProject + '4'
+              : result.budgetProject + result.budgetTypeId;
           //其他里面的预算id，都是小于等于0
           if (Number(result.budgetProject) <= 0) {
-            this.state.budgetProjectList.forEach(item => {
-              item.children.forEach(ite => {
-                if (ite.key === result.budgetProject) {
-                  budgetProjectName = ite.title;
-                }
-              });
-            });
+            // this.state.budgetProjectList.forEach(item => {
+            //   item.children.forEach(ite => {
+            //     if (ite.key === result.budgetProject) {
+            //       budgetProjectName = ite.title;
+            //     }
+            //   });
+            // });
           } else {
             this.state.budgetProjectList.forEach(item => {
               item.children.forEach(ite => {
                 ite.children?.forEach(i => {
-                  if (i.key === result.budgetProject && i.ysLX === result.budgetType) {
-                    budgetProjectName = i.title;
+                  if (i.value === result.budgetProject) {
                     totalBudget = Number(i.ysZJE);
                     relativeBudget = Number(i.ysKGL);
                     ysKZX = Number(i.ysKZX);
@@ -1317,46 +1376,111 @@ class NewProjectModelV2 extends React.Component {
           } else if (String(result.haveHard) === '1' && Number(result.softBudget) > 0) {
             haveType = 3;
           }
+          //项目名称实时改变
+          this.props.form.setFieldsValue({
+            projectName: result.projectName,
+          });
+          let labelArr = [];
+          if (this.props.scddProps?.glddxmId !== undefined) {
+            //生成迭代的新建 - 标签必须包含迭代项目  (注：生成迭代的新建isDDXM也为true，这边可以具体区分)
+            if (result.projectLabel.includes('14')) {
+              labelArr = result.projectLabel.split(',');
+            } else {
+              labelArr =
+                result.projectLabel === '' ? ['14'] : [...result.projectLabel.split(','), '14'];
+            }
+          } else if (isDDXM) {
+            //正常新建-关联迭代 - 标签保持原样
+            labelArr = this.state.basicInfo.projectLabel;
+          } else {
+            labelArr = result.projectLabel === '' ? [] : result.projectLabel.split(',');
+          }
+          //标签文本，用;连接
+          const labelTxt =
+            labelArr
+              .map(x => this.state.projectLabelOriginList?.find(y => y.ID === x)?.BQMC)
+              ?.join(';') || '';
+          // console.log('🚀 ~ labelArr :', labelArr, this.props.scddProps?.glddxmId);
           this.setState({
             haveType,
             subItem: result.haveChild,
-            ysKZX: ysKZX,
+            ysKZX: isDDXM ? 0 : ysKZX,
             searchStaffList: searchStaffList,
             projectTypeZYFlag: flag,
             projectTypeRYJFlag: RYJFlag,
             basicInfo: {
               haveHard: result.haveHard, //是否包含硬件
               SFYJRW: Number(result.isShortListed),
-              projectId: result.projectId,
+              projectId: isDDXM ? this.state.basicInfo.projectId : result.projectId,
               projectName: result.projectName,
               projectType: Number(result.projectType),
-              projectLabel: result.projectLabel === '' ? [] : result.projectLabel.split(','),
+              projectLabel: labelArr,
               org: newOrg,
               software: result.softwareId === '' ? [] : result.softwareId.split(','),
               biddingMethod: Number(result.biddingMethod),
+              labelTxt,
             },
-            budgetInfo: {
-              //项目软件预算
-              softBudget: Number(result.softBudget),
-              softBudgetinit: Number(result.softBudget),
-              //框架预算
-              frameBudget: Number(result.frameBudget),
-              //单独采购预算
-              singleBudget: Number(result.singleBudget),
-              year: moment(moment(result.year, 'YYYY').format()),
-              budgetProjectId: result.budgetProject,
-              budgetProjectName,
-              totalBudget: totalBudget,
-              relativeBudget: relativeBudget,
-              projectBudget: Number(result.projectBudget),
-              budgetType: result.budgetType,
-            },
+            budgetInfo: isDDXM
+              ? { ...this.state.budgetInfo }
+              : {
+                  //项目软件预算
+                  softBudget: Number(result.softBudget),
+                  softBudgetinit: Number(result.softBudget),
+                  //框架预算
+                  frameBudget: Number(result.frameBudget),
+                  //单独采购预算
+                  singleBudget: Number(result.singleBudget),
+                  year: moment(moment(result.year, 'YYYY').format()),
+                  budgetProjectId: result.budgetProject,
+                  budgetProjectName,
+                  totalBudget: totalBudget,
+                  relativeBudget: relativeBudget,
+                  projectBudget: Number(result.projectBudget),
+                  budgetType: result.budgetType,
+                },
             staffInfo: {
               ...this.state.staffInfo,
               focusJob: '',
               jobStaffList: jobArr,
             },
           });
+          if (isDDXM)
+            this.fetchQueryMilepostInfo(
+              {
+                type: Number(result.projectType),
+                isShortListed: Number(this.state.budgetInfo.frameBudget) > 0 ? '1' : '2',
+                //项目预算类型
+                haveType: this.state.haveType,
+                //项目软件预算
+                softBudget:
+                  RYJFlag && String(this.state.basicInfo.haveHard) === '2'
+                    ? 0
+                    : this.state.budgetInfo.softBudget,
+                //框架预算
+                frameBudget:
+                  RYJFlag && String(result.haveHard) === '2'
+                    ? 0
+                    : this.state.budgetInfo.frameBudget,
+                //单独采购预算
+                singleBudget:
+                  RYJFlag && String(result.haveHard) === '2'
+                    ? 0
+                    : this.state.budgetInfo.singleBudget,
+                xmid: Number(params.projectId),
+                biddingMethod: Number(result.biddingMethod),
+                budget:
+                  String(result.haveHard) === '2'
+                    ? this.state.budgetInfo.projectBudget
+                    : Number(this.state.budgetInfo.softBudget) +
+                      Number(this.state.budgetInfo.frameBudget) +
+                      Number(this.state.budgetInfo.singleBudget),
+                label: this.state.basicInfo.labelTxt,
+                //是否包含子项目
+                haveChild: Number(result.haveChild),
+                queryType: 'ALL',
+              },
+              true,
+            );
         }
       })
       .catch(error => {
@@ -1468,11 +1592,121 @@ class NewProjectModelV2 extends React.Component {
 
   // 查询关联预算项目信息
   fetchQueryBudgetProjects(params) {
+    //转为树结构-关联项目
+    const toItemTree = (list, parId) => {
+      let a = list.reduce((pre, current, index) => {
+        pre[current.ysLXID] = pre[current.ysLXID] || [];
+        pre[current.ysLXID].push({
+          key: current.ysLXID,
+          label: current.ysLX,
+          value: current.ysLXID,
+          ysID: current.ysID,
+          ysKGL: Number(current.ysKGL),
+          ysLB: current.ysLB,
+          ysName: current.ysName,
+          ysZJE: Number(current.ysZJE),
+          zdbm: current.zdbm,
+          ysLX: current.ysLX,
+          ysLXID: current.ysLXID,
+          ysKZX: Number(current.ysKZX),
+        });
+        return pre;
+      }, []);
+
+      const treeData = [];
+      for (const key in a) {
+        const indexData = [];
+        const childrenData = [];
+        const childrenDatamini = [];
+        if (a.hasOwnProperty(key)) {
+          if (a[key] !== null) {
+            // console.log("item",a[key]);
+            let b = a[key].reduce((pre, current, index) => {
+              pre[current.zdbm] = pre[current.zdbm] || [];
+              pre[current.zdbm].push({
+                key: current.ysID + current.ysLXID,
+                label: current.ysName,
+                value: current.ysID + current.ysLXID,
+                ysID: current.ysID,
+                ysKGL: Number(current.ysKGL),
+                ysLB: current.ysLB,
+                ysName: current.ysName,
+                ysZJE: Number(current.ysZJE),
+                zdbm: current.zdbm,
+                ysLX: current.ysLX,
+                ysLXID: current.ysLXID,
+                ysKZX: Number(current.ysKZX),
+              });
+              return pre;
+            }, []);
+            a[key].map(item => {
+              if (indexData.indexOf(item.zdbm) === -1) {
+                indexData.push(item.zdbm);
+                if (b[item.zdbm]) {
+                  let treeDatamini = { children: [] };
+                  if (item.zdbm === '6') {
+                    // console.log("b[item.zdbm]",b["6"])
+                    b[item.zdbm].map(i => {
+                      treeDatamini.key = i.ysID + i.ysLXID;
+                      treeDatamini.value = i.ysID + i.ysLXID;
+                      treeDatamini.label = i.ysName;
+                      treeDatamini.ysID = i.ysID;
+                      treeDatamini.ysKGL = Number(i.ysKGL);
+                      treeDatamini.ysLB = i.ysLB;
+                      treeDatamini.ysName = i.ysName;
+                      treeDatamini.ysZJE = Number(i.ysZJE);
+                      treeDatamini.ysKZX = Number(i.ysKZX);
+                      treeDatamini.zdbm = i.zdbm;
+                      treeDatamini.ysLX = i.ysLX;
+                      treeDatamini.ysLXID = i.ysLXID;
+                    });
+                    // treeDatamini.dropdownStyle = { color: '#666' }
+                    // treeDatamini.selectable=false;
+                    // treeDatamini.children = b[item.zdbm]
+                  } else {
+                    treeDatamini.key = item.zdbm + item.ysLXID;
+                    treeDatamini.value = item.zdbm + item.ysLXID;
+                    treeDatamini.label = item.ysLB;
+                    treeDatamini.ysID = item.ysID;
+                    treeDatamini.ysKGL = Number(item.ysKGL);
+                    treeDatamini.ysLB = item.ysLB;
+                    treeDatamini.ysName = item.ysName;
+                    treeDatamini.ysLX = item.ysLX;
+                    treeDatamini.ysLXID = item.ysLXID;
+                    treeDatamini.ysZJE = Number(item.ysZJE);
+                    treeDatamini.ysKZX = Number(item.ysKZX);
+                    treeDatamini.zdbm = item.zdbm;
+                    treeDatamini.dropdownStyle = { color: '#666' };
+                    treeDatamini.selectable = false;
+                    treeDatamini.children = b[item.zdbm];
+                  }
+                  childrenDatamini.push(treeDatamini);
+                }
+                childrenData.key = key;
+                childrenData.value = key;
+                childrenData.label = item.ysLX;
+                childrenData.dropdownStyle = { color: '#666' };
+                childrenData.selectable = false;
+                childrenData.children = childrenDatamini;
+              }
+            });
+            treeData.push(childrenData);
+          }
+        }
+      }
+      return treeData;
+    };
     return FetchQueryBudgetProjects(params)
       .then(result => {
         const { code = -1, record = [] } = result;
         if (code > 0) {
-          this.setState({ budgetProjectList: this.toItemTree(record) });
+          this.setState({ budgetProjectList: toItemTree(record) });
+          // console.log(
+          //   '🚀 ~ toItemTree(record):',
+          //   record,
+          //   this.toItemTree(record),
+          //   toItemTree(record),
+          // );
         }
       })
       .catch(error => {
@@ -1503,6 +1737,7 @@ class NewProjectModelV2 extends React.Component {
           // console.log("this.toLabelTree(record,0) ",this.toLabelTree(record,0))
           this.setState({
             projectLabelList: this.toLabelTree(JSON.parse(record), 0),
+            projectLabelOriginList: JSON.parse(record), //原数据，用于取labelTxt
             projectTypeList: this.toTypeTree(JSON.parse(xmlxRecord), 0),
           });
           const projectTypeZY = this.state.projectTypeList[0]?.children.filter(
@@ -1528,6 +1763,31 @@ class NewProjectModelV2 extends React.Component {
       })
       .catch(error => {
         message.error(!error.success ? error.message : error.note);
+      });
+  }
+
+  // 获取关联迭代项目下拉框数据
+  getGlddxmData() {
+    return QueryProjectListPara({
+      current: 1,
+      pageSize: -1, //这边是迭代项目id
+      paging: -1,
+      sort: '',
+      total: -1,
+      cxlx: 'DDXM',
+    })
+      .then(res => {
+        if (res?.success) {
+          const data = [...JSON.parse(res.projectRecord)];
+          // console.log('🚀 ~ file: index.js:1551 ~ NewProjectModelV2 ~ getGlddxmData ~ data:', data);
+          this.setState({
+            glddxmData: data,
+          });
+        }
+      })
+      .catch(e => {
+        console.error('关联迭代项目下拉框数据', e);
+        message.error('关联迭代项目下拉框数据查询失败', 1);
       });
   }
 
@@ -1855,6 +2115,7 @@ class NewProjectModelV2 extends React.Component {
       mileInfo: { milePostInfo = [] },
       subItem,
     } = this.state;
+    console.log('🚀 ~ file: index.js:2118 ~ NewProjectModelV2 ~ this.state:', this.state);
     //校验基础信息
     let basicflag;
     if (String(this.state.subItem) === '1') {
@@ -1982,17 +2243,28 @@ class NewProjectModelV2 extends React.Component {
               if (
                 item.XMMC === '' ||
                 item.XMMC == null ||
-                item.XMJL === '' || item.XMJL == null ||
-                item.XMLX === '' || item.XMLX == null ||
-                item.YYBM === '' || item.YYBM == null ||
-                item.CGFS === '' || item.CGFS == null || item.CGFS === '-1' ||
-                item.GLYS === '' || item.GLYS == null ||
+                item.XMJL === '' ||
+                item.XMJL == null ||
+                item.XMLX === '' ||
+                item.XMLX == null ||
+                item.YYBM === '' ||
+                item.YYBM == null ||
+                item.CGFS === '' ||
+                item.CGFS == null ||
+                item.CGFS === '-1' ||
+                item.GLYS === '' ||
+                item.GLYS == null ||
                 // || (item.XMYS === ''||item.XMYS == null)
-                item.RJYS === '' || item.RJYS == null ||
-                item.SFBHYJ === '' || item.SFBHYJ == null ||
-                item.SFWYJRWNXQ === '' || item.SFWYJRWNXQ == null ||
-                item.KJCGJE === '' || item.KJCGJE == null ||
-                item.DDCGJE === '' || item.DDCGJE == null
+                item.RJYS === '' ||
+                item.RJYS == null ||
+                item.SFBHYJ === '' ||
+                item.SFBHYJ == null ||
+                item.SFWYJRWNXQ === '' ||
+                item.SFWYJRWNXQ == null ||
+                item.KJCGJE === '' ||
+                item.KJCGJE == null ||
+                item.DDCGJE === '' ||
+                item.DDCGJE == null
               ) {
                 subItemflag = false;
               }
@@ -2000,12 +2272,20 @@ class NewProjectModelV2 extends React.Component {
               if (
                 item.XMMC === '' ||
                 item.XMMC == null ||
-                item.XMJL === '' || item.XMJL == null ||
-                item.XMLX === '' || item.XMLX == null ||
-                item.YYBM === '' || item.YYBM == null ||
-                item.CGFS === '' || item.CGFS == null || item.CGFS === '-1' ||
-                item.GLYS === '' || item.GLYS == null || item.GLYS === '-99' ||
-                item.XMYS === '' || item.XMYS == null
+                item.XMJL === '' ||
+                item.XMJL == null ||
+                item.XMLX === '' ||
+                item.XMLX == null ||
+                item.YYBM === '' ||
+                item.YYBM == null ||
+                item.CGFS === '' ||
+                item.CGFS == null ||
+                item.CGFS === '-1' ||
+                item.GLYS === '' ||
+                item.GLYS == null ||
+                item.GLYS === '-99' ||
+                item.XMYS === '' ||
+                item.XMYS == null
                 // || (item.RJYS === ''||item.RJYS == null)
                 // || (item.SFBHYJ === ''||item.SFBHYJ == null)
               ) {
@@ -2017,11 +2297,17 @@ class NewProjectModelV2 extends React.Component {
           if (
             item.XMMC === '' ||
             item.XMMC == null ||
-            item.XMJL === '' || item.XMJL == null ||
-            item.XMLX === '' || item.XMLX == null ||
-            item.YYBM === '' || item.YYBM == null ||
-            item.GLYS === '' || item.GLYS == null || item.GLYS === '-99' ||
-            item.XMYS === '' || item.XMYS == null
+            item.XMJL === '' ||
+            item.XMJL == null ||
+            item.XMLX === '' ||
+            item.XMLX == null ||
+            item.YYBM === '' ||
+            item.YYBM == null ||
+            item.GLYS === '' ||
+            item.GLYS == null ||
+            item.GLYS === '-99' ||
+            item.XMYS === '' ||
+            item.XMYS == null
             // || (item.RJYS === ''||item.RJYS == null)
             // || (item.SFBHYJ === ''||item.SFBHYJ == null)
           ) {
@@ -2031,12 +2317,20 @@ class NewProjectModelV2 extends React.Component {
           if (
             item.XMMC === '' ||
             item.XMMC == null ||
-            item.XMJL === '' || item.XMJL == null ||
-            item.XMLX === '' || item.XMLX == null ||
-            item.YYBM === '' || item.YYBM == null ||
-            item.CGFS === '' || item.CGFS == null || item.CGFS === '-1' ||
-            item.GLYS === '' || item.GLYS == null || item.GLYS === '-99' ||
-            item.XMYS === '' || item.XMYS == null
+            item.XMJL === '' ||
+            item.XMJL == null ||
+            item.XMLX === '' ||
+            item.XMLX == null ||
+            item.YYBM === '' ||
+            item.YYBM == null ||
+            item.CGFS === '' ||
+            item.CGFS == null ||
+            item.CGFS === '-1' ||
+            item.GLYS === '' ||
+            item.GLYS == null ||
+            item.GLYS === '-99' ||
+            item.XMYS === '' ||
+            item.XMYS == null
             // || (item.RJYS === ''||item.RJYS == null)
             // || (item.SFBHYJ === ''||item.SFBHYJ == null)
           ) {
@@ -2378,7 +2672,9 @@ class NewProjectModelV2 extends React.Component {
     params.members = memberInfo;
     // //console.log("params.projectId", this.state.basicInfo.projectId)
     params.projectId =
-      this.state.basicInfo.projectId === undefined || this.state.basicInfo.projectId === ''
+      this.state.basicInfo.projectId === undefined ||
+      this.state.basicInfo.projectId === '' ||
+      this.props.form.getFieldValue('glddxm') !== undefined
         ? -1
         : Number(this.state.basicInfo.projectId);
     // //console.log("operateType", operateType)
@@ -2402,10 +2698,30 @@ class NewProjectModelV2 extends React.Component {
     //是否包含子项目
     params.haveChild = this.state.subItem;
     this.operateCreatProject(params, type);
+    // console.log(
+    //   '%%##@@',
+    //   this.state.basicInfo.projectLabel,
+    //   this.props.form.getFieldValue('projectLabel'),
+    // );
+  };
+
+  //初始化迭代项目信息 - 包含迭代项目标签时且新建时 调用
+  handleInitIterationProjectInfo = async (iterationProject, projectId) => {
+    await InitIterationProjectInfo({
+      iterationProject,
+      projectId,
+    });
+    this.props.form.resetFields();
+    if (this.props.scddProps?.glddxmId !== undefined) {
+      //生成迭代的新建
+      window.location.href = `/#/pms/manage/ProjectDetail/${EncryptBase64(
+        JSON.stringify({ routes: this.props.scddProps?.routes || [], xmid: projectId }),
+      )}`;
+    }
   };
 
   operateCreatProject = (params, type) => {
-    console.log('-----------开始保存父项目信息-----------');
+    console.log('-----------开始保存父项目信息-----------', params);
     const { subItem } = this.state;
     OperateCreatProject(params)
       .then(result => {
@@ -2414,19 +2730,26 @@ class NewProjectModelV2 extends React.Component {
         if (code > 0) {
           sessionStorage.setItem('projectId', projectId);
           sessionStorage.setItem('handleType', type);
+          const { getFieldValue } = this.props.form;
           //保存子项目信息
           if (String(subItem) === '1') {
             this.operateInsertSubProjects(params, projectId, type);
           } else {
             //type:0 草稿 type:1 完成
-            let content;
             if (type === 0) {
-              content = '暂存草稿项目成功！';
+              message.success('暂存草稿项目成功！', 1);
             } else {
-              content = '新建项目成功';
+              message.success('新建项目成功', 1);
+              if (this.state.grayTest_DDMK) {
+                //初始化迭代项目信息 - 包含迭代项目标签时且新建时 调用
+                getFieldValue('projectLabel')?.includes('14') &&
+                  this.handleInitIterationProjectInfo(
+                    Number(getFieldValue('glddxm') || -1),
+                    Number(projectId),
+                  );
+              }
             }
             this.props.successCallBack();
-            message.success(content);
             //项目列表那边新建项目的时候，也跳转首页
             console.log('this.state.type', this.state.type);
             if (this.state.type && type === 1) {
@@ -3232,7 +3555,7 @@ class NewProjectModelV2 extends React.Component {
       rygwSelectDictionary = [],
       rygwSelect = false,
       orgExpendKeys = [],
-      ysKZX = 0,
+      ysKZX = 0, //可执行预算
       loginUser = [],
       projectBudgetChangeFlag = false,
       //本项目软件预算改变标志
@@ -3251,10 +3574,12 @@ class NewProjectModelV2 extends React.Component {
       subItem = 2,
       //子项目信息
       subItemRecord = [],
+      glddxmData = [],
+      glddxmId = undefined,
     } = this.state;
-    console.log('basicInfo.haveHard', this.state);
+    // console.log('basicInfo.haveHard', this.state);
     // //console.log("organizationTreeList", organizationTreeList)
-    const { getFieldDecorator } = this.props.form;
+    const { getFieldDecorator, getFieldValue } = this.props.form;
     const basicFormItemLayout = {
       labelCol: {
         xs: { span: 24 },
@@ -3365,6 +3690,56 @@ class NewProjectModelV2 extends React.Component {
       const { id } = item;
       return !milePostInfoIds.includes(id);
     });
+
+    //标签选择 迭代项目 之后，展示关联迭代项目下拉框，非必填
+    const getGLddxm = () => {
+      //选完回显该项目的数据，预算信息的除外
+      const onChange = v => {
+        if (v !== undefined) {
+          this.setState({ loading: true });
+          this.fetchQueryStationInfo(Number(v), true);
+        }
+      };
+      //灰度测试后去掉
+      if (!this.state.grayTest_DDMK) return null;
+      if (getFieldValue('projectLabel')?.includes('14'))
+        return (
+          <Row gutter={24}>
+            <Col span={12}>
+              <Form.Item label="关联迭代项目">
+                {getFieldDecorator('glddxm', {
+                  initialValue: glddxmId,
+                })(
+                  <Select
+                    placeholder="请选择关联迭代项目"
+                    filterOption={(input, option) =>
+                      option.props.children[0]?.props.children
+                        ?.toLowerCase()
+                        .indexOf(input.toLowerCase()) >= 0
+                    }
+                    optionFilterProp="children"
+                    showSearch
+                    allowClear
+                    onChange={onChange}
+                  >
+                    {glddxmData.map(x => (
+                      <Select.Option key={x.ID} value={x.ID}>
+                        <Tooltip title={x.XMMC} placement="topLeft">
+                          {x.XMMC}
+                        </Tooltip>
+                        <div style={{ fontSize: '12px', color: '#bfbfbf' }}>
+                          {x.XMJL}&nbsp;-&nbsp;{x.XMNF}
+                        </div>
+                      </Select.Option>
+                    ))}
+                  </Select>,
+                )}
+              </Form.Item>
+            </Col>
+          </Row>
+        );
+      return null;
+    };
 
     return (
       <Fragment>
@@ -3924,6 +4299,7 @@ class NewProjectModelV2 extends React.Component {
                           </Col>
                         ) : null}
                       </Row>
+                      {getGLddxm()}
 
                       {/*</React.Fragment>*/}
                       {/*<React.Fragment>*/}
@@ -4733,9 +5109,13 @@ class NewProjectModelV2 extends React.Component {
                                     placeholder="请选择关联预算项目"
                                     getPopupContainer={triggerNode => triggerNode.parentNode}
                                     // treeDefaultExpandAll
-                                    onChange={e => {
+                                    onChange={(e, _, node) => {
+                                      console.log(
+                                        '🚀 ~ file: index.js:5115 ~ NewProjectModelV2 ~ render ~ e:',
+                                        node?.triggerNode?.props.ysID,
+                                      );
                                       budgetProjectList.forEach(item => {
-                                        if (Number(e) <= 0) {
+                                        if (Number(node?.triggerNode?.props.ysID) <= 0) {
                                           item?.children?.forEach(ite => {
                                             if (ite.value === e) {
                                               console.log('iteiteiteite', ite);
@@ -4747,8 +5127,6 @@ class NewProjectModelV2 extends React.Component {
                                                     budgetProjectId: ite.ysID,
                                                     totalBudget: 0,
                                                     relativeBudget: 0,
-                                                    // projectBudget: 0,
-                                                    // budgetProjectName: ite.ysName,
                                                     budgetType: '资本性预算',
                                                   },
                                                   ysKZX: ite.ysKZX,
@@ -4773,7 +5151,6 @@ class NewProjectModelV2 extends React.Component {
                                                     budgetInfo: {
                                                       ...this.state.budgetInfo,
                                                       budgetProjectId: i.ysID,
-                                                      // budgetProjectName: i.value,
                                                       totalBudget: Number(i.ysZJE),
                                                       relativeBudget: Number(i.ysKGL),
                                                       budgetType: i.ysLX,
