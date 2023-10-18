@@ -304,7 +304,7 @@ class ContractSigning extends React.Component {
       xmmc: String(currentXmid), //项目的id
       bm: String(loginUser.org), //部门id
       gys: values.gys, //供应商的id
-      // lclx: isDdhtqslc ? 2 : 1,
+      lclx: isDdhtqslc ? 2 : 1,
     };
     const params = {
       objectclass: '合同签署流程',
@@ -366,7 +366,7 @@ class ContractSigning extends React.Component {
       contractSigningVisible,
       xmbh,
       dictionary: { LCJJCD = [], YZLX = [], CXBM = [], OAXMLX = [] },
-      // isDdhtqslc,
+      isDdhtqslc,
     } = this.props;
     let LOGIN_USER_ID = Number(JSON.parse(sessionStorage.getItem('user'))?.id);
     const { getFieldDecorator, getFieldValue, setFieldsValue } = this.props.form;
@@ -460,7 +460,7 @@ class ContractSigning extends React.Component {
               fontSize: '15px',
             }}
           >
-            <strong>{/* {isDdhtqslc && '迭代'} */}合同签署流程发起</strong>
+            <strong>{isDdhtqslc && '迭代'}合同签署流程发起</strong>
           </div>
           <Spin
             spinning={isSpinning}
