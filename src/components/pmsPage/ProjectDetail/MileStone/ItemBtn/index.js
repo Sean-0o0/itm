@@ -23,7 +23,11 @@ import AgreementEnterModel from '../../../HardwareItems/AgreementEnterModel';
 import PollResultEnterModel from '../../../HardwareItems/PollResultEnterModel';
 import DemandInitiated from '../../../HardwareItems/DemandInitiated';
 import EditBidInfoModel from '../../../HardwareItems/EditBidInfoModel';
-import IterationContrast from './IterationContrast';
+import IterationContract from './IterationContract';
+import AssociationContract from './AssociationContract';
+import { FetchQueryHardwareTendersAndContract } from '../../../../../services/projectManage';
+import SoftwarePaymentWHT from './SoftwarePaymentWHT';
+import AssociationInitiatedProcess from './AssociationInitiatedProcess';
 
 const { api } = config;
 const { confirm } = Modal;
@@ -84,6 +88,20 @@ class ItemBtn extends React.Component {
       loading: false, //加载状态
       curHtxxid: -1, //当前合同信息id
     },
+    glhtModalVisible: false,
+    curYkbid: '',
+    glhtid: '', //关联合同有数据时回显
+    yjhtxxData: {
+      //硬件合同信息优化新增的字段
+      list: [], //查看展示的列表
+      popoverVisible: false, //Popover弹窗
+      loading: false, //加载状态
+      curHtxxid: -1, //当前合同信息id
+      curFlowid: -1, //当前流程id
+    },
+    rjfysplcwhtModalVisible: false, //软件费用审批流程-无合同
+    isDdhtqslc: false, //是否迭代合同签署流程
+    glyfqlcModalVisible: false, //关联已发起流程弹窗
   };
   // timer = null;
 
@@ -601,6 +619,143 @@ class ItemBtn extends React.Component {
         </div>
       );
     }
+    // if (done) {
+    //   if (isBid)
+    //     return (
+    //       <div className="opr-more">
+    //         <div className="reopr-btn" onClick={() => lrxg(item, isBid, 'UPDATE')}>
+    //           修改
+    //         </div>
+    //       </div>
+    //     );
+    //   else {
+    //     const htxxck = () => {
+    //       FetchQueryHardwareTendersAndContract({
+    //         xmmc: Number(item.xmid),
+    //         flowId: -1,
+    //         type: 'HTXX',
+    //         flowType: 'CK',
+    //       })
+    //         .then(res => {
+    //           if (res.success) {
+    //             const { htxx = '[]', lcxx = '[]' } = res;
+    //             const htxxData = [...JSON.parse(htxx)];
+    //             const lcxxData = [...JSON.parse(lcxx)];
+    //             let htxxList = htxxData.map(x => ({
+    //               htxxid: x.ID,
+    //               flowid: x.GLLC,
+    //               htbt: `${lcxxData.find(l => l.ID === x.GLLC)?.BT}-${x.QSRQ}`,
+    //             }));
+    //             this.setState({
+    //               yjhtxxData: {
+    //                 ...this.state.yjhtxxData,
+    //                 list: htxxList,
+    //                 loading: false,
+    //               },
+    //             });
+    //             console.log('🚀 ~ htxxList:', htxxList);
+    //           }
+    //         })
+    //         .catch(error => {
+    //           console.error('查询合同信息', error);
+    //           this.setState({
+    //             yjhtxxData: {
+    //               ...this.state.yjhtxxData,
+    //               loading: false,
+    //             },
+    //           });
+    //         });
+    //     };
+
+    //     const htxxxg = (id, flowId) => {
+    //       this.setState({
+    //         hardWareContrastModalVisible: true,
+    //         yjhtxxData: {
+    //           ...this.state.yjhtxxData,
+    //           curHtxxid: id,
+    //           curFlowid: flowId,
+    //           popoverVisible: false,
+    //         },
+    //         lbModalUrl: 'UPDATE',
+    //         lbModalTitle: '硬件合同信息修改',
+    //       });
+    //     };
+
+    //     const reoprMoreContent = (
+    //       <div className="list">
+    //         <div className="item" onClick={() => lrxg(item, isBid, 'ADD')} key="录入">
+    //           录入
+    //         </div>
+    //       </div>
+    //     );
+    //     const documentContent = (
+    //       <Spin tip="加载中" spinning={this.state.yjhtxxData.loading} size="small">
+    //         <div className="list" style={this.state.yjhtxxData.loading ? { minHeight: 40 } : {}}>
+    //           {this.state.yjhtxxData.list?.map(x => (
+    //             <div
+    //               className="item"
+    //               key={x.htxxid}
+    //               style={{
+    //                 height: 'unset',
+    //                 lineHeight: 'unset',
+    //                 marginBottom: 0,
+    //                 paddingTop: 4,
+    //                 paddingBottom: 4,
+    //                 display: 'flex',
+    //                 alignItems: 'center',
+    //               }}
+    //             >
+    //               <Tooltip title={x.htbt} placement="topLeft" key={x.htxxid}>
+    //                 <div className="subject" style={{ color: '#1f1f1f' }}>
+    //                   {x.htbt}
+    //                 </div>
+    //               </Tooltip>
+    //               <div className="opr-btn" onClick={() => htxxxg(x.htxxid, x.flowid)}>
+    //                 修改
+    //               </div>
+    //             </div>
+    //           ))}
+    //           {this.state.yjhtxxData.list.length === 0 && (
+    //             <Empty
+    //               style={{ margin: 0 }}
+    //               image={Empty.PRESENTED_IMAGE_SIMPLE}
+    //               description="暂无数据"
+    //             />
+    //           )}
+    //         </div>
+    //       </Spin>
+    //     );
+    //     return (
+    //       <div className="opr-more">
+    //         <Popover
+    //           placement="bottomRight"
+    //           title={null}
+    //           content={documentContent}
+    //           overlayClassName="document-list-content-popover"
+    //           trigger="click"
+    //           visible={this.state.yjhtxxData.popoverVisible}
+    //           onVisibleChange={v =>
+    //             this.setState({ yjhtxxData: { ...this.state.yjhtxxData, popoverVisible: v } })
+    //           }
+    //         >
+    //           <div className="reopr-btn" onClick={() => htxxck(item)}>
+    //             查看
+    //           </div>
+    //         </Popover>
+    //         <Popover
+    //           placement="bottom"
+    //           title={null}
+    //           content={reoprMoreContent}
+    //           overlayClassName="btn-more-content-popover"
+    //         >
+    //           <div className="reopr-more">
+    //             <i className="iconfont icon-more2" />
+    //           </div>
+    //         </Popover>
+    //       </div>
+    //     );
+    //   }
+    // }
 
     return (
       <div className="opr-btn" onClick={() => lrxg(item, isBid, 'ADD')}>
@@ -731,7 +886,7 @@ class ItemBtn extends React.Component {
         case '软件费用审批流程-无合同':
           return 'ZSZQ_RJGM';
         case '项目立项申请':
-          return ['ZSZQ_XMLXSQ', 'ZSZQ_XMLXSQXX', 'ZSZQ_XMLXSQZB'];
+          return 'ZSZQ_XMLXSQ';
         case '软件合同签署流程':
           return 'ZSZQ_XXJSBRCHT';
         case '设备采购有合同':
@@ -884,6 +1039,14 @@ class ItemBtn extends React.Component {
         });
         return;
       }
+      //迭代合同签署流程
+      if (item.sxmc === '迭代合同签署流程') {
+        this.setState({
+          contractSigningVisible: true,
+          isDdhtqslc: true,
+        });
+        return;
+      }
       //需求发起
       if (item.sxmc === '需求发起') {
         this.setState({
@@ -906,12 +1069,17 @@ class ItemBtn extends React.Component {
         ]);
       }
       if (item.sxmc === '软件费用审批流程-无合同') {
-        params = this.getParams('TLC_LCFQ', 'TLC_LCFQ_RJGMWHT', [
-          {
-            name: 'GLXM',
-            value: Number(item.xmid),
-          },
-        ]);
+        //lb弹窗
+        // params = this.getParams('TLC_LCFQ', 'TLC_LCFQ_RJGMWHT', [
+        //   {
+        //     name: 'GLXM',
+        //     value: Number(item.xmid),
+        //   },
+        // ]);
+        this.setState({
+          rjfysplcwhtModalVisible: true,
+        });
+        return;
       }
       if (item.sxmc === '申请餐券') {
         params = this.getParams('TLC_LCFQ', 'TLC_LCFQ_CQSQLC', [
@@ -1052,6 +1220,10 @@ class ItemBtn extends React.Component {
       </div>
     );
     const fklcNameListContent = () => {
+      //参数 url YKB:ID01tMADJLlnj1,Fjg7WPFpfYdA00:0163666569853821,B23075600,138
+      //              易快报ID        用户易快报ID                   单据编号   关联合同（有数据时就有）
+
+      //跳转易快报
       const jumpToYKB = url => {
         if (url.includes('YKB:')) {
           const arr = url.split(',');
@@ -1080,6 +1252,7 @@ class ItemBtn extends React.Component {
             });
         }
       };
+
       //单据编号
       const getDJBH = url => {
         if (url.includes('YKB:')) {
@@ -1087,6 +1260,22 @@ class ItemBtn extends React.Component {
           if (arr.length > 2) return arr[2];
         }
         return '';
+      };
+
+      //开启关联合同弹窗
+      const glht = url => {
+        if (url.includes('YKB:')) {
+          const arr = url.split(',');
+          if (arr.length !== 0) {
+            const id = arr[0].split(':')[1];
+            const glhtid = arr[3];
+            this.setState({
+              glhtModalVisible: true,
+              curYkbid: id,
+              glhtid,
+            });
+          }
+        }
       };
       return (
         <Spin tip="跳转中" spinning={this.state.jumpLoading} size="small">
@@ -1108,9 +1297,40 @@ class ItemBtn extends React.Component {
                     paddingBottom: 4,
                   }}
                 >
-                  <Tooltip title={x.subject} placement="topLeft" key={x.subject}>
-                    <div className="subject">{x.subject}</div>
-                  </Tooltip>
+                  <div
+                    style={{
+                      width: '100%',
+                      height: 'unset',
+                      lineHeight: 'unset',
+                      marginBottom: 0,
+                      paddingTop: 4,
+                      paddingBottom: 4,
+                      display: 'flex',
+                      alignItems: 'center',
+                    }}
+                  >
+                    <Tooltip title={x.subject} placement="topLeft" key={x.subject}>
+                      <div className="subject">{x.subject}</div>
+                    </Tooltip>
+                    {this.props.dhtData?.length > 1 && (
+                      <div
+                        className="opr-btn"
+                        key="关联合同"
+                        onClick={e => {
+                          e.stopPropagation();
+                          glht(x.url);
+                        }}
+                      >
+                        关联合同
+                        <Tooltip
+                          title="可将付款流程和具体的合同信息进行关联"
+                          overlayStyle={{ maxWidth: 'unset' }}
+                        >
+                          <Icon type="question-circle-o" style={{ marginLeft: 4 }} />
+                        </Tooltip>
+                      </div>
+                    )}
+                  </div>
                   {getDJBH(x.url) !== '' && <div className="djbh">{getDJBH(x.url)}</div>}
                 </div>
               ))}
@@ -1212,6 +1432,36 @@ class ItemBtn extends React.Component {
           </Popover>
         </div>
       );
+    const ddhtqsCotent = () => {
+      //关联已发起流程
+      const glyfqlc = () => {
+        this.setState({
+          glyfqlcModalVisible: true,
+        });
+      };
+      return (
+        <div className="list">
+          <div className="item" onClick={() => lcfq(item)} key="发起新流程">
+            发起新流程
+          </div>
+          <div className="item" onClick={() => glyfqlc()} key="关联已发起流程">
+            关联已发起流程
+          </div>
+        </div>
+      );
+    };
+
+    if (item.sxmc === '迭代合同签署流程')
+      return (
+        <Popover
+          placement="bottom"
+          title={null}
+          content={ddhtqsCotent()}
+          overlayClassName="btn-more-content-popover"
+        >
+          <div className="opr-btn">发起</div>
+        </Popover>
+      );
     return (
       <div className="opr-btn" onClick={() => lcfq(item)}>
         发起
@@ -1249,6 +1499,7 @@ class ItemBtn extends React.Component {
         case '框架外硬件采购流程':
         case '总办会流程':
         case '需求发起':
+        case '迭代合同签署流程':
           return that.getLcfqck(done, item);
 
         //信息录入
@@ -1432,6 +1683,13 @@ class ItemBtn extends React.Component {
       xqfqModalVisible,
       oackzttxVisible,
       ddhtxxlr,
+      glhtModalVisible,
+      curYkbid,
+      glhtid,
+      yjhtxxData = {},
+      rjfysplcwhtModalVisible,
+      isDdhtqslc,
+      glyfqlcModalVisible,
     } = this.state;
     const { item, xmmc, xmbh, isHwSltPrj, auth = {} } = this.props;
     // console.log('🚀 ~ file: index.js:1005 ~ ItemBtn ~ render ~ item:', item);
@@ -1500,7 +1758,7 @@ class ItemBtn extends React.Component {
       isAllWindow: 1,
       title: '异常填写',
       width: '800px',
-      height: '330px',
+      height: '380px',
       style: { top: '60px' },
       visible: oackzttxVisible,
       footer: null,
@@ -1584,6 +1842,8 @@ class ItemBtn extends React.Component {
               })
             }
             onSuccess={() => this.onSuccess(lbModalTitle)}
+            htxxid={yjhtxxData.curHtxxid}
+            flowid={yjhtxxData.curFlowid}
           ></AgreementEnterModel>
         )}
 
@@ -1700,7 +1960,7 @@ class ItemBtn extends React.Component {
             projectCode={xmbh}
             isHwPrj={isHwSltPrj}
             ddcgje={this.props.ddcgje}
-            // dhtData={this.props.dhtData}
+            dhtData={this.props.dhtData}
           />
         )}
 
@@ -1715,8 +1975,8 @@ class ItemBtn extends React.Component {
                 editMessageVisible: false,
               })
             }
-            onSuccess={() => this.onSuccess('信息修改')}
-            // htxxid={this.state.rjhtxxData.curHtxxid}
+            onSuccess={this.onSuccess}
+            htxxid={this.state.rjhtxxData.curHtxxid}
           ></ContractInfoUpdate>
         )}
 
@@ -1734,6 +1994,7 @@ class ItemBtn extends React.Component {
             }
             onSuccess={() => this.onSuccess('合同签署')}
             xmbh={xmbh}
+            isDdhtqslc={isDdhtqslc}
           ></ContractSigning>
         )}
 
@@ -1765,13 +2026,47 @@ class ItemBtn extends React.Component {
             onSuccess={() => this.onSuccess('信息修改')}
           ></BidInfoUpdate>
         )}
-        <IterationContrast
+
+        {/* 迭代合同信息录入弹窗 */}
+        <IterationContract
           dataProps={{ modalData: ddhtxxlr }}
           funcProps={{
             setModalData: v => this.setState({ ddhtxxlr: v }),
             refresh: this.props.refresh,
           }}
         />
+
+        {/* 关联合同 */}
+        <AssociationContract
+          visible={glhtModalVisible}
+          ykbid={curYkbid}
+          glhtid={glhtid}
+          dhtData={this.props.dhtData}
+          refresh={this.props.refresh}
+          setVisible={v => this.setState({ glhtModalVisible: v })}
+        />
+
+        {/* 软件费用审批流程-无合同 */}
+        <SoftwarePaymentWHT
+          dataProps={{
+            visible: rjfysplcwhtModalVisible,
+            currentXmid: Number(item.xmid),
+            currentXmmc: xmmc,
+            xmbh,
+          }}
+          funcProps={{
+            setVisible: v => this.setState({ rjfysplcwhtModalVisible: v }),
+            onSuccess: v => this.onSuccess(v),
+          }}
+        />
+
+        {/* 关联已发起流程弹窗 */}
+        <AssociationInitiatedProcess
+          visible={glyfqlcModalVisible}
+          setVisible={v => this.setState({ glyfqlcModalVisible: v })}
+          xmid={Number(item.xmid)}
+        />
+
         <iframe src={src} id="Iframe" style={{ display: 'none' }} />
       </>
     );

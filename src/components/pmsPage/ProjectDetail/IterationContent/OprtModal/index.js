@@ -136,7 +136,7 @@ export default Form.create()(function OprtModal(props) {
               <TextArea
                 className="ms-textarea"
                 placeholder="请输入升级内容"
-                maxLength={1000}
+                maxLength={600}
                 autoSize={{ maxRows: 8, minRows: 4 }}
               ></TextArea>,
             )}

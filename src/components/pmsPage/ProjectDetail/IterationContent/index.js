@@ -5,7 +5,7 @@ import ImgArrowUp from '../../../../assets/projectDetail/icon_arrow_up.png';
 import OprtModal from './OprtModal';
 
 export default function IterationContent(props) {
-  const { prjData = {}, xmid, getIterationCtn } = props;
+  const { prjData = {}, xmid, is_XMJL_FXMJL, getIterationCtn } = props;
   const { iterationCtn = [], prjBasic = {} } = prjData;
   const [dataShow, setDataShow] = useState([]); //展示用
   const [isUnfold, setIsUnfold] = useState(false); //是否展开
@@ -20,10 +20,10 @@ export default function IterationContent(props) {
   let timer = null;
 
   useEffect(() => {
-    setDataShow([...iterationCtn.slice(0, 6)]);
+    setDataShow([...iterationCtn.slice(0, getColNum(itemWidth) * 2)]);
     setIsUnfold(false);
     return () => {};
-  }, [JSON.stringify(iterationCtn)]);
+  }, [JSON.stringify(iterationCtn), itemWidth]);
 
   useEffect(() => {
     // 页面变化时获取浏览器窗口的大小
@@ -70,6 +70,28 @@ export default function IterationContent(props) {
     debounce(fn, 300);
   };
 
+  //获取目前每行几个
+  const getColNum = w => {
+    switch (w) {
+      case '31.851%':
+        return 3;
+      case '23.718%':
+        return 4;
+      case '18.911%':
+        return 5;
+      case '15.724%':
+        return 6;
+      case '13.4565%':
+        return 7;
+      case '11.7605%':
+        return 8;
+      case '10.4441%':
+        return 9;
+      default:
+        return 3;
+    }
+  };
+
   //flex列表尾部占位置的空标签，处理justify-content对齐问题
   const getAfterItem = width => {
     let arr = [];
@@ -109,7 +131,11 @@ export default function IterationContent(props) {
             title={detail}
             placement="rightTop"
             autoAdjustOverflow
-            overlayStyle={{ whiteSpace: 'pre-wrap', maxWidth: 360 }}
+            overlayClassName="iteration-content-tooltip"
+            overlayStyle={{
+              whiteSpace: 'pre-wrap',
+              maxWidth: 400,
+            }}
           >
             {detail}
           </Tooltip>
@@ -124,10 +150,11 @@ export default function IterationContent(props) {
     if (bool) {
       setDataShow([...iterationCtn]);
     } else {
-      setDataShow([...iterationCtn.slice(0, 6)]);
+      setDataShow([...iterationCtn.slice(0, getColNum(itemWidth) * 2)]);
     }
   };
 
+  if (iterationCtn.length === 0 && !is_XMJL_FXMJL) return null;
   return (
     <div className="iteration-content-box">
       <OprtModal
@@ -138,16 +165,18 @@ export default function IterationContent(props) {
       />
       <div className="top-title">
         项目迭代内容
-        <span
-          onClick={() =>
-            setModalData({
-              visible: true,
-              type: 'ADD',
-            })
-          }
-        >
-          新增升级内容
-        </span>
+        {is_XMJL_FXMJL && (
+          <span
+            onClick={() =>
+              setModalData({
+                visible: true,
+                type: 'ADD',
+              })
+            }
+          >
+            新增升级内容
+          </span>
+        )}
       </div>
       {iterationCtn.length !== 0 && (
         <div
@@ -172,7 +201,7 @@ export default function IterationContent(props) {
           )}
         </div>
       )}
-      {iterationCtn.length > 6 &&
+      {iterationCtn.length > getColNum(itemWidth) * 2 &&
         (isUnfold ? (
           <Fragment>
             <div className="more-item-unfold" onClick={() => handleUnfold(false)}>

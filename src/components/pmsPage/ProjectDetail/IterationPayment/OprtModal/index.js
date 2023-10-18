@@ -11,14 +11,22 @@ import {
   Icon,
   Row,
   Col,
+  Tooltip,
 } from 'antd';
 import moment from 'moment';
-import { InsertProjectUpdateInfo } from '../../../../../services/pmsServices';
+import Decimal from 'decimal.js';
+import {
+  InsertEvaluateInfo,
+  InsertProjectUpdateInfo,
+  QueryEvaluateInfo,
+} from '../../../../../services/pmsServices';
 const { RangePicker } = DatePicker;
 //评估信息录入
 export default Form.create()(function OprtModal(props) {
-  const { xmid, modalData, setModalData, getIterationCtn, form } = props;
-  const { visible, data = {} } = modalData;
+  const { form, dataProps = {}, funcProps = {} } = props;
+  const { xmid, modalData = {}, rldj, djlx } = dataProps;
+  const { setModalData, getIterationPayment } = funcProps;
+  const { visible, infoId = -1, type = 'ADD', paymentNum = 0 } = modalData;
   const { getFieldDecorator, getFieldValue, validateFields, resetFields } = form;
   const [isSpinning, setIsSpinning] = useState(false); //加载状态
   const [upldData, setUpldData] = useState({
@@ -34,12 +42,89 @@ export default Form.create()(function OprtModal(props) {
   const [monthRange, setMonthRange] = useState({
     value: [],
     isTrunRed: false,
-    mode: ['month', 'month'],
-  }); //example
+    open: false,
+    flag: 0,
+  });
+  const [updateData, setUpdateData] = useState({
+    rlcb: undefined,
+    yhl: undefined,
+    fkcs: 1,
+  }); //修改回显
+  const isNumberic = value => {
+    return !isNaN(parseFloat(value)) && isFinite(value);
+  };
+  let ZCB =
+    rldj &&
+    parseFloat(
+      Decimal(isNumberic(getFieldValue('rlcb')) ? getFieldValue('rlcb') : 0)
+        .times(Decimal(100).minus(isNumberic(getFieldValue('yhl')) ? getFieldValue('yhl') : 0))
+        .times(Decimal(rldj))
+        .div(100)
+        .toFixed(2),
+    );
 
   useEffect(() => {
+    if (visible && type === 'UPDATE') {
+      getData();
+    }
     return () => {};
-  }, []);
+  }, [visible, djlx, type]);
+
+  //获取评估信息
+  const getData = () => {
+    setIsSpinning(true);
+    QueryEvaluateInfo({
+      infoId,
+    })
+      .then(res => {
+        if (res?.success) {
+          const obj = JSON.parse(res.result)[0] || {};
+          const {
+            RLCB,
+            YHL,
+            KSSJ = '',
+            JSSJ = '',
+            PGBG = [],
+            PSJY = [],
+            XQQD = [],
+            CPSJG = [],
+          } = obj;
+          // console.log('🚀 ~ QueryEvaluateInfo ~ res', JSON.parse(res.result));
+          setUpdateData({
+            rlcb: RLCB,
+            yhl: YHL,
+          });
+          setMonthRange(p => ({
+            ...p,
+            value: [moment(String(KSSJ)), moment(String(JSSJ))],
+          }));
+          const getFileArr = (arr = []) => {
+            return (
+              arr.map((x, i) => ({
+                uid: Date.now() + '-' + i,
+                name: x.fileName,
+                status: 'done',
+                url: x.url,
+                base64: x.data,
+              })) ?? []
+            );
+          };
+          setUpldData(p => ({
+            ...p,
+            pgbg: getFileArr(PGBG), //评估报告
+            psjy: getFileArr(PSJY), //评审纪要
+            xqqd: getFileArr(XQQD), //需求清单
+            cpsjg: getFileArr(CPSJG), //产品设计稿
+          }));
+          setIsSpinning(false);
+        }
+      })
+      .catch(e => {
+        console.error('🚀评估信息', e);
+        message.error('评估信息获取失败', 1);
+        setIsSpinning(false);
+      });
+  };
 
   //提交数据
   const handleOk = () => {
@@ -64,34 +149,83 @@ export default Form.create()(function OprtModal(props) {
       setUpldData(p => ({ ...p, cpsjgRed: true }));
       haveError = true;
     }
-    validateFields(err => {
+    validateFields(async err => {
       if (haveError) {
         return;
       }
       if (!err) {
-        // setIsSpinning(true);
-        // InsertProjectUpdateInfo({
-        //   date: Number(getFieldValue('sjrq').format('YYYYMMDD')),
-        //   frequency: type === 'ADD' ? -1 : data.times,
-        //   id: type === 'ADD' ? -1 : data.key,
-        //   info: getFieldValue('sjnr'),
-        //   operateType: type,
-        //   projectId: Number(xmid),
-        // })
-        //   .then(res => {
-        //     if (res?.success) {
-        //       message.success('操作成功', 1);
-        //       getIterationCtn();
-        //       setIsSpinning(false);
-        //       setModalData({ visible: false, data: {}, type: 'ADD' });
-        //       resetFields();
-        //     }
-        //   })
-        //   .catch(e => {
-        //     console.error('🚀InsertProjectUpdateInfo', e);
-        //     message.error('操作失败', 1);
-        //     setIsSpinning(false);
-        //   });
+        function convertFilesToBase64(fileArray, type = '') {
+          return Promise.all(
+            fileArray.map(file => {
+              if (file.url !== undefined)
+                //查询到的已有旧文件的情况
+                return new Promise((resolve, reject) => {
+                  resolve({ name: file.name, data: file.base64, type });
+                });
+              return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+
+                reader.onload = function() {
+                  const base64 = reader.result.split(',')[1];
+                  const fileName = file.name;
+                  resolve({ name: fileName, data: base64, type });
+                };
+
+                reader.onerror = function(error) {
+                  reject(error);
+                };
+
+                reader.readAsDataURL(file);
+              });
+            }),
+          );
+        }
+        let pgbgArr = await convertFilesToBase64(
+          upldData.pgbg?.map(x => x.originFileObj || x),
+          '评估报告',
+        );
+        let psjyArr = await convertFilesToBase64(
+          upldData.psjy?.map(x => x.originFileObj || x),
+          '评审纪要',
+        );
+        let xqqdArr = await convertFilesToBase64(
+          upldData.xqqd?.map(x => x.originFileObj || x),
+          '需求清单',
+        );
+        let cpsjgArr = await convertFilesToBase64(
+          upldData.cpsjg?.map(x => x.originFileObj || x),
+          '产品设计稿',
+        );
+        const fileInfo = pgbgArr.concat(psjyArr, xqqdArr, cpsjgArr);
+        let submitProps = {
+          startDate: Number((monthRange.value[0] || moment()).format('YYYYMM')),
+          endDate: Number((monthRange.value[1] || moment()).format('YYYYMM')),
+          fileInfo,
+          infoId: type === 'ADD' ? -1 : infoId,
+          laborCost: String(getFieldValue('rlcb')),
+          operateType: type,
+          planId: type === 'ADD' ? paymentNum + 1 : paymentNum, //传第几次付款，没数据传1
+          preferential: String(getFieldValue('yhl')),
+          projectId: Number(xmid),
+          totalCost: ZCB,
+          unitPrice: String(rldj),
+        };
+        // console.log('🚀 ~ file: index.js:90 ~ handleOk ~ submitProps :', submitProps);
+        setIsSpinning(true);
+        InsertEvaluateInfo(submitProps)
+          .then(res => {
+            if (res?.success) {
+              getIterationPayment();
+              message.success('操作成功', 1);
+              setIsSpinning(false);
+              handleCancel();
+            }
+          })
+          .catch(e => {
+            console.error('🚀InsertProjectUpdateInfo', e);
+            message.error('操作失败', 1);
+            setIsSpinning(false);
+          });
       }
     });
   };
@@ -110,7 +244,8 @@ export default Form.create()(function OprtModal(props) {
       xqqdRed: false,
       cpsjgRed: false,
     });
-    setMonthRange({ value: [], isTrunRed: false, mode: ['month', 'month'] });
+    setMonthRange({ value: [], isTrunRed: false, open: false });
+    setUpdateData({});
   };
 
   const getDatePicker = () => {
@@ -126,13 +261,30 @@ export default Form.create()(function OprtModal(props) {
         >
           <RangePicker
             style={{ minWidth: '100%' }}
-            mode={monthRange.mode}
+            mode={djlx === '1' ? ['date', 'date'] : ['month', 'month']}
             value={monthRange.value}
             placeholder="请选择"
-            format="YYYY-MM"
+            format={djlx === '1' ? 'YYYY-MM-DD' : 'YYYY-MM'}
             allowClear
+            open={monthRange.open}
+            onOpenChange={v => setMonthRange(p => ({ ...p, open: v, flag: 0 }))}
+            onChange={dates => {
+              console.log('🚀 ~ file: index.js:268 ~ getDatePicker ~ dates:', dates);
+              setMonthRange(p => ({
+                ...p,
+                value: dates,
+                isTrunRed: dates.length === 0,
+                // open: p.flag + 1 < 2,
+              }));
+            }}
             onPanelChange={dates => {
-              setMonthRange(p => ({ ...p, value: dates, isTrunRed: dates.length === 0 }));
+              setMonthRange(p => ({
+                ...p,
+                value: dates,
+                isTrunRed: dates.length === 0,
+                flag: p.flag + 1,
+                open: p.flag + 1 < 2,
+              }));
             }}
           />
         </Form.Item>
@@ -166,16 +318,7 @@ export default Form.create()(function OprtModal(props) {
   };
 
   //输入框
-  const getInputNumber = ({
-    label,
-    labelCol,
-    wrapperCol,
-    dataIndex,
-    initialValue,
-    rules,
-    maxLength,
-  }) => {
-    maxLength = maxLength || 150;
+  const getInputNumber = ({ label, labelCol, wrapperCol, dataIndex, initialValue, rules, max }) => {
     return (
       <Col span={12}>
         <Form.Item label={label} labelCol={{ span: labelCol }} wrapperCol={{ span: wrapperCol }}>
@@ -185,12 +328,12 @@ export default Form.create()(function OprtModal(props) {
           })(
             <InputNumber
               style={{ width: '100%' }}
-              max={99999999999.99}
+              max={max}
               min={0}
               step={0.01}
               precision={2}
               formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-              parser={value => value.replace(/\$\s?|(,*)/g, '')}
+              // parser={value => value.replace(/\$\s?|(,*)/g, '')}
             />,
           )}
         </Form.Item>
@@ -315,19 +458,19 @@ export default Form.create()(function OprtModal(props) {
   return (
     <Modal {...modalProps}>
       <div className="body-title-box">
-        <strong>评估信息录入</strong>
+        <strong>评估信息{type === 'ADD' ? '录入' : '修改'}</strong>
       </div>
       <Spin spinning={isSpinning} tip="加载中">
         <Form className="content-box">
           <Row>
             {getDatePicker()}
             {getInputNumber({
-              label: '人力成本(人月)',
+              label: `人力成本(人${djlx === '1' ? '日' : '月'})`,
               dataIndex: 'rlcb',
-              initialValue: undefined,
+              initialValue: updateData.rlcb,
               labelCol: 8,
               wrapperCol: 16,
-              maxLength: 99999999,
+              max: 99999999.99,
               rules: [
                 {
                   required: true,
@@ -337,14 +480,14 @@ export default Form.create()(function OprtModal(props) {
             })}
           </Row>
           <Row>
-            {getInputDisabled('人力单价(元/人月)', 25000, 8, 16)}
+            {getInputDisabled(`人力单价(元/人${djlx === '1' ? '日' : '月'})`, rldj, 8, 16)}
             {getInputNumber({
               label: '优惠率(%)',
               dataIndex: 'yhl',
-              initialValue: undefined,
+              initialValue: updateData.yhl,
               labelCol: 8,
               wrapperCol: 16,
-              maxLength: 100,
+              max: 100,
               rules: [
                 {
                   required: true,
@@ -353,7 +496,22 @@ export default Form.create()(function OprtModal(props) {
               ],
             })}
           </Row>
-          <Row>{getInputDisabled('总成本(元)', 25000, 8, 16)}</Row>
+          <Row>
+            {getInputDisabled(
+              <span>
+                总成本(元) &nbsp;
+                <Tooltip
+                  title="总成本 = 人力成本 * 人力单价 * (1 - 优惠率)"
+                  overlayStyle={{ maxWidth: 300 }}
+                >
+                  <Icon type="question-circle-o" />
+                </Tooltip>
+              </span>,
+              ZCB,
+              8,
+              16,
+            )}
+          </Row>
           <Row>
             {getMultipleUpload({
               label: '评估报告',

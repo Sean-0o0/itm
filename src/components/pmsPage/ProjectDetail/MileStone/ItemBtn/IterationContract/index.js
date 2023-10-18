@@ -13,16 +13,18 @@ import {
   Col,
   Radio,
   Select,
+  Tooltip,
 } from 'antd';
 import moment from 'moment';
 import {
   FetchQueryGysInZbxx,
   InsertIteContract,
   QueryIteContractInfo,
+  QueryIteContractList,
 } from '../../../../../../services/pmsServices';
-const { RangePicker } = DatePicker;
+
 //评估信息录入
-export default Form.create()(function OprtModal(props) {
+export default Form.create()(function IterationContract(props) {
   const { form, dataProps = {}, funcProps = {} } = props;
   const { modalData = {} } = dataProps;
   const { setModalData, refresh } = funcProps;
@@ -32,11 +34,13 @@ export default Form.create()(function OprtModal(props) {
   const [upldData, setUpldData] = useState([]); //附件上传数据
   const [gysData, setGysData] = useState([]); //供应商下拉数据
   const [oldData, setOldData] = useState({}); //修改时回显数据
+  const [glqtkjhtData, setGlqtkjhtData] = useState([]); //关联其他框架合同下拉框数据
 
   useEffect(() => {
     if (visible) {
       if (type === 'UPDATE') getOldData();
       getGysData();
+      getGlqtkjhtData();
     }
     return () => {};
   }, [visible, type]);
@@ -62,7 +66,25 @@ export default Form.create()(function OprtModal(props) {
       });
   };
 
-  //
+  //获取关联其他框架合同下拉框数据
+  const getGlqtkjhtData = () => {
+    setIsSpinning(true);
+    QueryIteContractList({ contractId: -1 })
+      .then(res => {
+        if (res?.success) {
+          console.log('🚀 ~ QueryIteContractList ~ res', res, JSON.parse(res.result));
+          setGlqtkjhtData(JSON.parse(res.result));
+          //to do ...
+          setIsSpinning(false);
+        }
+      })
+      .catch(e => {
+        console.error('🚀关联其他框架合同下拉框数据', e);
+        message.error('关联其他框架合同下拉框数据获取失败', 1);
+        setIsSpinning(false);
+      });
+  };
+
   //获取迭代合同信息
   const getOldData = () => {
     setIsSpinning(true);
@@ -97,7 +119,7 @@ export default Form.create()(function OprtModal(props) {
 
   //提交数据
   const handleOk = () => {
-    validateFields(async err => {
+    validateFields(async (err, values) => {
       if (!err) {
         setIsSpinning(true);
         function convertFilesToBase64(fileArray) {
@@ -129,13 +151,14 @@ export default Form.create()(function OprtModal(props) {
         const fileInfo = await convertFilesToBase64(upldData.map(x => x.originFileObj || x));
         let submitProps = {
           id: type === 'ADD' ? -1 : Number(oldData.ID),
-          priceType: getFieldValue('djlx'),
+          priceType: values.djlx,
           projectId: Number(xmid),
-          unitPrice: getFieldValue('rldj'),
-          signingDate: Number(getFieldValue('qsrq').format('YYYYMMDD')),
-          vendorId: Number(getFieldValue('gys')),
+          unitPrice: values.rldj,
+          signingDate: Number(values.qsrq.format('YYYYMMDD')),
+          vendorId: Number(values.gys),
           fileInfo,
           operateType: type,
+          relContract: Number(values.glqtkjht || -1),
         };
         console.log('🚀 ~ file: index.js:90 ~ handleOk ~ submitProps :', submitProps);
         InsertIteContract(submitProps)
@@ -177,7 +200,7 @@ export default Form.create()(function OprtModal(props) {
               },
             ],
           })(
-            <Select placeholder="请选择" showSearch allowClear>
+            <Select placeholder="请选择" optionFilterProp="children" showSearch allowClear>
               {gysData.map(x => (
                 <Select.Option key={x.id} value={x.id}>
                   {x.gysmc}
@@ -347,11 +370,59 @@ export default Form.create()(function OprtModal(props) {
     );
   };
 
+  //获取关联其他框架合同下拉框数据
+  const getGlqtkjhtSelector = () => {
+    const onChange = (v, option) => {
+      if (option !== undefined) {
+        const obj = option.props.htdata || {};
+        setOldData({
+          ID: -1,
+          GYS: String(obj.gys),
+          DJLX: obj.djlx,
+          QSRQ: String(obj.qsrq),
+          RLDJ: obj.rldj,
+          GLDDHT: obj.id,
+        });
+      }
+    };
+    return (
+      <Col span={12}>
+        <Form.Item label="关联其他框架合同" labelCol={{ span: 8 }} wrapperCol={{ span: 16 }}>
+          {getFieldDecorator('glqtkjht', {
+            initialValue: oldData.GLDDHT ? Number(oldData.GLDDHT) : undefined,
+            // rules: [
+            //   {
+            //     required: true,
+            //     message: '关联其他框架合同不允许空值',
+            //   },
+            // ],
+          })(
+            <Select
+              placeholder="请选择"
+              onChange={onChange}
+              showSearch
+              allowClear
+              optionFilterProp="optionfilter"
+            >
+              {glqtkjhtData.map(x => (
+                <Select.Option optionfilter={x.xm} key={x.id} value={x.id} htdata={x}>
+                  <Tooltip title={x.xm} placement="topLeft">
+                    {x.xm}
+                  </Tooltip>
+                </Select.Option>
+              ))}
+            </Select>,
+          )}
+        </Form.Item>
+      </Col>
+    );
+  };
+
   const modalProps = {
     wrapClassName: 'editMessage-modify add-valuation-info-modal',
-    width: 900,
+    width: 800,
     maskClosable: false,
-    style: { top: 10 },
+    style: { top: 60 },
     maskStyle: { backgroundColor: 'rgb(0 0 0 / 30%)' },
     zIndex: 103,
     title: null,
@@ -376,15 +447,18 @@ export default Form.create()(function OprtModal(props) {
         <strong>迭代合同信息{type === 'ADD' ? '录入' : '修改'}</strong>
       </div>
       <Spin spinning={isSpinning} tip="加载中">
-        <Form className="content-box">
+        <Form className="content-box" style={{ paddingLeft: 24 }}>
           <Row>
-            {getSelector()}
+            {getGlqtkjhtSelector()}
             {getDatePicker()}
           </Row>
           <Row>
+            {getSelector()}
             {getRadio()}
+          </Row>
+          <Row>
             {getInputNumber({
-              label: '人力单价',
+              label: '人力单价(元)',
               dataIndex: 'rldj',
               initialValue: oldData.RLDJ,
               labelCol: 8,
@@ -397,8 +471,6 @@ export default Form.create()(function OprtModal(props) {
                 },
               ],
             })}
-          </Row>
-          <Row>
             {getMultipleUpload({
               label: '附件',
               labelCol: 8,

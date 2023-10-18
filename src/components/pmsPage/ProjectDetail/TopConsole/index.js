@@ -79,7 +79,7 @@ export default function TopConsole(props) {
     closeFileAddModal();
     //刷新数据
     getPrjDtlData();
-    getMileStoneData();
+    getMileStoneData(true); //true 表示将初始化 高亮里程碑 为 当前里程碑
   };
 
   //获取项目标签
@@ -369,7 +369,7 @@ export default function TopConsole(props) {
           <Menu.Item onClick={() => openLbModal('供应商', 'blgys')}>供应商补录</Menu.Item>
         )}
         <Menu.Item onClick={() => openLbModal('软件合同签署流程', 'rjhtqs')}>
-          软件合同签署流程
+          补录软件合同签署流程
         </Menu.Item>
         <Menu.Item onClick={() => handleSqModal()}>申请餐券</Menu.Item>
         <Menu.Item onClick={() => handleSqModal('申请权限')}>申请权限</Menu.Item>
@@ -407,36 +407,36 @@ export default function TopConsole(props) {
   };
 
   // 迭代年份
-  // const menu = (
-  //   <Menu>
-  //     {iterationYear.dropdown?.map(x => (
-  //       <Menu.Item
-  //         key={x.NF}
-  //         onClick={() => {
-  //           if (Number(x.NF) !== iterationYear.currentYear) {
-  //             setPrjData(p => ({
-  //               ...p,
-  //               iterationYear: {
-  //                 ...p.iterationYear,
-  //                 currentYear: Number(x.NF),
-  //               },
-  //             }));
-  //             history.push(
-  //               `/pms/manage/ProjectDetail/${EncryptBase64(
-  //                 JSON.stringify({
-  //                   routes,
-  //                   xmid: x.ID,
-  //                 }),
-  //               )}`,
-  //             );
-  //           }
-  //         }}
-  //       >
-  //         {x.NF}
-  //       </Menu.Item>
-  //     ))}
-  //   </Menu>
-  // );
+  const menu = (
+    <Menu>
+      {iterationYear.dropdown?.map(x => (
+        <Menu.Item
+          key={x.NF}
+          onClick={() => {
+            if (Number(x.NF) !== iterationYear.currentYear) {
+              setPrjData(p => ({
+                ...p,
+                iterationYear: {
+                  ...p.iterationYear,
+                  currentYear: Number(x.NF),
+                },
+              }));
+              history.push(
+                `/pms/manage/ProjectDetail/${EncryptBase64(
+                  JSON.stringify({
+                    routes,
+                    xmid: x.ID,
+                  }),
+                )}`,
+              );
+            }
+          }}
+        >
+          {x.NF}
+        </Menu.Item>
+      ))}
+    </Menu>
+  );
 
   //申请餐券/权限弹窗
   const sqModalProps = {
@@ -815,12 +815,15 @@ export default function TopConsole(props) {
         })}
       </Breadcrumb>
       <div className="prj-info-row">
-      <div className="prj-name">{prjBasic?.XMMC}</div>
-        {/* <div className="prj-name">
-          {prjBasic.XMMC &&
-            prjBasic.XMMC +
-              (iterationYear.currentYear && isDDXM ? `-${iterationYear.currentYear}` : '')}
-        </div> */}
+        {isDDXM ? (
+          <div className="prj-name">
+            {prjBasic.XMMC &&
+              prjBasic.XMMC +
+                (iterationYear.currentYear && isDDXM ? ` -${iterationYear.currentYear}` : '')}
+          </div>
+        ) : (
+          <div className="prj-name">{prjBasic?.XMMC}</div>
+        )}
         <div className="tag-row">
           {prjBasic.SFSC === '0' ? (
             <Popconfirm title="确定收藏吗？" onConfirm={() => handlePrjCollect('SCXM')}>
@@ -833,9 +836,9 @@ export default function TopConsole(props) {
           )}
           {getTags(prjBasic.XMBQ, prjBasic.XMBQID)}
           {/* 1已完结2未完结 */}
-          {prjBasic.WJZT === '1' && (
+          {/* {prjBasic.WJZT === '1' && (
             <img src={iconCompleted} className="icon-completed" alt="图片：已完结" />
-          )}
+          )} */}
           {allowEdit() && (
             <Button className="btn-edit" onClick={handleEditPrjInfo}>
               编辑
@@ -855,7 +858,7 @@ export default function TopConsole(props) {
         {prjBasic.XMJL}
         <span className="create-time">创建时间：</span>
         {prjBasic.CJRQ ? moment(prjBasic.CJRQ).format('YYYY-MM-DD') : null}
-        {/* {isDDXM && (
+        {isDDXM && iterationYear.dropdown?.length > 0 && (
           <div className="iteration-year">
             迭代年份：
             <Dropdown overlay={menu} trigger={['click']}>
@@ -865,7 +868,7 @@ export default function TopConsole(props) {
               </span>
             </Dropdown>
           </div>
-        )} */}
+        )}
       </div>
     </div>
   );

@@ -17,6 +17,7 @@ export default function MileStone(props) {
     isLeader,
     isHwSltPrj,
     stateProps = {},
+    isDDXM = false,
   } = props;
   const {
     currentStep,
@@ -33,7 +34,7 @@ export default function MileStone(props) {
     endIndex,
     setEndIndex,
   } = stateProps;
-  const { risk = [], member = [], prjBasic = {}, xmjbxxRecord = [] } = prjData;
+  const { risk = [], member = [], prjBasic = {}, xmjbxxRecord = [], contrastArr = [] } = prjData;
   const [itemWidth, setItemWidth] = useState('47.76%'); //块宽度
   const [riskUrl, setRiskUrl] = useState(''); //风险弹窗
   const [riskVisible, setRiskVisible] = useState(false); //风险弹窗
@@ -81,6 +82,11 @@ export default function MileStone(props) {
     }
     return () => {};
   }, [xmid, JSON.stringify(prjBasic)]);
+
+  useEffect(() => {
+    if (isDDXM) setIsUnfold(false);
+    return () => {};
+  }, [isDDXM]);
 
   //展开、收起
   const handleUnfold = bool => {
@@ -225,6 +231,7 @@ export default function MileStone(props) {
                 refresh={refresh}
                 isHwSltPrj={isHwSltPrj} //是否硬件入围
                 ddcgje={Number(prjBasic.DDCGJE ?? 0)} //单独采购金额
+                dhtData={contrastArr} //多合同
                 auth={{
                   isLeader,
                   isMember: (() => {
