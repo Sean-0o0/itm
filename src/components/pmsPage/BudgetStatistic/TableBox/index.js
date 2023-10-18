@@ -21,7 +21,7 @@ const { Option } = Select;
 
 const TableBox = props => {
   const { dataProps = {}, funcProps = {} } = props;
-  const { tableData = {}, filterData = {}, allowExport, activeKey } = dataProps;
+  const { tableData = {}, filterData = {}, allowExport, activeKey, spinningData } = dataProps;
   const {
     setFilterData = () => {},
     queryTableData = () => {},
@@ -541,8 +541,10 @@ const TableBox = props => {
   const handleYearChange = d => {
     setFilterData(p => ({ ...p, year: d, yearOpen: false }));
     setSpinningData(p => ({
-      tip: '预算项目信息加载中',
-      spinning: true,
+      // tip: '预算项目信息加载中',
+      // spinning: true,
+      ...p,
+      sltDisabled: true,
     }));
     FetchQueryBudgetProjects({
       type: 'NF',
@@ -586,7 +588,7 @@ const TableBox = props => {
           }));
           setSpinningData(p => ({
             ...p,
-            spinning: false,
+            sltDisabled: false,
           }));
         }
       })
@@ -595,7 +597,7 @@ const TableBox = props => {
         message.error('预算项目获取失败', 1);
         setSpinningData(p => ({
           ...p,
-          spinning: false,
+          sltDisabled: false,
         }));
       });
   };
@@ -657,6 +659,7 @@ const TableBox = props => {
               onChange={handleBudgetPrjChange}
               value={filterData.budgetPrj}
               treeDefaultExpandAll
+              disabled={spinningData.sltDisabled}
             />
           </div>
           <Button

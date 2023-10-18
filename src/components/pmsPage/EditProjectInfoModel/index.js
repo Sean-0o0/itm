@@ -50,7 +50,10 @@ import {
   FetchQueryHTXXByXQTC,
   FetchQueryZBXXByXQTC,
   FetchQueryZCXX,
+  InitIterationProjectInfo,
   QueryPaymentAccountList,
+  QueryProjectListPara,
+  QueryUserRole,
   UpdateHTXX,
   UpdateProjectOtherInfo,
   UpdateZbxx,
@@ -447,6 +450,7 @@ class EditProjectInfoModel extends React.Component {
     height: 0, // 人员信息下拉框高度设置
     softwareList: [], // 软件清单列表
     projectLabelList: [], // 项目标签列表
+    projectLabelOriginList: [], // 项目标签列表 - 原数据 用于取labelTxt
     projectTypeList: [], //项目类型列表
     projectTypeZY: [], //自研项目下的项目类型
     projectTypeZYFlag: false, //是否选中自研项目下的类型
@@ -472,7 +476,7 @@ class EditProjectInfoModel extends React.Component {
       singleBudgetinit: 0,
       year: moment(new Date()), // 年份
       budgetProjectId: '', // 预算项目id
-      budgetProjectName: '', // 预算项目名称
+      budgetProjectName: '', // 预算项目id+预算类型id 作value用
       totalBudget: 0, // 总预算(元)
       relativeBudget: 0, // 可关联总预算(元)
       projectBudget: 0, // 本项目预算
@@ -645,6 +649,9 @@ class EditProjectInfoModel extends React.Component {
     subItemFinish: false,
     //项目预算类型
     haveType: 1,
+    glddxmData: [], //关联迭代项目下拉框数据
+    glddxmId: undefined, //关联迭代项目id - 编辑回显 - 类型为string
+    grayTest_DDMK: false, //灰度测试
   };
 
   componentWillMount() {
@@ -683,8 +690,28 @@ class EditProjectInfoModel extends React.Component {
     if (subItemFinish) {
       this.setState({ subItemFinish: true });
     }
+    //灰度测试 - DDMK
+    let LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
+    //获取登录角色数据 - 判断用户是否为领导
+    const roleRes =
+      (await QueryUserRole({
+        userId: Number(LOGIN_USER_INFO.id),
+      })) || {};
+    const testRole = JSON.parse(roleRes.testRole || '{}');
+    const { DDXM = '' } = testRole;
+    const DDXM_IDArr = DDXM === '' ? [] : DDXM.split(',');
+    const DDXM_Auth = DDXM_IDArr.includes(String(LOGIN_USER_INFO.id));
+    console.log(
+      '🚀 ~ file: index.js:253 ~ handlePromiseAll ~ DDXM_Auth:',
+      DDXM_Auth,
+      DDXM_IDArr,
+      String(LOGIN_USER_INFO.id),
+    );
+    this.setState({
+      grayTest_DDMK: DDXM_Auth,
+    });
     setTimeout(function() {
-      _this.fetchInterface();
+      _this.fetchInterface(DDXM_Auth);
     }, 300);
   };
 
@@ -692,7 +719,7 @@ class EditProjectInfoModel extends React.Component {
     clearTimeout(timer);
   }
 
-  fetchInterface = async () => {
+  fetchInterface = async (grayTest_DDMK = false) => {
     // 查询软件清单
     this.fetchQuerySoftwareList();
     // 查询项目标签
@@ -712,13 +739,20 @@ class EditProjectInfoModel extends React.Component {
     await this.fetchQueryOrganizationInfo();
     // 查询岗位信息 --- 位置不要变就放在这儿
     await this.fetchQueryStationInfo();
-    // 查询组织机构信息 --- 位置不要变就放在这儿
-    await this.fetchQueryOrganizationInfo();
+    // // 查询组织机构信息 --- 位置不要变就放在这儿
+    // await this.fetchQueryOrganizationInfo();
     // 查询人员信息 --- 位置不要变就放在这儿
     await this.fetchQueryMemberInfo();
     // 修改项目时查询项目详细信息 --- 位置不要变就放在这儿
     if (this.state.basicInfo.projectId && this.state.basicInfo.projectId !== -1) {
       await this.fetchQueryProjectDetails({ projectId: this.state.basicInfo.projectId });
+    }
+    //灰度测试后去掉条件
+    if (grayTest_DDMK) {
+      //.分割，取最后一个
+      const glddxmIdArr = this.state.glddxmId === '' ? [] : this.state.glddxmId?.split('.') || [];
+      // 获取关联迭代项目下拉框数据
+      await this.getGlddxmData(glddxmIdArr.length > 0 ? glddxmIdArr[glddxmIdArr.length - 1] : -1);
     }
     //里程碑信息
     // 查询里程碑阶段信息
@@ -765,8 +799,34 @@ class EditProjectInfoModel extends React.Component {
     this.setState({ loading: false });
   };
 
-  // 处理岗位数据
-  fetchQueryStationInfo() {
+  // 获取关联迭代项目下拉框数据
+  getGlddxmData(glddxmid) {
+    return QueryProjectListPara({
+      current: 1,
+      pageSize: glddxmid, //这边是迭代项目id
+      paging: -1,
+      sort: '',
+      total: -1,
+      cxlx: 'DDXM',
+    })
+      .then(res => {
+        if (res?.success) {
+          const data = [...JSON.parse(res.projectRecord)].filter(
+            x => x.ID !== String(this.state.basicInfo.projectId),
+          );
+          this.setState({
+            glddxmData: data,
+          });
+        }
+      })
+      .catch(e => {
+        console.error('关联迭代项目下拉框数据', e);
+        message.error('关联迭代项目下拉框数据查询失败', 1);
+      });
+  }
+
+  // 处理岗位数据  isDDXM - 与关联迭代项目有关时调用的
+  fetchQueryStationInfo(xmid = -1, isDDXM = false) {
     const params = {
       current: 1,
       pageSize: 999,
@@ -790,14 +850,19 @@ class EditProjectInfoModel extends React.Component {
           loginUser.id = String(loginUser.id);
           arr[9] = [loginUser.id];
           //console.log("arrarr", arr)
-          this.setState({
-            searchStaffList: [loginUser],
-            // loginUser: loginUser,
-            staffJobList: rec,
-            rygwDictionary: rec,
-            rygwSelectDictionary: rec,
-            staffInfo: { ...this.state.staffInfo, jobStaffList: arr },
-          });
+          this.setState(
+            {
+              searchStaffList: [loginUser],
+              // loginUser: loginUser,
+              staffJobList: rec,
+              rygwDictionary: rec,
+              rygwSelectDictionary: rec,
+              staffInfo: { ...this.state.staffInfo, jobStaffList: arr },
+            },
+            () => {
+              if (isDDXM) this.fetchQueryProjectDetails({ projectId: xmid }, true);
+            },
+          );
         }
       })
       .catch(error => {
@@ -805,8 +870,8 @@ class EditProjectInfoModel extends React.Component {
       });
   }
 
-  // 查询里程碑信息
-  fetchQueryMilepostInfo(params) {
+  // 查询里程碑信息  isDDXM - 与关联迭代项目有关时调用的
+  fetchQueryMilepostInfo(params, isDDXM = false) {
     console.log('------------查询里程碑信息-----------');
     return FetchQueryMilepostInfo(params)
       .then(record => {
@@ -1140,6 +1205,8 @@ class EditProjectInfoModel extends React.Component {
             }
             this.setState({ milePostInfo, mileInfo: { ...this.state.mileInfo, milePostInfo } });
           }
+          //与关联迭代项目有关时调用的，停止加载
+          if (isDDXM) this.setState({ loading: false });
         }
       })
       .catch(error => {
@@ -1426,8 +1493,8 @@ class EditProjectInfoModel extends React.Component {
       });
   }
 
-  // 修改项目时查询项目详细信息
-  fetchQueryProjectDetails(params) {
+  // 修改项目时查询项目详细信息  isDDXM - 与关联迭代项目有关时调用的
+  fetchQueryProjectDetails(params, isDDXM = false) {
     const { staffJobList = [], rygwSelectDictionary = [], projectTypeZY = [] } = this.state;
     let newStaffJobList = [];
     return FetchQueryProjectDetails(params)
@@ -1492,22 +1559,24 @@ class EditProjectInfoModel extends React.Component {
           let totalBudget = 0;
           let relativeBudget = 0;
           let ysKZX = 0;
-          let budgetProjectName = '';
+          let budgetProjectName =
+            Number(result.budgetProject) <= 0
+              ? result.budgetProject + '4'
+              : result.budgetProject + result.budgetTypeId;
           //其他里面的预算id，都是小于等于0
           if (Number(result.budgetProject) <= 0) {
-            this.state.budgetProjectList.forEach(item => {
-              item.children.forEach(ite => {
-                if (ite.key === result.budgetProject) {
-                  budgetProjectName = ite.title;
-                }
-              });
-            });
+            // this.state.budgetProjectList.forEach(item => {
+            //   item.children.forEach(ite => {
+            //     if (ite.key === result.budgetProject) {
+            //       budgetProjectName = ite.label;
+            //     }
+            //   });
+            // });
           } else {
             this.state.budgetProjectList.forEach(item => {
               item.children.forEach(ite => {
                 ite.children?.forEach(i => {
-                  if (i.key === result.budgetProject && i.ysLX === result.budgetType) {
-                    budgetProjectName = i.title;
+                  if (i.value === result.budgetProject) {
                     totalBudget = Number(i.ysZJE);
                     relativeBudget = Number(i.ysKGL);
                     ysKZX = Number(i.ysKZX);
@@ -1537,54 +1606,114 @@ class EditProjectInfoModel extends React.Component {
           } else if (String(result.haveHard) === '1' && Number(result.softBudget) > 0) {
             haveType = 3;
           }
+          //项目名称实时改变
+          this.props.form.setFieldsValue({
+            projectName: result.projectName,
+          });
+          //.分割，取最后一个
+          const glddxmIdArr =
+            result.iteProjectId === '' ? [] : result.iteProjectId?.split('.') || [];
+          //标签文本，用;连接
+          const labelTxt =
+            result.projectLabel === ''
+              ? ''
+              : result.projectLabel
+                  .split(',')
+                  .map(x => this.state.projectLabelOriginList?.find(y => y.ID === x)?.BQMC)
+                  ?.join(';') || '';
           this.setState({
             haveType,
             subItem: result.haveChild,
             subIteminit: result.haveChild,
-            ysKZX: ysKZX,
+            ysKZX: isDDXM ? 0 : ysKZX,
             searchStaffList: searchStaffList,
             projectTypeZYFlag: flag,
             projectTypeRYJFlag: RYJFlag,
             basicInfo: {
               haveHard: result.haveHard, //是否包含硬件
               SFYJRW: Number(result.isShortListed),
-              projectId: result.projectId,
+              projectId: isDDXM ? this.state.basicInfo.projectId : result.projectId,
               projectName: result.projectName,
               projectType: Number(result.projectType),
               projectLabel: result.projectLabel === '' ? [] : result.projectLabel.split(','),
               org: newOrg,
               software: result.softwareId === '' ? [] : result.softwareId.split(','),
               biddingMethod: Number(result.biddingMethod),
+              labelTxt,
             },
-            budgetInfo: {
-              //项目软件预算
-              softBudget: Number(result.softBudget),
-              softBudgetinit: Number(result.softBudget),
-              //框架预算
-              frameBudget: Number(result.frameBudget),
-              //单独采购预算
-              singleBudget: Number(result.singleBudget),
-              singleBudgetinit: Number(result.singleBudget),
-              year: moment(moment(result.year, 'YYYY').format()),
-              budgetProjectId: result.budgetProject,
-              //编辑页面进来的初始预算项目
-              budgetProjectIdinit: result.budgetProject,
-              budgetProjectName,
-              totalBudget: totalBudget,
-              relativeBudget: relativeBudget,
-              //编辑页面进来的初始剩余预算
-              relativeBudgetinit: relativeBudget,
-              projectBudget: Number(result.projectBudget),
-              //编辑页面进来的初始项目预算
-              projectBudgetinit: Number(result.projectBudget),
-              budgetType: result.budgetType,
-            },
+            budgetInfo: isDDXM
+              ? { ...this.state.budgetInfo }
+              : {
+                  //项目软件预算
+                  softBudget: Number(result.softBudget),
+                  softBudgetinit: Number(result.softBudget),
+                  //框架预算
+                  frameBudget: Number(result.frameBudget),
+                  //单独采购预算
+                  singleBudget: Number(result.singleBudget),
+                  singleBudgetinit: Number(result.singleBudget),
+                  year: moment(moment(result.year, 'YYYY').format()),
+                  budgetProjectId: result.budgetProject,
+                  //编辑页面进来的初始预算项目
+                  budgetProjectIdinit: result.budgetProject,
+                  budgetProjectName,
+                  totalBudget: totalBudget,
+                  relativeBudget: relativeBudget,
+                  //编辑页面进来的初始剩余预算
+                  relativeBudgetinit: relativeBudget,
+                  projectBudget: Number(result.projectBudget),
+                  //编辑页面进来的初始项目预算
+                  projectBudgetinit: Number(result.projectBudget),
+                  budgetType: result.budgetType,
+                },
             staffInfo: {
               ...this.state.staffInfo,
               focusJob: '',
               jobStaffList: jobArr,
             },
+            glddxmId: isDDXM
+              ? this.state.glddxmId
+              : glddxmIdArr.length > 0
+              ? glddxmIdArr[glddxmIdArr.length - 1]
+              : undefined,
           });
+          if (isDDXM)
+            this.fetchQueryMilepostInfo(
+              {
+                type: Number(result.projectType),
+                isShortListed: Number(this.state.budgetInfo.frameBudget) > 0 ? '1' : '2',
+                //项目预算类型
+                haveType: this.state.haveType,
+                //项目软件预算
+                softBudget:
+                  RYJFlag && String(this.state.basicInfo.haveHard) === '2'
+                    ? 0
+                    : this.state.budgetInfo.softBudget,
+                //框架预算
+                frameBudget:
+                  RYJFlag && String(result.haveHard) === '2'
+                    ? 0
+                    : this.state.budgetInfo.frameBudget,
+                //单独采购预算
+                singleBudget:
+                  RYJFlag && String(result.haveHard) === '2'
+                    ? 0
+                    : this.state.budgetInfo.singleBudget,
+                xmid: Number(params.projectId),
+                biddingMethod: Number(result.biddingMethod),
+                budget:
+                  String(result.haveHard) === '2'
+                    ? this.state.budgetInfo.projectBudget
+                    : Number(this.state.budgetInfo.softBudget) +
+                      Number(this.state.budgetInfo.frameBudget) +
+                      Number(this.state.budgetInfo.singleBudget),
+                label: this.state.basicInfo.labelTxt,
+                //是否包含子项目
+                haveChild: Number(result.haveChild),
+                queryType: 'ALL',
+              },
+              isDDXM,
+            );
         }
       })
       .catch(error => {
@@ -1697,11 +1826,119 @@ class EditProjectInfoModel extends React.Component {
 
   // 查询关联预算项目信息
   fetchQueryBudgetProjects(params) {
+    //转为树结构-关联项目
+    const toItemTree = (list, parId) => {
+      let a = list.reduce((pre, current, index) => {
+        pre[current.ysLXID] = pre[current.ysLXID] || [];
+        pre[current.ysLXID].push({
+          key: current.ysLXID,
+          label: current.ysLX,
+          value: current.ysLXID,
+          ysID: current.ysID,
+          ysKGL: Number(current.ysKGL),
+          ysLB: current.ysLB,
+          ysName: current.ysName,
+          ysZJE: Number(current.ysZJE),
+          zdbm: current.zdbm,
+          ysLX: current.ysLX,
+          ysLXID: current.ysLXID,
+          ysKZX: Number(current.ysKZX),
+        });
+        return pre;
+      }, []);
+
+      const treeData = [];
+      for (const key in a) {
+        const indexData = [];
+        const childrenData = [];
+        const childrenDatamini = [];
+        if (a.hasOwnProperty(key)) {
+          if (a[key] !== null) {
+            // console.log("item",a[key]);
+            let b = a[key].reduce((pre, current, index) => {
+              pre[current.zdbm] = pre[current.zdbm] || [];
+              pre[current.zdbm].push({
+                key: current.ysID + current.ysLXID,
+                label: current.ysName,
+                value: current.ysID + current.ysLXID,
+                ysID: current.ysID,
+                ysKGL: Number(current.ysKGL),
+                ysLB: current.ysLB,
+                ysName: current.ysName,
+                ysZJE: Number(current.ysZJE),
+                zdbm: current.zdbm,
+                ysLX: current.ysLX,
+                ysLXID: current.ysLXID,
+                ysKZX: Number(current.ysKZX),
+              });
+              return pre;
+            }, []);
+            a[key].map(item => {
+              if (indexData.indexOf(item.zdbm) === -1) {
+                indexData.push(item.zdbm);
+                if (b[item.zdbm]) {
+                  let treeDatamini = { children: [] };
+                  if (item.zdbm === '6') {
+                    // console.log("b[item.zdbm]",b["6"])
+                    b[item.zdbm].map(i => {
+                      treeDatamini.key = i.ysID + i.ysLXID;
+                      treeDatamini.value = i.ysID + i.ysLXID;
+                      treeDatamini.label = i.ysName;
+                      treeDatamini.ysID = i.ysID;
+                      treeDatamini.ysKGL = Number(i.ysKGL);
+                      treeDatamini.ysLB = i.ysLB;
+                      treeDatamini.ysName = i.ysName;
+                      treeDatamini.ysZJE = Number(i.ysZJE);
+                      treeDatamini.ysKZX = Number(i.ysKZX);
+                      treeDatamini.zdbm = i.zdbm;
+                      treeDatamini.ysLX = i.ysLX;
+                      treeDatamini.ysLXID = i.ysLXID;
+                    });
+                    // treeDatamini.dropdownStyle = { color: '#666' }
+                    // treeDatamini.selectable=false;
+                    // treeDatamini.children = b[item.zdbm]
+                  } else {
+                    treeDatamini.key = item.zdbm + item.ysLXID;
+                    treeDatamini.value = item.zdbm + item.ysLXID;
+                    treeDatamini.label = item.ysLB;
+                    treeDatamini.ysID = item.ysID;
+                    treeDatamini.ysKGL = Number(item.ysKGL);
+                    treeDatamini.ysLB = item.ysLB;
+                    treeDatamini.ysName = item.ysName;
+                    treeDatamini.ysLX = item.ysLX;
+                    treeDatamini.ysLXID = item.ysLXID;
+                    treeDatamini.ysZJE = Number(item.ysZJE);
+                    treeDatamini.ysKZX = Number(item.ysKZX);
+                    treeDatamini.zdbm = item.zdbm;
+                    treeDatamini.dropdownStyle = { color: '#666' };
+                    treeDatamini.selectable = false;
+                    treeDatamini.children = b[item.zdbm];
+                  }
+                  childrenDatamini.push(treeDatamini);
+                }
+                childrenData.key = key;
+                childrenData.value = key;
+                childrenData.label = item.ysLX;
+                childrenData.dropdownStyle = { color: '#666' };
+                childrenData.selectable = false;
+                childrenData.children = childrenDatamini;
+              }
+            });
+            treeData.push(childrenData);
+          }
+        }
+      }
+      return treeData;
+    };
     return FetchQueryBudgetProjects(params)
       .then(result => {
         const { code = -1, record = [] } = result;
         if (code > 0) {
-          this.setState({ budgetProjectList: this.toItemTree(record) });
+          this.setState({ budgetProjectList: toItemTree(record) });
+          // console.log(
+          //   '🚀 ~ file: index.js:1901 ~ EditProjectInfoModel ~ fetchQueryBudgetProjects ~ toItemTree(record):',
+          //   toItemTree(record),
+          // );
         }
       })
       .catch(error => {
@@ -1732,6 +1969,7 @@ class EditProjectInfoModel extends React.Component {
           // //console.log("this.toLabelTree(record,0) ",this.toLabelTree(record,0))
           this.setState({
             projectLabelList: this.toLabelTree(JSON.parse(record), 0),
+            projectLabelOriginList: JSON.parse(record), //原数据，用于取labelTxt
             projectTypeList: this.toTypeTree(JSON.parse(xmlxRecord), 0),
           });
           const projectTypeZY = this.state.projectTypeList[0]?.children.filter(
@@ -3027,6 +3265,14 @@ class EditProjectInfoModel extends React.Component {
     });
   }
 
+  //初始化迭代项目信息 - 包含迭代项目标签时且值有变化时 调用
+  handleInitIterationProjectInfo = async (iterationProject, projectId) => {
+    await InitIterationProjectInfo({
+      iterationProject,
+      projectId,
+    });
+  };
+
   async operateCreatProject(params, type) {
     //更新其他信息
     const {
@@ -3034,6 +3280,7 @@ class EditProjectInfoModel extends React.Component {
       requirementInfoRecord = [],
       prizeInfoRecord = [],
       topicInfoRecord = [],
+      glddxmId = undefined,
     } = this.state;
     if (
       requirementInfoRecord.length > 0 ||
@@ -3061,19 +3308,44 @@ class EditProjectInfoModel extends React.Component {
           if (String(subItem) === '1') {
             this.operateInsertSubProjects(params, projectId);
           } else {
-            this.props.successCallBack();
             //子项目完善
             if (this.state.subItemFinish) {
               message.success('子项目完善成功！');
               // window.location.href = '/#/pms/manage/ProjectInfo';
             } else {
+              const { getFieldValue } = this.props.form;
+              //灰度测试后去掉条件
+              if (this.state.grayTest_DDMK) {
+                //关联迭代项目值有变化时（不等于原来的值）调用，有值入值，没值有迭代标签入-1，无则-2
+                if (getFieldValue('glddxm') !== glddxmId) {
+                  this.handleInitIterationProjectInfo(
+                    Number(
+                      getFieldValue('glddxm') !== undefined
+                        ? getFieldValue('glddxm')
+                        : getFieldValue('projectLabel')?.includes('14')
+                        ? -1
+                        : -2,
+                    ),
+                    Number(projectId),
+                  );
+                } else {
+                  console.log(
+                    "🚀 ~ getFieldValue('glddxm'):",
+                    String(getFieldValue('glddxm')),
+                    glddxmId === '',
+                  );
+                  //关联迭代项目值为undefined且有迭代标签时，入-1
+                  if (
+                    getFieldValue('glddxm') === undefined &&
+                    getFieldValue('projectLabel')?.includes('14')
+                  ) {
+                    this.handleInitIterationProjectInfo(-1, Number(projectId));
+                  }
+                }
+              }
               message.success('编辑项目成功！');
             }
-            //从首页进来的还需要跳转到项目信息页面
-            // if (this.state.type && type === 1) {
-            //   //新建项目成功后跳转到项目信息页面
-            //   window.location.href = '/#/pms/manage/ProjectInfo';
-            // }
+            this.props.successCallBack();
           }
         } else {
           message.error(note);
@@ -3163,22 +3435,34 @@ class EditProjectInfoModel extends React.Component {
     const {
       mileInfo: { milePostInfo = [] },
     } = this.state;
-    confirm({
-      okText: '确认',
-      cancelText: '取消',
-      title: '提示',
-      content: '确认要删除里程碑信息吗？',
-      onOk() {
-        let arr = [];
-        milePostInfo.forEach((item, i) => {
-          if (i !== index) {
-            arr.push(item);
-          }
-        });
-        _this.setState({ mileInfo: { ..._this.state.mileInfo, milePostInfo: arr } });
-      },
-      onCancel() {},
-    });
+    const existCpl =
+      milePostInfo[index].matterInfos.find(x => x.sxlb?.find(x => x.zxzt === '1') !== undefined) !==
+      undefined; //存在已执行事项
+    // console.log(
+    //   '🚀 ~ existCpl:',
+    //   milePostInfo[index].matterInfos.find(x => x.sxlb?.find(x => x.zxzt === '1') !== undefined),
+    // );
+    if (existCpl) {
+      message.warn('该里程碑包含已执行事项，无法删除', 1);
+    } else {
+      confirm({
+        okText: '确认',
+        cancelText: '取消',
+        title: '提示',
+        content: '确认要删除里程碑信息吗？',
+        onOk() {
+          // let arr = [];
+          // milePostInfo.forEach((item, i) => {
+          //   if (i !== index) {
+          //     arr.push(item);
+          //   }
+          // });
+          let arr = milePostInfo.filter((_, i) => i !== index);
+          _this.setState({ mileInfo: { ..._this.state.mileInfo, milePostInfo: arr } });
+        },
+        onCancel() {},
+      });
+    }
   };
 
   // 去除事项列表里面所有的title数据
@@ -3219,43 +3503,48 @@ class EditProjectInfoModel extends React.Component {
     const mile = JSON.parse(JSON.stringify(milePostInfo));
     let matterInfo = mile[index].matterInfos;
     let sxlb = [];
-    matterInfo[i].sxlb.forEach((item, index) => {
-      if (index !== sx_index) {
-        sxlb.push(item);
+    const existCpl = (matterInfo[i]?.sxlb)[sx_index].zxzt === '1'; //存在已执行事项
+    if (existCpl) {
+      message.warn('该事项已执行，无法删除', 1);
+    } else {
+      matterInfo[i].sxlb.forEach((item, index) => {
+        if (index !== sx_index) {
+          sxlb.push(item);
+        }
+      });
+      matterInfo[i].sxlb = sxlb;
+      ////console.log("matterInfo[i]", matterInfo[i])
+      //chenjian-判断是否显示新增按钮 没有可新增的sxlb就不展示
+      if (
+        matterInfo[i].sxlb.filter(i => i.sxmc).length ===
+        this.state.mileItemInfo.filter(i => i.swlx === matterInfo[i]?.swlxmc).length
+      ) {
+        matterInfo[i].addFlag = false;
+      } else {
+        matterInfo[i].addFlag = true;
       }
-    });
-    matterInfo[i].sxlb = sxlb;
-    ////console.log("matterInfo[i]", matterInfo[i])
-    //chenjian-判断是否显示新增按钮 没有可新增的sxlb就不展示
-    if (
-      matterInfo[i].sxlb.filter(i => i.sxmc).length ===
-      this.state.mileItemInfo.filter(i => i.swlx === matterInfo[i]?.swlxmc).length
-    ) {
-      matterInfo[i].addFlag = false;
-    } else {
-      matterInfo[i].addFlag = true;
+      //cccccccc
+      let hash = {};
+      let spliceList = [];
+      spliceList = this.state.mileItemInfo.reduce((item, next) => {
+        hash[next.swlx] ? '' : (hash[next.swlx] = item.push(next));
+        return item;
+      }, []);
+      matterInfo = matterInfo.filter(item => item.sxlb.filter(i => i.sxmc).length !== 0);
+      if (matterInfo.length === spliceList.filter(i => i.lcbid === mile[index].lcblxid).length) {
+        mile[index].addSxFlag = false;
+      } else {
+        mile[index].addSxFlag = true;
+      }
+      const removeTitleMile = this.removeAllTitle(JSON.parse(JSON.stringify(mile)));
+      // ////console.log("milePostInfo-ccc",removeTitleMile)
+      this.setState({
+        mileInfo: {
+          ...this.state.mileInfo,
+          milePostInfo: this.filterGridLayOut(JSON.parse(JSON.stringify(removeTitleMile))),
+        },
+      });
     }
-    //cccccccc
-    let hash = {};
-    let spliceList = [];
-    spliceList = this.state.mileItemInfo.reduce((item, next) => {
-      hash[next.swlx] ? '' : (hash[next.swlx] = item.push(next));
-      return item;
-    }, []);
-    matterInfo = matterInfo.filter(item => item.sxlb.filter(i => i.sxmc).length !== 0);
-    if (matterInfo.length === spliceList.filter(i => i.lcbid === mile[index].lcblxid).length) {
-      mile[index].addSxFlag = false;
-    } else {
-      mile[index].addSxFlag = true;
-    }
-    const removeTitleMile = this.removeAllTitle(JSON.parse(JSON.stringify(mile)));
-    // ////console.log("milePostInfo-ccc",removeTitleMile)
-    this.setState({
-      mileInfo: {
-        ...this.state.mileInfo,
-        milePostInfo: this.filterGridLayOut(JSON.parse(JSON.stringify(removeTitleMile))),
-      },
-    });
     ////console.log("88888888", this.state.mileInfo);
   };
 
@@ -4349,6 +4638,8 @@ class EditProjectInfoModel extends React.Component {
       subItemRecord = [],
       //是否是从完善页面进来的子项目
       subItemFlag = false,
+      glddxmData = [],
+      glddxmId = undefined,
     } = this.state;
     // console.log('purchaseInfopurchaseInfo', purchaseInfo);
     const { getFieldDecorator } = this.props.form;
@@ -4633,6 +4924,61 @@ class EditProjectInfoModel extends React.Component {
         cell: EditableCellQT,
       },
     };
+
+    //标签选择 迭代项目 之后，展示关联迭代项目下拉框，非必填
+    const getGLddxm = () => {
+      const { getFieldDecorator, getFieldValue } = this.props.form;
+      //选完回显该项目的数据，预算信息的除外
+      const onChange = v => {
+        if (v !== undefined) {
+          this.setState({ loading: true });
+          this.fetchQueryStationInfo(Number(v), true);
+        }
+      };
+      if (!this.state.grayTest_DDMK) return null;
+      if (getFieldValue('projectLabel')?.includes('14'))
+        return (
+          <Col
+            span={12}
+            style={{
+              paddingLeft: !projectTypeZYFlag ? 12 : 24,
+              paddingRight: !projectTypeZYFlag ? 24 : 12,
+            }}
+          >
+            <Form.Item label="关联迭代项目" className="formItem">
+              {getFieldDecorator('glddxm', {
+                initialValue: glddxmId,
+              })(
+                <Select
+                  placeholder="请选择关联迭代项目"
+                  filterOption={(input, option) =>
+                    option.props.children[0]?.props.children
+                      ?.toLowerCase()
+                      .indexOf(input.toLowerCase()) >= 0
+                  }
+                  optionFilterProp="children"
+                  showSearch
+                  allowClear
+                  onChange={onChange}
+                >
+                  {glddxmData.map(x => (
+                    <Select.Option key={x.ID} value={x.ID}>
+                      <Tooltip title={x.XMMC} placement="topLeft">
+                        {x.XMMC}
+                      </Tooltip>
+                      <div style={{ fontSize: '12px', color: '#bfbfbf' }}>
+                        {x.XMJL}&nbsp;-&nbsp;{x.XMNF}
+                      </div>
+                    </Select.Option>
+                  ))}
+                </Select>,
+              )}
+            </Form.Item>
+          </Col>
+        );
+      return null;
+    };
+
     return (
       <Fragment>
         <div className="editProject" style={{ overflowY: 'auto', height: '638px' }}>
@@ -4857,7 +5203,7 @@ class EditProjectInfoModel extends React.Component {
                                     //console.log("extraextra", extra)
                                     let labelTxt = nodeArr.map(x => x);
                                     labelTxt = labelTxt.join(';');
-                                    //console.log("labelTxt", labelTxt)
+                                    console.log('labelTxt', labelTxt);
                                     //console.log("eeeeee", e)
                                     this.setState({
                                       basicInfo: { ...basicInfo, projectLabel: e, labelTxt },
@@ -5046,8 +5392,8 @@ class EditProjectInfoModel extends React.Component {
                         <Col
                           span={12}
                           style={{
-                            paddingLeft: !projectTypeZYFlag ? '24px' : '12px',
-                            paddingRight: '24px',
+                            paddingLeft: !projectTypeZYFlag ? 24 : 12,
+                            paddingRight: !projectTypeZYFlag ? 12 : 24,
                           }}
                         >
                           <Form.Item
@@ -5120,6 +5466,7 @@ class EditProjectInfoModel extends React.Component {
                             )}
                           </Form.Item>
                         </Col>
+                        {getGLddxm()}
                       </Row>
 
                       {String(this.state.subItem) === '1' ? (
@@ -5908,9 +6255,9 @@ class EditProjectInfoModel extends React.Component {
                                     getPopupContainer={triggerNode => triggerNode.parentNode}
                                     placeholder="请选择关联预算项目"
                                     // treeDefaultExpandAll
-                                    onChange={e => {
+                                    onChange={(e, _, node) => {
                                       budgetProjectList.forEach(item => {
-                                        if (Number(e) <= 0) {
+                                        if (Number(node?.triggerNode?.props.ysID) <= 0) {
                                           item?.children?.forEach(ite => {
                                             if (ite.value === e) {
                                               // ////console.log("iteiteiteite",ite)
@@ -7247,9 +7594,11 @@ class EditProjectInfoModel extends React.Component {
                                                     })}
                                                 </Select>
                                               ) : (
+                                                // e.sxlb?.length !== 1 && e.swlxmc !== 'new' && e.addFlag &&
+                                                mileItemInfo.filter(mi => mi.swlx === e.swlxmc)
+                                                  .length > 0 &&
                                                 e.sxlb?.length !== 1 &&
-                                                e.swlxmc !== 'new' &&
-                                                e.addFlag && (
+                                                e.swlxmc !== 'new' && (
                                                   <div
                                                     className="editProject addHover"
                                                     style={{
@@ -7773,9 +8122,11 @@ class EditProjectInfoModel extends React.Component {
                                                     })}
                                                 </Select>
                                               ) : (
+                                                // e.sxlb?.length !== 1 && e.swlxmc !== 'new' && e.addFlag &&
+                                                mileItemInfo.filter(mi => mi.swlx === e.swlxmc)
+                                                  .length > 0 &&
                                                 e.sxlb?.length !== 1 &&
-                                                e.swlxmc !== 'new' &&
-                                                e.addFlag && (
+                                                e.swlxmc !== 'new' && (
                                                   <div
                                                     style={{
                                                       display: 'grid',

@@ -12,9 +12,11 @@ import {
   Spin,
   message,
   Tooltip,
+  Icon,
 } from 'antd';
 import moment from 'moment';
 import {
+  QueryContractFlowInfo,
   QueryCreatePaymentInfo,
   QueryPaymentAccountList,
 } from '../../../../../services/pmsServices';
@@ -32,6 +34,8 @@ export default function FormOperate(props) {
     rlwbData = {},
     ddcgje = 0,
     dictionary = {},
+    dhtData = [],
+    ddfkData = {},
   } = props;
   const { DJLX = [] } = dictionary;
   const {
@@ -475,6 +479,61 @@ export default function FormOperate(props) {
     );
   };
 
+  //关联合同
+  const getGlhtSelector = () => {
+    return (
+      <>
+        <Col span={12}>
+          <Form.Item
+            label={
+              <span>
+                关联合同
+                <Tooltip
+                  title="可将付款流程和具体的合同信息进行关联"
+                  overlayStyle={{ maxWidth: 'unset' }}
+                >
+                  <Icon type="question-circle-o" style={{ marginLeft: 4, color: '#000000d9' }} />
+                </Tooltip>
+              </span>
+            }
+            labelCol={{ span: 8 }}
+            wrapperCol={{ span: 16 }}
+          >
+            {getFieldDecorator('glht', {
+              rules: [
+                {
+                  required: true,
+                  message: '关联合同不允许空值',
+                },
+              ],
+            })(
+              <Select
+                style={{ width: '100%', borderRadius: '8px !important' }}
+                placeholder="请选择关联合同"
+                showSearch
+                allowClear
+                optionFilterProp="children"
+                filterOption={(input, option) =>
+                  option.props.children?.props?.children
+                    ?.toLowerCase()
+                    .indexOf(input.toLowerCase()) >= 0
+                }
+              >
+                {dhtData.map(x => (
+                  <Option key={x.ID} value={x.ID}>
+                    <Tooltip title={x.GYSMC + '-' + x.QSRQ} placement="topLeft">
+                      {x.GYSMC + '-' + x.QSRQ}
+                    </Tooltip>
+                  </Option>
+                ))}
+              </Select>,
+            )}
+          </Form.Item>
+        </Col>
+      </>
+    );
+  };
+
   //描述
   const getTextArea = () => {
     return (
@@ -517,7 +576,7 @@ export default function FormOperate(props) {
     labelCol: 8,
     wrapperCol: 16,
     dataIndex: 'htje',
-    initialValue: rlwbData.ZJE ?? htje,
+    initialValue: rlwbData.ZJE ?? ddfkData.zcb ?? htje,
     rules: [
       {
         required: true,
@@ -610,6 +669,7 @@ export default function FormOperate(props) {
         {!isHwPrj &&
           ddcgje !== 0 &&
           getRadio('付款类型', fklx, e => setFklx(e.target.value), '软件付款', '硬件付款')}
+        {dhtData.length > 1 && getGlhtSelector()}
       </Row>
       <Row>
         {/* 不是硬件入围，再看单独采购金额 */}

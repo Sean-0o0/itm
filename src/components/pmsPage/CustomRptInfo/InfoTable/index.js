@@ -17,14 +17,14 @@ export default function InfoTable(props) {
     routes,
     bbid,
     setIsSpinning,
+    cjrid,
   } = props; //表格数据
   const location = useLocation();
   const [tableColumns, setTableColumns] = useState([]); //处理过的列配置信息
+  let LOGIN_USERID = Number(JSON.parse(sessionStorage.getItem('user'))?.id);
 
   useEffect(() => {
     if (columns.length > 0) {
-      let LOGIN_USERID = Number(JSON.parse(sessionStorage.getItem('user'))?.id);
-      LOGIN_USERID &&
         QueryUserRole({
           userId: LOGIN_USERID,
         })
@@ -315,36 +315,46 @@ export default function InfoTable(props) {
     return;
   };
 
-  //复制自定义报告
+  //复制自定义报表
   const handleCopy = () => {
-    setIsSpinning(true);
-    CopyCustomReport({
-      reportId: Number(bbid),
-    })
-      .then(res => {
-        if (res?.success) {
-          message.success('操作成功', 1);
-          setIsSpinning(false);
-        }
-      })
-      .catch(e => {
-        console.error('🚀复制自定义报告', e);
-        message.error('操作失败', 1);
-        setIsSpinning(false);
-      });
+    Modal.confirm({
+      title: '提示：',
+      content: `是否确定复制该报表？`,
+      okText: '确定',
+      cancelText: '取消',
+      onOk: () => {
+        setIsSpinning(true);
+        CopyCustomReport({
+          reportId: Number(bbid),
+        })
+          .then(res => {
+            if (res?.success) {
+              message.success('操作成功', 1);
+              setIsSpinning(false);
+            }
+          })
+          .catch(e => {
+            console.error('🚀复制自定义报表', e);
+            message.error('操作失败', 1);
+            setIsSpinning(false);
+          });
+      },
+    });
   };
 
   return (
     <div className="info-table">
       <div className="btn-export-box">
-        <Button
-          type="primary"
-          className="btn-export"
-          style={{ marginRight: 8 }}
-          onClick={handleCopy}
-        >
-          保存至我的
-        </Button>
+        {LOGIN_USERID !== cjrid && (
+          <Button
+            type="primary"
+            className="btn-export"
+            style={{ marginRight: 8 }}
+            onClick={handleCopy}
+          >
+            保存至我的
+          </Button>
+        )}
         <Button type="primary" className="btn-export" onClick={handleExport}>
           导出
         </Button>

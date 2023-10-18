@@ -11,6 +11,8 @@ import {
   Select,
   Spin,
   Icon,
+  Tooltip,
+  Button,
 } from 'antd';
 // import { EditableProTable, ProCard, ProFormField, ProFormRadio } from '@ant-design/pro-components';
 const { Option } = Select;
@@ -19,6 +21,7 @@ import {
   FetchQueryGysInZbxx,
   FetchQueryHTXXByXQTC,
   UpdateHTXX,
+  QueryContractFlowInfo,
 } from '../../../../services/pmsServices';
 import moment from 'moment';
 import TableFullScreen from './TableFullScreen';
@@ -117,14 +120,14 @@ class EditableCell extends React.Component {
                   //   return;
                   // }
                   let newValues = {};
-                  newValues = {...values};
+                  newValues = { ...values };
                   for (let i in newValues) {
                     if (i === 'fksj' + record['id']) {
                       newValues[i] = dataString;
                     }
                   }
                   // this.toggleEdit();
-                  handleSave({...record, ...newValues});
+                  handleSave({ ...record, ...newValues });
                 },
               );
             }}
@@ -235,6 +238,7 @@ class EditableCell extends React.Component {
   }
 }
 
+const curLCHTJE = React.createRef(-1); //当前流程合同金额 - 合同金额不能超过流程金额
 class ContractInfoUpdate extends React.Component {
   state = {
     isModalFullScreen: false,
@@ -253,6 +257,9 @@ class ContractInfoUpdate extends React.Component {
     addGysModalVisible: false,
     isSpinning: true,
     lxje: 0, //立项金额
+    glhtlcData: [],
+    flowId: -1,
+    // curLCHTJE: -1, //当前流程合同金额 - 合同金额不能超过流程金额
   };
 
   componentDidMount() {
@@ -267,39 +274,69 @@ class ContractInfoUpdate extends React.Component {
     })
       .then(res => {
         let rec = res.record;
+        // this.setState(
+        //   {
+        //     contractInfo: { htje: Number(rec[0]?.htje), qsrq: rec[0]?.qsrq },
+        //     gys: rec[0]?.gys,
+        //   },
+        //   () => {
+        //     this.setState({
+        //       currentGysId: rec[0]?.gys,
+        //     });
+        //   },
+        // );
+        // console.log('🚀 ~ file: index.js ~ line 233 ~ ContractInfoUpdate ~ rec[0]?.gys', rec[0]?.gys);
+        // let arr = [];
+        // for (let i = 0; i < rec.length; i++) {
+        //   arr.push({
+        //     id: rec[i]?.fkxqid,
+        //     ['fkqs' + rec[i]?.fkxqid]: Number(rec[i]?.fkqs),
+        //     ['bfb' + rec[i]?.fkxqid]: Number(rec[i]?.bfb),
+        //     ['fkje' + rec[i]?.fkxqid]: Number(rec[i]?.fkje),
+        //     ['fksj' + rec[i]?.fkxqid]: moment(rec[i]?.fksj).format('YYYY-MM-DD'),
+        //     zt: rec[i]?.zt,
+        //   });
+        // }
+        const arr = rec.reduce((acc, cur) => {
+          if (cur.htxxid === this.props.htxxid)
+            return [
+              ...acc,
+              {
+                ...cur,
+                id: cur.fkxqid,
+                ['fkqs' + cur.fkxqid]: Number(cur.fkqs),
+                ['bfb' + cur.fkxqid]: Number(cur.bfb),
+                ['fkje' + cur.fkxqid]: Number(cur.fkje),
+                ['fksj' + cur.fkxqid]: moment(cur.fksj).format('YYYY-MM-DD'),
+                zt: cur.zt,
+              },
+            ];
+          return acc;
+        }, []);
         this.setState(
           {
-            contractInfo: { htje: Number(rec[0]?.htje), qsrq: rec[0]?.qsrq },
-            gys: rec[0]?.gys,
+            tableData: [...this.state.tableData, ...arr],
+            lxje: Number(res.lxje),
+            contractInfo: { htje: Number(arr[0]?.htje), qsrq: arr[0]?.qsrq },
+            gys: arr[0]?.gys,
+            flowId: arr[0] === undefined || arr[0].htlc === '' ? -1 : Number(arr[0].htlc),
           },
           () => {
             this.setState({
-              currentGysId: rec[0]?.gys,
+              currentGysId: arr[0]?.gys,
             });
+            this.getGlhtlcData();
           },
         );
-        // console.log('🚀 ~ file: index.js ~ line 233 ~ ContractInfoUpdate ~ rec[0]?.gys', rec[0]?.gys);
-        let arr = [];
-        for (let i = 0; i < rec.length; i++) {
-          arr.push({
-            id: rec[i]?.fkxqid,
-            ['fkqs' + rec[i]?.fkxqid]: Number(rec[i]?.fkqs),
-            ['bfb' + rec[i]?.fkxqid]: Number(rec[i]?.bfb),
-            ['fkje' + rec[i]?.fkxqid]: Number(rec[i]?.fkje),
-            ['fksj' + rec[i]?.fkxqid]: moment(rec[i]?.fksj).format('YYYY-MM-DD'),
-            zt: rec[i]?.zt,
-          });
-        }
-        this.setState({
-          tableData: [...this.state.tableData, ...arr],
-          isSpinning: false,
-          lxje: Number(res.lxje),
-        });
       })
       .catch(e => {
         message.error('合同信息查询失败', 1);
+        this.setState({
+          isSpinning: false,
+        });
       });
   };
+
   // 查询供应商下拉列表
   fetchQueryGysInZbxx = (current, pageSize) => {
     FetchQueryGysInZbxx({
@@ -327,6 +364,38 @@ class ContractInfoUpdate extends React.Component {
         message.error('供应商信息查询失败', 1);
       });
   };
+
+  //获取合同签署流程
+  getGlhtlcData = () => {
+    QueryContractFlowInfo({
+      projectId: this.props.currentXmid,
+      queryType: 'HT',
+      flowId: this.state.flowId,
+    })
+      .then(res => {
+        if (res?.success) {
+          const rec = JSON.parse(res.result);
+          // console.log('🚀 ~ QueryContractFlowInfo ~ res', rec);
+          //to do ...
+          this.setState({
+            glhtlcData: rec,
+            isSpinning: false,
+            // curLCHTJE: Number(rec.find(x => Number(x.ID) === this.state.flowId)?.LCHTJE || -1),
+          });
+          curLCHTJE.current = Number(
+            rec.find(x => Number(x.ID) === this.state.flowId)?.LCHTJE || -1,
+          );
+        }
+      })
+      .catch(e => {
+        console.error('🚀合同签署流程', e);
+        message.error('合同签署流程数据获取失败', 1);
+        this.setState({
+          isSpinning: false,
+        });
+      });
+  };
+
   //合同信息修改付款详情表格单行删除
   handleSingleDelete = id => {
     const dataSource = [...this.state.tableData];
@@ -388,19 +457,132 @@ class ContractInfoUpdate extends React.Component {
     this.fetchQueryGysInZbxx();
   };
 
+  handleOk = () => {
+    const { tableData = [], currentGysId } = this.state;
+    const { currentXmid, closeMessageEditModal, onSuccess } = this.props;
+    const { getFieldValue, validateFields } = this.props.form;
+    validateFields(err => {
+      if (!err) {
+        let fkjeSum = 0,
+          bfbSum = 0;
+        tableData?.forEach(item => {
+          fkjeSum += Number(item['fkje' + item.id]);
+          bfbSum += Number(item['bfb' + item.id]);
+        });
+        if (bfbSum > 1) {
+          message.error('占比总额不能超过1', 1);
+        } else if (fkjeSum > getFieldValue('htje')) {
+          message.error('付款总额不能超过合同金额', 1);
+        } else {
+          this.setState({
+            isSpinning: true,
+          });
+          let arr = [...tableData];
+          arr.forEach(item => {
+            for (let i in item) {
+              if (i === 'fksj' + item.id) {
+                item[i] = moment(item[i]).format('YYYYMMDD');
+              } else {
+                item[i] = String(item[i]);
+              }
+            }
+          });
+          let newArr = [];
+          arr.map(item => {
+            let obj = {
+              ID: item.id,
+              FKQS: item['fkqs' + item.id],
+              BFB: item['bfb' + item.id],
+              FKJE: item['fkje' + item.id],
+              FKSJ: item['fksj' + item.id],
+              ZT: item.zt,
+              GYS: String(currentGysId),
+            };
+            newArr.push(obj);
+          });
+          newArr.push({});
+          const params = {
+            xmmc: Number(currentXmid),
+            json: JSON.stringify(newArr),
+            rowcount: tableData.length,
+            htje: Number(getFieldValue('htje')),
+            qsrq: Number(getFieldValue('qsrq').format('YYYYMMDD')),
+            gysid: Number(currentGysId),
+            czlx: 'UPDATE',
+            lcid: Number(getFieldValue('glhtlc')),
+            htid: Number(this.props.htxxid),
+          };
+          console.log('🚀 ~ file: index.js:474 ~ ContractInfoUpdate ~ params:', params);
+          UpdateHTXX(params)
+            .then(res => {
+              if (res?.code === 1) {
+                onSuccess();
+                this.setState({ isSpinning: false, tableData: [] });
+                message.success('修改成功', 1);
+                closeMessageEditModal();
+              }
+            })
+            .catch(e => {
+              message.error('合同信息修改失败', 1);
+              this.setState({
+                isSpinning: false,
+              });
+            });
+        }
+      }
+    });
+  };
+
+  handleCancel = () => {
+    this.setState({ tableData: [] });
+    this.props.closeMessageEditModal();
+  };
+
+  handleDelete = () => {
+    const { currentXmid, closeMessageEditModal, htxxid, onSuccess } = this.props;
+    this.setState({ isSpinning: true });
+    const params = {
+      xmmc: Number(currentXmid),
+      json: '[]',
+      rowcount: 0,
+      htje: 1,
+      qsrq: 20000101,
+      gysid: 1,
+      czlx: 'DELETE',
+      lcid: 1,
+      htid: Number(htxxid),
+    };
+    UpdateHTXX(params)
+      .then(res => {
+        if (res?.code === 1) {
+          onSuccess();
+          message.success('删除成功', 1);
+          this.setState({ isSpinning: false, tableData: [] });
+          closeMessageEditModal();
+        }
+      })
+      .catch(e => {
+        message.error('合同信息修改失败', 1);
+        this.setState({
+          isSpinning: false,
+        });
+      });
+  };
+
   render() {
     const {
       isTableFullScreen,
       isModalFullScreen,
-      tableData,
+      tableData = [],
       contractInfo,
-      gysData,
+      gysData = [],
       gys,
       currentGysId,
       isSelectorOpen,
       addGysModalVisible,
       isSpinning,
       selectedRowIds,
+      glhtlcData = [],
     } = this.state;
     const {
       currentXmid,
@@ -409,7 +591,7 @@ class ContractInfoUpdate extends React.Component {
       closeMessageEditModal,
       onSuccess,
     } = this.props;
-    const { getFieldDecorator, getFieldValue, setFieldsValue } = this.props.form;
+    const { getFieldDecorator, getFieldValue, setFieldsValue, validateFields } = this.props.form;
     const rowSelection = {
       onChange: (selectedRowKeys, selectedRows) => {
         let newSelectedRowIds = [];
@@ -463,20 +645,20 @@ class ContractInfoUpdate extends React.Component {
         ellipsis: true,
         editable: true,
       },
-      {
-        title: '状态',
-        dataIndex: 'zt',
-        width: '10%',
-        key: 'zt',
-        ellipsis: true,
-        // editable: true,
-        render: text => {
-          if (text === '1') {
-            return this.state.tableData.length >= 1 ? <span>已付款</span> : null;
-          }
-          return this.state.tableData.length >= 1 ? <span>未付款</span> : null;
-        },
-      },
+      // {
+      //   title: '状态',
+      //   dataIndex: 'zt',
+      //   width: '10%',
+      //   key: 'zt',
+      //   ellipsis: true,
+      //   // editable: true,
+      //   render: text => {
+      //     if (text === '1') {
+      //       return this.state.tableData.length >= 1 ? <span>已付款</span> : null;
+      //     }
+      //     return this.state.tableData.length >= 1 ? <span>未付款</span> : null;
+      //   },
+      // },
       {
         title: '操作',
         dataIndex: 'operator',
@@ -560,85 +742,27 @@ class ContractInfoUpdate extends React.Component {
           }}
           title={null}
           visible={editMessageVisible}
-          onOk={() => {
-            this.props.form.validateFields(err => {
-              if (!err) {
-                let fkjeSum = 0,
-                  bfbSum = 0;
-                tableData?.forEach(item => {
-                  fkjeSum += Number(item['fkje' + item.id]);
-                  bfbSum += Number(item['bfb' + item.id]);
-                });
-                if (bfbSum > 1) {
-                  message.error('占比总额不能超过1', 1);
-                } else if (fkjeSum > getFieldValue('htje')) {
-                  message.error('付款总额不能超过合同金额', 1);
-                } else {
-                  this.setState({
-                    isSpinning: true,
-                  });
-                  let arr = [...tableData];
-                  arr.forEach(item => {
-                    for (let i in item) {
-                      if (i === 'fksj' + item.id) {
-                        item[i] = moment(item[i]).format('YYYYMMDD');
-                      } else {
-                        item[i] = String(item[i]);
-                      }
-                    }
-                  });
-                  let newArr = [];
-                  arr.map(item => {
-                    let obj = {
-                      ID: item.id,
-                      FKQS: item['fkqs' + item.id],
-                      BFB: item['bfb' + item.id],
-                      FKJE: item['fkje' + item.id],
-                      FKSJ: item['fksj' + item.id],
-                      ZT: item.zt,
-                      GYS: String(currentGysId),
-                    };
-                    newArr.push(obj);
-                  });
-                  newArr.push({});
-                  // console.log('submitData', {
-                  //     xmmc: Number(currentXmid),
-                  //     json: JSON.stringify(newArr),
-                  //     rowcount: tableData.length,
-                  //     htje: Number(getFieldValue('htje')),
-                  //     qsrq: Number(getFieldValue('qsrq').format('YYYYMMDD'))
-                  // });
-                  UpdateHTXX({
-                    xmmc: Number(currentXmid),
-                    json: JSON.stringify(newArr),
-                    rowcount: tableData.length,
-                    htje: Number(getFieldValue('htje')),
-                    qsrq: Number(getFieldValue('qsrq').format('YYYYMMDD')),
-                    gysid: Number(currentGysId),
-                    czlx: 'UPDATE',
-                  })
-                    .then(res => {
-                      if (res?.code === 1) {
-                        onSuccess();
-                        this.setState({ isSpinning: false, tableData: [] });
-                        closeMessageEditModal();
-                      }
-                    })
-                    .catch(e => {
-                      message.error('合同信息修改失败', 1);
-                      this.setState({
-                        isSpinning: false,
-                      });
-                    });
-                }
-              }
-            });
-          }}
-          onCancel={() => {
-            this.setState({ tableData: [] });
-            closeMessageEditModal();
-          }}
-          confirmLoading={isSpinning}
+          onCancel={this.handleCancel}
+          footer={
+            <div className="modal-footer">
+              <Button className="btn-default" onClick={this.handleCancel}>
+                取消
+              </Button>
+              <Button
+                loading={isSpinning}
+                className="btn-primary"
+                type="primary"
+                onClick={this.handleOk}
+              >
+                保存
+              </Button>
+              <Popconfirm title="确定删除吗？" onConfirm={this.handleDelete}>
+                <Button loading={isSpinning} className="btn-primary" type="primary">
+                  删除
+                </Button>
+              </Popconfirm>
+            </div>
+          }
         >
           <div
             style={{
@@ -697,14 +821,19 @@ class ContractInfoUpdate extends React.Component {
                         },
                         {
                           validator: (rule, value, callback) => {
-                            // console.log(
-                            //   '🚀 ~ file: index.js:685 ~ ContractInfoUpdate ~ render ~ rule, value, callback:',
-                            //   rule,
-                            //   value,
-                            //   callback,
-                            // );
+                            console.log(
+                              '🚀 ~ file: index.js:685 ~ ContractInfoUpdate ~ render ~ rule, value, callback:',
+                              rule,
+                              value,
+                              callback,
+                            );
                             if (Number(value) > this.state.lxje) {
                               callback('合同金额不能超过本项目立项金额：' + this.state.lxje);
+                            } else if (
+                              curLCHTJE.current !== -1 &&
+                              Number(value) > curLCHTJE.current
+                            ) {
+                              callback('合同金额不能超过关联合同流程金额：' + curLCHTJE.current);
                             } else {
                               callback();
                             }
@@ -805,6 +934,45 @@ class ContractInfoUpdate extends React.Component {
                       fontSize: '20px',
                     }}
                   />
+                </Col>
+              </Row>
+              <Row>
+                <Col span={12}>
+                  <Form.Item label="关联合同流程" labelCol={{ span: 6 }} wrapperCol={{ span: 17 }}>
+                    {getFieldDecorator('glhtlc', {
+                      initialValue: glhtlcData[0]?.XTLCID,
+                    })(
+                      <Select
+                        style={{ width: '100%', borderRadius: '8px !important' }}
+                        placeholder="请选择关联合同流程"
+                        showSearch
+                        allowClear
+                        optionFilterProp="children"
+                        filterOption={(input, option) =>
+                          option.props.children?.props?.children
+                            ?.toLowerCase()
+                            .indexOf(input.toLowerCase()) >= 0
+                        }
+                        onChange={(v, o) => {
+                          // this.setState({
+                          //   curLCHTJE: Number(o?.props.je || -1),
+                          // });
+                          curLCHTJE.current = Number(o?.props.je || -1);
+                          setTimeout(() => {
+                            validateFields(['htje'], () => {});
+                          }, 200);
+                        }}
+                      >
+                        {glhtlcData?.map(x => (
+                          <Option key={x.XTLCID} value={x.XTLCID} je={x.LCHTJE}>
+                            <Tooltip title={x.LCMC} placement="topLeft">
+                              {x.LCMC}
+                            </Tooltip>
+                          </Option>
+                        ))}
+                      </Select>,
+                    )}
+                  </Form.Item>
                 </Col>
               </Row>
               <Row>

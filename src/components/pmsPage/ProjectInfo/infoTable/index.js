@@ -7,7 +7,6 @@ import { Link } from 'react-router-dom';
 import { useLocation } from 'react-router';
 import PrjTypeModal from '../../HomePage/ShortcutCard/PrjTypeModal';
 import NewProjectModelV2 from '../../../../pages/workPlatForm/singlePage/NewProjectModelV2';
-import EditProjectInfoModel from '../../EditProjectInfoModel';
 
 export default function InfoTable(props) {
   const [sortedInfo, setSortedInfo] = useState({}); //金额排序

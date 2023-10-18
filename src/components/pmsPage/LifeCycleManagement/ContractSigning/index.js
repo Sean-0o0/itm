@@ -222,7 +222,7 @@ class ContractSigning extends React.Component {
 
   //发起流程到oa
   individuationGetOAResult = values => {
-    console.log("params", this.handleParams(values))
+    console.log('params', this.handleParams(values));
     return IndividuationGetOAResult(this.handleParams(values))
       .then(result => {
         const { code = -1, record = [] } = result;
@@ -244,13 +244,11 @@ class ContractSigning extends React.Component {
 
   handleParams = values => {
     const { uploadFileParams, uploadFileParams2, processListData, BM1 = '', BM2 = '' } = this.state;
-    const { currentXmid, currentXmmc } = this.props;
+    const { currentXmid, currentXmmc, isDdhtqslc } = this.props;
     const loginUser = JSON.parse(window.sessionStorage.getItem('user'));
     loginUser.id = String(loginUser.id);
     let arr = [];
-    arr = processListData?.map(item => {
-      return item?.id;
-    });
+    arr = processListData?.map(item => Number(item?.id));
     //表单数据
     const formdata = {
       extinfo: {
@@ -306,6 +304,7 @@ class ContractSigning extends React.Component {
       xmmc: String(currentXmid), //项目的id
       bm: String(loginUser.org), //部门id
       gys: values.gys, //供应商的id
+      lclx: isDdhtqslc ? 2 : 1,
     };
     const params = {
       objectclass: '合同签署流程',
@@ -367,6 +366,7 @@ class ContractSigning extends React.Component {
       contractSigningVisible,
       xmbh,
       dictionary: { LCJJCD = [], YZLX = [], CXBM = [], OAXMLX = [] },
+      isDdhtqslc,
     } = this.props;
     let LOGIN_USER_ID = Number(JSON.parse(sessionStorage.getItem('user'))?.id);
     const { getFieldDecorator, getFieldValue, setFieldsValue } = this.props.form;
@@ -411,6 +411,7 @@ class ContractSigning extends React.Component {
             closeAssociatedFileModal={() => this.setState({ associatedFileVisible: false })}
             onSuccess={() => this.onSuccess('关联文件')}
             xmbh={xmbh}
+            list={processListData}
           ></AssociatedFile>
         )}
         <Modal
@@ -459,7 +460,7 @@ class ContractSigning extends React.Component {
               fontSize: '15px',
             }}
           >
-            <strong>合同签署流程发起</strong>
+            <strong>{isDdhtqslc && '迭代'}合同签署流程发起</strong>
           </div>
           <Spin
             spinning={isSpinning}

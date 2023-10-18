@@ -29,31 +29,12 @@ export default function ProjectCard(props) {
   const location = useLocation();
 
   useEffect(() => {
-    window.addEventListener('message', handleIframePostMessage);
-    return () => {
-      window.removeEventListener('message', handleIframePostMessage);
-    };
-  }, []);
-
-  useEffect(() => {
     if (prjInfo.length !== 0) {
-      setInfoList(p => [...prjInfo?.slice(0, getColNum(itemWidth) * 3)]);
+      setInfoList(p => [...prjInfo?.slice(0, getColNum(itemWidth))]);
       setIsUnfold(false);
     }
     return () => {};
-  }, [props]);
-
-  //监听新建项目弹窗状态
-  const handleIframePostMessage = event => {
-    if (typeof event.data !== 'string' && event.data.operate === 'close') {
-      closeFileAddModal();
-    }
-    if (typeof event.data !== 'string' && event.data.operate === 'success') {
-      closeFileAddModal();
-      getPrjInfo(userRole); //刷新数据
-      // message.success('保存成功');
-    }
-  };
+  }, [JSON.stringify(prjInfo), itemWidth]);
 
   //获取目前每行几个
   const getColNum = w => {
@@ -78,66 +59,17 @@ export default function ProjectCard(props) {
   //展开、收起
   const handleUnfold = bool => {
     if (bool) {
-      // if (allPrj.length === 0) {
-      setIsLoading(true);
-      QueryProjectGeneralInfo({
-        queryType: 'CG',
-        role: userRole,
-        org: Number(LOGIN_USER_INFO.org),
-        paging: -1,
-        current: 1,
-        pageSize: 9999,
-        total: -1,
-        sort: '',
-      })
-        .then(res => {
-          if (res?.success) {
-            let arr = JSON.parse(res?.xmxx); //项目信息
-            arr?.forEach(item => {
-              let riskArr = []; //风险信息
-              let participantArr = []; //人员信息
-              JSON.parse(res?.fxxx).forEach(x => {
-                if (x.XMID === item.XMID) {
-                  riskArr.push(x);
-                }
-              });
-              JSON.parse(res?.ryxx).forEach(x => {
-                if (x.XMID === item.XMID) {
-                  participantArr.push(x);
-                }
-              });
-              item.riskData = [...riskArr];
-              item.participantData = [...participantArr];
-            });
-            setAllPrj(p => [...arr]);
-            setInfoList(p => [...arr]);
-            setIsLoading(false);
-            setIsUnfold(bool);
-          }
-        })
-        .catch(e => {
-          console.error('QueryProjectGeneralInfo', e);
-          message.error('项目信息查询失败', 1);
-        });
-      // } else {
-      //   setInfoList(p => [...allPrj]);
-      //   setIsUnfold(bool);
-      // }
+      setInfoList(p => [...prjInfo]);
     } else {
-      setInfoList(p => [...prjInfo?.slice(0, getColNum(itemWidth) * 3)]);
-      setIsUnfold(bool);
+      setInfoList(p => [...prjInfo?.slice(0, getColNum(itemWidth))]);
     }
+    setIsUnfold(bool);
   };
 
   //草稿编辑
   const handleDraftModify = xmid => {
     setFileAddVisible(true);
-    setSrc_fileAdd(
-      // `/#/single/pms/SaveProject/${EncryptBase64(
-      //   JSON.stringify({ xmid, type: true, projectStatus: 'SAVE' }),
-      // )}`,
-      { xmid: xmid, type: true, projectStatus: 'SAVE' },
-    );
+    setSrc_fileAdd({ xmid: xmid, type: true, projectStatus: 'SAVE' });
   };
 
   //草稿删除
@@ -599,7 +531,7 @@ export default function ProjectCard(props) {
         )}
         {getAfterItem(itemWidth)}
       </div>
-      {total > getColNum(itemWidth) * 1 &&
+      {total > getColNum(itemWidth) &&
         (isUnfold ? (
           <div className="more-item" onClick={() => handleUnfold(false)}>
             收起

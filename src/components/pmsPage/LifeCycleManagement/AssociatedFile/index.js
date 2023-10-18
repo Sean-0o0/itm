@@ -24,12 +24,16 @@ import { isArrayLike } from 'lodash';
 import { QueryOafilerela } from '../../../../services/pmsServices';
 
 class AssociatedFile extends React.Component {
-  state = {
-    isSpinning: false,
-    selectedRowKeys: [],
-    tableData: [], //初始查询数据
-    tbFilterData: [], //筛选查询后数据 - 展示
-  };
+  constructor(props) {
+    super(props);
+    // console.log('🚀 ~ file: index.js:36 ~ AssociatedFile ~ constructor ~ props:', props);
+    this.state = {
+      isSpinning: false,
+      selectedRowKeys: props.list.map(x => x.id) || [],
+      tableData: [], //初始查询数据
+      tbFilterData: [], //筛选查询后数据 - 展示
+    };
+  }
 
   componentDidMount() {
     this.getTableData();
@@ -37,28 +41,38 @@ class AssociatedFile extends React.Component {
 
   //查询表格数据
   getTableData() {
-    QueryOafilerela({ projectCode: String(this.props.xmbh || '') }).then(res => {
-      function uniqueFunc(arr, uniId) {
-        const res = new Map();
-        return arr.filter(item => !res.has(Number(item[uniId])) && res.set(Number(item[uniId]), 1));
-      }
-      let arr = uniqueFunc(JSON.parse(res?.responseBody).concat(JSON.parse(res?.flowInfo)), 'id');
-      console.log(
-        '🚀 ~ file: index.js:47 ~ AssociatedFile ~ QueryOafilerela ~ arr:',
-        JSON.parse(res?.responseBody),
-        arr,
-      );
-      arr.map(x => {
-        return {
-          ...x,
-          id: Number(x.id),
-        };
+    this.setState({ isSpinning: true });
+    QueryOafilerela({ projectCode: String(this.props.xmbh || '') })
+      .then(res => {
+        function uniqueFunc(arr, uniId) {
+          const res = new Map();
+          return arr.filter(
+            item => !res.has(Number(item[uniId])) && res.set(Number(item[uniId]), 1),
+          );
+        }
+        let arr = uniqueFunc(
+          JSON.parse(res?.responseBody === '' ? '[]' : res?.responseBody).concat(
+            JSON.parse(res?.flowInfo === '' ? '[]' : res?.flowInfo),
+          ),
+          'id',
+        ).map(x => {
+          return {
+            ...x,
+            id: Number(x.id),
+          };
+        });
+        this.setState({
+          tableData: [...arr],
+          tbFilterData: [...arr],
+          isSpinning: false,
+        });
+      })
+      .catch(e => {
+        console.error('查询表格数据', e);
+        this.setState({
+          isSpinning: false,
+        });
       });
-      this.setState({
-        tableData: [...arr],
-        tbFilterData: [...arr],
-      });
-    });
   }
 
   //查询
@@ -183,6 +197,7 @@ class AssociatedFile extends React.Component {
           onOk={() => this.props.onConfirm(this.getDataSelected(selectedRowKeys, tableData))}
           onCancel={this.props.closeAssociatedFileModal}
           visible={associatedFileVisible}
+          destroyOnClose
         >
           <div
             style={{

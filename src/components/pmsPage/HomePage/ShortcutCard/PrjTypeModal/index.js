@@ -10,20 +10,21 @@ export default function PrjTypeModal(props) {
   const [isSpinning, setIsSpinning] = useState(false); //加载状态
   useEffect(() => {
     setIsSpinning(true);
-    FetchQueryProjectLabel({})
-      .then(res => {
-        if (res?.success) {
-          let data = JSON.parse(res.xmlxRecord).filter(x => !['0', '1'].includes(x.GRADE));
-          // console.log('🚀 ~ file: index.js:17 ~ useEffect ~ data:', data);
-          setTypeData(p => [...data]);
-          setIsSpinning(false);
-        }
-      })
-      .catch(e => {
-        console.error('FetchQueryProjectLabel', e);
-        message.error('项目类型查询失败', 1);
-      });
-
+    if (visible) {
+      FetchQueryProjectLabel({})
+        .then(res => {
+          if (res?.success) {
+            let data = JSON.parse(res.xmlxRecord).filter(x => !['0', '1'].includes(x.GRADE));
+            // console.log('🚀 ~ file: index.js:17 ~ useEffect ~ data:', data);
+            setTypeData(p => [...data]);
+            setIsSpinning(false);
+          }
+        })
+        .catch(e => {
+          console.error('FetchQueryProjectLabel', e);
+          message.error('项目类型查询失败', 1);
+        });
+    }
     return () => {};
   }, [visible]);
 

@@ -7,7 +7,16 @@ import { useLocation } from 'react-router';
 import MoreOperationModal from './MoreOperationModal';
 
 export default function EvaluationTable(props) {
-  const { dtlData = {}, dictionary = {}, isAuth = false, xqid, getDtldata, fqrid, isDock } = props;
+  const {
+    routes = [],
+    dtlData = {},
+    dictionary = {},
+    isAuth = false,
+    xqid,
+    getDtldata,
+    fqrid,
+    isDock,
+  } = props;
   const [modalVisible, setModalVisible] = useState(false); //更多操作弹窗显隐
   const { ZHPC = [], XQSX_ORIGIN = [] } = dtlData;
   const { DFZT = [], LYZT = [], WBRYGW = [] } = dictionary;
@@ -48,7 +57,7 @@ export default function EvaluationTable(props) {
                   JSON.stringify({ splId: row.GYSID }),
                 )}`,
                 state: {
-                  routes: [{ name: '需求详情', pathname: location.pathname }],
+                  routes,
                 },
               }}
               className="table-link-strong"
@@ -77,7 +86,7 @@ export default function EvaluationTable(props) {
                 }),
               )}`,
               state: {
-                routes: [{ name: '需求详情', pathname: location.pathname }],
+                routes,
               },
             }}
             className="table-link-strong"
@@ -110,7 +119,7 @@ export default function EvaluationTable(props) {
                       }),
                     )}`,
                     state: {
-                      routes: [{ name: '需求详情', pathname: location.pathname }],
+                      routes,
                     },
                   }}
                   className="table-link-strong-tagtxt"

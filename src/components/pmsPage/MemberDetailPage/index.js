@@ -110,6 +110,7 @@ class MemberDetailPage extends Component {
             XTZH: ryxxdata[0]?.XTZH,
             RCSJ: ryxxdata[0]?.RCSJ ? moment(String(ryxxdata[0]?.RCSJ)) : null,
             LCSJ: ryxxdata[0]?.LCSJ ? moment(String(ryxxdata[0]?.LCSJ)) : null,
+            FQRID:ryxxdata[0]?.FQRID,
           };
           let basicData = {
             JL: ryxxdata[0]?.JL,

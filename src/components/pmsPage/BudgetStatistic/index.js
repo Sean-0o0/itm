@@ -28,6 +28,7 @@ export default function BudgetStatistic(props) {
   const [spinningData, setSpinningData] = useState({
     spinning: false,
     tip: '加载中',
+    sltDisabled: false,
   }); //加载状态
   const [allowExport, setAllowExport] = useState(false); //是否允许导出
   const CUR_USER_ID = String(JSON.parse(sessionStorage.getItem('user')).id);
@@ -203,7 +204,7 @@ export default function BudgetStatistic(props) {
           </Tabs>
         </div>
         <TableBox
-          dataProps={{ tableData, filterData, allowExport, activeKey }}
+          dataProps={{ tableData, filterData, allowExport, activeKey, spinningData }}
           funcProps={{ setFilterData, queryTableData, setSpinningData }}
         />
       </Spin>

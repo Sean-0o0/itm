@@ -17,7 +17,7 @@ export default function DemandTable(props) {
   }, []);
 
   const getDateItem = (label, date) => {
-    console.log("🚀 ~ file: index.js:20 ~ getDateItem ~ date:", date)
+    // console.log("🚀 ~ file: index.js:20 ~ getDateItem ~ date:", date)
     if (date !== undefined)
       return (
         <div className="date-item" key={label}>

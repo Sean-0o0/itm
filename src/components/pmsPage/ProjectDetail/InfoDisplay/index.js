@@ -1,5 +1,5 @@
 import { Empty, Popover, Table, Tooltip, message } from 'antd';
-import React, { useEffect, useState } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import moment from 'moment';
 import { Link } from 'react-router-dom';
 import config from '../../../../utils/config';
@@ -13,7 +13,7 @@ const {
 } = api;
 
 export default function InfoDisplay(props) {
-  const { prjData, xmid, routes, isLeader, isHwSltPrj, isBdgtMnger } = props;
+  const { prjData, xmid, routes, isLeader, isHwSltPrj, isBdgtMnger, isDDXM } = props;
   const {
     prjBasic = {},
     award = [],
@@ -25,6 +25,8 @@ export default function InfoDisplay(props) {
     bidding = {},
     supplier = [],
     member = [],
+    contrastArr = [],
+    glddxmData = [],
   } = prjData;
   let LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
   //liveBos弹窗配置
@@ -107,14 +109,10 @@ export default function InfoDisplay(props) {
     );
   };
   //付款计划
-  const getPmtPlan = (arr = []) => {
+  const getPmtPlan = (arr = [], label = '付款计划：', width = '100%') => {
     return (
-      <div
-        className="info-item"
-        key="付款计划："
-        style={{ width: '100%', display: 'flex', height: 'unset' }}
-      >
-        <div className="payment-label">付款计划：</div>
+      <div className="info-item" key={label} style={{ width, display: 'flex', height: 'unset' }}>
+        <div className="payment-label">{label}</div>
         <div className="payment-plan">
           {arr.map((x, i) => (
             <div key={x.ID}>
@@ -303,6 +301,56 @@ export default function InfoDisplay(props) {
     ));
   };
 
+  //多合同信息
+  const getHtxxInfoRow = (haveAuth = true) => {
+    const suffix = i => (contrastArr.length > 1 ? '-' + (i + 1) + '：' : '：'); //是否多合同，后缀
+    return contrastArr.map((x, i) => (
+      <div className="htxx-info-row-box" key={x.ID}>
+        {x.GYSMC && getInfoItem('合同供应商' + suffix(i), x.GYSMC)}
+        {x.HTJE && haveAuth && getInfoItem('合同金额' + suffix(i), getAmountFormat(x.HTJE) + '元')}
+        {x.YFKJE &&
+          haveAuth &&
+          getInfoItem('已付款金额' + suffix(i), getAmountFormat(x.YFKJE) + '元')}
+        {x.QSRQ && getInfoItem('签署日期' + suffix(i), moment(x.QSRQ).format('YYYY年MM月DD日'))}
+        {x.payment?.length !== 0 &&
+          haveAuth &&
+          getPmtPlan(x.payment, '付款计划' + suffix(i), '64%')}
+      </div>
+    ));
+  };
+
+  //关联迭代项目名称
+  const getGlddxmmc = (idStr = '') => {
+    //.分割，取最后一个
+    const glddxmIdArr = idStr === '' ? [] : idStr.split('.');
+    const glddxmId = glddxmIdArr.length > 0 ? glddxmIdArr[glddxmIdArr.length - 1] : undefined;
+    const glddxmmc = glddxmData.find(x => x.ID === glddxmId)?.XMMC || '';
+    if (idStr !== '')
+      return (
+        <div className="info-item" key="关联迭代项目：">
+          <span>关联迭代项目：</span>
+          <Tooltip placement="topLeft" title={glddxmmc}>
+            <Link
+              style={{ color: '#3361ff' }}
+              to={{
+                pathname: `/pms/manage/ProjectDetail/${EncryptBase64(
+                  JSON.stringify({
+                    xmid: glddxmId,
+                  }),
+                )}`,
+                state: {
+                  routes,
+                },
+              }}
+            >
+              {glddxmmc}
+            </Link>
+          </Tooltip>
+        </div>
+      );
+    return null;
+  };
+
   return (
     <div className="info-display-box">
       {/* 需求列表 */}
@@ -388,21 +436,23 @@ export default function InfoDisplay(props) {
           {prjBasic.FXMMC && (
             <div className="info-item" key="父项目名称：">
               <span>父项目名称：</span>
-              <Link
-                style={{ color: '#3361ff' }}
-                to={{
-                  pathname: `/pms/manage/ProjectDetail/${EncryptBase64(
-                    JSON.stringify({
-                      xmid: prjBasic.GLFXMID,
-                    }),
-                  )}`,
-                  state: {
-                    routes,
-                  },
-                }}
-              >
-                {prjBasic.FXMMC}
-              </Link>
+              <Tooltip placement="topLeft" title={prjBasic.FXMMC}>
+                <Link
+                  style={{ color: '#3361ff' }}
+                  to={{
+                    pathname: `/pms/manage/ProjectDetail/${EncryptBase64(
+                      JSON.stringify({
+                        xmid: prjBasic.GLFXMID,
+                      }),
+                    )}`,
+                    state: {
+                      routes,
+                    },
+                  }}
+                >
+                  {prjBasic.FXMMC}
+                </Link>
+              </Tooltip>
             </div>
           )}
           {getInfoItem('是否包含硬件：', prjBasic.SFBHYJ === '1' ? '是' : '否')}
@@ -587,6 +637,7 @@ export default function InfoDisplay(props) {
               )}
             </div>
           )}
+          {isDDXM && getGlddxmmc(prjBasic.GLDDXM)}
         </div>
       </div>
       {/* 预算信息 */}
@@ -673,16 +724,17 @@ export default function InfoDisplay(props) {
             <div className="info-box" key="zcxx">
               <div className="top-title">招采信息</div>
               <div className="info-row-box">
-                {contrast.HTJE && getInfoItem('合同金额：', getAmountFormat(contrast.HTJE) + '元')}
+                {getHtxxInfoRow()}
+                {/* {contrast.HTJE && getInfoItem('合同金额：', getAmountFormat(contrast.HTJE) + '元')} */}
                 {notNull(prjBasic.ZBFS) !== '暂无数据' && getInfoItem('招采方式：', prjBasic.ZBFS)}
-                {contrast.QSRQ &&
-                  getInfoItem('签署日期：', moment(contrast.QSRQ).format('YYYY年MM月DD日'))}
+                {/* {contrast.QSRQ &&
+                  getInfoItem('签署日期：', moment(contrast.QSRQ).format('YYYY年MM月DD日'))} */}
                 {bidding.TBBZJ &&
                   getInfoItem('招标保证金：', getAmountFormat(bidding.TBBZJ) + '元')}
                 {bidding.LYBZJ &&
                   getInfoItem('履约保证金：', getAmountFormat(bidding.LYBZJ) + '元')}
                 {bidding.PBBG && getPbbg(JSON.parse(bidding.PBBG)?.items || [])}
-                {payment.length !== 0 && getPmtPlan(payment)}
+                {/* {payment.length !== 0 && getPmtPlan(payment)} */}
                 {otrSupplier.length !== 0 && (
                   <div className="info-item" key="zcxx-4-1">
                     <span>其他投标供应商：</span>
@@ -708,9 +760,10 @@ export default function InfoDisplay(props) {
           <div className="info-box" key="zcxx">
             <div className="top-title">招采信息</div>
             <div className="info-row-box">
+              {getHtxxInfoRow(false)}
               {notNull(prjBasic.ZBFS) !== '暂无数据' && getInfoItem('招采方式：', prjBasic.ZBFS)}
-              {contrast.QSRQ &&
-                getInfoItem('签署日期：', moment(contrast.QSRQ).format('YYYY年MM月DD日'))}
+              {/* {contrast.QSRQ &&
+                getInfoItem('签署日期：', moment(contrast.QSRQ).format('YYYY年MM月DD日'))} */}
               {bidding.PBBG && getPbbg(JSON.parse(bidding.PBBG)?.items || [])}
               {otrSupplier.length !== 0 && (
                 <div className="info-item" key="zcxx-4-1">

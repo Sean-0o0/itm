@@ -7,10 +7,11 @@ import DemandTable from './DemandTable';
 import ResumeInfo from './ResumeInfo';
 import EvaluationTable from './EvaluationTable';
 import EmploymentInfo from './EmploymentInfo';
+import { EncryptBase64 } from '../../Common/Encrypt';
 // import { FetchQueryProjectLabel } from '../../../services/projectManage';
 
 export default function DemandDetail(props) {
-  const { routes, xqid = -2, fqrid = -2, dictionary } = props;
+  const { routes = [], xqid = -2, fqrid = -2, dictionary } = props;
   const { WBSWLX = [], WBRYGW = [], DFZT } = dictionary;
   const [isSpinning, setIsSpinning] = useState(false); //加载状态
   const [dtlData, setDtlData] = useState({}); //详情信息
@@ -20,15 +21,28 @@ export default function DemandDetail(props) {
   const [curFqrid, setCurFqrid] = useState(fqrid); //当前fqrid
   const [activeKey, setActiveKey] = useState(xqid); //高亮的需求tab id
   let isAuth = isDock || String(LOGIN_USER_ID) === String(curFqrid); //是否为外包项目对接人或需求发起人
+  const [routeArr, setRouteArr] = useState([]); //路由，初始为props的routes，后续切换tab改变
 
   useEffect(() => {
     if (xqid !== -2 && WBRYGW.length !== 0 && WBSWLX.length !== 0) {
       setActiveKey(String(xqid));
       // console.log('🚀 ~ file: index.js:338 ~ DemandDetail ~ xqid, WBSWLX, fqrid:', xqid);
       getDtldata(xqid, fqrid);
+
+      let arr = JSON.parse(JSON.stringify([...routes]));
+      if (arr.length > 0) {
+        arr[arr.length - 1].pathname = `/pms/manage/DemandDetail/${EncryptBase64(
+          JSON.stringify({
+            xqid: String(xqid),
+            fqrid,
+            routes: arr.slice(0, arr.length),
+          }),
+        )}`;
+        setRouteArr(arr);
+      }
     }
     return () => {};
-  }, [xqid, fqrid, JSON.stringify(WBRYGW), JSON.stringify(WBSWLX)]);
+  }, [xqid, fqrid, JSON.stringify(WBRYGW), JSON.stringify(WBSWLX), JSON.stringify(routes)]);
 
   //获取详情数据
   const getDtldata = (xqid, fqrid) => {
@@ -228,13 +242,15 @@ export default function DemandDetail(props) {
     >
       <div className="demand-detail-box">
         <TopConsole
-          xqid={xqid}
-          routes={routes}
+          xqid={curXqid}
+          routes={routeArr}
           dtlData={dtlData}
           isAuth={isAuth}
           getDtldata={getDtldata}
           activeKey={activeKey}
           setActiveKey={setActiveKey}
+          setRouteArr={setRouteArr}
+          fqrid={curFqrid}
         />
         <ProjectItems
           dtlData={dtlData}
@@ -246,7 +262,7 @@ export default function DemandDetail(props) {
           getDtldata={getDtldata}
           WBRYGW={WBRYGW}
           dictionary={dictionary}
-          routes={routes}
+          routes={routeArr}
         />
         <DemandTable
           dtlData={dtlData}
@@ -263,6 +279,7 @@ export default function DemandDetail(props) {
           fqrid={curFqrid}
           getDtldata={getDtldata}
           isDock={isDock}
+          routes={routeArr}
         />
 
         <EmploymentInfo dtlData={dtlData} isAuth={isAuth} setIsSpinning={setIsSpinning} />

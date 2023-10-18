@@ -7,6 +7,7 @@ import {
   QueryPaymentFlowInfo,
   CreatPaymentFlow,
   InsertOutsourcePaymentInfo,
+  UpdateItePayInfo,
 } from '../../../../services/pmsServices';
 import ExpenseDetail from './ExpenseDetail';
 import moment from 'moment';
@@ -71,9 +72,10 @@ const PaymentProcess = props => {
     ddcgje = 0, // 单独采购金额，为0时无值
     rlwbData = {}, //人力外包费用支付 - 付款流程总金额
     dictionary = {},
+    ddfkData = false, //迭代付款{infoId, zcb},zcb赋值给合同金额
+    dhtData = [], //多合同
   } = props;
   const { DJLX = [], FRST = [] } = dictionary;
-  // console.log('🚀 ~ file: index.js:63 ~ PaymentProcess ~ rlwbData:', rlwbData);
   const { validateFields, getFieldValue, resetFields } = form;
   const formData = {
     sfyht,
@@ -234,6 +236,8 @@ const PaymentProcess = props => {
           requisitionInfo: glsqData.radioObj?.id,
           // specificationId: DJLX.find(x => x.ibm === getFieldValue('djlx'))?.cbm,
           specificationId: DJLX.find(x => x.ibm === getFieldValue('djlx'))?.note,
+          //关联合同 ID
+          fkqs: String(dhtData.length > 1 ? getFieldValue('glht') || '' : dhtData[0]?.ID || ''),
         };
         (isHwPrj || (!isHwPrj && ddcgje !== 0 && fklx === 2)) &&
           (submitData.yjyhtid = String(getFieldValue('glsb')));
@@ -258,6 +262,9 @@ const PaymentProcess = props => {
                   setIsSpinning(false);
                   if (JSON.stringify(rlwbData) !== '{}' && rlwbData !== undefined) {
                     OutsourcePaymentInfoInsert(String(res.ykbid));
+                  }
+                  if (ddfkData !== false) {
+                    handleUpdateItePayInfo(Number(ddfkData.infoId), String(res.ykbid));
                   }
                   message.success(`付款流程${operateType === 'send' ? '发起' : '草稿暂存'}成功`, 1);
                   if (onSuccess !== undefined) onSuccess(); //刷新数据
@@ -293,6 +300,18 @@ const PaymentProcess = props => {
       jd: String(rlwbData.JD ?? ''),
       nf: Number(rlwbData.NF ?? 0),
       xmid: Number(currentXmid ?? 0),
+      ykbid,
+    })
+      .then(res => {})
+      .catch(e => {
+        message.error('操作失败', 1);
+      });
+  };
+
+  //迭代付款
+  const handleUpdateItePayInfo = (infoId, ykbid) => {
+    UpdateItePayInfo({
+      infoId,
       ykbid,
     })
       .then(res => {})
@@ -341,8 +360,6 @@ const PaymentProcess = props => {
     visible: addSkzhModalVisible,
     footer: null,
   };
-
-  
 
   return (
     <>
@@ -395,6 +412,8 @@ const PaymentProcess = props => {
             currentXmid={currentXmid}
             rlwbData={rlwbData}
             dictionary={dictionary}
+            dhtData={dhtData}
+            ddfkData={ddfkData}
           />
           <ExpenseDetail
             currentXmid={currentXmid}

@@ -276,6 +276,8 @@ export default function RightRptContent(props) {
               obj.sltOpen = false; //树下拉框展开收起
             } else if (obj.ZJLX === 'RADIO') {
               obj.SELECTORVALUE = false;
+            } else if (obj.ZJLX === 'RADIO-XMZT') {
+              obj.SELECTORVALUE = true;
             } else {
               obj.SELECTORDATA = JSON.parse(res.result);
             }
@@ -707,13 +709,25 @@ export default function RightRptContent(props) {
               SXSJ = [x.SELECTORVALUE.min || 0, x.SELECTORVALUE.max || 9999999999];
               bmArr.push(x.BM);
             } else if (x.ZJLX === 'RADIO') {
-              //目前只有是否为父项目，暂时写死以下情况
+              //是否为父项目，暂时写死以下情况
               SXSJ = undefined;
               SXLX = 'ZHTJ';
               if (x.SELECTORVALUE) {
                 SXTJ = '(SELECT COUNT(*) FROM TXMXX_XMXX WHERE GLFXM = XM.ID AND ZT != 0 ) > 0';
               } else {
                 SXTJ = '(SELECT COUNT(*) FROM TXMXX_XMXX WHERE GLFXM = XM.ID AND ZT != 0 ) <= 0';
+              }
+              bmArr.push(x.BM);
+            } else if (x.ZJLX === 'RADIO-XMZT') {
+              //项目状态，暂时写死以下情况
+              SXSJ = undefined;
+              SXLX = 'ZHTJ';
+              if (x.SELECTORVALUE) {
+                SXTJ =
+                  '(SELECT COUNT(*) FROM TSMZQ_LCBZX WHERE ZT = 4 AND XGZT = 1 AND XMMC = XM.ID) = 0';
+              } else {
+                SXTJ =
+                  '(SELECT COUNT(*) FROM TSMZQ_LCBZX WHERE ZT = 4 AND XGZT = 1 AND XMMC = XM.ID) > 0';
               }
               bmArr.push(x.BM);
             } else if (x.TJBCXLX === 'YSXM') {

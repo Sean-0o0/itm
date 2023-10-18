@@ -27,7 +27,7 @@ export default function TopConsole(props) {
 
   //查询的值
 
-
+  
   const handleReset = () => {
     // console.log('kkkk');
     let arr = [...data.filterData];
@@ -344,6 +344,18 @@ export default function TopConsole(props) {
             </Radio.Group>
           );
           break;
+        case 'RADIO-XMZT':
+          component = (
+            <Radio.Group
+              value={SELECTORVALUE}
+              onChange={handleRadioChange}
+              className="item-component"
+            >
+              <Radio value={true}>正常</Radio>
+              <Radio value={false}>逾期</Radio>
+            </Radio.Group>
+          );
+          break;
         case 'SINGLE':
         case 'TREE-SINGLE':
         default:
@@ -424,10 +436,8 @@ export default function TopConsole(props) {
             //   ? isUnfold
             //     ? {}
             //     : { height: 56, overflow: 'hidden' }
-            //   : 
-              getFilterLength(data.filterData) === 0
-              ? { borderTop: 0 }
-              : {}
+            //   :
+            getFilterLength(data.filterData) === 0 ? { borderTop: 0 } : {}
           }
         >
           <span className="label">组合条件</span>

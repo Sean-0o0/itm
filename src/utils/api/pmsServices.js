@@ -817,4 +817,22 @@ export default [
     url: '/projectManage/queryIteContractList',
     dis: '查询迭代合同列表',
   },
+  {
+    code: '',
+    key: 'queryProjectDraft',
+    url: '/projectManage/queryProjectDraft',
+    dis: '查询项目草稿',
+  },
+  {
+    code: '',
+    key: 'relIteContractFlow',
+    url: '/projectManage/relIteContractFlow',
+    dis: '关联迭代合同',
+  },
+  {
+    code: '',
+    key: 'queryIteContractFlow',
+    url: '/projectManage/queryIteContractFlow',
+    dis: '关联迭代合同签署流程',
+  },
 ];
