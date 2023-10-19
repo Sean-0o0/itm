@@ -7,6 +7,7 @@ import 'echarts/lib/component/tooltip';
 import 'echarts/lib/component/legend';
 import 'echarts/lib/component/legendScroll';
 import 'echarts/lib/component/title';
+import 'echarts/lib/chart/radar';
 import ReactEchartsCore from 'echarts-for-react/lib/core';
 import InfoDetail from "../../ProjectMemberStatisticsInfo/infoDetail";
 

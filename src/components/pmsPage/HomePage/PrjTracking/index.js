@@ -206,9 +206,9 @@ export default function PrjTracking(props) {
           </div>
           <div className="prj-tracking-infos-box">
             {trackingData?.length > 0 ? (
-              trackingData?.map(i => {
+              trackingData?.map((i, index) => {
                 return (
-                  <div className="prj-tracking-infos-content" key={i.XMID}>
+                  <div className="prj-tracking-infos-content" key={String(i.XMID) + index}>
                     <div className="prj-tracking-infos-content-box">
                       <Link
                         style={{ color: '#3361ff' }}
