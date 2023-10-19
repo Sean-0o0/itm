@@ -6,6 +6,7 @@ import {
   FetchQueryOwnerWorkflow,
   FetchQueryWpsWDXX,
   GetApplyListProvisionalAuth,
+  QueryIteContractFlow,
   RemindSubProjectFinish,
 } from '../../../../../services/pmsServices';
 import BridgeModel from '../../../../Common/BasicModal/BridgeModel';
@@ -842,6 +843,7 @@ class ItemBtn extends React.Component {
       '框架内硬件采购流程',
       '框架外硬件采购流程',
       '总办会流程',
+      '迭代合同签署流程',
     ].includes(item.sxmc);
     //流程类型
     const getLclx = sxmc => {
@@ -933,43 +935,68 @@ class ItemBtn extends React.Component {
         this.setState({
           fklcLoading: true,
         });
-        FetchQueryOwnerWorkflow({
-          paging: -1,
-          current: 1,
-          pageSize: 9999,
-          total: -1,
-          sort: 'XQ',
-          xmid: Number(item.xmid),
-        })
-          .then(ret => {
-            const { code = 0, record = [] } = ret;
-            if (code === 1) {
-              let arr = [];
-              if (item.sxmc === '项目立项申请') {
-                arr = record
-                  .filter(x => x.type === 'OA流程')
-                  .map(x => ({ ...x, url: JSON.parse(x.url) }))
-                  .filter(x => getLclx(item.sxmc).includes(x.url.lclx));
-              } else {
-                arr = record
-                  .filter(x => x.type === 'OA流程')
-                  .map(x => ({ ...x, url: JSON.parse(x.url) }))
-                  .filter(x => x.url.lclx === getLclx(item.sxmc));
+        if (item.sxmc === '迭代合同签署流程') {
+          QueryIteContractFlow({ queryType: 2, projectId: Number(item.xmid) })
+            .then(res => {
+              if (res?.success) {
+                const arr = JSON.parse(res.result).map(x => ({
+                  ...x,
+                  subject: x.BT,
+                  url: { url: x.URL },
+                }));
+                // console.log('🚀 ~ 迭代合同签署流程:', arr);
+                this.setState({
+                  fklcLoading: false,
+                  currentFklcList: arr,
+                });
               }
-
+            })
+            .catch(e => {
+              message.error('流程信息获取失败', 1);
               this.setState({
                 fklcLoading: false,
-                currentFklcList: arr,
               });
-            }
-          })
-          .catch(error => {
-            message.error('流程信息获取失败', 1);
-            this.setState({
-              fklcLoading: false,
+              console.error(!error.success ? error.message : error.note);
             });
-            console.error(!error.success ? error.message : error.note);
-          });
+        } else {
+          FetchQueryOwnerWorkflow({
+            paging: -1,
+            current: 1,
+            pageSize: 9999,
+            total: -1,
+            sort: 'XQ',
+            xmid: Number(item.xmid),
+          })
+            .then(ret => {
+              const { code = 0, record = [] } = ret;
+              if (code === 1) {
+                let arr = [];
+                if (item.sxmc === '项目立项申请') {
+                  arr = record
+                    .filter(x => x.type === 'OA流程')
+                    .map(x => ({ ...x, url: JSON.parse(x.url) }))
+                    .filter(x => getLclx(item.sxmc).includes(x.url.lclx));
+                } else {
+                  arr = record
+                    .filter(x => x.type === 'OA流程')
+                    .map(x => ({ ...x, url: JSON.parse(x.url) }))
+                    .filter(x => x.url.lclx === getLclx(item.sxmc));
+                }
+
+                this.setState({
+                  fklcLoading: false,
+                  currentFklcList: arr,
+                });
+              }
+            })
+            .catch(error => {
+              message.error('流程信息获取失败', 1);
+              this.setState({
+                fklcLoading: false,
+              });
+              console.error(!error.success ? error.message : error.note);
+            });
+        }
         return;
       }
       FetchQueryOAUrl({

@@ -25,16 +25,12 @@ class ToConsole extends Component {
       data: { XMJLID },
     } = this.props;
     const LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
-    if (zyrole === '外包项目对接人' || String(LOGIN_USER_INFO.id) === XMJLID) {
-      //type 编辑详情还是编辑试用期考核情况
-      console.log('------编辑外包人员信息----');
-      this.setState({
-        editMemberInfoVisible: true,
-        operateType: type,
-      });
-    } else {
-      message.warn('只有项目经理或外包项目对接人可编辑!');
-    }
+    //type 编辑详情还是编辑试用期考核情况
+    console.log('------编辑外包人员信息----');
+    this.setState({
+      editMemberInfoVisible: true,
+      operateType: type,
+    });
   };
 
   modPwd = () => {

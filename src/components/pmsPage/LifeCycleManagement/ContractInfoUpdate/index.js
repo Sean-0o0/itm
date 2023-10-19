@@ -583,6 +583,7 @@ class ContractInfoUpdate extends React.Component {
       isSpinning,
       selectedRowIds,
       glhtlcData = [],
+      flowId,
     } = this.state;
     const {
       currentXmid,
@@ -940,7 +941,7 @@ class ContractInfoUpdate extends React.Component {
                 <Col span={12}>
                   <Form.Item label="关联合同流程" labelCol={{ span: 6 }} wrapperCol={{ span: 17 }}>
                     {getFieldDecorator('glhtlc', {
-                      initialValue: glhtlcData[0]?.XTLCID,
+                      initialValue: flowId === -1 ? undefined : flowId,
                     })(
                       <Select
                         style={{ width: '100%', borderRadius: '8px !important' }}

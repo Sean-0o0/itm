@@ -690,7 +690,10 @@ const TableBox = props => {
             </Button>
           )}
         </div>
-        <div className="project-info-table-box">
+        <div
+          className="project-info-table-box"
+          style={!allowExport ? { height: 'calc(100% - 109px)' } : {}}
+        >
           <Table
             columns={activeKey === 'KY' ? columns_KY : columns}
             rowKey={'YSID'}
