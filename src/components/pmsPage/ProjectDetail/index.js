@@ -1192,7 +1192,10 @@ export default function ProjectDetail(props) {
           haveSpl={!isHwSltPrj && prjData?.supplier?.length !== 0}
           setIsSpinning={setIsSpinning}
           setPrjData={setPrjData}
-          isDDXM={isDDXM}
+          isDDXM={
+            prjData.prjBasic?.XMBQ?.includes('迭代项目') ||
+            (prjData.prjBasic?.GLDDXM === undefined && Number(prjData.prjBasic?.SFGLDD) > 0)
+          }
         />
         <div className="detail-row">
           <div className="col-left">
