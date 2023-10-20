@@ -12,6 +12,7 @@ import config from '../../../../utils/config';
 import axios from 'axios';
 import BridgeModel from '../../../Common/BasicModal/BridgeModel';
 import AssociationContract from '../MileStone/ItemBtn/AssociationContract';
+import SoftwarePaymentWHT from '../MileStone/ItemBtn/SoftwarePaymentWHT';
 const { api } = config;
 const {
   pmsServices: { getStreamByLiveBos },
@@ -42,6 +43,7 @@ export default function IterationPayment(props) {
     xwhck: false,
     glht: false,
     curYkbid: '',
+    fkjhId: -1,
   });
   const [popData, setPopData] = useState({
     splcfq: false, //审批流程发起
@@ -186,17 +188,18 @@ export default function IterationPayment(props) {
             ...p,
             title: '软件费用审批无合同流程' + '发起',
             rjfyspwht: true,
+            fkjhId: item.id,
           }));
-          getLink('TLC_LCFQ', 'TLC_LCFQ_RJGMWHT', [
-            {
-              name: 'GLXM',
-              value: Number(xmid),
-            },
-            {
-              name: 'DDFKJH',
-              value: Number(item.id),
-            },
-          ]);
+          // getLink('TLC_LCFQ', 'TLC_LCFQ_RJGMWHT', [
+          //   {
+          //     name: 'GLXM',
+          //     value: Number(xmid),
+          //   },
+          //   {
+          //     name: 'DDFKJH',
+          //     value: Number(item.id),
+          //   },
+          // ]);
           setPopData(p => ({ ...p, splcfq: false }));
         };
         const xwh = () => {
@@ -730,7 +733,7 @@ export default function IterationPayment(props) {
     width: '864x',
     height: '700px',
     style: { top: 10 },
-    visible: lbModal.zbh,
+    visible: lbModal.rjfyspwht,
     footer: null,
   };
 
@@ -816,7 +819,7 @@ export default function IterationPayment(props) {
         />
       )}
       {/* 软件费用审批无合同流程发起 */}
-      {lbModal.rjfyspwht && (
+      {/* {lbModal.rjfyspwht && (
         <BridgeModel
           modalProps={rjfyspwhtModalProps}
           onCancel={() => setLbModal(p => ({ ...p, rjfyspwht: false }))}
@@ -827,7 +830,23 @@ export default function IterationPayment(props) {
           }}
           src={lbModal.url}
         />
-      )}
+      )} */}
+      <SoftwarePaymentWHT
+        dataProps={{
+          visible: lbModal.rjfyspwht,
+          currentXmid: Number(xmid),
+          xmbh: prjBasic.XMBM || '',
+          FKJHID: lbModal.fkjhId,
+        }}
+        funcProps={{
+          setVisible: v => setLbModal(p => ({ ...p, rjfyspwht: v })),
+          onSuccess: () => {
+            message.success('操作成功', 1);
+            getIterationPayment();
+            setLbModal(p => ({ ...p, rjfyspwht: false }));
+          },
+        }}
+      />
       <AssociationContract
         visible={lbModal.glht}
         ykbid={lbModal.curYkbid}

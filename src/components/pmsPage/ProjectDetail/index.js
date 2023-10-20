@@ -520,26 +520,32 @@ export default function ProjectDetail(props) {
             // console.log('🚀 ~ isPrjExist , isNotCplHard:', isPrjExist, isNotCplHard);
           }
 
-          if (XMJBXX.XMBQ?.includes('迭代项目')) {
-            if (!XMJBXX.XMBQ?.includes('自研项目')) {
-              // 获取迭代项目付款记录
-              const paymentRecordData =
-                (await QueryIteProjPayRcd({ projectId: Number(xmid) })) || {};
-              if (paymentRecordData.success) {
-                let paymentRecordArr = JSON.parse(paymentRecordData.fkxxResult);
-                let yearArr = JSON.parse(paymentRecordData.nfxxResult);
-                let curYear = yearArr.find(x => Number(x.ID) === Number(xmid))?.NF;
-                setPrjData(p => ({
-                  ...p,
-                  paymentRecord: paymentRecordArr,
-                  iterationYear: {
-                    currentYear: curYear,
-                    dropdown: yearArr,
-                  },
-                }));
-              }
+          if (
+            XMJBXX.XMBQ?.includes('迭代项目') ||
+            (XMJBXX.GLDDXM === undefined && Number(XMJBXX.SFGLDD) > 0)
+          ) {
+            // 获取迭代项目付款记录
+            const paymentRecordData = (await QueryIteProjPayRcd({ projectId: Number(xmid) })) || {};
+            if (paymentRecordData.success) {
+              let paymentRecordArr = JSON.parse(paymentRecordData.fkxxResult);
+              let yearArr = JSON.parse(paymentRecordData.nfxxResult)?.filter(
+                x => Number(x.ID) !== Number(xmid),
+              );
+              let curYear = JSON.parse(paymentRecordData.nfxxResult)?.find(
+                x => Number(x.ID) === Number(xmid),
+              )?.NF;
+              setPrjData(p => ({
+                ...p,
+                paymentRecord: paymentRecordArr,
+                iterationYear: {
+                  currentYear: curYear,
+                  dropdown: yearArr,
+                },
+              }));
             }
+          }
 
+          if (XMJBXX.XMBQ?.includes('迭代项目')) {
             //获取项目迭代内容
             const iterationCtnPromise = QueryProjectUpdateInfo({
               projectId: Number(xmid),

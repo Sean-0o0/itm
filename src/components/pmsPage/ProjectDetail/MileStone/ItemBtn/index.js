@@ -1188,11 +1188,42 @@ class ItemBtn extends React.Component {
       });
       this.getLink(params, 'lbModalUrl');
     };
+    const ddhtqsCotent = () => {
+      //关联已发起流程
+      const glyfqlc = () => {
+        this.setState({
+          glyfqlcModalVisible: true,
+        });
+      };
+      return (
+        <div className="list">
+          <div className="item" onClick={() => lcfq(item)} key="发起新流程">
+            发起新流程
+          </div>
+          <div className="item" onClick={() => glyfqlc()} key="关联已发起流程">
+            关联已发起流程
+          </div>
+        </div>
+      );
+    };
     const reoprMoreCotent = (
       <div className="list">
-        <div className="item" onClick={() => lcfq(item)} key="再次发起">
-          {item.sxmc === '需求发起' ? '新增发起' : '再次发起'}
-        </div>
+        {item.sxmc === '迭代合同签署流程' ? (
+          <Popover
+            placement="right"
+            title={null}
+            content={ddhtqsCotent()}
+            overlayClassName="btn-more-content-popover"
+          >
+            <div className="item" key="再次发起">
+              再次发起
+            </div>
+          </Popover>
+        ) : (
+          <div className="item" onClick={() => lcfq(item)} key="再次发起">
+            {item.sxmc === '需求发起' ? '新增发起' : '再次发起'}
+          </div>
+        )}
         {isOACK && (
           <div className="item" key="异常填写" onClick={() => zttx(item.xmid, getLclx(item.sxmc))}>
             异常填写
@@ -1424,24 +1455,6 @@ class ItemBtn extends React.Component {
           </Popover>
         </div>
       );
-    const ddhtqsCotent = () => {
-      //关联已发起流程
-      const glyfqlc = () => {
-        this.setState({
-          glyfqlcModalVisible: true,
-        });
-      };
-      return (
-        <div className="list">
-          <div className="item" onClick={() => lcfq(item)} key="发起新流程">
-            发起新流程
-          </div>
-          <div className="item" onClick={() => glyfqlc()} key="关联已发起流程">
-            关联已发起流程
-          </div>
-        </div>
-      );
-    };
 
     if (item.sxmc === '迭代合同签署流程')
       return (

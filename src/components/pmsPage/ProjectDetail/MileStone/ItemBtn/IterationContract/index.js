@@ -22,6 +22,12 @@ import {
   QueryIteContractInfo,
   QueryIteContractList,
 } from '../../../../../../services/pmsServices';
+import config from '../../../../../../utils/config';
+import axios from 'axios';
+const { api } = config;
+const {
+  pmsServices: { queryFileStream },
+} = api;
 
 //评估信息录入
 export default Form.create()(function IterationContract(props) {
@@ -372,9 +378,50 @@ export default Form.create()(function IterationContract(props) {
 
   //获取关联其他框架合同下拉框数据
   const getGlqtkjhtSelector = () => {
-    const onChange = (v, option) => {
+    function convertBlobsToBase64(fileArray) {
+      return Promise.all(
+        fileArray.map((file, index) => {
+          return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = function() {
+              const base64 = reader.result.split(',')[1];
+              const fileName = file.name;
+              resolve({ uid: Date.now() + '-' + index, name: fileName, status: 'done', base64 });
+            };
+            reader.onerror = function(error) {
+              reject(error);
+            };
+            reader.readAsDataURL(file.blob);
+          });
+        }),
+      );
+    }
+    const onChange = async (v, option) => {
       if (option !== undefined) {
         const obj = option.props.htdata || {};
+        const fjObj = JSON.parse(obj.fj || '{}');
+        const fjPromiseArr =
+          fjObj.items?.map(x =>
+            axios({
+              method: 'POST',
+              url: queryFileStream,
+              responseType: 'blob',
+              data: {
+                objectName: 'TXMXX_DDXM_HTXX',
+                columnName: 'FJ',
+                id: obj.id,
+                title: x[1],
+                extr: x[0],
+                type: '',
+              },
+            }),
+          ) || [];
+        // console.log('🚀 ~ file: index.js:404 ~ onChange ~ fjPromiseArr:', fjPromiseArr);
+        const resArr = await Promise.all(fjPromiseArr);
+        const fjArr = await convertBlobsToBase64(
+          resArr.map(x => ({ name: JSON.parse(x?.config?.data || '{}').title, blob: x.data })),
+        );
+        setUpldData(fjArr);
         setOldData({
           ID: -1,
           GYS: String(obj.gys),

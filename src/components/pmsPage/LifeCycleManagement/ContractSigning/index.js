@@ -263,7 +263,7 @@ class ContractSigning extends React.Component {
           BM2, //传空
           NGR1: '', //传空
           NGR2: '', //传空
-          XMLB: values.XMLX, //项目类型
+          // XMLB: values.XMLX, //项目类型
         },
       },
       //关联文件id，数组形式，多个id用“,”隔开，比如[102,102]

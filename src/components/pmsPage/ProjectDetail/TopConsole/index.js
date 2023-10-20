@@ -411,9 +411,9 @@ export default function TopConsole(props) {
     <Menu>
       {iterationYear.dropdown?.map(x => (
         <Menu.Item
-          key={x.NF}
+          key={x.ID}
           onClick={() => {
-            if (Number(x.NF) !== iterationYear.currentYear) {
+            if (Number(x.ID) !== Number(xmid)) {
               setPrjData(p => ({
                 ...p,
                 iterationYear: {

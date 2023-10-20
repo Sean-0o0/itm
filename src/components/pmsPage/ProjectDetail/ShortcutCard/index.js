@@ -120,6 +120,7 @@ export default function ShortcutCard(props) {
     setModalVisible(p => ({ ...p, createIterationPrj: true }));
   };
 
+  if (!((showKQXX && isMember()) || showSCDD)) return null;
   return (
     <div className="shortcut-card-box">
       <div className="top-title">快捷入口</div>

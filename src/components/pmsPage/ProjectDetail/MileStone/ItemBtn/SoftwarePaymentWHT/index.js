@@ -36,7 +36,7 @@ export default connect(({ global }) => ({
       userBasicInfo = {},
       dictionary = {},
     } = props;
-    const { visible, currentXmid, xmbh } = dataProps;
+    const { visible, currentXmid, xmbh, FKJHID } = dataProps;
     const { setVisible, onSuccess } = funcProps;
     const { getFieldDecorator, getFieldValue, validateFields, resetFields } = form;
     const { CXBM = [] } = dictionary;
@@ -518,7 +518,7 @@ export default connect(({ global }) => ({
                 BGRQ: Number(moment(values.bgrq).format('YYYYMMDD')), // 报告日期
                 QSBGNR: values.qsbgnr, //请示报告内容
                 LB: String(values.fylb), //费用类别
-                XMLB: String(values.xmlx), //项目类型
+                // XMLB: String(values.xmlx), //项目类型
                 SFFDHT: '0', //固定0
                 LX: String(values.lx), //类型
                 ...bmValue,
@@ -540,6 +540,7 @@ export default connect(({ global }) => ({
           const flowdata = {
             xmmc: String(currentXmid), //项目的id
             bm: String(userBasicInfo.orgid), //部门id
+            fkjhid: FKJHID
           };
           const params = {
             objectclass: '软件费用审批无合同流程',

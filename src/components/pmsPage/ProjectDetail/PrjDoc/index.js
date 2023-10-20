@@ -75,7 +75,7 @@ export default function PrjDoc(props) {
               }
               key={i}
             >
-              <div>{JSON.parse(x.CZSM)?.czr}</div>
+              <div>{JSON.parse(x.CZSM || '{}')?.czr}</div>
               <span>{x.CZSJ && moment(x.CZSJ).format('YYYY-MM-DD HH:mm:ss')}</span>
             </Timeline.Item>
           ))}
@@ -224,10 +224,10 @@ export default function PrjDoc(props) {
                 </Collapse.Panel>
               ) : (
                 <Collapse.Panel
-                  header={x.WDLX + `（${JSON.parse(x.WDFJ)?.items?.length}）`}
+                  header={x.WDLX + `（${JSON.parse(x.WDFJ || '{}')?.items?.length}）`}
                   key={x.WDID}
                 >
-                  {JSON.parse(x.WDFJ)?.items?.map(y => (
+                  {JSON.parse(x.WDFJ || '{}')?.items?.map(y => (
                     <div
                       className="doc-item"
                       key={y[0]}
