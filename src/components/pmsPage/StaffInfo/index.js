@@ -144,7 +144,7 @@ export default function StaffInfo(props) {
               arr.push({
                 gw: '总经理助理',
                 id: '10704',
-                name: '钟*乐',
+                name: '钟政乐',
                 orgId: '357', //原是运行保障三部"15505"
                 orgName: '信息技术运保部',
                 xb: '男',
