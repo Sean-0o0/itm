@@ -41,7 +41,7 @@ export default Form.create()(function OprtModal(props) {
   }); //上传数据
   const [monthRange, setMonthRange] = useState({
     value: [],
-    isTrunRed: false,
+    isTurnRed: false,
     open: false,
     flag: 0,
   });
@@ -130,7 +130,7 @@ export default Form.create()(function OprtModal(props) {
   const handleOk = () => {
     let haveError = false;
     if (monthRange.value.length === 0) {
-      setMonthRange(p => ({ ...p, isTrunRed: true }));
+      setMonthRange(p => ({ ...p, isTurnRed: true }));
       haveError = true;
     }
     if (upldData.pgbg.length === 0) {
@@ -244,7 +244,7 @@ export default Form.create()(function OprtModal(props) {
       xqqdRed: false,
       cpsjgRed: false,
     });
-    setMonthRange({ value: [], isTrunRed: false, open: false });
+    setMonthRange({ value: [], isTurnRed: false, open: false });
     setUpdateData({});
   };
 
@@ -254,8 +254,8 @@ export default Form.create()(function OprtModal(props) {
         <Form.Item
           label="评估周期"
           required
-          help={monthRange.isTrunRed ? '评估周期不能为空' : ''}
-          validateStatus={monthRange.isTrunRed ? 'error' : 'success'}
+          help={monthRange.isTurnRed ? '评估周期不能为空' : ''}
+          validateStatus={monthRange.isTurnRed ? 'error' : 'success'}
           labelCol={{ span: 8 }}
           wrapperCol={{ span: 16 }}
         >
@@ -273,7 +273,7 @@ export default Form.create()(function OprtModal(props) {
               setMonthRange(p => ({
                 ...p,
                 value: dates,
-                isTrunRed: dates.length === 0,
+                isTurnRed: dates.length === 0,
                 // open: p.flag + 1 < 2,
               }));
             }}
@@ -281,7 +281,7 @@ export default Form.create()(function OprtModal(props) {
               setMonthRange(p => ({
                 ...p,
                 value: dates,
-                isTrunRed: dates.length === 0,
+                isTurnRed: dates.length === 0,
                 flag: p.flag + 1,
                 open: p.flag + 1 < 2,
               }));
@@ -347,7 +347,7 @@ export default Form.create()(function OprtModal(props) {
     wrapperCol,
     fileList = [],
     setFileList,
-    isTrunRed,
+    isTurnRed,
     setIsTurnRed,
   }) => {
     const onUploadDownload = file => {
@@ -403,8 +403,8 @@ export default Form.create()(function OprtModal(props) {
           labelCol={{ span: labelCol }}
           wrapperCol={{ span: wrapperCol }}
           required
-          help={isTrunRed ? label + '不允许空值' : ''}
-          validateStatus={isTrunRed ? 'error' : 'success'}
+          help={isTurnRed ? label + '不允许空值' : ''}
+          validateStatus={isTurnRed ? 'error' : 'success'}
         >
           <Upload
             action={'/api/projectManage/queryfileOnlyByupload'}
@@ -519,7 +519,7 @@ export default Form.create()(function OprtModal(props) {
               wrapperCol: 16,
               fileList: upldData.pgbg,
               setFileList: v => setUpldData(p => ({ ...p, pgbg: v })),
-              isTrunRed: upldData.pgbgRed,
+              isTurnRed: upldData.pgbgRed,
               setIsTurnRed: v => setUpldData(p => ({ ...p, pgbgRed: v })),
             })}
             {getMultipleUpload({
@@ -528,7 +528,7 @@ export default Form.create()(function OprtModal(props) {
               wrapperCol: 16,
               fileList: upldData.psjy,
               setFileList: v => setUpldData(p => ({ ...p, psjy: v })),
-              isTrunRed: upldData.psjyRed,
+              isTurnRed: upldData.psjyRed,
               setIsTurnRed: v => setUpldData(p => ({ ...p, psjyRed: v })),
             })}
           </Row>
@@ -539,7 +539,7 @@ export default Form.create()(function OprtModal(props) {
               wrapperCol: 16,
               fileList: upldData.xqqd,
               setFileList: v => setUpldData(p => ({ ...p, xqqd: v })),
-              isTrunRed: upldData.xqqdRed,
+              isTurnRed: upldData.xqqdRed,
               setIsTurnRed: v => setUpldData(p => ({ ...p, xqqdRed: v })),
             })}
             {getMultipleUpload({
@@ -548,7 +548,7 @@ export default Form.create()(function OprtModal(props) {
               wrapperCol: 16,
               fileList: upldData.cpsjg,
               setFileList: v => setUpldData(p => ({ ...p, cpsjg: v })),
-              isTrunRed: upldData.cpsjgRed,
+              isTurnRed: upldData.cpsjgRed,
               setIsTurnRed: v => setUpldData(p => ({ ...p, cpsjgRed: v })),
             })}
           </Row>

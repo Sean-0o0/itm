@@ -267,7 +267,7 @@ export default Form.create()(function IterationContract(props) {
     wrapperCol,
     fileList = [],
     setFileList,
-    isTrunRed,
+    isTurnRed,
     setIsTurnRed,
   }) => {
     const onUploadDownload = file => {
@@ -323,8 +323,8 @@ export default Form.create()(function IterationContract(props) {
           labelCol={{ span: labelCol }}
           wrapperCol={{ span: wrapperCol }}
           // required
-          // help={isTrunRed ? label + '不允许空值' : ''}
-          // validateStatus={isTrunRed ? 'error' : 'success'}
+          // help={isTurnRed ? label + '不允许空值' : ''}
+          // validateStatus={isTurnRed ? 'error' : 'success'}
         >
           <Upload
             action={'/api/projectManage/queryfileOnlyByupload'}
@@ -524,7 +524,7 @@ export default Form.create()(function IterationContract(props) {
               wrapperCol: 16,
               fileList: upldData,
               setFileList: setUpldData,
-              isTrunRed: false,
+              isTurnRed: false,
               setIsTurnRed: () => {},
             })}
           </Row>

@@ -118,7 +118,7 @@ export default function StaffInfo(props) {
         if (res?.success) {
           // let arr = [];
           let finalData = JSON.parse(JSON.stringify(orgArr));
-          // console.log('🚀 ~ QueryMemberInfo', JSON.parse(res.record));
+          // console.log('🚀 ~ QueryMemberInfo', JSON.parse(res.record), finalData);
           let memberArr = JSON.parse(res.record);
           finalData.forEach(item => {
             let parentArr = [];
@@ -139,6 +139,17 @@ export default function StaffInfo(props) {
                 } else if (x.name === '胡凡') {
                   x.orderNum = 5;
                 }
+              });
+              // 非要就先写死
+              arr.push({
+                gw: '总经理助理',
+                id: '10704',
+                name: '钟*乐',
+                orgId: '357', //原是运行保障三部"15505"
+                orgName: '信息技术运保部',
+                xb: '男',
+                xh: '1',
+                orderNum: 6,
               });
               parentArr = arr.sort((a, b) => a.orderNum - b.orderNum);
             }

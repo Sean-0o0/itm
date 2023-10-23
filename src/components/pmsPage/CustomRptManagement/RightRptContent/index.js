@@ -453,13 +453,13 @@ export default function RightRptContent(props) {
 
   //操作记录浮窗
   const historyContent = () => {
-    const getName = id => shareRyData.selector.filter(x => Number(x.id) === id)[0]?.name;
+    // const getName = id => shareRyData.selector.filter(x => Number(x.id) === id)[0]?.name;
     return (
       <Timeline className="history-box">
         {historyData.map((x, i) => (
           <Timeline.Item color="#3361ff" className="history-item" key={i}>
             <div>
-              {getName(x.CZR) +
+              {x.CZRMC +
                 (x.CZFF === '分享'
                   ? '把模版分享给了' + x.FXDX?.replace(/,/g, '、')
                   : x.CZFF + '了模板信息')}
@@ -788,6 +788,7 @@ export default function RightRptContent(props) {
             if (res?.success) {
               message.success('保存成功', 1);
               getRptList(); //刷新数据
+              getHistoryData(editingId);
               // setStatus('normal');
               setIsSpinning(false);
             }

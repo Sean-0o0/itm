@@ -272,8 +272,8 @@ export default function TopConsole(props) {
           onChange={handleTabsChange}
           size={'large'}
         >
-          {XQXQ.map((x, index) => (
-            <TabPane tab={'人力需求' + (index + 1)} key={x.XQID}></TabPane>
+          {XQXQ.map(x => (
+            <TabPane tab={'人力需求' + x.XH} key={x.XQID}></TabPane>
           ))}
         </Tabs>
       </div>

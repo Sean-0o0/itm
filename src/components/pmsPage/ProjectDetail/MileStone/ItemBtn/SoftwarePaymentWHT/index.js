@@ -26,7 +26,7 @@ import { IndividuationGetOAResult } from '../../../../../../services/pmsServices
 export default connect(({ global }) => ({
   dictionary: global.dictionary,
   userBasicInfo: global.userBasicInfo,
-  dataAnonymization: global.dataAnonymization
+  dataAnonymization: global.dataAnonymization,
 }))(
   Form.create()(function SoftwarePaymentWHT(props) {
     const {
@@ -147,7 +147,7 @@ export default connect(({ global }) => ({
               <Input
                 maxLength={500}
                 placeholder={'请输入' + label}
-                allowclear="true"
+                allowClear="true"
                 style={{ width: '100%' }}
               />,
             )}
@@ -312,7 +312,7 @@ export default connect(({ global }) => ({
       wrapperCol,
       fileList = [],
       setFileList,
-      isTrunRed,
+      isTurnRed,
       setIsTurnRed,
     }) => {
       const onUploadDownload = file => {
@@ -366,9 +366,9 @@ export default connect(({ global }) => ({
             label={label}
             labelCol={{ span: labelCol }}
             wrapperCol={{ span: wrapperCol }}
-            required={isTrunRed !== undefined}
-            help={isTrunRed ? label + '不允许空值' : ''}
-            validateStatus={isTrunRed ? 'error' : 'success'}
+            required={isTurnRed !== undefined}
+            help={isTurnRed ? label + '不允许空值' : ''}
+            validateStatus={isTurnRed ? 'error' : 'success'}
           >
             <Upload
               action={'/api/projectManage/queryfileOnlyByupload'}
@@ -540,7 +540,7 @@ export default connect(({ global }) => ({
           const flowdata = {
             xmmc: String(currentXmid), //项目的id
             bm: String(userBasicInfo.orgid), //部门id
-            fkjhid: FKJHID
+            fkjhid: FKJHID,
           };
           const params = {
             objectclass: '软件费用审批无合同流程',
@@ -726,7 +726,7 @@ export default connect(({ global }) => ({
                   wrapperCol: wrapperCol,
                   fileList: upldData,
                   setFileList: setUpldData,
-                  isTrunRed: undefined,
+                  isTurnRed: undefined,
                   setIsTurnRed: () => {},
                 })}
               </Row>

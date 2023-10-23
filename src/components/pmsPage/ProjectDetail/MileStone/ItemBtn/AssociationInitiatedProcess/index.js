@@ -133,7 +133,7 @@ export default Form.create()(function AssociationInitiatedProcess(props) {
             <Input
               maxLength={500}
               placeholder={'请输入' + label}
-              allowclear="true"
+              allowClear="true"
               style={{ width: '100%' }}
             />,
           )}
