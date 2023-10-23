@@ -131,7 +131,7 @@ export default Form.create()(function IterationContract(props) {
         function convertFilesToBase64(fileArray) {
           return Promise.all(
             fileArray.map(file => {
-              if (file.url !== undefined)
+              if (file.url !== undefined || file.url === '')
                 //查询到的已有旧文件的情况
                 return new Promise((resolve, reject) => {
                   resolve({ name: file.name, data: file.base64 });
@@ -271,9 +271,9 @@ export default Form.create()(function IterationContract(props) {
     setIsTurnRed,
   }) => {
     const onUploadDownload = file => {
-      if (!file.url) {
+      if (file.url === undefined || file.url === '') {
         let reader = new FileReader();
-        reader.readAsDataURL(file.originFileObj);
+        reader.readAsDataURL(file.originFileObj || file.blob);
         reader.onload = e => {
           var link = document.createElement('a');
           link.href = e.target.result;
@@ -386,7 +386,14 @@ export default Form.create()(function IterationContract(props) {
             reader.onload = function() {
               const base64 = reader.result.split(',')[1];
               const fileName = file.name;
-              resolve({ uid: Date.now() + '-' + index, name: fileName, status: 'done', base64 });
+              resolve({
+                uid: Date.now() + '-' + index,
+                name: fileName,
+                status: 'done',
+                base64,
+                blob: file.blob,
+                url: '',
+              });
             };
             reader.onerror = function(error) {
               reject(error);
@@ -397,6 +404,7 @@ export default Form.create()(function IterationContract(props) {
       );
     }
     const onChange = async (v, option) => {
+      setIsSpinning(true);
       if (option !== undefined) {
         const obj = option.props.htdata || {};
         const fjObj = JSON.parse(obj.fj || '{}');
@@ -421,16 +429,18 @@ export default Form.create()(function IterationContract(props) {
         const fjArr = await convertBlobsToBase64(
           resArr.map(x => ({ name: JSON.parse(x?.config?.data || '{}').title, blob: x.data })),
         );
+        console.log('🚀 ~ file: index.js:432 ~ onChange ~ fjArr:', fjArr);
         setUpldData(fjArr);
-        setOldData({
-          ID: -1,
+        setOldData(p => ({
+          ...p,
           GYS: String(obj.gys),
           DJLX: obj.djlx,
           QSRQ: String(obj.qsrq),
           RLDJ: obj.rldj,
           GLDDHT: obj.id,
-        });
+        }));
       }
+      setIsSpinning(false);
     };
     return (
       <Col span={12}>
