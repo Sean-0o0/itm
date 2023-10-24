@@ -189,9 +189,9 @@ function VisitedRoutes(props) {
           ></TabPane>
         ) : (
           <TabPane
-            tab={<Link to="/UIProcessor?Table=WORKFLOW_TOTASKS&hideTitlebar=true">流程列表</Link>}
+            tab={<Link to="/UIProcessor?Table=V_RYKQ&hideTitlebar=true">考勤打卡</Link>}
             closable={false}
-            key="/UIProcessor?Table=WORKFLOW_TOTASKS&hideTitlebar=true"
+            key="/UIProcessor?Table=V_RYKQ&hideTitlebar=true"
           ></TabPane>
         )}
         {handleUrls(urls).length > 0 &&
@@ -309,9 +309,10 @@ function VisitedRoutes(props) {
               return null;
             }
             if (V_RYKQ) {
-              url = item;
-              if (item.includes('/UIProcessor?Table=V_RYKQ&hideTitlebar=true')) title = '考勤打卡';
-              else return null;
+              // url = item;
+              // if (item.includes('/UIProcessor?Table=V_RYKQ&hideTitlebar=true')) title = '考勤打卡';
+              // else return null;
+              return null;
             }
             if (
               (TGYS_GYSRYQX || V_GYSRYQX) &&
