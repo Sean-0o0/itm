@@ -74,9 +74,13 @@ function VisitedRoutes(props) {
   useEffect(() => {
     if (menuTree.length > 0) {
       let urlArr = [...urls];
-      const index = urlArr.findIndex(x => x.includes(newPathname) || newPathname.includes(x));
+      const parts = newPathname.split('/');
+      const finalPathname = parts.slice(0, 4).join('/'); //取pms/manage/xx
+      // console.log('🚀 ~ urlArr, newPathname:', urlArr, newPathname, finalPathname);
+      // const index = urlArr.findIndex(x => x.includes(newPathname) || newPathname.includes(x));
+      const index = urlArr.findIndex(x => x.includes(finalPathname) || finalPathname.includes(x));
       if (index !== -1) {
-        urlArr.splice(index, 1, newPathname);
+        urlArr.splice(index, 1, newPathname); //若有相同的pms/manage/xx，则原位替换，只保留一个
         setUrls([...urlArr]);
       } else {
         setUrls([...urls, newPathname]);
@@ -150,6 +154,7 @@ function VisitedRoutes(props) {
       /^\/pms\/manage\/BudgetStatistic/,
       /^\/pms\/manage\/AttendanceStatistic/,
       /^\/pms\/manage\/XwhExamine/,
+      /^\/pms\/manage\/ProjectStatisticsInfo/,
     ];
     regExpArr.forEach(regExp => {
       matchFilter(regExp);
@@ -288,6 +293,10 @@ function VisitedRoutes(props) {
               {
                 title: '信委会议案上会审批',
                 urlEnd: 'XwhExamine',
+              },
+              {
+                title: '项目明细',
+                urlEnd: 'ProjectStatisticsInfo',
               },
             ];
             urlEndArr.forEach(x => {
