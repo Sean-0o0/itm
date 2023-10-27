@@ -1142,6 +1142,100 @@
             }
           }
         }
+
+        & > .item-box {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          padding: 16px 24px;
+          font-size: 14px;
+          //font-family: PingFangSC-Regular, PingFang SC;
+          font-weight: 400;
+          color: #222222;
+
+          &:last-child {
+            margin-bottom: 0;
+          }
+
+          & > .btn-search {
+            .antd-btn-primary();
+            margin-left: auto;
+          }
+
+          & > .btn-reset {
+            .antd-btn-default();
+            margin-left: 8px;
+          }
+
+          & > .console-item {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            // justify-content: center;
+            width: 27%;
+            position: relative;
+
+            .item-label {
+              flex-shrink: 0;
+            }
+
+            .label-selector-arrow {
+              position: absolute;
+              top: 50%;
+              right: 37px;
+              margin-top: -6px;
+              color: rgba(0, 0, 0, 0.25);
+              font-size: 12px;
+              line-height: 1;
+              cursor: pointer;
+              transition: all 0.3s;
+              pointer-events: none;
+            }
+
+            .selector-rotate {
+              transform: rotate(180deg);
+            }
+
+            .item-selector {
+              margin-left: 8px;
+              margin-right: 24px;
+              // flex: auto;
+              // width: 75%;
+              flex-grow: 1;
+              overflow: hidden;
+
+              .ant-select-selection {
+                cursor: pointer;
+              }
+
+              .ant-select-selection-selected-value {
+                color: #303133;
+              }
+
+              .ant-select-selection.ant-select-selection--single {
+                height: 33px;
+              }
+            }
+          }
+
+          & > .filter-fold,
+          & > .filter-unfold {
+            color: #3361ff;
+            cursor: pointer;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+
+            i {
+              margin-left: 8px;
+              font-size: 1em;
+            }
+
+            &:hover {
+              color: #3363ffaf;
+            }
+          }
+        }
         & > .export-row {
           padding: 0 24px 16px 24px;
           display: flex;
@@ -23722,36 +23816,22 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
   }
 }
 
-//需求详情-需求信息-简历信息浮窗
-.demand-detail-resume-info-popover {
+//知识产权、获奖荣誉附件浮窗
+.file-list-popover {
   .ant-popover-inner-content {
     padding: 0;
   }
   .fj-box {
     padding: 16px;
-    padding-bottom: 8px;
+    padding-right: 0;
     font-size: 14px;
     font-family: PingFangSC-Medium, PingFang SC;
-    min-width: 100px;
-    overflow: hidden;
-    overflow-y: auto;
-    max-height: 252px; //超6行滚动
-
-    // margin-right: 5px;
-    &::-webkit-scrollbar {
-      width: 6px;
-      background-color: #f0f2f5;
-      border-radius: 3px;
-    }
-
-    &::-webkit-scrollbar-thumb {
-      background-color: #dbdfe6;
-      border-radius: 3px;
-    }
+    width: 320px;
 
     .fj-header {
       display: flex;
       margin-bottom: 8px;
+      padding-right: 16px;
 
       .fj-title {
         font-weight: bold;
@@ -23768,24 +23848,53 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
       }
     }
 
-    .item {
-      font-size: 14px;
-      font-family: PingFangSC-Regular, PingFang SC;
-      font-weight: 400;
-      height: 28px;
-      line-height: 28px;
-      margin-bottom: 4px;
-      color: #3361ff;
-      cursor: pointer;
-      transition: all 0.3s;
+    .fj-content {
+      padding-right: 13px;
+      overflow: hidden;
+      overflow-y: auto;
+      max-height: 252px;
 
-      &:last-child {
-        margin-bottom: 0;
+      &::-webkit-scrollbar {
+        width: 6px;
+        background-color: #f0f2f5;
+        border-radius: 3px;
       }
 
-      &:hover {
-        color: #3361ffaf;
-        background-color: #fafafa;
+      &::-webkit-scrollbar-thumb {
+        background-color: #dbdfe6;
+        border-radius: 3px;
+      }
+
+      .item {
+        font-size: 14px;
+        font-family: PingFangSC-Regular, PingFang SC;
+        font-weight: 400;
+        height: 28px;
+        line-height: 28px;
+        margin-bottom: 4px;
+        color: #3361ff;
+        cursor: pointer;
+        transition: all 0.3s;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+
+        span {
+          width: 285px;
+          text-overflow: ellipsis;
+          overflow: hidden;
+          white-space: nowrap;
+        }
+
+        &:last-child {
+          margin-bottom: 0;
+        }
+
+        &:hover {
+          color: #3361ffaf;
+          background-color: #fafafa;
+        }
       }
     }
   }
@@ -24246,6 +24355,338 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
       background-color: #5d5d5d;
       border-radius: 3px;
       width: 6px;
+    }
+  }
+}
+
+//知识产权、获奖荣誉
+.intel-property-box {
+  overflow: hidden;
+  height: 100%;
+
+  .ant-spin-spinning {
+    width: 100%;
+    color: #3361ff;
+    .ant-spin-dot-item {
+      background-color: #3361ff;
+    }
+  }
+
+  .top-console {
+    height: 55px;
+    background-color: white;
+    box-shadow: 0px 0px 8px 0px rgba(0, 0, 0, 0.08);
+    padding: 0 24px;
+    .font-size-16();
+    font-family: PingFangSC-Regular;
+    color: #303133;
+
+    .ant-tabs-nav .ant-tabs-tab {
+      color: #666;
+
+      &:hover {
+        color: rgba(102, 102, 102, 0.7);
+      }
+    }
+
+    .ant-tabs-nav .ant-tabs-tab-active {
+      color: #3361ff !important;
+      font-weight: bold;
+
+      &:hover {
+        color: #3363ffc7 !important;
+      }
+    }
+
+    .ant-tabs-ink-bar {
+      background-color: #3361ff;
+    }
+  }
+
+  .intel-property-spin-wrapper {
+    height: 100%;
+    & > div > .ant-spin {
+      max-height: unset;
+    }
+    .ant-spin-container {
+      height: 100%;
+      & .table-box {
+        margin: 24px;
+        height: calc(100% - 103px);
+        background-color: white;
+        box-shadow: 0px 1px 4px 0px rgba(20, 38, 98, 0.04);
+        border-radius: 8px;
+
+        .table-console {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          width: 100%;
+          height: 64px;
+          padding: 0 24px;
+          position: relative;
+
+          button {
+            .antd-btn-default();
+          }
+
+          .month-slt-btn {
+            button {
+              &:first-child {
+                border-right: 1px solid transparent;
+                border-radius: 4px 0 0 4px;
+
+                &:hover {
+                  border-right: 1px solid #3361ffaf;
+                }
+              }
+
+              &:last-child {
+                border-radius: 0 4px 4px 0;
+              }
+            }
+          }
+
+          & .console-date {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+
+            & .console-icon {
+              height: 24px;
+              margin-right: 8px;
+            }
+
+            & .console-txt {
+              .font-s16();
+              font-family: Roboto-Medium;
+              font-weight: 600;
+              color: #303133;
+            }
+          }
+
+          .img-finish {
+            position: absolute;
+            top: 2px;
+            right: 200px;
+            z-index: 1;
+            width: 100px;
+          }
+        }
+
+        & .table-content {
+          padding: 24px;
+          padding-top: 0;
+          height: calc(100% - 64px);
+          overflow: hidden;
+
+          .update-col {
+            font-family: PingFangSC-Regular, PingFang SC;
+            font-weight: 400;
+
+            span {
+              // flex-grow: 1;
+              text-overflow: ellipsis;
+              overflow: hidden;
+              white-space: nowrap;
+            }
+
+            .update-tag {
+              display: inline-block;
+              text-align: center;
+              // flex-shrink: 0;
+              width: 52px;
+              height: 24px;
+              background: #fff5e5;
+              border-radius: 12px;
+              border: 1px solid #ffda9f;
+              font-size: 12px;
+              color: #e58c00;
+              line-height: 24px;
+              margin-left: 6px;
+            }
+          }
+        }
+        & > .filter-row {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          padding: 16px 24px;
+          font-size: 14px;
+          //font-family: PingFangSC-Regular, PingFang SC;
+          font-weight: 400;
+          color: #222222;
+
+          &:last-child {
+            margin-bottom: 0;
+          }
+
+          & > .btn-search {
+            .antd-btn-primary();
+            margin-left: auto;
+          }
+
+          & > .btn-reset {
+            .antd-btn-default();
+            margin-left: 8px;
+          }
+
+          & > .console-item {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            // justify-content: center;
+            // width: 29%;
+            position: relative;
+            width: 23%;
+
+            .item-label {
+              // flex-shrink: 0;
+              width: max-content;
+              flex-shrink: 0;
+            }
+
+            .item-selector {
+              margin-left: 8px;
+              margin-right: 24px;
+              width: 164px;
+              // flex-grow: 1;
+              overflow: hidden;
+              flex-grow: 1;
+
+              .ant-select-selection {
+                cursor: pointer;
+              }
+
+              .ant-select-selection-selected-value {
+                color: #303133;
+              }
+
+              .ant-select-selection.ant-select-selection--single {
+                height: 33px;
+              }
+            }
+          }
+        }
+        & > .export-row {
+          padding: 0 24px 16px 24px;
+          display: flex;
+          flex-direction: row;
+          align-items: flex-end;
+          justify-content: space-between;
+          button {
+            .antd-btn-primary();
+          }
+          .table-unit {
+            font-size: 14px;
+            font-weight: normal;
+            color: #909399;
+            font-family: PingFangSC-regular, PingFang SC;
+          }
+        }
+        & > .project-info-table-box {
+          overflow: hidden;
+          overflow-y: auto;
+          height: calc(100% - 129px);
+          border-top: none;
+          padding-right: 4px;
+          margin-right: 20px;
+          margin-left: 24px;
+          margin-bottom: 16px;
+
+          &::-webkit-scrollbar {
+            width: 8px;
+            background-color: #ffffff;
+            border-radius: 4px;
+          }
+
+          &::-webkit-scrollbar-thumb {
+            background-color: #d8d8d8;
+            border-radius: 4px;
+          }
+
+          .opr-column {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+
+            span {
+              color: #3361ff;
+              margin-right: 6px;
+              cursor: pointer;
+
+              &:last-child {
+                margin-right: 0px;
+              }
+
+              &:hover {
+                color: #3361ffaf;
+              }
+            }
+
+            i {
+              cursor: pointer;
+              font-size: 18px;
+              margin-top: 2px;
+            }
+          }
+
+          //嵌套子表格异常解决
+          tr.ant-table-expanded-row td > .ant-table-wrapper {
+            margin: -10px;
+          }
+
+          tr.ant-table-expanded-row .ant-table-placeholder {
+            top: 0;
+          }
+
+          .ant-table-thead {
+            z-index: 99;
+          }
+
+          .sub-table-demand-info {
+            //子表格的表头处理
+            .ant-table-thead {
+              position: unset;
+            }
+          }
+
+          .table-link-strong();
+          .antd-table-adaptation();
+          .ant-table-placeholder {
+            border: 0;
+            top: 42px;
+          }
+          .ant-table-wrapper {
+            border: 0;
+          }
+        }
+      }
+    }
+  }
+}
+
+//知识产权新增/编辑弹窗
+.intel-property-opr-modal {
+  .default-modal();
+  .ant-modal {
+    .content-box {
+      height: 320px;
+      padding-left: 14px;
+      padding-bottom: 0;
+    }
+  }
+}
+
+//获奖荣誉新增/编辑弹窗
+.award-honor-opr-modal {
+  .default-modal();
+  .ant-modal {
+    .content-box {
+      height: 300px;
+      padding-left: 14px;
+      padding-bottom: 0;
     }
   }
 }

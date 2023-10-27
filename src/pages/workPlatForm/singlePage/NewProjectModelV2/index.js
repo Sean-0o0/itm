@@ -1505,29 +1505,29 @@ class NewProjectModelV2 extends React.Component {
 
   // 查询人员信息
   fetchQueryMemberInfo() {
-    return FetchQueryMemberInfo(
-      { type: 'ALL' }
-    ).then((result) => {
-      const { code = -1, record = '' } = result;
-      if (code > 0) {
-        const result = JSON.parse(record);
-        const arr = [];
-        result.forEach(item => {
-          let e = {
-            orgFid: item.orgId,
-            orgId: '_' + item.id,
-            orgName: item.name
-          };
-          arr.push(e);
-        });
-        this.setState({
-          staffList: result,
-          organizationStaffTreeList: this.toOrgTree(this.state.organizationList.concat(arr), 0)
-        });
-      }
-    }).catch((error) => {
-      message.error(!error.success ? error.message : error.note);
-    });
+    return FetchQueryMemberInfo({ type: 'ALL' })
+      .then(result => {
+        const { code = -1, record = '' } = result;
+        if (code > 0) {
+          const result = JSON.parse(record);
+          const arr = [];
+          result.forEach(item => {
+            let e = {
+              orgFid: item.orgId,
+              orgId: '_' + item.id,
+              orgName: item.name,
+            };
+            arr.push(e);
+          });
+          this.setState({
+            staffList: result,
+            organizationStaffTreeList: this.toOrgTree(this.state.organizationList.concat(arr), 0),
+          });
+        }
+      })
+      .catch(error => {
+        message.error(!error.success ? error.message : error.note);
+      });
   }
 
   // 查询组织机构信息

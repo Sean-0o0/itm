@@ -3,11 +3,16 @@ import { message, Spin, Tabs } from 'antd';
 import TableBox from './TableBox';
 import { QueryBudgetStatistics, QueryUserRole } from '../../../services/pmsServices';
 import moment from 'moment';
-import { FetchQueryBudgetProjects } from '../../../services/projectManage';
+import TreeUtils from '../../../utils/treeUtils';
+import {
+  FetchQueryBudgetProjects,
+  FetchQueryOrganizationInfo,
+} from '../../../services/projectManage';
 const { TabPane } = Tabs;
 
 export default function BudgetStatistic(props) {
-  const { dictionary = {} } = props;
+  const { dictionary = {}, tab } = props;
+  console.log('🚀 ~ file: index.js:15 ~ BudgetStatistic ~ tab:', tab);
   const { YSLB = [] } = dictionary;
   const [tableData, setTableData] = useState({
     data: [],
@@ -31,13 +36,30 @@ export default function BudgetStatistic(props) {
     sltDisabled: false,
   }); //加载状态
   const [allowExport, setAllowExport] = useState(false); //是否允许导出
-  const CUR_USER_ID = String(JSON.parse(sessionStorage.getItem('user')).id);
+  let CUR_USER_ID = String(JSON.parse(sessionStorage.getItem('user')).id);
+  const [orgData, setOrgData] = useState([]); //部门下拉框数据
 
   useLayoutEffect(() => {
-    queryTableData({});
-    getBudgetPrjSlt(activeKey);
-    getUserRole();
+    if (tab === undefined) {
+      queryTableData({});
+      getBudgetPrjSlt(activeKey);
+      getUserRole();
+      getOrgData();
+    }
   }, []);
+
+  useLayoutEffect(() => {
+    if (tab !== undefined) {
+      let CUR_USER_NAME = JSON.parse(sessionStorage.getItem('user'))?.name;
+      setActiveKey(tab);
+      setFilterData(p => ({ ...p, director: CUR_USER_NAME }));
+      queryTableData({ budgetType: tab, director: CUR_USER_NAME });
+      getBudgetPrjSlt(tab);
+      getUserRole();
+      getOrgData();
+    }
+    return () => {};
+  }, [tab]);
 
   //获取用户角色
   const getUserRole = () => {
@@ -57,6 +79,41 @@ export default function BudgetStatistic(props) {
       });
   };
 
+  //获取部门数据
+  const getOrgData = () => {
+    setSpinningData(p => ({
+      tip: '加载中',
+      spinning: true,
+    }));
+    FetchQueryOrganizationInfo({
+      type: 'XXJS',
+    })
+      .then(res => {
+        if (res?.success) {
+          let data = TreeUtils.toTreeData(res.record, {
+            keyName: 'orgId',
+            pKeyName: 'orgFid',
+            titleName: 'orgName',
+            normalizeTitleName: 'title',
+            normalizeKeyName: 'value',
+          })[0].children[0].children[0].children;
+          setOrgData([...data]);
+          setSpinningData(p => ({
+            ...p,
+            spinning: false,
+          }));
+        }
+      })
+      .catch(e => {
+        message.error('部门信息查询失败', 1);
+        console.error('FetchQueryOrganizationInfo', e);
+        setSpinningData(p => ({
+          ...p,
+          spinning: false,
+        }));
+      });
+  };
+
   const queryTableData = ({
     budgetType = activeKey,
     current = 1,
@@ -64,6 +121,8 @@ export default function BudgetStatistic(props) {
     sort = curSorter,
     budgetCategory,
     budgetId,
+    org,
+    director,
   }) => {
     setSpinningData(p => ({
       tip: '加载中',
@@ -74,6 +133,8 @@ export default function BudgetStatistic(props) {
       budgetCategory,
       budgetId,
       budgetType,
+      org,
+      director,
       current,
       pageSize,
       paging: 1,
@@ -177,6 +238,8 @@ export default function BudgetStatistic(props) {
       ...p,
       budgetCategory: undefined,
       budgetPrj: undefined,
+      org: undefined,
+      director: undefined,
     }));
     queryTableData({ budgetType: key, budgetCategory: undefined, budgetId: undefined });
     getBudgetPrjSlt(key);
@@ -204,7 +267,7 @@ export default function BudgetStatistic(props) {
           </Tabs>
         </div>
         <TableBox
-          dataProps={{ tableData, filterData, allowExport, activeKey, spinningData }}
+          dataProps={{ tableData, filterData, allowExport, activeKey, spinningData, orgData }}
           funcProps={{ setFilterData, queryTableData, setSpinningData }}
         />
       </Spin>

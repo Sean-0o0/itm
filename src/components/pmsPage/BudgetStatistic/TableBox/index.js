@@ -10,6 +10,8 @@ import {
   Select,
   TreeSelect,
   Drawer,
+  Icon,
+  Input,
 } from 'antd';
 import { QueryBudgetStatistics } from '../../../../services/pmsServices';
 import moment from 'moment';
@@ -21,7 +23,14 @@ const { Option } = Select;
 
 const TableBox = props => {
   const { dataProps = {}, funcProps = {} } = props;
-  const { tableData = {}, filterData = {}, allowExport, activeKey, spinningData } = dataProps;
+  const {
+    tableData = {},
+    filterData = {},
+    allowExport,
+    activeKey,
+    spinningData,
+    orgData = [],
+  } = dataProps;
   const {
     setFilterData = () => {},
     queryTableData = () => {},
@@ -34,6 +43,8 @@ const TableBox = props => {
   }); //项目付款详情抽屉
   const [exportModalVisible, setExportModalVisible] = useState(false); //导出弹窗显隐
   const location = useLocation();
+  const [filterFold, setFilterFold] = useState(true); //收起 true、展开 false
+  const [orgOpen, setOrgOpen] = useState(false); //下拉框展开
 
   //列配置
   const columns = [
@@ -391,6 +402,8 @@ const TableBox = props => {
           budgetCategory:
             filterData.budgetCategory !== undefined ? Number(filterData.budgetCategory) : undefined,
           budgetId: filterData.budgetPrj !== undefined ? Number(filterData.budgetPrj) : undefined,
+          org: filterData.org !== undefined ? Number(filterData.org) : undefined,
+          director: filterData.director,
         });
       } else {
         queryTableData({
@@ -400,6 +413,8 @@ const TableBox = props => {
           budgetCategory:
             filterData.budgetCategory !== undefined ? Number(filterData.budgetCategory) : undefined,
           budgetId: filterData.budgetPrj !== undefined ? Number(filterData.budgetPrj) : undefined,
+          org: filterData.org !== undefined ? Number(filterData.org) : undefined,
+          director: filterData.director,
         });
       }
     } else {
@@ -409,6 +424,8 @@ const TableBox = props => {
         budgetCategory:
           filterData.budgetCategory !== undefined ? Number(filterData.budgetCategory) : undefined,
         budgetId: filterData.budgetPrj !== undefined ? Number(filterData.budgetPrj) : undefined,
+        org: filterData.org !== undefined ? Number(filterData.org) : undefined,
+        director: filterData.director,
       });
     }
     return;
@@ -605,7 +622,7 @@ const TableBox = props => {
   return (
     <>
       <div className="table-box">
-        <div className="filter-row">
+        <div className="item-box">
           <div className="console-item">
             <div className="item-label">年份</div>
             <DatePicker
@@ -621,29 +638,6 @@ const TableBox = props => {
               onPanelChange={handleYearChange}
             />
           </div>
-          {activeKey !== 'KY' && (
-            <div className="console-item">
-              <div className="item-label">预算类别</div>
-              <Select
-                className="item-selector"
-                dropdownClassName={'item-selector-dropdown'}
-                filterOption={(input, option) =>
-                  option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                }
-                showSearch
-                allowClear
-                onChange={v => setFilterData(p => ({ ...p, budgetCategory: v }))}
-                value={filterData.budgetCategory}
-                placeholder="请选择"
-              >
-                {filterData.budgetCategorySlt?.map((x, i) => (
-                  <Option key={i} value={Number(x.ibm)}>
-                    {x.note}
-                  </Option>
-                ))}
-              </Select>
-            </div>
-          )}
           <div className="console-item">
             <div className="item-label">预算项目</div>
             <TreeSelect
@@ -662,6 +656,30 @@ const TableBox = props => {
               disabled={spinningData.sltDisabled}
             />
           </div>
+          <div className="console-item">
+            <div className="item-label">负责人</div>
+            <Input
+              value={filterData.director}
+              className="item-selector"
+              onChange={v => {
+                v.persist();
+                if (v.target.value === '') {
+                  setFilterData(p => ({ ...p, director: undefined }));
+                } else {
+                  setFilterData(p => ({ ...p, director: v.target.value }));
+                }
+              }}
+              placeholder={'请输入负责人'}
+              allowClear={true}
+              style={{ width: '100%' }}
+            />
+          </div>
+          {filterFold && (
+            <div className="filter-unfold" onClick={() => setFilterFold(false)}>
+              更多
+              <i className="iconfont icon-down" />
+            </div>
+          )}
           <Button
             className="btn-search"
             type="primary"
@@ -673,6 +691,8 @@ const TableBox = props => {
                     : undefined,
                 budgetId:
                   filterData.budgetPrj !== undefined ? Number(filterData.budgetPrj) : undefined,
+                org: filterData.org !== undefined ? Number(filterData.org) : undefined,
+                director: filterData.director,
               })
             }
           >
@@ -682,6 +702,61 @@ const TableBox = props => {
             重置
           </Button>
         </div>
+        {!filterFold && (
+          <div className="item-box">
+            <div className="console-item">
+              <div className="item-label">部门</div>
+              <TreeSelect
+                allowClear
+                showArrow
+                className="item-selector"
+                showSearch
+                showCheckedStrategy={TreeSelect.SHOW_PARENT}
+                treeNodeFilterProp="title"
+                dropdownClassName="newproject-treeselect"
+                dropdownStyle={{ maxHeight: 300, overflow: 'auto' }}
+                treeData={orgData}
+                value={filterData.org}
+                placeholder="请选择"
+                onChange={v => setFilterData(p => ({ ...p, org: v }))}
+                treeDefaultExpandAll
+                open={orgOpen}
+                onDropdownVisibleChange={v => setOrgOpen(v)}
+              />
+              <Icon
+                type="down"
+                className={'label-selector-arrow' + (orgOpen ? ' selector-rotate' : '')}
+              />
+            </div>
+            {activeKey !== 'KY' && (
+              <div className="console-item">
+                <div className="item-label">预算类别</div>
+                <Select
+                  className="item-selector"
+                  dropdownClassName={'item-selector-dropdown'}
+                  filterOption={(input, option) =>
+                    option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                  }
+                  showSearch
+                  allowClear
+                  onChange={v => setFilterData(p => ({ ...p, budgetCategory: v }))}
+                  value={filterData.budgetCategory}
+                  placeholder="请选择"
+                >
+                  {filterData.budgetCategorySlt?.map((x, i) => (
+                    <Option key={i} value={Number(x.ibm)}>
+                      {x.note}
+                    </Option>
+                  ))}
+                </Select>
+              </div>
+            )}
+            <div className="filter-unfold" onClick={() => setFilterFold(true)}>
+              收起
+              <i className="iconfont icon-up" />
+            </div>
+          </div>
+        )}
         <div className="export-row">
           <span className="table-unit">单位：万元</span>
           {allowExport && (
@@ -692,7 +767,15 @@ const TableBox = props => {
         </div>
         <div
           className="project-info-table-box"
-          style={!allowExport ? { height: 'calc(100% - 109px)' } : {}}
+          style={
+            !allowExport
+              ? filterFold
+                ? { height: 'calc(100% - 109px)' }
+                : { height: 'calc(100% - 174px)' }
+              : filterFold
+              ? { height: 'calc(100% - 129px)' }
+              : { height: 'calc(100% - 194px)' }
+          }
         >
           <Table
             columns={activeKey === 'KY' ? columns_KY : columns}
