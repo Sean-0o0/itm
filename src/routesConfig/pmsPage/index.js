@@ -338,24 +338,24 @@ exports.routes = [
     path: `${prefix}/XwhExamine`,
     component: './pmsPage/XwhExamine',
   },
-  // {
-  //   // 知识产权列表
-  //   path: `${prefix}/IntelProperty/:params`,
-  //   component: './pmsPage/IntelProperty',
-  // },
-  // {
-  //   // 知识产权列表
-  //   path: `${prefix}/IntelProperty`,
-  //   component: './pmsPage/IntelProperty',
-  // },
-  // {
-  //   // 获奖荣誉列表
-  //   path: `${prefix}/AwardHonor/:params`,
-  //   component: './pmsPage/AwardHonor',
-  // },
-  // {
-  //   // 获奖荣誉列表
-  //   path: `${prefix}/AwardHonor`,
-  //   component: './pmsPage/AwardHonor',
-  // },
+  {
+    // 知识产权列表
+    path: `${prefix}/IntelProperty/:params`,
+    component: './pmsPage/IntelProperty',
+  },
+  {
+    // 知识产权列表
+    path: `${prefix}/IntelProperty`,
+    component: './pmsPage/IntelProperty',
+  },
+  {
+    // 获奖荣誉列表
+    path: `${prefix}/AwardHonor/:params`,
+    component: './pmsPage/AwardHonor',
+  },
+  {
+    // 获奖荣誉列表
+    path: `${prefix}/AwardHonor`,
+    component: './pmsPage/AwardHonor',
+  },
 ];
