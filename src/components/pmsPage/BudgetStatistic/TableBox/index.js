@@ -174,7 +174,10 @@ const TableBox = props => {
       sorter: true,
       sortDirections: ['descend', 'ascend'],
       render: (txt, row) => (
-        <a style={{ color: '#3361ff' }} onClick={() => openDrawer(Number(row.YSID))}>
+        <a
+          style={{ color: '#3361ff', display: 'block' }}
+          onClick={() => openDrawer(Number(row.YSID))}
+        >
           {txt}
         </a>
       ),
@@ -327,7 +330,10 @@ const TableBox = props => {
       sorter: true,
       sortDirections: ['descend', 'ascend'],
       render: (txt, row) => (
-        <a style={{ color: '#3361ff' }} onClick={() => openDrawer(Number(row.YSID))}>
+        <a
+          style={{ color: '#3361ff', display: 'block' }}
+          onClick={() => openDrawer(Number(row.YSID))}
+        >
           {txt}
         </a>
       ),

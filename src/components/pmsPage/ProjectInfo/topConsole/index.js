@@ -132,8 +132,9 @@ export default forwardRef(function TopConsole(props, ref) {
                 if (item.ZDBM === '6') {
                   // console.log("b[item.ZDBM]",b["6"])
                   b[item.ZDBM].map(i => {
-                    treeDatamini.key = i.ID + i.ZDBM;
-                    treeDatamini.value = i.ID + i.ZDBM;
+                    let treeDatamini = {};
+                    treeDatamini.key = i.ID+ i.ysLXID;
+                    treeDatamini.value = i.ID+ i.ysLXID;
                     treeDatamini.title = i.YSXM;
                     treeDatamini.ID = i.ID;
                     treeDatamini.KGLYS = Number(i.KGLYS);
@@ -142,10 +143,10 @@ export default forwardRef(function TopConsole(props, ref) {
                     treeDatamini.ZYS = Number(i.ZYS);
                     treeDatamini.KZXYS = Number(i.KZXYS);
                     treeDatamini.ZDBM = i.ZDBM;
+                    treeDatamini.ysLX = i.ysLX;
+                    treeDatamini.ysLXID = i.ysLXID;
+                    childrenDatamini.push(treeDatamini);
                   });
-                  // treeDatamini.dropdownStyle = { color: '#666' }
-                  // treeDatamini.selectable=false;
-                  // treeDatamini.children = b[item.ZDBM]
                 } else {
                   treeDatamini.key = item.ZDBM + item.YSLXID;
                   treeDatamini.value = item.ZDBM + item.YSLXID;
@@ -161,9 +162,10 @@ export default forwardRef(function TopConsole(props, ref) {
                   treeDatamini.ZDBM = item.ZDBM;
                   treeDatamini.dropdownStyle = { color: '#666' };
                   treeDatamini.selectable = false;
-                  treeDatamini.children = b[item.ZDBM];
+                  treeDatamini.children = b[item.ZDBM]; 
+                  childrenDatamini.push(treeDatamini);
                 }
-                childrenDatamini.push(treeDatamini);
+               
               }
               childrenData.key = key;
               childrenData.value = key;

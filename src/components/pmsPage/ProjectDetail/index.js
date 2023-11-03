@@ -36,8 +36,20 @@ export default function ProjectDetail(props) {
   const { routes, xmid, dictionary } = props;
   const [isSpinning, setIsSpinning] = useState(false); //加载状态
   const [prjData, setPrjData] = useState({}); //项目信息-所有
-  const { HJRYDJ = [], ZSCQLX = [], RYGW = [], CGFS = [], ZYXMKQLX = [] } = dictionary; //获奖等级、知识产权类型、岗位、招采方式
-  // console.log('🚀 ~ file: index.js:37 ~ ProjectDetail ~ ZYXMKQLX:', ZYXMKQLX);
+  const {
+    HJRYDJ = [],
+    ZSCQLX = [],
+    RYGW = [],
+    CGFS = [],
+    ZYXMKQLX = [],
+    CQLX = [],
+    QYBZDQZT = [],
+    ZSCQDQZT = [],
+    FMZLDQZT = [],
+    HJLX = [],
+    KTZT = [],
+    HJQK = [],
+  } = dictionary; //获奖等级、知识产权类型、岗位、招采方式
   const [isLeader, setIsLeader] = useState(false); //判断用户是否为领导 - 权限控制
   let LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
   const [isHwPrj, setIsHwPrj] = useState(false); //是否包含硬件
@@ -73,9 +85,10 @@ export default function ProjectDetail(props) {
     monthData: [], //月份数据
   }); //考勤信息
   const [grayTest, setGrayTest] = useState({
-    KQMK: false,
-    DDMK: false,
-  }); //灰度测试 - KQMK考勤模块、DDMK 迭代模块
+    KQMK: false, //考勤模块
+    DDMK: false, //迭代模块
+    ZSCQ: false, //知识产权、获奖荣誉
+  }); //灰度测试
   let isDDXM = prjData.prjBasic?.XMBQ?.includes('迭代项目') && grayTest.DDMK; // 是否迭代项目
   let isDDXMFK =
     prjData.prjBasic?.XMBQ?.includes('迭代项目') &&
@@ -87,6 +100,10 @@ export default function ProjectDetail(props) {
     prjData.prjBasic?.XMJLID,
     ...(prjData.prjBasic?.FXMJL === '' ? [] : prjData.prjBasic?.FXMJL?.split(',') || []),
   ].includes(String(LOGIN_USER_INFO.id)); //快捷入口，只有项目经理和副项目经理可以看到
+  const [isGLY, setIsGLY] = useState({
+    hjry: false,
+    zscq: false,
+  }); //是否管理员
   // var s = 0;
   // var e = 0;
 
@@ -238,20 +255,26 @@ export default function ProjectDetail(props) {
       if (roleData.success) {
         setIsLeader(roleData.role !== '普通人员');
         setIsBdgtMnger(roleData.zyrole === '预算管理人');
+        setIsGLY({
+          zscq: JSON.parse(roleData.testRole || '{}').ALLROLE?.includes('知识产权管理员'),
+          hjry: JSON.parse(roleData.testRole || '{}').ALLROLE?.includes('获奖荣誉管理员'),
+        });
         //灰度测试
         const testRole = JSON.parse(roleData.testRole || '{}');
-        const { KQDJ = '', DDXM = '' } = testRole;
+        const { KQDJ = '', DDXM = '', ZSCQ = '' } = testRole;
         const KQDJ_IDArr = KQDJ === '' ? [] : KQDJ.split(',');
         const KQDJ_Auth = KQDJ_IDArr.includes(String(LOGIN_USER_INFO.id));
         const DDXM_IDArr = DDXM === '' ? [] : DDXM.split(',');
         const DDXM_Auth = DDXM_IDArr.includes(String(LOGIN_USER_INFO.id));
+        const ZSCQ_IDArr = ZSCQ === '' ? [] : ZSCQ.split(',');
+        const ZSCQ_Auth = ZSCQ_IDArr.includes(String(LOGIN_USER_INFO.id));
         console.log(
-          '🚀 ~ file: index.js:253 ~ handlePromiseAll ~ DDXM_Auth:',
-          DDXM_Auth,
-          DDXM_IDArr,
+          '🚀 ~ file: index.js:253 ~ handlePromiseAll ~ 灰度测试:',
+          ZSCQ_Auth,
+          ZSCQ_IDArr,
           String(LOGIN_USER_INFO.id),
         );
-        setGrayTest({ KQMK: KQDJ_Auth, DDMK: DDXM_Auth });
+        setGrayTest({ KQMK: KQDJ_Auth, DDMK: DDXM_Auth, ZSCQ: ZSCQ_Auth });
       }
       if (infoData.success) {
         const p = (str, isArr = true) => {
@@ -266,14 +289,44 @@ export default function ProjectDetail(props) {
         let prjBasic = p(infoData.xmjbxxRecord, false);
         setIsHwSltPrj(prjBasic.XMLX === '6');
         setIsHwPrj(prjBasic.SFBHYJ === '1');
-        //字典处理
-        let award = p(infoData.hjxxRecord);
-        prjBasic.XMLX !== '6' &&
-          award.forEach(item => {
-            item.RYDJ = HJRYDJ?.filter(x => x.ibm === item.RYDJ)[0]?.note;
-            item.ZSCQLX = ZSCQLX?.filter(x => x.ibm === item.ZSCQLX)[0]?.note;
-            item.HJSJ = item.HJSJ.slice(0, 10);
-          });
+        //知识产权获奖荣誉
+        let award = [];
+        let topic = [];
+        if (prjBasic.XMLX !== '6') {
+          const getDqztField = (cqlx, bool) => {
+            if (cqlx === '2') return bool ? 'FMZLDQZT' : FMZLDQZT;
+            else if (cqlx === '4') return bool ? 'QYBZDQZT' : QYBZDQZT;
+            else return bool ? 'ZSCQDQZT' : ZSCQDQZT;
+          };
+          const getDqztField2 = (cqlx, bool) => {
+            if (cqlx === '2') return bool ? 'KTZT' : KTZT;
+            else return bool ? 'HJQK' : HJQK;
+          };
+          //获奖荣誉
+          award = HJLX.map(x => ({
+            title: x.note,
+            data: p(infoData.hjxxRecord)
+              .filter(y => y.HJLX === x.ibm)
+              .map(m => ({
+                ...m,
+                //新增当前状态 文本
+                DQZT: getDqztField2(m.HJLX).find(f => f.ibm === m[getDqztField2(m.HJLX, true)])
+                  ?.note,
+              })),
+          }));
+          //知识产权
+          topic = CQLX.map(x => ({
+            title: x.note,
+            data: p(infoData.ktxxRecord)
+              .filter(y => y.CQLX === x.ibm)
+              .map(m => ({
+                ...m,
+                //新增当前状态 文本
+                DQZT: getDqztField(m.CQLX).find(f => f.ibm === m[getDqztField(m.CQLX, true)])?.note,
+              })),
+          }));
+          // console.log('🚀 ~ file: index.js:321 ~ handlePromiseAll ~ topic:', award, topic);
+        }
         prjBasic.ZBFS = CGFS?.filter(x => x.ibm === prjBasic.ZBFS)[0]?.note;
         prjBasic.XMLX = JSON.parse(xmlxData.xmlxRecord)
           .map(x => {
@@ -312,7 +365,7 @@ export default function ProjectDetail(props) {
           bidding: p(infoData.zbxxRecord, false),
           otrSupplier: p(infoData.qtgysxxRecord),
           award,
-          topic: p(infoData.ktxxRecord),
+          topic,
           payment: p(infoData.fkxxRecord),
           supplier: supplierArr,
           xmjbxxRecord: p(infoData.xmjbxxRecord),
@@ -686,14 +739,44 @@ export default function ProjectDetail(props) {
           let prjBasic = p(res.xmjbxxRecord, false);
           setIsHwSltPrj(prjBasic.XMLX === '6');
           setIsHwPrj(prjBasic.SFBHYJ === '1');
-          //字典处理
-          let award = p(res.hjxxRecord);
-          prjBasic.XMLX !== '6' &&
-            award.forEach(item => {
-              item.RYDJ = HJRYDJ?.filter(x => x.ibm === item.RYDJ)[0]?.note;
-              item.ZSCQLX = ZSCQLX?.filter(x => x.ibm === item.ZSCQLX)[0]?.note;
-              item.HJSJ = item.HJSJ.slice(0, 10);
-            });
+          //知识产权获奖荣誉
+          let award = [];
+          let topic = [];
+          if (prjBasic.XMLX !== '6') {
+            const getDqztField = (cqlx, bool) => {
+              if (cqlx === '2') return bool ? 'FMZLDQZT' : FMZLDQZT;
+              else if (cqlx === '4') return bool ? 'QYBZDQZT' : QYBZDQZT;
+              else return bool ? 'ZSCQDQZT' : ZSCQDQZT;
+            };
+            const getDqztField2 = (cqlx, bool) => {
+              if (cqlx === '2') return bool ? 'KTZT' : KTZT;
+              else return bool ? 'HJQK' : HJQK;
+            };
+            //获奖荣誉
+            award = HJLX.map(x => ({
+              title: x.note,
+              data: p(res.hjxxRecord)
+                .filter(y => y.HJLX === x.ibm)
+                .map(m => ({
+                  ...m,
+                  //新增当前状态 文本
+                  DQZT: getDqztField2(m.HJLX).find(f => f.ibm === m[getDqztField2(m.HJLX, true)])
+                    ?.note,
+                })),
+            }));
+            //知识产权
+            topic = CQLX.map(x => ({
+              title: x.note,
+              data: p(res.ktxxRecord)
+                .filter(y => y.CQLX === x.ibm)
+                .map(m => ({
+                  ...m,
+                  //新增当前状态 文本
+                  DQZT: getDqztField(m.CQLX).find(f => f.ibm === m[getDqztField(m.CQLX, true)])
+                    ?.note,
+                })),
+            }));
+          }
           prjBasic.ZBFS = CGFS?.filter(x => x.ibm === prjBasic.ZBFS)[0]?.note;
           prjBasic.XMLX = XMLX?.filter(x => x.ibm === prjBasic.XMLX)[0]?.note;
           //供应商信息处理
@@ -736,7 +819,7 @@ export default function ProjectDetail(props) {
             bidding: p(res.zbxxRecord, false),
             otrSupplier: p(res.qtgysxxRecord),
             award,
-            topic: p(res.ktxxRecord),
+            topic,
             payment: p(res.fkxxRecord),
             supplier: supplierArr,
             xmjbxxRecord: p(res.xmjbxxRecord),
@@ -1196,6 +1279,7 @@ export default function ProjectDetail(props) {
             prjData.prjBasic?.XMBQ?.includes('迭代项目') ||
             (prjData.prjBasic?.GLDDXM === undefined && Number(prjData.prjBasic?.SFGLDD) > 0)
           }
+          grayTest={grayTest}
         />
         <div className="detail-row">
           <div className="col-left">
@@ -1282,6 +1366,8 @@ export default function ProjectDetail(props) {
                   showSCDD,
                   routes,
                   showKQXX,
+                  isGLY,
+                  grayTest,
                 }}
                 funcProps={{ getPrjDtlData, setIsSpinning, handlePromiseAll, setShowSCDD }}
               />

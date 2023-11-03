@@ -835,4 +835,53 @@ export default [
     url: '/projectManage/queryIteContractFlow',
     dis: '关联迭代合同签署流程',
   },
+  {
+    code: '',
+    key: 'queryIPRList',
+    url: '/projectManage/queryIPRList',
+    dis: '查询知识产权列表',
+  },
+  {
+    code: '',
+    key: 'queryAwardAndHonorList',
+    url: '/projectManage/queryAwardAndHonorList',
+    dis: '查询获奖荣誉',
+  },
+  {
+    code: '',
+    key: 'editIPRInfo',
+    url: '/projectManage/editIPRInfo',
+    dis: '编辑知识产权',
+  },
+  {
+    code: '',
+    key: 'operateAwardAndHonor',
+    url: '/projectManage/operateAwardAndHonor',
+    dis: '编辑获奖荣誉',
+  },
+
+  {
+    code: '',
+    key: 'queryXCContractInfo',
+    url: '/projectManage/queryXCContractInfo',
+    dis: '查询信创合同列表',
+  },
+  {
+    code: '',
+    key: 'queryXCContractSubInfo',
+    url: '/projectManage/queryXCContractSubInfo',
+    dis: '查询信创合同附属信息',
+  },
+  {
+    code: '',
+    key: 'operateXCContract',
+    url: '/projectManage/operateXCContract',
+    dis: '编辑信创合同信息',
+  },
+  {
+    code: '',
+    key: 'transferXCContract',
+    url: '/projectManage/transferXCContract',
+    dis: '信创合同转办',
+  },
 ];

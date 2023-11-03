@@ -1645,8 +1645,9 @@ class NewProjectModelV2 extends React.Component {
                 if (b[item.zdbm]) {
                   let treeDatamini = { children: [] };
                   if (item.zdbm === '6') {
-                    // console.log("b[item.zdbm]",b["6"])
+                    // console.log('b[item.zdbm]', b['6']);
                     b[item.zdbm].map(i => {
+                      let treeDatamini = {};
                       treeDatamini.key = i.ysID + i.ysLXID;
                       treeDatamini.value = i.ysID + i.ysLXID;
                       treeDatamini.label = i.ysName;
@@ -1659,10 +1660,8 @@ class NewProjectModelV2 extends React.Component {
                       treeDatamini.zdbm = i.zdbm;
                       treeDatamini.ysLX = i.ysLX;
                       treeDatamini.ysLXID = i.ysLXID;
+                      childrenDatamini.push(treeDatamini);
                     });
-                    // treeDatamini.dropdownStyle = { color: '#666' }
-                    // treeDatamini.selectable=false;
-                    // treeDatamini.children = b[item.zdbm]
                   } else {
                     treeDatamini.key = item.zdbm + item.ysLXID;
                     treeDatamini.value = item.zdbm + item.ysLXID;
@@ -1679,8 +1678,8 @@ class NewProjectModelV2 extends React.Component {
                     treeDatamini.dropdownStyle = { color: '#666' };
                     treeDatamini.selectable = false;
                     treeDatamini.children = b[item.zdbm];
+                    childrenDatamini.push(treeDatamini);
                   }
-                  childrenDatamini.push(treeDatamini);
                 }
                 childrenData.key = key;
                 childrenData.value = key;
@@ -1701,12 +1700,12 @@ class NewProjectModelV2 extends React.Component {
         const { code = -1, record = [] } = result;
         if (code > 0) {
           this.setState({ budgetProjectList: toItemTree(record) });
-          // console.log(
-          //   '🚀 ~ toItemTree(record):',
-          //   record,
-          //   this.toItemTree(record),
-          //   toItemTree(record),
-          // );
+          console.log(
+            '🚀 ~ toItemTree(record):',
+            record,
+            this.toItemTree(record),
+            toItemTree(record),
+          );
         }
       })
       .catch(error => {

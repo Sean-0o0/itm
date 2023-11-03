@@ -9,7 +9,7 @@ import {
   Icon,
   Popconfirm,
 } from 'antd';
-import React, { useState } from 'react';
+import React, { Fragment, useState } from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import moment from 'moment';
 import { EncryptBase64 } from '../../../Common/Encrypt';
@@ -34,6 +34,7 @@ export default function TopConsole(props) {
     getMileStoneData,
     setPrjData,
     isDDXM,
+    grayTest = {},
   } = props;
   const [fileAddVisible, setFileAddVisible] = useState(false); //项目信息修改弹窗显示
   const [src_fileAdd, setSrc_fileAdd] = useState({}); //项目信息修改弹窗显示
@@ -55,7 +56,14 @@ export default function TopConsole(props) {
     title: '',
     url: '#',
   }); //livebos弹窗、付款流程补录弹窗显隐
-  const { prjBasic = {}, member = [], payment = [], iterationYear = [] } = prjData;
+  const {
+    prjBasic = {},
+    member = [],
+    payment = [],
+    iterationYear = [],
+    topic = [],
+    award = [],
+  } = prjData;
   let LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
   const history = useHistory();
 
@@ -833,6 +841,110 @@ export default function TopConsole(props) {
             <Popconfirm title="确定取消收藏吗？" onConfirm={() => handlePrjCollect('QXXM')}>
               <i className="iconfont icon-star-fill" />
             </Popconfirm>
+          )}
+          {grayTest.ZSCQ && (
+            <Fragment>
+              {' '}
+              {/* 科技奖项 */}
+              {award
+                .find(x => x.title === '科技奖项')
+                ?.data.findIndex(x => String(x.HJQK) === '1') === -1 ? (
+                <img
+                  src={require(`../../../../assets/projectDetail/trophy_gray.png`)}
+                  alt="kjjx"
+                  className="img-zscq-hjry"
+                />
+              ) : (
+                <Popover
+                  placement="bottom"
+                  title={null}
+                  content={
+                    <div className="list">
+                      {award
+                        .find(x => x.title === '科技奖项')
+                        ?.data.filter(x => String(x.HJQK) === '1')
+                        .map((x, i) => (
+                          <div className="item" key={x.HJMC + i} style={{ maxWidth: 385 }}>
+                            {x.HJMC}
+                          </div>
+                        ))}
+                    </div>
+                  }
+                  overlayClassName="zscq-hjry-popover-content"
+                >
+                  <img
+                    src={require(`../../../../assets/projectDetail/trophy.png`)}
+                    alt="kjjx"
+                    className="img-zscq-hjry"
+                  />
+                </Popover>
+              )}
+              {/* 研究课题 */}
+              {award
+                .find(x => x.title === '研究课题')
+                ?.data.findIndex(x => String(x.KTZT) === '3') === -1 ? (
+                <img
+                  src={require(`../../../../assets/projectDetail/medal_gray.png`)}
+                  alt="yjkt"
+                  className="img-zscq-hjry"
+                />
+              ) : (
+                <Popover
+                  placement="bottom"
+                  title={null}
+                  content={
+                    <div className="list">
+                      {award
+                        .find(x => x.title === '研究课题')
+                        ?.data.filter(x => String(x.KTZT) === '3')
+                        .map((x, i) => (
+                          <div className="item" key={x.HJMC + i} style={{ maxWidth: 385 }}>
+                            {x.HJMC}
+                          </div>
+                        ))}
+                    </div>
+                  }
+                  overlayClassName="zscq-hjry-popover-content"
+                >
+                  <img
+                    src={require(`../../../../assets/projectDetail/medal.png`)}
+                    alt="yjkt"
+                    className="img-zscq-hjry"
+                  />
+                </Popover>
+              )}
+              {/* 知识产权 */}
+              {topic.flatMap(x => x.data).length === 0 ? (
+                <img
+                  src={require(`../../../../assets/projectDetail/book_gray.png`)}
+                  alt="zscq"
+                  className="img-zscq-hjry"
+                />
+              ) : (
+                <Popover
+                  placement="bottom"
+                  title={null}
+                  content={
+                    <div className="list">
+                      {topic
+                        .flatMap(x => x.data)
+                        .map((x, i) => (
+                          <div className="item" key={x.CQMC + i} style={{ maxWidth: 385 }}>
+                            {x.CQMC}
+                          </div>
+                        ))}
+                    </div>
+                  }
+                  overlayClassName="zscq-hjry-popover-content"
+                >
+                  <img
+                    src={require(`../../../../assets/projectDetail/book.png`)}
+                    alt="zscq"
+                    className="img-zscq-hjry"
+                  />
+                </Popover>
+              )}
+            </Fragment>
           )}
           {getTags(prjBasic.XMBQ, prjBasic.XMBQID)}
           {/* 1已完结2未完结 */}

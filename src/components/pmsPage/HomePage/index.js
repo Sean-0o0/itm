@@ -77,6 +77,15 @@ export default function HomePage(props) {
   const [trackingData, setTrackingData] = useState([{ tableInfo: [] }]);
   const [isTrackingSpinning, setIsTrackingSpinning] = useState(false);
   const [showExtends, setShowExtends] = useState(false);
+  const [isGLY, setIsGLY] = useState({
+    hjry: false,
+    zscq: false,
+  }); //是否管理员
+  const [grayTest, setGrayTest] = useState({
+    KQMK: false, //考勤模块
+    DDMK: false, //迭代模块
+    ZSCQ: false, //知识产权、获奖荣誉
+  }); //灰度测试
   var s = 0;
   var e = 0;
 
@@ -126,6 +135,21 @@ export default function HomePage(props) {
       if (roleData.code === 1) {
         const ROLE = roleData.role;
         setUserRole(ROLE);
+        setIsGLY({
+          zscq: JSON.parse(roleData.testRole || '{}').ALLROLE?.includes('知识产权管理员'),
+          hjry: JSON.parse(roleData.testRole || '{}').ALLROLE?.includes('获奖荣誉管理员'),
+        });
+        const testRole = JSON.parse(roleData.testRole || '{}');
+        const { ZSCQ = '' } = testRole;
+        const ZSCQ_IDArr = ZSCQ === '' ? [] : ZSCQ.split(',');
+        const ZSCQ_Auth = ZSCQ_IDArr.includes(String(LOGIN_USER_INFO.id));
+        console.log(
+          '🚀 ~ file: index.js:253 ~ handlePromiseAll ~ 灰度测试:',
+          ZSCQ_Auth,
+          ZSCQ_IDArr,
+          String(LOGIN_USER_INFO.id),
+        );
+        setGrayTest(p => ({ ...p, ZSCQ: ZSCQ_Auth }));
         //获取预算执行情况
         const budgetPromise = QueryBudgetOverviewInfo({
           org: Number(LOGIN_USER_INFO.org),
@@ -165,7 +189,7 @@ export default function HomePage(props) {
           date: Number(new moment().format('YYYYMMDD')),
           paging: 1,
           current: 1,
-          pageSize: 3,
+          pageSize: 5,
           total: -1,
           sort: '',
         });
@@ -311,7 +335,42 @@ export default function HomePage(props) {
           });
         }
         if (sysNoticeResData.success) {
-          setNoticeData([...sysNoticeResData.record]);
+          //灰度测试
+          const testRole = JSON.parse(roleData.testRole || '{}');
+          const { ZSCQ = '' } = testRole;
+          const ZSCQ_IDArr = ZSCQ === '' ? [] : ZSCQ.split(',');
+          const ZSCQ_Auth = ZSCQ_IDArr.includes(String(LOGIN_USER_INFO.id));
+          if (!ZSCQ_Auth) {
+            //获取全部系统公告数据
+            const sysNoticeResData2 = await FetchQueryOwnerMessage({
+              cxlx: 'GG',
+              date: Number(new moment().format('YYYYMMDD')),
+              paging: -1,
+              current: 1,
+              pageSize: 5,
+              total: -1,
+              sort: '',
+            });
+            function isJSON(str) {
+              try {
+                JSON.parse(str);
+              } catch (e) {
+                // 转换出错，抛出异常
+                return false;
+              }
+              return true;
+            }
+            setNoticeData(
+              [...sysNoticeResData2.record]
+                ?.filter(
+                  x =>
+                    !(x.xxlx === '4' && JSON.parse(isJSON(x.kzzd) ? x.kzzd : '{}').LX === 'HJRY'),
+                )
+                ?.slice(0, 5) || [],
+            );
+          } else {
+            setNoticeData([...sysNoticeResData.record]);
+          }
         }
         if (overviewResData1.success && overviewResData2.success) {
           setOverviewInfo({
@@ -391,7 +450,7 @@ export default function HomePage(props) {
         setIsSpinning(false);
       }
     } catch (error) {
-      console.log('🚀 ~ handlePromiseAll ~ error:', error);
+      console.error('🚀 ~ handlePromiseAll ~ error:', error);
       message.error('个人工作台信息获取失败', 1);
       setIsSpinning(false);
     }
@@ -683,7 +742,11 @@ export default function HomePage(props) {
           </div>
           <div className="col-right">
             <GuideCard />
-            <SystemNotice noticeData={noticeData} setNoticeData={setNoticeData} />
+            <SystemNotice
+              noticeData={noticeData}
+              setNoticeData={setNoticeData}
+              isGLY={isGLY.hjry}
+            />
             <ShortcutCard
               userRole={userRole}
               getPrjInfo={() => {

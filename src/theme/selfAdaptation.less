@@ -277,6 +277,33 @@
       }
     }
 
+    .opr-column {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+
+      span {
+        color: #3361ff;
+        margin-right: 6px;
+        cursor: pointer;
+
+        &:last-child {
+          margin-right: 0px;
+        }
+
+        &:hover {
+          color: #3361ffaf;
+        }
+      }
+
+      i {
+        cursor: pointer;
+        font-size: 18px;
+        margin-top: 2px;
+      }
+    }
+
     .ant-table-scroll .ant-table-header {
       margin-bottom: -16.5px !important; //表格表头底部边框
       background-color: #f5f7fa;
@@ -716,7 +743,25 @@
       }
 
       //输入框
-      .ant-input:focus {
+      .ant-input:focus,
+      .ant-input-number:focus,
+      .ant-input-number-focused {
+        border-color: #3361ff;
+        box-shadow: 0 0 0 2px #3361ff33;
+      }
+      .ant-input:hover,
+      .ant-input-number:hover {
+        border-color: #3361ff;
+      }
+
+      //下拉框
+      .ant-select-selection:hover,
+      .ant-select-focused .ant-select-selection,
+      .ant-select-selection:focus,
+      .ant-select-selection:active {
+        border-color: #3361ff;
+      }
+      .ant-select-open .ant-select-selection {
         border-color: #3361ff;
         box-shadow: 0 0 0 2px #3361ff33;
       }

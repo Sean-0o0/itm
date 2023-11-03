@@ -4,61 +4,69 @@ import moment from 'moment';
 import { Link } from 'react-router-dom';
 import ShowAllModal from './ShowAllModal';
 import { Tooltip } from 'antd';
+import OprModal from '../../AwardHonor/OprModal';
 
 export default function SystemNotice(props) {
-  const { noticeData = [], setNoticeData } = props;
+  const { noticeData = [], setNoticeData, isGLY } = props;
   const [modalVisible, setModalVisible] = useState(false); //弹窗需要
+  const [hjryData, setHjryData] = useState({
+    visible: false, //显隐
+    oprType: 'ADD',
+    rowData: undefined,
+    isSB: false, //是否申报
+    fromPrjDetail: false, //入口是否在项目详情
+    parentRow: undefined, //申报行的父行数据{}
+    type: 'KJJX',
+  }); //操作弹窗
   const location = useLocation();
 
-  useEffect(() => {
-    const nodeArr = document.querySelectorAll('.notice-item, .notice-item-unclick > .item-title');
-    if (nodeArr.length !== 0 && noticeData.length !== 0) {
-      let data = [...noticeData];
-      for (let i = 0; i < nodeArr.length; i++) {
-        let x = nodeArr[i];
-        data[i] && (data[i].textHide = !(x.clientHeight <= 44 && x.scrollHeight <= 44));
+  const getNoticeItem = ({
+    txnr = '--',
+    xxlx = '3',
+    txrq = '',
+    xxid,
+    textHide = false,
+    kzzd = '{}',
+  }) => {
+    const handleClick = () => {
+      if (xxlx === '4') {
+        if (JSON.parse(kzzd).LX === 'HJRY') {
+          handleSb(JSON.parse(kzzd));
+          return;
+        }
       }
-      setNoticeData([...data]);
-    }
-    // console.log(noticeData);
-    return () => {};
-  }, [JSON.stringify(noticeData)]);
-
-  const getNoticeItem = ({ txnr = '--', xxlx = '3', txrq = '', xxid, textHide = false }) => {
+    };
     return (
       <div className={xxlx === '4' ? 'notice-item' : 'notice-item-unclick'} key={xxid}>
         <i className="iconfont icon-notice-fill" />
-        {textHide ? (
-          <div className={'item-title item-title-before'}>
-            {xxlx === '4' ? (
-              <span className={'icon-wrapper'}>
-                ...
-                <i className="iconfont icon-right" />
-              </span>
-            ) : (
-              <span className={'icon-wrapper-xxlx3'}>...</span>
-            )}
-            <Tooltip placement="topLeft" title={txnr}>
-              {txnr}
-            </Tooltip>
-          </div>
-        ) : (
-          <div className="item-title">
-            <Tooltip placement="topLeft" title={txnr}>
-              {txnr}
-            </Tooltip>
-            {xxlx === '4' ? (
-              <span className={'icon-wrapper'}>
-                <i className="iconfont icon-right" />
-              </span>
-            ) : (
-              ''
-            )}
-          </div>
-        )}
+        <div className="item-title" onClick={handleClick}>
+          <Tooltip placement="topLeft" title={txnr}>
+            {txnr}
+          </Tooltip>
+        </div>
         <div className="item-date">{moment(txrq).format('YYYY-MM-DD')}</div>
       </div>
     );
+  };
+
+  //申报
+  const handleSb = row => {
+    const getHJLX = (key = 1) => {
+      if (key === 2) {
+        return 'YJKT';
+      } else {
+        return 'KJJX';
+      }
+    };
+    setHjryData({
+      visible: true,
+      oprType: 'ADD',
+      rowData: undefined,
+      isSB: true,
+      fromPrjDetail: false,
+      parentRow: { ...row, KTMC: row.JXMC },
+      type: getHJLX(row.HJLX),
+    });
   };
 
   if (noticeData.length === 0) return null;
@@ -71,8 +79,16 @@ export default function SystemNotice(props) {
           <i className="iconfont icon-right" />
         </span>
       </div>
+      {/* 获奖荣誉 */}
+      <OprModal
+        setVisible={v => setHjryData(p => ({ ...p, visible: v }))}
+        type={hjryData.type}
+        data={hjryData}
+        refresh={() => {}}
+        isGLY={isGLY}
+      />
       <ShowAllModal
-        dataProps={{ visible: modalVisible }}
+        dataProps={{ visible: modalVisible, isGLY }}
         funcProps={{ setVisible: setModalVisible }}
       />
       <div className="notice-box">{noticeData.map(x => getNoticeItem(x))}</div>

@@ -12,7 +12,6 @@ const { TabPane } = Tabs;
 
 export default function BudgetStatistic(props) {
   const { dictionary = {}, tab } = props;
-  console.log('🚀 ~ file: index.js:15 ~ BudgetStatistic ~ tab:', tab);
   const { YSLB = [] } = dictionary;
   const [tableData, setTableData] = useState({
     data: [],

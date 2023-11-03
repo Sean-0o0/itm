@@ -155,6 +155,10 @@ function VisitedRoutes(props) {
       /^\/pms\/manage\/AttendanceStatistic/,
       /^\/pms\/manage\/XwhExamine/,
       /^\/pms\/manage\/ProjectStatisticsInfo/,
+      /^\/pms\/manage\/IntelProperty/,
+      /^\/pms\/manage\/AwardHonor/,
+      /^\/pms\/manage\/InnovationContract/,
+      /^\/pms\/manage\/InnovationContractEdit/,
     ];
     regExpArr.forEach(regExp => {
       matchFilter(regExp);
@@ -197,6 +201,7 @@ function VisitedRoutes(props) {
         {handleUrls(urls).length > 0 &&
           handleUrls(urls).map(item => {
             let { url = '', title = '' } = menuArray.find(m => m.url === item) || {};
+            //尾部有带参数的页面需要配置
             let urlEndArr = [
               {
                 title: '项目详情',
@@ -297,6 +302,22 @@ function VisitedRoutes(props) {
               {
                 title: '项目明细',
                 urlEnd: 'ProjectStatisticsInfo',
+              },
+              {
+                title: '知识产权列表',
+                urlEnd: 'IntelProperty',
+              },
+              {
+                title: '获奖荣誉列表',
+                urlEnd: 'AwardHonor',
+              },
+              {
+                title: '信创合同信息列表',
+                urlEnd: 'InnovationContract',
+              },
+              {
+                title: '信创合同信息编辑',
+                urlEnd: 'InnovationContractEdit',
               },
             ];
             urlEndArr.forEach(x => {

@@ -2,12 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { Modal, DatePicker, Table, Spin, message } from 'antd';
 import moment from 'moment';
 import { FetchQueryOwnerMessage } from '../../../../../services/pmsServices';
+import OprAHModal from '../../../AwardHonor/OprModal';
 
 const { RangePicker } = DatePicker;
 
 export default function ShowAllModal(props) {
   const { dataProps = {}, funcProps = {} } = props;
-  const { visible } = dataProps;
+  const { visible, isGLY } = dataProps;
   const { setVisible } = funcProps;
   const [tableData, setTableData] = useState({
     data: [],
@@ -17,24 +18,15 @@ export default function ShowAllModal(props) {
     loading: false,
   }); //表格数据
   const [date, setDate] = useState([]); //公告日期
-
-  //列配置
-  const columns = [
-    {
-      title: '公告内容',
-      dataIndex: 'txnr',
-      key: 'txnr',
-      ellipsis: true,
-    },
-    {
-      title: '公告日期',
-      dataIndex: 'txrq',
-      key: 'txrq',
-      width: 120,
-      ellipsis: true,
-      render: txt => moment(txt).format('YYYY-MM-DD'),
-    },
-  ];
+  const [hjryData, setHjryData] = useState({
+    visible: false, //显隐
+    oprType: 'ADD',
+    rowData: undefined,
+    isSB: false, //是否申报
+    fromPrjDetail: false, //入口是否在项目详情
+    parentRow: undefined, //申报行的父行数据{}
+    type: 'KJJX',
+  }); //获奖荣誉操作弹窗
 
   useEffect(() => {
     if (visible) {
@@ -59,6 +51,61 @@ export default function ShowAllModal(props) {
     }
     return () => {};
   }, [visible]);
+
+  //列配置
+  const columns = [
+    {
+      title: '公告内容',
+      dataIndex: 'txnr',
+      key: 'txnr',
+      ellipsis: false,
+      render: (txt, row) => {
+        const handleClick = () => {
+          if (row.xxlx === '4') {
+            if (JSON.parse(row.kzzd).LX === 'HJRY') {
+              handleSb(JSON.parse(row.kzzd));
+              return;
+            }
+          }
+        };
+        if (row.xxlx === '4')
+          return (
+            <span className="clickable-txt" onClick={handleClick}>
+              {txt}
+            </span>
+          );
+        return txt;
+      },
+    },
+    {
+      title: '公告日期',
+      dataIndex: 'txrq',
+      key: 'txrq',
+      width: 120,
+      ellipsis: true,
+      render: txt => moment(txt).format('YYYY-MM-DD'),
+    },
+  ];
+
+  //申报
+  const handleSb = row => {
+    const getHJLX = (key = 1) => {
+      if (key === 2) {
+        return 'YJKT';
+      } else {
+        return 'KJJX';
+      }
+    };
+    setHjryData({
+      visible: true,
+      oprType: 'ADD',
+      rowData: undefined,
+      isSB: true,
+      fromPrjDetail: false,
+      parentRow: { ...row, KTMC: row.JXMC },
+      type: getHJLX(row.HJLX),
+    });
+  };
 
   //获取表格数据
   const getTableData = ({ date, endDate, current = 1, pageSize = 10 }) => {
@@ -132,6 +179,14 @@ export default function ShowAllModal(props) {
       <div className="body-title-box">
         <strong>系统公告</strong>
       </div>
+      {/* 获奖荣誉 */}
+      <OprAHModal
+        setVisible={v => setHjryData(p => ({ ...p, visible: v }))}
+        type={hjryData.type}
+        data={hjryData}
+        refresh={() => {}}
+        isGLY={isGLY}
+      />
       <Spin spinning={tableData.loading} tip="加载中">
         <div className="content-box">
           <div className="notice-date">

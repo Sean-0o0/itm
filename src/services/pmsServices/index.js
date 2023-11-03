@@ -147,6 +147,14 @@ const {
     queryProjectDraft,
     relIteContractFlow,
     queryIteContractFlow,
+    queryIPRList,
+    queryAwardAndHonorList,
+    editIPRInfo,
+    operateAwardAndHonor,
+    queryXCContractInfo,
+    queryXCContractSubInfo,
+    operateXCContract,
+    transferXCContract,
   },
 } = api;
 
@@ -1572,6 +1580,87 @@ export async function RelIteContractFlow(payload) {
 export async function QueryIteContractFlow(payload) {
   const option = {
     url: queryIteContractFlow,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 查询知识产权列表
+export async function QueryIPRList(payload) {
+  const option = {
+    url: queryIPRList,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 查询获奖荣誉
+export async function QueryAwardAndHonorList(payload) {
+  const option = {
+    url: queryAwardAndHonorList,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 编辑知识产权
+export async function EditIPRInfo(payload) {
+  const option = {
+    url: editIPRInfo,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 编辑获奖荣誉
+export async function OperateAwardAndHonor(payload) {
+  const option = {
+    url: operateAwardAndHonor,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+//
+
+// 查询信创合同列表
+export async function QueryXCContractInfo(payload) {
+  const option = {
+    url: queryXCContractInfo,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 查询信创合同附属信息
+export async function QueryXCContractSubInfo(payload) {
+  const option = {
+    url: queryXCContractSubInfo,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 编辑信创合同信息
+export async function OperateXCContract(payload) {
+  const option = {
+    url: operateXCContract,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 信创合同转办
+export async function TransferXCContract(payload) {
+  const option = {
+    url: transferXCContract,
     method: 'post',
     data: payload,
   };

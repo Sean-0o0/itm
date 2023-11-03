@@ -108,6 +108,7 @@ export default function InfoDisplay(props) {
       </div>
     );
   };
+
   //付款计划
   const getPmtPlan = (arr = [], label = '付款计划：', width = '100%') => {
     return (
@@ -251,6 +252,7 @@ export default function InfoDisplay(props) {
     );
   };
 
+  //供应商信息
   const getSupplierInfoRow = () => {
     return supplier.map(item => (
       <div className="info-row" key={item.GYSID}>
@@ -349,6 +351,18 @@ export default function InfoDisplay(props) {
         </div>
       );
     return null;
+  };
+
+  //知识产权获奖荣誉
+  const ZSCQ_HJRY = (label, val) => {
+    return (
+      <div className="info-item" key={label}>
+        <span>{label}</span>
+        <Tooltip title={val} placement="topLeft">
+          <div style={{ display: 'inline', cursor: 'default' }}>{val}</div>
+        </Tooltip>
+      </div>
+    );
   };
 
   return (
@@ -471,116 +485,6 @@ export default function InfoDisplay(props) {
               >
                 查看详情
               </Link>
-            </div>
-          )}
-          {!isHwSltPrj && (
-            <div className="info-item">
-              <span>获奖信息：</span>
-              {award.length === 0 ? (
-                '暂无数据'
-              ) : (
-                <Popover
-                  placement="bottom"
-                  title={null}
-                  content={tablePopover(award, [
-                    {
-                      title: '奖项名称',
-                      dataIndex: 'JXMC',
-                      width: 180,
-                      key: 'JXMC',
-                      ellipsis: true,
-                      render: txt => (
-                        <Tooltip title={txt} placement="topLeft">
-                          <span style={{ cursor: 'default' }}>{txt}</span>
-                        </Tooltip>
-                      ),
-                    },
-                    {
-                      title: '荣誉等级',
-                      dataIndex: 'RYDJ',
-                      width: 150,
-                      key: 'RYDJ',
-                      ellipsis: true,
-                      render: txt => <span style={{ cursor: 'default' }}>{txt}</span>,
-                    },
-                    {
-                      title: '知识产权类型',
-                      dataIndex: 'ZSCQLX',
-                      width: 150,
-                      key: 'ZSCQLX',
-                      ellipsis: true,
-                      render: txt => <span style={{ cursor: 'default' }}>{txt}</span>,
-                    },
-                    {
-                      title: '获奖日期',
-                      dataIndex: 'HJSJ',
-                      key: 'HJSJ',
-                      ellipsis: true,
-                      render: txt => <span style={{ cursor: 'default' }}>{txt}</span>,
-                    },
-                  ])}
-                  overlayClassName="project-topic-content-popover"
-                >
-                  <a style={{ color: '#3361ff' }}>查看详情</a>
-                </Popover>
-              )}
-            </div>
-          )}
-          {!isHwSltPrj && (
-            <div className="info-item">
-              <span>项目课题：</span>
-              {topic.length === 0 ? (
-                '暂无数据'
-              ) : (
-                <Popover
-                  placement="bottomLeft"
-                  title={null}
-                  content={tablePopover(topic, [
-                    {
-                      title: '课题名称',
-                      dataIndex: 'XMKT',
-                      width: 160,
-                      key: 'XMKT',
-                      ellipsis: true,
-                      render: txt => (
-                        <Tooltip title={txt} placement="topLeft">
-                          <span style={{ cursor: 'default' }}>{txt}</span>
-                        </Tooltip>
-                      ),
-                    },
-                    {
-                      title: '进度',
-                      dataIndex: 'JD',
-                      width: 100,
-                      key: 'JD',
-                      ellipsis: true,
-                      render: txt => <span style={{ cursor: 'default' }}>{txt}%</span>,
-                    },
-                    {
-                      title: '简介',
-                      dataIndex: 'JJ',
-                      key: 'JJ',
-                      ellipsis: true,
-                      render: txt => (
-                        <Tooltip title={txt} placement="topLeft">
-                          <span style={{ cursor: 'default' }}>{txt}</span>
-                        </Tooltip>
-                      ),
-                    },
-                    {
-                      title: '当前进展',
-                      dataIndex: 'DQJZ',
-                      width: 100,
-                      key: 'DQJZ',
-                      ellipsis: true,
-                      render: txt => <span style={{ cursor: 'default' }}>{txt}</span>,
-                    },
-                  ])}
-                  overlayClassName="project-topic-content-popover"
-                >
-                  <a style={{ color: '#3361ff' }}>查看详情</a>
-                </Popover>
-              )}
             </div>
           )}
           {!isHwSltPrj && (
@@ -789,7 +693,7 @@ export default function InfoDisplay(props) {
             {String(LOGIN_USER_INFO.id) === String(prjBasic.XMJLID) && (
               <div className="info-item" key="需求列表：">
                 <span>需求列表：</span>
-                {award[0]?.ID === '0' ? (
+                {award[0]?.ID === '0' ? ( //与后端约定的，某些情况，如硬件入围时返回特殊数据用于判断是否显示
                   '暂无数据'
                 ) : (
                   <a style={{ color: '#3361ff' }} onClick={() => openXqlbModal(xmid)}>
@@ -801,7 +705,7 @@ export default function InfoDisplay(props) {
             {String(LOGIN_USER_INFO.id) === String(prjBasic.XMJLID) && (
               <div className="info-item" key="询比结果：">
                 <span>询比结果：</span>
-                {topic[0]?.XMID === '0' ? (
+                {topic[0]?.XMID === '0' ? ( //与后端约定的，某些情况，如硬件入围时返回特殊数据用于判断是否显示
                   '暂无数据'
                 ) : (
                   <a style={{ color: '#3361ff' }} onClick={() => openXbjglbModal(xmid)}>
@@ -812,7 +716,7 @@ export default function InfoDisplay(props) {
             )}
             <div className="info-item" key="标段统计：">
               <span>标段统计：</span>
-              {demand[0]?.XMID === '0' ? (
+              {demand[0]?.XMID === '0' ? ( //与后端约定的，某些情况，如硬件入围时返回特殊数据用于判断是否显示
                 '暂无数据'
               ) : (
                 <a style={{ color: '#3361ff' }} onClick={() => openBdtjlbModal(xmid)}>
@@ -828,6 +732,30 @@ export default function InfoDisplay(props) {
         <div className="info-box" key="gysxx">
           <div className="top-title">供应商信息</div>
           {getSupplierInfoRow()}
+        </div>
+      )}
+      {/* 知识产权和获奖荣誉信息 */}
+      {[...topic.flatMap(x => x.data), ...award.flatMap(x => x.data)].length > 0 && (
+        <div className="info-box" key="zscqhhjryxx">
+          <div className="top-title">知识产权和获奖荣誉信息</div>
+          <div className="info-row-box">
+            {topic.map(x =>
+              x.data.map((d, i) =>
+                ZSCQ_HJRY(
+                  x.title + (x.data.length > 1 ? '-' + (i + 1) : '') + '：',
+                  `（${d.DQZT}）` + d.CQMC,
+                ),
+              ),
+            )}
+            {award.map(x =>
+              x.data.map((d, i) =>
+                ZSCQ_HJRY(
+                  x.title + (x.data.length > 1 ? '-' + (i + 1) : '') + '：',
+                  `（${d.DQZT}）` + d.HJMC,
+                ),
+              ),
+            )}
+          </div>
         </div>
       )}
     </div>

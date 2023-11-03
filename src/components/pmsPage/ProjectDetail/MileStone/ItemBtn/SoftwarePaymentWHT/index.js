@@ -147,7 +147,7 @@ export default connect(({ global }) => ({
               <Input
                 maxLength={500}
                 placeholder={'请输入' + label}
-                allowClear="true"
+                allowClear
                 style={{ width: '100%' }}
               />,
             )}
