@@ -322,10 +322,10 @@ const TableBox = props => {
     },
     {
       title: '涉及项目数',
-      dataIndex: 'SJXM',
+      dataIndex: 'SJXMS',
       width: '9%',
       align: 'center',
-      key: 'SJXM',
+      key: 'SJXMS',
       ellipsis: true,
       sorter: true,
       sortDirections: ['descend', 'ascend'],
@@ -510,6 +510,18 @@ const TableBox = props => {
       ),
     },
     {
+      title: '项目阶段',
+      dataIndex: 'XMJD',
+      key: 'XMJD',
+      width: '15%',
+      ellipsis: true,
+      render: txt => (
+        <Tooltip title={txt} placement="topLeft">
+          <span style={{ cursor: 'default' }}>{txt}</span>
+        </Tooltip>
+      ),
+    },
+    {
       title: '合同金额(元)',
       dataIndex: 'HTJE',
       width: '15%',
@@ -525,7 +537,7 @@ const TableBox = props => {
     {
       title: '已付款金额(元)',
       dataIndex: 'YFKJE',
-      width: '17%',
+      width: '16%',
       align: 'right',
       key: 'YFKJE',
       ellipsis: true,
@@ -538,7 +550,7 @@ const TableBox = props => {
     {
       title: '未付款金额(元)',
       dataIndex: 'WFKJE',
-      width: '17%',
+      width: '16%',
       align: 'right',
       key: 'WFKJE',
       ellipsis: true,
@@ -551,7 +563,7 @@ const TableBox = props => {
     {
       title: '付款时间',
       dataIndex: 'FKSJ',
-      width: '15%',
+      width: '12%',
       key: 'FKSJ',
       ellipsis: true,
       sorter: (a, b) => Number(a.FKSJ || 0) - Number(b.FKSJ || 0),
@@ -804,7 +816,7 @@ const TableBox = props => {
         </div>
         <Drawer
           title="项目付款详情"
-          width={850}
+          width={950}
           onClose={() =>
             setDrawerData({
               visible: false,

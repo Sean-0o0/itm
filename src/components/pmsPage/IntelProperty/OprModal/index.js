@@ -12,6 +12,7 @@ import {
   TreeSelect,
   Icon,
   Tooltip,
+  DatePicker,
 } from 'antd';
 import moment from 'moment';
 import RJZZ from './RJZZ';
@@ -51,7 +52,14 @@ export default connect(({ global = {} }) => ({
       fromPrjDetail = false,
       isGLY,
     } = props;
-    const { FMZLDQZT = [], ZSCQDQZT = [], QYBZDQZT = [], ZLLX = [], CYXZ = [] } = dictionary;
+    const {
+      FMZLDQZT = [],
+      ZSCQDQZT = [],
+      QYBZDQZT = [],
+      ZLLX = [],
+      CYXZ = [],
+      HYBZLX = [],
+    } = dictionary;
     const { getFieldDecorator, getFieldValue, validateFields, resetFields } = form;
     const [isSpinning, setIsSpinning] = useState(false); //加载状态
     const [upldData, setUpldData] = useState([]); //附件数据
@@ -87,7 +95,7 @@ export default connect(({ global = {} }) => ({
         paging: -1,
         total: -1,
         sort: '',
-        cxlx: 'GR',
+        cxlx: isGLY ? 'ALL' : 'GR',
       })
         .then(res => {
           if (res.code === 1) {
@@ -291,6 +299,7 @@ export default connect(({ global = {} }) => ({
       sltArr = [],
       valueField,
       titleField,
+      required = true,
     }) => {
       return (
         <Col span={12}>
@@ -299,7 +308,7 @@ export default connect(({ global = {} }) => ({
               initialValue,
               rules: [
                 {
-                  required: true,
+                  required,
                   message: label + '不允许空值',
                 },
               ],
@@ -355,7 +364,15 @@ export default connect(({ global = {} }) => ({
     );
 
     //输入框
-    const getInput = (label, dataIndex, initialValue, labelCol, wrapperCol, maxLength) => {
+    const getInput = (
+      label,
+      dataIndex,
+      initialValue,
+      labelCol,
+      wrapperCol,
+      maxLength,
+      disabled,
+    ) => {
       return (
         <Col span={12}>
           <Form.Item label={label} labelCol={{ span: labelCol }} wrapperCol={{ span: wrapperCol }}>
@@ -363,16 +380,17 @@ export default connect(({ global = {} }) => ({
               initialValue,
               rules: [
                 {
-                  required: true,
+                  required: disabled ? false : true,
                   message: label + '不允许空值',
                 },
               ],
             })(
               <Input
-                placeholder={'请输入' + label}
+                placeholder={disabled ? '待定' : '请输入' + label}
                 allowClear
                 style={{ width: '100%' }}
                 maxLength={maxLength}
+                disabled={disabled}
               />,
             )}
           </Form.Item>
@@ -511,6 +529,25 @@ export default connect(({ global = {} }) => ({
       );
     };
 
+    //日期选择器
+    const getDatePicker = (label, dataIndex, initialValue, labelCol, wrapperCol) => {
+      return (
+        <Col span={12}>
+          <Form.Item label={label} labelCol={{ span: labelCol }} wrapperCol={{ span: wrapperCol }}>
+            {getFieldDecorator(dataIndex, {
+              initialValue,
+              rules: [
+                {
+                  required: true,
+                  message: label + '不允许空值',
+                },
+              ],
+            })(<DatePicker style={{ width: '100%' }} />)}
+          </Form.Item>
+        </Col>
+      );
+    };
+
     //提交数据
     const onOk = () => {
       validateFields(async (err, values) => {
@@ -573,6 +610,8 @@ export default connect(({ global = {} }) => ({
             certificateNo: values.zsh,
             patentType: turnNumber(values.zllx),
             participateType: turnNumber(values.cyxz),
+            checkInDate: turnNumber(values.djsj?.format('YYYYMMDD')),
+            standardType: turnNumber(values.bzlx),
             operateType: oprType,
           };
           EditIPRInfo(params)
@@ -657,6 +696,7 @@ export default connect(({ global = {} }) => ({
                 getMultipleUpload,
                 getSingleTreeSelector,
                 getInputDisabled,
+                getDatePicker,
               }}
               dataProps={{
                 rowData,
@@ -669,7 +709,7 @@ export default connect(({ global = {} }) => ({
                 fromPrjDetail,
                 isGLY,
               }}
-              funcProps={{ setUpldData, setIsTurnRed }}
+              funcProps={{ setUpldData, setIsTurnRed, getFieldValue }}
             />
           );
         case 'HYBZ':
@@ -681,6 +721,7 @@ export default connect(({ global = {} }) => ({
                 getMultipleUpload,
                 getSingleTreeSelector,
                 getInputDisabled,
+                getDatePicker,
               }}
               dataProps={{
                 rowData,
@@ -692,8 +733,9 @@ export default connect(({ global = {} }) => ({
                 CYXZ,
                 fromPrjDetail,
                 isGLY,
+                HYBZLX,
               }}
-              funcProps={{ setUpldData, setIsTurnRed }}
+              funcProps={{ setUpldData, setIsTurnRed, getFieldValue }}
             />
           );
         case 'QYBZ':
@@ -705,6 +747,7 @@ export default connect(({ global = {} }) => ({
                 getMultipleUpload,
                 getSingleTreeSelector,
                 getInputDisabled,
+                getDatePicker,
               }}
               dataProps={{
                 rowData,
@@ -716,7 +759,7 @@ export default connect(({ global = {} }) => ({
                 fromPrjDetail,
                 isGLY,
               }}
-              funcProps={{ setUpldData, setIsTurnRed }}
+              funcProps={{ setUpldData, setIsTurnRed, getFieldValue }}
             />
           );
         default:
@@ -728,6 +771,7 @@ export default connect(({ global = {} }) => ({
                 getMultipleUpload,
                 getSingleTreeSelector,
                 getInputDisabled,
+                getDatePicker,
               }}
               dataProps={{
                 rowData,

@@ -3,7 +3,7 @@ import { useLocation } from 'react-router';
 import moment from 'moment';
 import { Link } from 'react-router-dom';
 import ShowAllModal from './ShowAllModal';
-import { Tooltip } from 'antd';
+import { message, Tooltip } from 'antd';
 import OprModal from '../../AwardHonor/OprModal';
 
 export default function SystemNotice(props) {
@@ -27,9 +27,14 @@ export default function SystemNotice(props) {
     xxid,
     textHide = false,
     kzzd = '{}',
+    gqts = '',
   }) => {
     const handleClick = () => {
       if (xxlx === '4') {
+        if (gqts !== '') {
+          message.warn(JSON.parse(gqts).tsnr, 1);
+          return;
+        }
         if (JSON.parse(kzzd).LX === 'HJRY') {
           handleSb(JSON.parse(kzzd));
           return;

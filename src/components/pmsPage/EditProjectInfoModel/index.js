@@ -1269,18 +1269,20 @@ class EditProjectInfoModel extends React.Component {
         result.push(list[i]);
         continue;
       }
-      if (obj[id].children) {
-        obj[id].children.push(list[i]);
-      } else {
-        obj[id].children = [list[i]];
+      if (obj.hasOwnProperty(id)) {
+        if (obj[id]?.children) {
+          obj[id].children.push(list[i]);
+        } else {
+          obj[id].children = [list[i]];
+        }
       }
     }
     //设置默认展开的节点
     let expend = [];
     let exp = {};
     // ////console.log("result",result)
-    exp = JSON.parse(JSON.stringify(result[0]));
-    exp.children.map(item => {
+    exp = JSON.parse(JSON.stringify(result[0] || '{}'));
+    exp.children?.map(item => {
       delete item.children;
       // if (item.orgName === "公司总部") {
       expend.push(item.orgId);

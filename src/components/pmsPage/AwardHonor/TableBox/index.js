@@ -164,7 +164,7 @@ const TableBox = props => {
           ellipsis: true,
           render: (txt, row) => (
             <div className="opr-column">
-              {moment().isSameOrBefore(moment(String(row.SBJZRQ)), 'day') && (
+              {(moment().isSameOrBefore(moment(String(row.SBJZRQ)), 'day') || isGLY) && (
                 <span onClick={() => handleAddSbRow(row)}>申报</span>
               )}
               {allowEdit(row.LXRID) && <span onClick={() => handleEdit(row)}>修改</span>}
@@ -252,7 +252,7 @@ const TableBox = props => {
           ellipsis: true,
           render: (txt, row) => (
             <div className="opr-column">
-              {moment().isSameOrBefore(moment(String(row.SBJZRQ)), 'day') && (
+              {(moment().isSameOrBefore(moment(String(row.SBJZRQ)), 'day') || isGLY) && (
                 <span onClick={() => handleAddSbRow(row)}>申报</span>
               )}
               {allowEdit(row.LXRID) && <span onClick={() => handleEdit(row)}>修改</span>}

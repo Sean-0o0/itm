@@ -22,6 +22,7 @@ const TableBox = props => {
     ZLLX = [],
     CYXZ = [],
     isGLY,
+    HYBZLX = [],
   } = dataProps;
   const {
     setFilterData = () => {},
@@ -43,7 +44,7 @@ const TableBox = props => {
       title: '关联项目',
       dataIndex: 'GLXM',
       key: 'GLXM',
-      width: '14%',
+      // width: '14%',
       ellipsis: true,
       render: (txt, row) => (
         <div title={txt}>
@@ -136,9 +137,25 @@ const TableBox = props => {
           title: '参与类型',
           dataIndex: 'CYLX',
           key: 'CYLX',
-          width: '10%',
+          width: '8%',
           ellipsis: true,
-          render: txt => getNote(CYXZ, txt),
+          render: txt => (
+            <Tooltip title={getNote(CYXZ, txt)} placement="topLeft">
+              <span style={{ cursor: 'default' }}>{getNote(CYXZ, txt)}</span>
+            </Tooltip>
+          ),
+        },
+        {
+          title: '标准类型',
+          dataIndex: 'HYBZLX',
+          key: 'HYBZLX',
+          width: '8%',
+          ellipsis: true,
+          render: txt => (
+            <Tooltip title={getNote(HYBZLX, txt)} placement="topLeft">
+              <span style={{ cursor: 'default' }}>{getNote(HYBZLX, txt)}</span>
+            </Tooltip>
+          ),
         },
       ];
     } else {
@@ -342,6 +359,7 @@ const TableBox = props => {
       GLXMID: turnString(row.GLXMID),
       ZLLX: turnString(row.ZLLX),
       CYXZ: turnString(row.CYLX),
+      HYBZLX: turnString(row.HYBZLX),
       NAME: getName(activeKey, row),
       FJ: row.FJ,
     };

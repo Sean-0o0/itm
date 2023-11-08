@@ -23,7 +23,11 @@ class OperateTab extends React.Component {
   }
 
   onRangePickerChange(date, dateString) {
-    console.log("🚀 ~ file: index.js ~ line 34 ~ OperateTab ~ onRangePickerChange ~ date, dateString", date, dateString)
+    console.log(
+      '🚀 ~ file: index.js ~ line 34 ~ OperateTab ~ onRangePickerChange ~ date, dateString',
+      date,
+      dateString,
+    );
     this.setState({
       dateSearch: dateString[0] === '' && dateString[1] === '' ? [] : [...dateString],
     });
@@ -33,36 +37,19 @@ class OperateTab extends React.Component {
     const { inputSearch, dateSearch } = this.state;
     const { handleTableFilter } = this.props;
     return (
-      <div style={{ margin: '2rem 0 0 0' }}>
-        <Row gutter={24}>
+      <div style={{ margin: '13.4px 0 0 0' }}>
+        <Row>
           <Col span={10}>
-            <Form.Item label="文件类别" labelCol={{ span: 6 }} wrapperCol={{ span: 18 }}>
-              <Input placeholder="请输入文件类别" onChange={(e) => this.onInputChange(e)}/>
+            <Form.Item label="标题/文件类别" labelCol={{ span: 8 }} wrapperCol={{ span: 16 }}>
+              <Input placeholder="请输入标题/文件类别" onChange={e => this.onInputChange(e)} />
             </Form.Item>
           </Col>
-          {/* <Col span={8}>
-            <Form.Item label="标题" labelCol={{span: 6}} wrapperCol={{span: 18}}>
-              <Input placeholder="请输入标题"/>
-            </Form.Item>
-          </Col>
-          <Col span={8}>
-            <Form.Item label="文号" labelCol={{span: 6}} wrapperCol={{span: 18}}>
-              <Input placeholder="请输入文号"/>
-            </Form.Item>
-          </Col>
-        </Row>
-        <Row gutter={24}>
-          <Col span={8}>
-            <Form.Item label="流程状态" labelCol={{span: 6}} wrapperCol={{span: 18}}>
-              <Input placeholder="请输入流程状态"/>
-            </Form.Item>
-          </Col> */}
-          <Col span={11}>
-            <Form.Item label="拟稿日期" labelCol={{ span: 6 }} wrapperCol={{ span: 18 }}>
+          <Col span={12}>
+            <Form.Item label="拟稿日期" labelCol={{ span: 6 }} wrapperCol={{ span: 16 }}>
               <RangePicker onChange={(d, ds) => this.onRangePickerChange(d, ds)} />
             </Form.Item>
           </Col>
-          <Col span={3} style={{ paddingTop: '0.25rem' }}>
+          <Col span={2} style={{ paddingTop: '1.68px' }}>
             <Form.Item>
               <Button
                 type="primary"

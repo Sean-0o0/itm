@@ -96,7 +96,7 @@ export default connect(({ global = {} }) => ({
         paging: -1,
         total: -1,
         sort: '',
-        cxlx: 'GR',
+        cxlx: isGLY ? 'ALL' : 'GR',
       })
         .then(res => {
           if (res.code === 1) {
@@ -104,7 +104,13 @@ export default connect(({ global = {} }) => ({
               ...p,
               prjName: [...res.record].map(x => ({ XMMC: x.xmmc, XMID: x.xmid })),
             }));
-            getContactData();
+            if (isGLY) {
+              getContactData();
+            } else if (fromPrjDetail !== false) {
+              getTableData();
+            } else {
+              setIsSpinning(false);
+            }
           }
         })
         .catch(e => {
@@ -225,7 +231,12 @@ export default connect(({ global = {} }) => ({
                     return parentArr.length > 0;
                   });
                   setSltData(p => ({ ...p, contact: [...finalData] }));
-                  getTableData();
+                  if (fromPrjDetail !== false) {
+                    console.log('ggg');
+                    getTableData(); //来自项目详情才有下拉框
+                  } else {
+                    setIsSpinning(false);
+                  }
                 }
               })
               .catch(e => {

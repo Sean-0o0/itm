@@ -62,6 +62,10 @@ export default function ShowAllModal(props) {
       render: (txt, row) => {
         const handleClick = () => {
           if (row.xxlx === '4') {
+            if (row.gqts !== '') {
+              message.warn(JSON.parse(row.gqts).tsnr, 1);
+              return;
+            }
             if (JSON.parse(row.kzzd).LX === 'HJRY') {
               handleSb(JSON.parse(row.kzzd));
               return;

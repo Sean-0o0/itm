@@ -83,7 +83,7 @@ class AssociatedFile extends React.Component {
         let str = `\S*${search}\S*`;
         let reg = new RegExp(str, 'i'); //不区分大小写
         list.map(item => {
-          if (reg.test(item.objectname)) {
+          if (reg.test(item.objectname) || reg.test(item.title)) {
             data.push(item);
           }
         });

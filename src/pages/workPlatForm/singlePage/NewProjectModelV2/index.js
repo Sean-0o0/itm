@@ -6538,7 +6538,7 @@ class NewProjectModelV2 extends React.Component {
                                                 e.sxlb?.length !== 1 &&
                                                 e.swlxmc !== 'new' && (
                                                   <div
-                                                    className="editProject addHover"
+                                                    className="addHover"
                                                     style={{
                                                       display: 'grid',
                                                       alignItems: 'center',

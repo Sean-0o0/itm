@@ -14,7 +14,14 @@ export default function IntelProperty(props) {
       params: { params = '' },
     },
   } = props;
-  const { ZLLX = [], CYXZ = [], ZSCQDQZT = [], FMZLDQZT = [], QYBZDQZT = [] } = dictionary;
+  const {
+    ZLLX = [],
+    CYXZ = [],
+    ZSCQDQZT = [],
+    FMZLDQZT = [],
+    QYBZDQZT = [],
+    HYBZLX = [],
+  } = dictionary;
   const [tableData, setTableData] = useState({
     data: [],
     current: 1,
@@ -173,6 +180,7 @@ export default function IntelProperty(props) {
             ZLLX,
             CYXZ,
             isGLY,
+            HYBZLX,
           }}
           funcProps={{ setFilterData, queryTableData, setSpinningData, allowEdit }}
         />

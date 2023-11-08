@@ -188,7 +188,7 @@ function MoreOperationModal(props) {
     {
       title: '人员需求',
       dataIndex: 'RYDJ',
-      width: '10%',
+      // width: '10%',
       // align: 'center',
       key: 'RYDJ',
       ellipsis: true,
