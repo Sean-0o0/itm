@@ -42,6 +42,8 @@ export default function AwardHonor(props) {
   }); //加载状态
   const [isGLY, setIsGLY] = useState(false); //是否管理员
   const CUR_USER_ID = Number(JSON.parse(sessionStorage.getItem('user')).id);
+  const [expandedRowKeys, setExpandedRowKeys] = useState([]); //默认展开行
+  const [subTableData, setSubTableData] = useState([]); //子表数据
   const tabData = [
     { title: '科技奖项', value: 'KJJX' },
     { title: '研究课题', value: 'YJKT' },
@@ -56,6 +58,7 @@ export default function AwardHonor(props) {
       }));
       setActiveKey(obj.tab);
       setFilterData(p => ({ ...p, awardName: obj.name }));
+      getSubTableData(obj.rowID);
       queryTableData({ tab: obj.tab, ...filterData, awardName: obj.name });
     } else {
       queryTableData({});
@@ -140,6 +143,38 @@ export default function AwardHonor(props) {
       });
   };
 
+  //查询获奖荣誉 子表
+  const getSubTableData = async ID => {
+    if (!expandedRowKeys.includes(ID)) {
+      setExpandedRowKeys(p => [...p, ID]);
+    }
+    let arr = [...tableData.data];
+    arr.forEach(x => {
+      if (x.ID === ID) x.loading = true;
+    });
+    setTableData(p => ({ ...p, data: arr }));
+    // 查询获奖荣誉 子表
+    let res = await QueryAwardAndHonorList({
+      listId: Number(ID),
+      tab: activeKey,
+      current: 1,
+      pageSize: 10,
+      paging: -1,
+      queryType: 'XQ',
+      sort: '',
+      total: -1,
+    });
+    const data = JSON.parse(res.result);
+    setSubTableData(p => ({
+      ...p,
+      [ID]: data,
+    }));
+    arr.forEach(x => {
+      if (x.ID === ID) x.loading = false;
+    });
+    setTableData(p => ({ ...p, data: arr }));
+  };
+
   //tab切换回调
   const handleTabsChange = key => {
     //清空筛选数据
@@ -182,8 +217,19 @@ export default function AwardHonor(props) {
             HJQK,
             KTZT,
             isGLY,
+            expandedRowKeys,
+            subTableData,
           }}
-          funcProps={{ setFilterData, queryTableData, setSpinningData, setTableData, allowEdit }}
+          funcProps={{
+            setFilterData,
+            queryTableData,
+            setSpinningData,
+            setTableData,
+            allowEdit,
+            setExpandedRowKeys,
+            setSubTableData,
+            getSubTableData,
+          }}
         />
       </Spin>
     </div>

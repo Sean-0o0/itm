@@ -46,7 +46,7 @@ import PrizeInfo from '../../../../components/pmsPage/EditProjectInfoModel/Other
 import SubItemInfo from './SubItemInfo';
 import {
   InitIterationProjectInfo,
-  QueryProjectListPara,
+  QueryIteProjectList,
   QueryUserRole,
 } from '../../../../services/pmsServices';
 
@@ -1049,18 +1049,20 @@ class NewProjectModelV2 extends React.Component {
         result.push(list[i]);
         continue;
       }
-      if (obj[id].children) {
-        obj[id].children.push(list[i]);
-      } else {
-        obj[id].children = [list[i]];
+      if (obj.hasOwnProperty(id)) {
+        if (obj[id]?.children) {
+          obj[id].children.push(list[i]);
+        } else {
+          obj[id].children = [list[i]];
+        }
       }
     }
     //设置默认展开的节点
     let expend = [];
     let exp = {};
-    // //console.log("result",result)
-    exp = JSON.parse(JSON.stringify(result[0]));
-    exp.children.map(item => {
+    // ////console.log("result",result)
+    exp = JSON.parse(JSON.stringify(result[0] || '{}'));
+    exp.children?.map(item => {
       delete item.children;
       // if (item.orgName === "公司总部") {
       expend.push(item.orgId);
@@ -1747,7 +1749,7 @@ class NewProjectModelV2 extends React.Component {
           let projectTypeZYFlag = false;
           //自研项目不展示采购方式
           if (
-            projectTypeZY.filter(i => String(i.ID) === String(this.state.basicInfo.projectType))
+            projectTypeZY?.filter(i => String(i.ID) === String(this.state.basicInfo.projectType))
               .length > 0
           ) {
             projectTypeZYFlag = true;
@@ -1767,7 +1769,7 @@ class NewProjectModelV2 extends React.Component {
 
   // 获取关联迭代项目下拉框数据
   getGlddxmData() {
-    return QueryProjectListPara({
+    return QueryIteProjectList({
       current: 1,
       pageSize: -1, //这边是迭代项目id
       paging: -1,
@@ -1777,7 +1779,7 @@ class NewProjectModelV2 extends React.Component {
     })
       .then(res => {
         if (res?.success) {
-          const data = [...JSON.parse(res.projectRecord)];
+          const data = [...JSON.parse(res.result)].map(x => ({ ...x, ID: String(x.ID) }));
           // console.log('🚀 ~ file: index.js:1551 ~ NewProjectModelV2 ~ getGlddxmData ~ data:', data);
           this.setState({
             glddxmData: data,

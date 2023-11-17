@@ -133,6 +133,7 @@ function VisitedRoutes(props) {
         }
       });
     };
+    //尾部有带参数的页面需要配置
     let regExpArr = [
       /^\/pms\/manage\/ProjectInfo/,
       /^\/pms\/manage\/ProjectDetail/,
@@ -159,6 +160,7 @@ function VisitedRoutes(props) {
       /^\/pms\/manage\/AwardHonor/,
       /^\/pms\/manage\/InnovationContract/,
       /^\/pms\/manage\/InnovationContractEdit/,
+      /^\/pms\/manage\/InnovationContractView/,
     ];
     regExpArr.forEach(regExp => {
       matchFilter(regExp);
@@ -318,6 +320,10 @@ function VisitedRoutes(props) {
               {
                 title: '信创合同信息编辑',
                 urlEnd: 'InnovationContractEdit',
+              },
+              {
+                title: '信创合同信息查看',
+                urlEnd: 'InnovationContractView',
               },
             ];
             urlEndArr.forEach(x => {

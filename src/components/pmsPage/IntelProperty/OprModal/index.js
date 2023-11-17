@@ -21,7 +21,6 @@ import {
   EditIPRInfo,
   FetchQueryOwnerProjectList,
   QueryMemberInfo,
-  QueryProjectListPara,
 } from '../../../../services/pmsServices';
 import { connect } from 'dva';
 import FMZL from './FMZL';
@@ -68,6 +67,7 @@ export default connect(({ global = {} }) => ({
       contact: [],
       prjName: [],
     }); //下拉框数据
+    const [upldError, setUpldError] = useState([]); //附件报红数据
 
     useEffect(() => {
       if (visible) {
@@ -107,7 +107,7 @@ export default connect(({ global = {} }) => ({
           }
         })
         .catch(e => {
-          console.error('QueryProjectListPara', e);
+          console.error('FetchQueryOwnerProjectList', e);
           message.error('项目名称下拉框信息查询失败', 1);
           setIsSpinning(false);
         });
@@ -431,17 +431,20 @@ export default connect(({ global = {} }) => ({
         let list = [...info.fileList]; //每次改变后的数据列表
         if (list.length > 0) {
           list.forEach(item => {
+            //原来没有，则为新数据，加进去
             if (fileList.findIndex(x => x.uid === item.uid) === -1) {
-              //原来没有，则为新数据，加进去
-              setFileList([
-                ...fileList,
-                {
-                  ...item,
-                  uid: item.uid,
-                  name: item.name,
-                  status: item.status === 'uploading' ? 'done' : item.status,
-                },
-              ]);
+              //没报错
+              if (!upldError.includes(item.uid)) {
+                setFileList([
+                  ...fileList,
+                  {
+                    ...item,
+                    uid: item.uid,
+                    name: item.name,
+                    status: item.status === 'uploading' ? 'done' : item.status,
+                  },
+                ]);
+              }
             } else {
               //原来有的数据，判断是否已移除
               setFileList(fileList.filter(x => x.status !== 'removed'));
@@ -453,7 +456,12 @@ export default connect(({ global = {} }) => ({
           setIsTurnRed(true);
         }
       };
-      const onBeforeUpload = () => {};
+      const onBeforeUpload = async file => {
+        if ((await file.size) === 0) {
+          setUpldError(p => [...p, file.uid]);
+          message.error(`不能上传0字节文件（${file.name}）！`, 2);
+        }
+      };
       return (
         <Col span={12}>
           <Form.Item

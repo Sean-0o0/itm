@@ -1,9 +1,6 @@
 import React, { useEffect, useState, forwardRef, useImperativeHandle } from 'react';
 import { Select, Button, Input, TreeSelect, Row, Col, Icon, message, DatePicker } from 'antd';
 import {
-  QueryProjectListPara,
-  QueryProjectListInfo,
-  QueryOutsourceRequirementList,
   QueryRequirementListPara,
   QueryUserRole,
   FetchQueryGysInZbxx,

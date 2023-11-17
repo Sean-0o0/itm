@@ -884,4 +884,40 @@ export default [
     url: '/projectManage/transferXCContract',
     dis: '信创合同转办',
   },
+  {
+    code: '',
+    key: 'queryProjectXCContract',
+    url: '/projectManage/queryProjectXCContract',
+    dis: '项目详情里查信创合同',
+  },
+  {
+    code: '',
+    key: 'queryIteProjectList',
+    url: '/projectManage/queryIteProjectList',
+    dis: '查询迭代项目',
+  },
+  {
+    code: '',
+    key: 'queryUndoMatters',
+    url: '/projectManage/queryUndoMatters',
+    dis: '查询未完成事项',
+  },
+  {
+    code: '',
+    key: 'queryDocTemplateLibrary',
+    url: '/projectManage/queryDocTemplateLibrary',
+    dis: '查询文档模板库',
+  },
+  {
+    code: '',
+    key: 'editDocTemplate',
+    url: '/projectManage/editDocTemplate',
+    dis: '编辑文档模板',
+  },
+  {
+    code: '',
+    key: 'queryDocType',
+    url: '/projectManage/queryDocType',
+    dis: '查询文档类型',
+  },
 ];

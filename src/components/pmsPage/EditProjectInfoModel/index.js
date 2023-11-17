@@ -43,16 +43,12 @@ import {
 } from '../../../services/projectManage';
 import { DecryptBase64, EncryptBase64 } from '../../Common/Encrypt';
 import config from '../../../utils/config';
-import LBDialog from 'livebos-frame/dist/LBDialog';
-import RiskOutline from './RiskOutline';
 import {
   FetchQueryGysInZbxx,
-  FetchQueryHTXXByXQTC,
-  FetchQueryZBXXByXQTC,
   FetchQueryZCXX,
   InitIterationProjectInfo,
+  QueryIteProjectList,
   QueryPaymentAccountList,
-  QueryProjectListPara,
   QueryUserRole,
   UpdateHTXX,
   UpdateProjectOtherInfo,
@@ -801,7 +797,7 @@ class EditProjectInfoModel extends React.Component {
 
   // 获取关联迭代项目下拉框数据
   getGlddxmData(glddxmid) {
-    return QueryProjectListPara({
+    return QueryIteProjectList({
       current: 1,
       pageSize: glddxmid, //这边是迭代项目id
       paging: -1,
@@ -811,9 +807,9 @@ class EditProjectInfoModel extends React.Component {
     })
       .then(res => {
         if (res?.success) {
-          const data = [...JSON.parse(res.projectRecord)].filter(
-            x => x.ID !== String(this.state.basicInfo.projectId),
-          );
+          const data = [...JSON.parse(res.result)]
+            .map(x => ({ ...x, ID: String(x.ID) }))
+            .filter(x => x.ID !== String(this.state.basicInfo.projectId));
           this.setState({
             glddxmData: data,
           });
@@ -2596,8 +2592,10 @@ class EditProjectInfoModel extends React.Component {
         return;
       }
     }
-    if (Number(purchaseInfo.lxje) < Number(purchaseInfo.contractValue)) {
-      message.warn('合同金额不能超过本项目立项金额(' + purchaseInfo.lxje + '元),请修改！');
+    if (Number(this.state.budgetInfo.projectBudget) < Number(purchaseInfo.contractValue)) {
+      message.warn(
+        '合同金额不能超过本项目金额(' + this.state.budgetInfo.projectBudget + '元),请修改！',
+      );
       return;
     }
     //付款金额总数
@@ -7601,7 +7599,7 @@ class EditProjectInfoModel extends React.Component {
                                                 e.sxlb?.length !== 1 &&
                                                 e.swlxmc !== 'new' && (
                                                   <div
-                                                    className="editProject addHover"
+                                                    className="addHover"
                                                     style={{
                                                       display: 'grid',
                                                       alignItems: 'center',

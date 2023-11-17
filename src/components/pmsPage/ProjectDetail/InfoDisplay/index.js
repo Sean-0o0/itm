@@ -4,6 +4,7 @@ import moment from 'moment';
 import { Link } from 'react-router-dom';
 import config from '../../../../utils/config';
 import axios from 'axios';
+import { useHistory } from 'react-router';
 import { EncryptBase64 } from '../../../Common/Encrypt';
 import BridgeModel from '../../../Common/BasicModal/BridgeModel';
 import BidSectionModel from '../../HardwareItems/BidSectionModel';
@@ -13,7 +14,7 @@ const {
 } = api;
 
 export default function InfoDisplay(props) {
-  const { prjData, xmid, routes, isLeader, isHwSltPrj, isBdgtMnger, isDDXM } = props;
+  const { prjData, xmid, routes, isLeader, isHwSltPrj, isBdgtMnger, isDDXM, grayTest = {} } = props;
   const {
     prjBasic = {},
     award = [],
@@ -27,7 +28,9 @@ export default function InfoDisplay(props) {
     member = [],
     contrastArr = [],
     glddxmData = [],
+    invCData = [],
   } = prjData;
+  const history = useHistory();
   let LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
   //liveBos弹窗配置
   const [lbModal, setLbModal] = useState({
@@ -365,6 +368,60 @@ export default function InfoDisplay(props) {
     );
   };
 
+  //合同其他明细
+  const getHtqtmx = (data = []) => {
+    const handleClick = htbh => {
+      history.push({
+        pathname:
+          '/pms/manage/InnovationContractView/' +
+          EncryptBase64(
+            JSON.stringify({
+              htbh,
+              routes,
+            }),
+          ),
+      });
+    };
+    let node = null;
+    if (invCData.length === 1)
+      node = (
+        <a style={{ color: '#3361ff' }} onClick={() => handleClick(invCData[0].HTBH)}>
+          查看详情
+        </a>
+      );
+    else
+      node = (
+        <Popover
+          placement="rightTop"
+          title={null}
+          arrowPointAtCenter
+          content={
+            <div className="list">
+              {data.map(x => (
+                <div
+                  className="item"
+                  key={x.HTMC + x.HTID}
+                  style={{ maxWidth: 385, color: '#3361ff' }}
+                  onClick={() => handleClick(x.HTBH)}
+                >
+                  {x.HTMC}
+                </div>
+              ))}
+            </div>
+          }
+          overlayClassName="other-supplier-content-popover"
+        >
+          <a style={{ color: '#3361ff' }}>查看详情</a>
+        </Popover>
+      );
+    return (
+      <div className="info-item" key="htqtmx">
+        <span>合同其他明细：</span>
+        {node}
+      </div>
+    );
+  };
+
   return (
     <div className="info-display-box">
       {/* 需求列表 */}
@@ -624,21 +681,17 @@ export default function InfoDisplay(props) {
             bidding.LYBZJ,
             bidding.PBBG,
             otrSupplier[0]?.GYSMC,
-          ]) ? null : (
+          ]) && invCData.length === 0 ? null : (
             <div className="info-box" key="zcxx">
               <div className="top-title">招采信息</div>
+              {getHtxxInfoRow()}
               <div className="info-row-box">
-                {getHtxxInfoRow()}
-                {/* {contrast.HTJE && getInfoItem('合同金额：', getAmountFormat(contrast.HTJE) + '元')} */}
                 {notNull(prjBasic.ZBFS) !== '暂无数据' && getInfoItem('招采方式：', prjBasic.ZBFS)}
-                {/* {contrast.QSRQ &&
-                  getInfoItem('签署日期：', moment(contrast.QSRQ).format('YYYY年MM月DD日'))} */}
                 {bidding.TBBZJ &&
                   getInfoItem('招标保证金：', getAmountFormat(bidding.TBBZJ) + '元')}
                 {bidding.LYBZJ &&
                   getInfoItem('履约保证金：', getAmountFormat(bidding.LYBZJ) + '元')}
                 {bidding.PBBG && getPbbg(JSON.parse(bidding.PBBG)?.items || [])}
-                {/* {payment.length !== 0 && getPmtPlan(payment)} */}
                 {otrSupplier.length !== 0 && (
                   <div className="info-item" key="zcxx-4-1">
                     <span>其他投标供应商：</span>
@@ -652,6 +705,7 @@ export default function InfoDisplay(props) {
                     </Popover>
                   </div>
                 )}
+                {grayTest.XCHT && invCData.length > 0 && getHtqtmx(invCData)}
               </div>
             </div>
           )

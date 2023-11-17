@@ -5,6 +5,8 @@ import { Link } from 'react-router-dom';
 import ShowAllModal from './ShowAllModal';
 import { message, Tooltip } from 'antd';
 import OprModal from '../../AwardHonor/OprModal';
+import { useHistory } from 'react-router-dom';
+import { EncryptBase64 } from '../../../Common/Encrypt';
 
 export default function SystemNotice(props) {
   const { noticeData = [], setNoticeData, isGLY } = props;
@@ -15,10 +17,12 @@ export default function SystemNotice(props) {
     rowData: undefined,
     isSB: false, //是否申报
     fromPrjDetail: false, //入口是否在项目详情
+    fromHome: false, //
     parentRow: undefined, //申报行的父行数据{}
     type: 'KJJX',
   }); //操作弹窗
   const location = useLocation();
+  const history = useHistory();
 
   const getNoticeItem = ({
     txnr = '--',
@@ -69,8 +73,17 @@ export default function SystemNotice(props) {
       rowData: undefined,
       isSB: true,
       fromPrjDetail: false,
+      fromHome: true,
       parentRow: { ...row, KTMC: row.JXMC },
       type: getHJLX(row.HJLX),
+    });
+  };
+
+  //跳转
+  const handleModalRefresh = (name, obj = {}) => {
+    // console.log("🚀 ~ file: index.js:84 ~ handleModalRefresh ~ obj:", obj)
+    history.push({
+      pathname: `/pms/manage/${name}/${EncryptBase64(JSON.stringify(obj))}`,
     });
   };
 
@@ -89,7 +102,7 @@ export default function SystemNotice(props) {
         setVisible={v => setHjryData(p => ({ ...p, visible: v }))}
         type={hjryData.type}
         data={hjryData}
-        refresh={() => {}}
+        refresh={v => handleModalRefresh('AwardHonor', v)}
         isGLY={isGLY}
       />
       <ShowAllModal

@@ -24668,6 +24668,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
   }
 }
 
+//信创合同列表
 .innovation-contract-box {
   overflow: hidden;
   height: 100%;
@@ -24804,42 +24805,6 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
         overflow: hidden;
 
         padding: 16px 24px;
-        // & > .opr-row {
-        //   padding: 16px 24px;
-        //   display: flex;
-        //   flex-direction: row;
-        //   align-items: center;
-
-        //   button {
-        //     .antd-btn-primary();
-        //     margin-left: auto;
-        //   }
-
-        //   & > .slt-num {
-        //     font-size: 14px;
-        //     font-weight: normal;
-        //     color: #909399;
-        //     font-family: PingFangSC-regular, PingFang SC;
-
-        //     span {
-        //       color: #3361ff;
-        //       margin: 0 4px;
-        //     }
-        //   }
-
-        //   & > .slt-clear {
-        //     font-size: 14px;
-        //     font-weight: normal;
-        //     color: #3361ff;
-        //     font-family: PingFangSC-regular, PingFang SC;
-        //     cursor: pointer;
-        //     margin-left: 16px;
-
-        //     &:hover {
-        //       color: #3361ffaf;
-        //     }
-        //   }
-        // }
 
         & > .project-info-table-box {
           overflow: hidden;
@@ -24886,20 +24851,6 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
             z-index: 99;
           }
 
-          // .ant-table-body {
-          // &::-webkit-scrollbar {
-          //   width: 8px;
-          //   height: 8px;
-          //   background-color: #ffffff;
-          //   border-radius: 4px;
-          // }
-
-          // &::-webkit-scrollbar-thumb {
-          //   background-color: #d8d8d8;
-          //   border-radius: 4px;
-          // }
-          // }
-
           .sub-table-demand-info {
             //子表格的表头处理
             .ant-table-thead {
@@ -24911,7 +24862,6 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
           .antd-table-adaptation();
           .ant-table-placeholder {
             border: 0;
-            // top: 42px;
           }
           .ant-table-wrapper {
             border: 0;
@@ -25009,6 +24959,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
         margin: 0 24px;
         padding: 16px 24px;
         padding-right: 0;
+        padding-top: 0;
 
         &::-webkit-scrollbar {
           width: 10px;
@@ -25025,13 +24976,15 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
           display: flex;
           flex-direction: row;
           flex-wrap: wrap;
-          height: 212px;
+          height: 183px;
           // align-items: flex-start;
           // margin-bottom: -16px;
+          align-content: flex-start;
+          margin-bottom: 16px;
 
           & > .info-item {
             // height: 22px;
-            line-height: 42px;
+            line-height: 61px;
             font-size: 14px;
             font-family: PingFangSC-Regular, PingFang SC;
             font-weight: 400;
@@ -25041,7 +24994,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
             overflow: hidden;
             white-space: nowrap;
             padding-right: 24px;
-            margin-bottom: 16px;
+            // margin-bottom: 16px;
 
             .item-top,
             .item-bottom {
@@ -25073,11 +25026,12 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
             // justify-content: center;
             width: 25%;
             position: relative;
-            margin-bottom: 16px;
+            // margin-bottom: 16px;
             font-size: 14px;
             font-family: PingFangSC-Regular, PingFang SC;
             font-weight: 400;
             color: #303133;
+            line-height: 61px;
 
             .item-label {
               flex-shrink: 0;
@@ -25089,6 +25043,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
               margin-bottom: 0;
               flex-grow: 1;
               padding-right: 24px;
+              overflow: hidden;
             }
 
             .ant-form-item-control {
@@ -25118,20 +25073,34 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
 
         & > .table-box {
           padding-right: 24px;
-          .antd-table-adaptation();
-          .table-link-strong();
+          position: relative;
+
           & > .btn-row {
             button {
               .antd-btn-primary();
             }
             margin-bottom: 16px;
           }
+          & > .table-row {
+            &::-webkit-scrollbar {
+              width: 10px;
+              background-color: #f0f2f5;
+              border-radius: 5px;
+            }
+
+            &::-webkit-scrollbar-thumb {
+              background-color: #dbdfe6;
+              border-radius: 5px;
+            }
+            .antd-table-adaptation();
+            .table-link-strong();
+          }
         }
       }
 
       & > .opr-btn-row {
         flex-shrink: 0;
-        padding: 24px;
+        padding: 10px 24px;
         border-top: 1px solid #eeeff1;
         background-color: #fff;
         width: 100%;
@@ -25140,14 +25109,13 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
         align-items: center;
         margin-top: auto;
         .btn-submit {
-          margin-left: auto;
           .antd-btn-primary();
         }
-        // .btn-cancel {
-        //   margin-left: auto;
-        //   .antd-btn-default();
-        //   margin-right: 8px;
-        // }
+        .btn-cancel {
+          margin-left: auto;
+          .antd-btn-default();
+          margin-right: 8px;
+        }
       }
     }
   }
@@ -25158,9 +25126,427 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
   .default-modal();
   .ant-modal {
     .content-box {
-      height: 400px;
+      height: 501px;
       padding-left: 14px;
       padding-bottom: 0;
+    }
+  }
+}
+
+//创合同信息列表 - 转办人弹窗
+.transfer-modal-modal {
+  .default-modal();
+  .content-box {
+    height: 110px;
+  }
+}
+
+//项目完结
+.prj-finish-modal {
+  .default-modal();
+  .ant-modal {
+    .content-box {
+      padding: 0 24px;
+      min-height: 230px;
+      max-height: 638px;
+      font-size: 14px;
+      font-family: PingFangSC-Regular, PingFang SC;
+      line-height: 22px;
+
+      &::-webkit-scrollbar {
+        border-radius: 5px;
+      }
+
+      & > .prj-rate-row {
+        font-weight: bold;
+        color: #303133;
+        padding: 16px 0;
+        padding-bottom: 8px;
+        span {
+          font-size: 18px;
+        }
+      }
+
+      & > .table-row {
+        margin-bottom: 16px;
+        .table-title {
+          font-weight: bold;
+          color: #303133;
+          margin-bottom: 12px;
+
+          span {
+            font-weight: normal;
+            color: #909399;
+          }
+        }
+        .table-finish {
+          color: #303133;
+        }
+        .antd-table-adaptation();
+      }
+      & > .payment-row {
+        .payment-title {
+          font-weight: bold;
+          color: #303133;
+          margin-bottom: 12px;
+        }
+        .htxx-info-row-box {
+          display: flex;
+          flex-direction: row;
+          flex-wrap: wrap;
+          align-items: flex-start;
+          width: 100%;
+
+          & > .info-item {
+            height: 22px;
+            line-height: 22px;
+            font-size: 14px;
+            font-family: PingFangSC-Regular, PingFang SC;
+            font-weight: 400;
+            color: #303133;
+            width: 50%;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            white-space: nowrap;
+            margin-bottom: 16px;
+
+            .item-top,
+            .item-bottom {
+              width: 100%;
+
+              span {
+                display: inline-block;
+                width: 70px;
+                text-align: right;
+                color: #909399;
+                margin-right: 8px;
+              }
+            }
+
+            .payment-label {
+              width: fit-content;
+            }
+
+            .payment-plan {
+              // width: calc(100% - 70px);
+              display: inline-block;
+
+              div {
+                margin-bottom: 4px;
+                max-width: 100%;
+                text-overflow: ellipsis;
+                overflow: hidden;
+                white-space: nowrap;
+
+                &:last-child {
+                  margin-bottom: 0;
+                }
+              }
+            }
+
+            .payment-label,
+            span {
+              color: #909399;
+              margin-right: 8px;
+            }
+
+            a {
+              &:hover {
+                color: #3361ffb8 !important;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+//文档模板库
+.doc-template-lib-box {
+  overflow: hidden;
+  height: 100%;
+
+  .ant-spin-spinning {
+    width: 100%;
+    color: #3361ff;
+    .ant-spin-dot-item {
+      background-color: #3361ff;
+    }
+  }
+
+  .doc-template-lib-spin-wrapper {
+    height: 100%;
+    & > div > .ant-spin {
+      max-height: unset;
+    }
+    .ant-spin-container {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+
+      & > .top-console {
+        padding: 16px 24px;
+        background-color: #fff;
+        box-shadow: 0 4px 4px 0 rgb(20 38 98 / 4%);
+        border-radius: 8;
+        overflow: hidden;
+        margin: 24px 24px 0 24px;
+        flex-shrink: 0;
+
+        & > .item-box {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          font-size: 14px;
+          font-weight: 400;
+          color: #222222;
+          margin-bottom: 16px;
+
+          &:last-child {
+            margin-bottom: 0;
+          }
+
+          & > .btn-search {
+            .antd-btn-primary();
+            margin-left: auto;
+          }
+
+          & > .btn-reset {
+            .antd-btn-default();
+            margin-left: 8px;
+          }
+
+          & > .console-item {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            // justify-content: center;
+            width: 27%;
+            position: relative;
+
+            .item-label {
+              flex-shrink: 0;
+              width: 56px;
+              text-align: right;
+            }
+
+            .item-node {
+              margin-left: 8px;
+              margin-right: 24px;
+              // flex: auto;
+              // width: 75%;
+              flex-grow: 1;
+              overflow: hidden;
+            }
+          }
+        }
+      }
+
+      & > .template-box {
+        padding: 16px 12px 0 24px;
+        flex-grow: 1;
+        margin-right: 12px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+
+        & > .btn-row {
+          button {
+            .antd-btn-primary();
+          }
+          margin-bottom: 16px;
+          flex-shrink: 0;
+        }
+
+        & > .content-box {
+          // display: flex;
+          // flex-direction: row;
+          // align-items: start;
+          // justify-content: space-between;
+          flex-grow: 1;
+          overflow: hidden;
+          overflow-y: auto;
+          padding-bottom: 8px;
+
+          &::-webkit-scrollbar {
+            width: 10px;
+            background-color: #f0f2f5;
+            border-radius: 5px;
+          }
+
+          &::-webkit-scrollbar-thumb {
+            background-color: #dbdfe6;
+            border-radius: 5px;
+          }
+          & > .waterfall-box {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            & > .tplt-item-wrapper {
+              width: 24%;
+              transition: width 0.3s;
+              & > .tplt-item {
+                width: 100%;
+                box-shadow: 0px 1px 4px 0px rgba(20, 38, 98, 0.04);
+                border-radius: 8px;
+                background-color: #fff;
+                margin-bottom: 16px;
+                // float: left;
+
+                & > .title-row {
+                  padding: 0 16px;
+                  height: 40px;
+                  background: linear-gradient(
+                    270deg,
+                    rgba(51, 97, 255, 0) 0%,
+                    rgba(51, 97, 255, 0.1) 100%
+                  );
+                  border-radius: 8px 1px 1px 1px;
+                  display: flex;
+                  flex-direction: row;
+                  align-items: center;
+
+                  span {
+                    flex-grow: 1;
+                    height: 22px;
+                    font-size: 14px;
+                    font-family: PingFangSC-Medium, PingFang SC;
+                    font-weight: bold;
+                    color: #303133;
+                    line-height: 22px;
+                    text-overflow: ellipsis;
+                    overflow: hidden;
+                    white-space: nowrap;
+                    cursor: default;
+                  }
+                  .icon-edit {
+                    flex-shrink: 0;
+                    margin-left: 6px;
+                    width: fit-content;
+                    color: #3361ff;
+                    cursor: pointer;
+                    font-size: 18px;
+                    &:hover {
+                      color: #3361ffaf;
+                    }
+                  }
+                }
+                & > .content-row {
+                  padding: 16px;
+                  background-color: #fff;
+                  overflow: hidden;
+                  border-radius: 0 0 8px 8px;
+                  & > .doc-item {
+                    padding: 8px 16px;
+                    font-size: 14px;
+                    font-family: PingFangSC-Regular, PingFang SC;
+                    font-weight: 400;
+                    color: #303133;
+                    line-height: 20px;
+                    text-align: left;
+                    border-radius: 4px;
+                    background-color: #fafafb;
+                    margin-bottom: 8px;
+                    cursor: pointer;
+                    transition: all 0.3s;
+                    &:hover {
+                      color: #fff;
+                      background-color: #4e7afd;
+                    }
+                    &:last-child {
+                      margin-bottom: 0;
+                    }
+                  }
+
+                  & > .more-item,
+                  & > .more-item-unfold {
+                    .font-size-14();
+                    font-weight: normal;
+                    padding-top: 5px;
+                    text-align: center;
+                    line-height: 1em;
+                    cursor: pointer;
+                    color: #606266;
+
+                    &:hover {
+                      color: #3361ff;
+
+                      i {
+                        color: #3361ff;
+                      }
+                    }
+
+                    i {
+                      margin-left: 4px;
+                      font-size: 1em;
+                      color: #909399;
+                    }
+                  }
+                }
+              }
+            }
+            @media screen and (max-width: 1741px) {
+              & > .tplt-item-wrapper {
+                width: 24%;
+              }
+            }
+
+            @media screen and (min-width: 1742px) and (max-width: 2043px) {
+              & > .tplt-item-wrapper {
+                width: 19.1434%;
+              }
+            }
+
+            @media screen and (min-width: 2044px) and (max-width: 2345px) {
+              & > .tplt-item-wrapper {
+                width: 15.9245%;
+              }
+            }
+
+            @media screen and (min-width: 2346px) and (max-width: 2647px) {
+              & > .tplt-item-wrapper {
+                width: 13.6325%;
+              }
+            }
+
+            @media screen and (min-width: 2648px) and (max-width: 2949px) {
+              & > .tplt-item-wrapper {
+                width: 11.917%;
+              }
+            }
+
+            @media screen and (min-width: 2950px) and (max-width: 3251px) {
+              & > .tplt-item-wrapper {
+                width: 10.585%;
+              }
+            }
+
+            @media screen and (min-width: 3252px) {
+              & > .tplt-item-wrapper {
+                width: 9.5209%;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+.doc-template-oprt-modal {
+  .default-modal();
+  .content-box {
+    min-height: 200px;
+    max-height: 400px;
+  }
+  .modal-footer {
+    .btn-default {
+      .antd-btn-default();
+    }
+
+    .btn-primary {
+      .antd-btn-primary();
     }
   }
 }

@@ -842,9 +842,8 @@ export default function TopConsole(props) {
               <i className="iconfont icon-star-fill" />
             </Popconfirm>
           )}
-          {grayTest.ZSCQ && (
+          {
             <Fragment>
-              {' '}
               {/* 科技奖项 */}
               {award
                 .find(x => x.title === '科技奖项')
@@ -945,12 +944,12 @@ export default function TopConsole(props) {
                 </Popover>
               )}
             </Fragment>
-          )}
+          }
           {getTags(prjBasic.XMBQ, prjBasic.XMBQID)}
           {/* 1已完结2未完结 */}
-          {/* {prjBasic.WJZT === '1' && (
+          {prjBasic.WJZT === '1' && (
             <img src={iconCompleted} className="icon-completed" alt="图片：已完结" />
-          )} */}
+          )}
           {allowEdit() && (
             <Button className="btn-edit" onClick={handleEditPrjInfo}>
               编辑

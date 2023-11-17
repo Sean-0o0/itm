@@ -49,6 +49,7 @@ export default function YJKTSB(props) {
               onChange: () => {},
               valueField: 'XMID',
               titleField: 'XMMC',
+              required: false,
             })}
         {fromPrjDetail !== false
           ? getSingleSelector({

@@ -46,6 +46,7 @@ export default function RJZZ(props) {
             onChange: () => {},
             valueField: 'XMID',
             titleField: 'XMMC',
+            required: false,
           })}
       {getInput('软件名称', 'name', rowData.NAME, labelCol, wrapperCol, 50)}
       {getInput('版本号', 'bbh', rowData.BBH, labelCol, wrapperCol, 10)}

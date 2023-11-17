@@ -46,6 +46,7 @@ export default function QYBZ(props) {
             onChange: () => {},
             valueField: 'XMID',
             titleField: 'XMMC',
+            required: false,
           })}
       {getInput('标准名称', 'name', rowData.NAME, labelCol, wrapperCol, 50)}
       {isGLY &&

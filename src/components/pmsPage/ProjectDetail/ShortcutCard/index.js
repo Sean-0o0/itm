@@ -1,13 +1,15 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Modal, message, Popover } from 'antd';
 import moment from 'moment';
-import { FinishProject, QueryProjectListPara } from '../../../../services/pmsServices';
+import { FinishProject, QueryIteProjectList } from '../../../../services/pmsServices';
 import AttendanceRegister from './AttendanceRegister';
 import NewProjectModelV2 from '../../../../pages/workPlatForm/singlePage/NewProjectModelV2';
 import { EncryptBase64 } from '../../../Common/Encrypt';
 import OprAHModal from '../../AwardHonor/OprModal';
 import OprIPModal from '../../IntelProperty/OprModal';
 import { useHistory } from 'react-router-dom';
+import ScatterFlowers from './ScatterFlowers';
+import PrjFinishModal from './PrjFinishModal';
 
 export default function ShortcutCard(props) {
   const { dataProps = {}, funcProps = {} } = props;
@@ -21,7 +23,7 @@ export default function ShortcutCard(props) {
     isGLY = {},
     grayTest = {},
   } = dataProps;
-  const { prjBasic = {}, member = [] } = prjData;
+  const { prjBasic = {}, member = [], contrastArr = [] } = prjData;
   const { getPrjDtlData, setIsSpinning, handlePromiseAll, setShowSCDD } = funcProps;
   let LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
   const [modalVisible, setModalVisible] = useState({
@@ -29,6 +31,7 @@ export default function ShortcutCard(props) {
     createIterationPrj: false,
     intelProperty: false,
     awardHonor: false,
+    prjFinish: false, //项目完结
   }); //弹窗显隐
   const [IPAHData, setIPAHData] = useState({
     oprType: 'ADD',
@@ -39,6 +42,7 @@ export default function ShortcutCard(props) {
     parentRow: undefined, //申报行的父行数据{}
   }); //知识产权、获奖荣誉
   const history = useHistory();
+  const flowers = useRef(null);
 
   useEffect(() => {
     return () => {};
@@ -47,7 +51,7 @@ export default function ShortcutCard(props) {
   // 获取关联迭代项目下拉框数据 - 用于判断是否显示生成迭代
   const getGlddxmData = () => {
     // setIsSpinning(true);
-    QueryProjectListPara({
+    QueryIteProjectList({
       current: 1,
       pageSize: -1, //这边是迭代项目id
       paging: -1,
@@ -57,7 +61,7 @@ export default function ShortcutCard(props) {
     })
       .then(res => {
         if (res?.success) {
-          const data = [...JSON.parse(res.projectRecord)].map(x => x.ID);
+          const data = [...JSON.parse(res.projectRecord)].map(x => String(x.ID));
           const isPrjExist = data.includes(String(xmid));
           const isNotCplHard =
             prjBasic.XMLX === '软硬件项目' &&
@@ -106,33 +110,51 @@ export default function ShortcutCard(props) {
 
   //项目完结
   const handlePrjFinish = (id = -1) => {
-    // Modal.confirm({
-    //   title: '提示：',
-    //   content: `是否确定完结该项目？`,
-    //   okText: '确定',
-    //   cancelText: '取消',
-    //   onOk: () => {
-    //     setIsSpinning(true);
-    //     FinishProject({
-    //       finishDate: Number(moment().format('YYYYMMDD')),
-    //       projectId: Number(id),
-    //     })
-    //       .then(res => {
-    //         if (res?.success) {
-    //           getPrjDtlData();
-    //           // setIsSpinning(false);
-    //           setTimeout(() => {
-    //             message.success('完结成功', 1);
-    //           }, 200);
-    //         }
-    //       })
-    //       .catch(e => {
-    //         console.error('🚀项目完结', e);
-    //         message.error('完结失败', 1);
-    //         setIsSpinning(false);
-    //       });
-    //   },
-    // });
+    setModalVisible(p => ({ ...p, prjFinish: true }));
+  };
+
+  //完结撒花
+  const scatterFlowers = () => {
+    let dpr = 1;
+    var devicePixelRatio = window.devicePixelRatio;
+    if (devicePixelRatio >= 3) {
+      dpr = 3;
+    } else if (devicePixelRatio >= 2) {
+      dpr = 2;
+    } else {
+      dpr = 1;
+    }
+    window.dpr = dpr;
+    new ScatterFlowers({
+      canvas: flowers.current,
+      flowersColor: [
+        ['250,174,255-60-11', '244,150,255-80-63', '247,197,255-100-100'],
+        ['255,255,0-80-25', '255,255,0-100-100'],
+        ['195,255,176-80-0', '69,197,117-100-100'],
+        ['79,213,255-80-0', '43,187,250-100-100'],
+        ['43,0,255-80-0', '43,0,255-100-100'],
+        ['255,0,0-80-0', '255,0,0-100-100'],
+      ],
+      faceColor: '255,200,44-100', // 笑脸颜色
+      eyeColor: '76,64,65-100', // 眼睛颜色
+      mouthColor: '255,109,64-100', // 笑嘴颜色
+      flowersLength: 20,
+      autoStart: true,
+      faceFlag: true,
+      faceR: 15,
+      eyeR: 2,
+      mouthR: 4,
+    });
+  };
+
+  //项目完结刷新
+  const handlePrjFinishRefresh = () => {
+    getPrjDtlData();
+    setTimeout(() => {
+      message.success('完结成功', 1);
+      setIsSpinning(false);
+      scatterFlowers();
+    }, 200);
   };
 
   //考勤登记
@@ -203,7 +225,7 @@ export default function ShortcutCard(props) {
     });
   };
 
-  if (!((showKQXX && isMember()) || showSCDD || grayTest.ZSCQ)) return null;
+  if (!((showKQXX && isMember()) || showSCDD)) return null;
   return (
     <div className="shortcut-card-box">
       <div className="top-title">快捷入口</div>
@@ -238,6 +260,7 @@ export default function ShortcutCard(props) {
           isGLY={isGLY.hjry}
         />
       )}
+      {/* 生成迭代新建项目 */}
       <Modal
         wrapClassName="editMessage-modify xbjgEditStyle"
         width={1000}
@@ -283,14 +306,28 @@ export default function ShortcutCard(props) {
           }} //生成迭代需要用的参数
         />
       </Modal>
+      {/* 项目完结 */}
+      <PrjFinishModal
+        visible={modalVisible.prjFinish}
+        setVisible={v => setModalVisible(p => ({ ...p, prjFinish: v }))}
+        data={{ xmid, xmjd: prjBasic.XMJD, contrastArr, refresh: handlePrjFinishRefresh }}
+      />
       <div className="content">
-        {grayTest.ZSCQ && getShortcutItem('zscq', '知识产权', () => {}, intelPropertyMenu)}
-        {grayTest.ZSCQ && getShortcutItem('hjry', '获奖荣誉', () => {}, awardHonorMenu)}
+        {getShortcutItem('zscq', '知识产权', () => {}, intelPropertyMenu)}
+        {getShortcutItem('hjry', '获奖荣誉', () => {}, awardHonorMenu)}
         {/* {getShortcutItem('xclr', '信创录入', () => {})} */}
         {showKQXX && isMember() && getShortcutItem('kqdj', '考勤登记', handleAttendanceRegister)}
         {showSCDD && getShortcutItem('scdd', '生成迭代', createIterationPrj)}
-        {/* {prjBasic.WJZT !== '1' && getShortcutItem('xmwj', '项目完结', () => handlePrjFinish(xmid))} */}
+        {grayTest.DDMK &&
+          prjBasic.WJZT !== '1' &&
+          getShortcutItem('xmwj', '项目完结', () => handlePrjFinish(xmid))}
       </div>
+      <canvas
+        ref={flowers}
+        height={400}
+        width={800}
+        style={{ position: 'absolute', top: 0, right: 310, pointerEvents: 'none' }}
+      ></canvas>
     </div>
   );
 }

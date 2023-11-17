@@ -49,6 +49,7 @@ export default function KJJXSB(props) {
               onChange: () => {},
               valueField: 'XMID',
               titleField: 'XMMC',
+              required: false,
             })}
         {fromPrjDetail !== false
           ? getSingleSelector({

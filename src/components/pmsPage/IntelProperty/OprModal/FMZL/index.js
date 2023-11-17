@@ -47,6 +47,7 @@ export default function FMZL(props) {
             onChange: () => {},
             valueField: 'XMID',
             titleField: 'XMMC',
+            required: false,
           })}
       {getInput('专利名称', 'name', rowData.NAME, labelCol, wrapperCol, 50)}
       {getSingleSelector({

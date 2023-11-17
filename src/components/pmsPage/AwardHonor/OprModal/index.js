@@ -17,12 +17,10 @@ import {
 import moment from 'moment';
 import { FetchQueryOrganizationInfo } from '../../../../services/projectManage';
 import {
-  EditIPRInfo,
   FetchQueryOwnerProjectList,
   OperateAwardAndHonor,
   QueryAwardAndHonorList,
   QueryMemberInfo,
-  QueryProjectListPara,
 } from '../../../../services/pmsServices';
 import { connect } from 'dva';
 import axios from 'axios';
@@ -58,6 +56,7 @@ export default connect(({ global = {} }) => ({
       rowData, //修改时回显
       isSB = false, //是否申报
       fromPrjDetail = false, //入口是否在项目详情
+      fromHome = false, //入口是否在首页
       parentRow = {}, //申报行的父行数据{}
     } = data;
     const { KTZT = [], HJQK = [], JXJB = [] } = dictionary;
@@ -70,6 +69,7 @@ export default connect(({ global = {} }) => ({
       prjName: [],
       tableData: [],
     }); //下拉框数据
+    const [upldError, setUpldError] = useState([]); //附件报红数据
 
     useEffect(() => {
       if (visible && rowData !== undefined) {
@@ -114,7 +114,7 @@ export default connect(({ global = {} }) => ({
           }
         })
         .catch(e => {
-          console.error('QueryProjectListPara', e);
+          console.error('FetchQueryOwnerProjectList', e);
           message.error('项目名称下拉框信息查询失败', 1);
           setIsSpinning(false);
         });
@@ -335,6 +335,7 @@ export default connect(({ global = {} }) => ({
       sltArr = [],
       valueField,
       titleField,
+      required = true,
     }) => {
       return (
         <Col span={12}>
@@ -343,7 +344,7 @@ export default connect(({ global = {} }) => ({
               initialValue,
               rules: [
                 {
-                  required: true,
+                  required,
                   message: label + '不允许空值',
                 },
               ],
@@ -457,17 +458,20 @@ export default connect(({ global = {} }) => ({
         let list = [...info.fileList]; //每次改变后的数据列表
         if (list.length > 0) {
           list.forEach(item => {
+            //原来没有，则为新数据，加进去
             if (fileList.findIndex(x => x.uid === item.uid) === -1) {
-              //原来没有，则为新数据，加进去
-              setFileList([
-                ...fileList,
-                {
-                  ...item,
-                  uid: item.uid,
-                  name: item.name,
-                  status: item.status === 'uploading' ? 'done' : item.status,
-                },
-              ]);
+              //没报错
+              if (!upldError.includes(item.uid)) {
+                setFileList([
+                  ...fileList,
+                  {
+                    ...item,
+                    uid: item.uid,
+                    name: item.name,
+                    status: item.status === 'uploading' ? 'done' : item.status,
+                  },
+                ]);
+              }
             } else {
               //原来有的数据，判断是否已移除
               setFileList(fileList.filter(x => x.status !== 'removed'));
@@ -479,7 +483,12 @@ export default connect(({ global = {} }) => ({
           setIsTurnRed(true);
         }
       };
-      const onBeforeUpload = () => {};
+      const onBeforeUpload = async file => {
+        if ((await file.size) === 0) {
+          setUpldError(p => [...p, file.uid]);
+          message.error(`不能上传0字节文件（${file.name}）！`, 2);
+        }
+      };
       return (
         <Col span={12}>
           <Form.Item
@@ -502,7 +511,7 @@ export default connect(({ global = {} }) => ({
               onChange={onUploadChange}
               beforeUpload={onBeforeUpload}
               accept={
-                '.doc,.docx,.xml,.pdf,.txt,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+                '.doc,.docx,.xml,.xls,.xlsx,.csv,.pdf,.txt,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document'
               }
               fileList={fileList}
             >
@@ -673,13 +682,16 @@ export default connect(({ global = {} }) => ({
             .then(res => {
               if (res?.success) {
                 refresh(
-                  data.fromPrjDetail === false
+                  data.fromPrjDetail === false && fromHome === false
                     ? {}
                     : {
-                        name: sltData.tableData?.find(x => String(x.ID) === String(values.awardId))[
-                          type === 'KJJX' ? 'JXMC' : 'KTMC'
-                        ],
+                        name:
+                          parentRow.JXMC ??
+                          sltData?.tableData?.find(x => String(x.ID) === String(values.awardId))[
+                            type === 'KJJX' ? 'JXMC' : 'KTMC'
+                          ],
                         tab: type,
+                        rowID: values.awardId,
                       },
                 );
                 message.success('操作成功', 1);

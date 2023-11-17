@@ -30,6 +30,8 @@ const TableBox = props => {
     HJQK = [],
     KTZT = [],
     isGLY,
+    expandedRowKeys,
+    subTableData,
   } = dataProps;
   const {
     setFilterData = () => {},
@@ -37,9 +39,10 @@ const TableBox = props => {
     setSpinningData = () => {},
     setTableData = () => {},
     allowEdit,
+    setExpandedRowKeys,
+    setSubTableData,
+    getSubTableData,
   } = funcProps;
-  const [expandedRowKeys, setExpandedRowKeys] = useState([]); //默认展开行
-  const [subTableData, setSubTableData] = useState([]); //子表数据
   const [modalData, setModalData] = useState({
     visible: false, //显隐
     oprType: 'ADD',
@@ -49,35 +52,6 @@ const TableBox = props => {
     parentRow: undefined, //申报行的父行数据{}
   }); //操作弹窗
   const location = useLocation();
-
-  //查询获奖荣誉 子表
-  const getSubTableData = async ID => {
-    let arr = [...tableData.data];
-    arr.forEach(x => {
-      if (x.ID === ID) x.loading = true;
-    });
-    setTableData(p => ({ ...p, data: arr }));
-    // 查询获奖荣誉 子表
-    let res = await QueryAwardAndHonorList({
-      listId: Number(ID),
-      tab: activeKey,
-      current: 1,
-      pageSize: 10,
-      paging: -1,
-      queryType: 'XQ',
-      sort: '',
-      total: -1,
-    });
-    const data = JSON.parse(res.result);
-    setSubTableData(p => ({
-      ...p,
-      [ID]: data,
-    }));
-    arr.forEach(x => {
-      if (x.ID === ID) x.loading = false;
-    });
-    setTableData(p => ({ ...p, data: arr }));
-  };
 
   //列配置
   const columns = (key = 'KJJX') => {

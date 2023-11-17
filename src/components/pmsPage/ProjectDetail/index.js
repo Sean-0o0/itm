@@ -7,17 +7,19 @@ import TopConsole from './TopConsole';
 import {
   FetchQueryLifecycleStuff,
   FetchQueryLiftcycleMilestone,
+  QueryIteProjectList,
   QueryIteProjPayPlan,
   QueryIteProjPayRcd,
   QueryMemberAttendanceRcd,
   QueryProjectFiles,
   QueryProjectInfoAll,
-  QueryProjectListPara,
   QueryProjectMessages,
   QueryProjectNode,
   QueryProjectTracking,
   QueryProjectUpdateInfo,
+  QueryProjectXCContract,
   QueryUserRole,
+  QueryXCContractInfo,
 } from '../../../services/pmsServices/index';
 import { message, Spin } from 'antd';
 import { FetchQueryProjectLabel } from '../../../services/projectManage';
@@ -88,6 +90,7 @@ export default function ProjectDetail(props) {
     KQMK: false, //考勤模块
     DDMK: false, //迭代模块
     ZSCQ: false, //知识产权、获奖荣誉
+    XCHT: false, //信创合同
   }); //灰度测试
   let isDDXM = prjData.prjBasic?.XMBQ?.includes('迭代项目') && grayTest.DDMK; // 是否迭代项目
   let isDDXMFK =
@@ -204,6 +207,10 @@ export default function ProjectDetail(props) {
         xmid: Number(xmid),
         ryid: Number(LOGIN_USER_INFO.id),
       });
+      //信创合同信息展示 - ！！！跳转编辑页后只能查看，故无其他刷新，后续可能有变动，需注意
+      const invCPromise = QueryProjectXCContract({
+        projectId: Number(xmid), //  关联项目
+      });
 
       const [
         xmlxRes,
@@ -217,6 +224,7 @@ export default function ProjectDetail(props) {
         allMsRes,
         curMsRes,
         msItemRes,
+        invCRes,
       ] = await Promise.all([
         xmlxPromise,
         rolePromise,
@@ -229,6 +237,7 @@ export default function ProjectDetail(props) {
         allMsPromise,
         curMsPromise,
         msItemPromise,
+        invCPromise,
       ]);
 
       const xmlxData = (await xmlxRes) || {};
@@ -242,6 +251,7 @@ export default function ProjectDetail(props) {
       const allMsData = (await allMsRes) || {};
       const curMsData = (await curMsRes) || {};
       const msItemData = (await msItemRes) || {};
+      const inVcData = (await invCRes) || {};
 
       if (xmlxData.success) {
         let xmlxArr = JSON.parse(xmlxData.xmlxRecord).map(x => {
@@ -261,20 +271,16 @@ export default function ProjectDetail(props) {
         });
         //灰度测试
         const testRole = JSON.parse(roleData.testRole || '{}');
-        const { KQDJ = '', DDXM = '', ZSCQ = '' } = testRole;
+        const { KQDJ = '', DDXM = '', ZSCQ = '', XCHT = '' } = testRole;
         const KQDJ_IDArr = KQDJ === '' ? [] : KQDJ.split(',');
         const KQDJ_Auth = KQDJ_IDArr.includes(String(LOGIN_USER_INFO.id));
         const DDXM_IDArr = DDXM === '' ? [] : DDXM.split(',');
         const DDXM_Auth = DDXM_IDArr.includes(String(LOGIN_USER_INFO.id));
         const ZSCQ_IDArr = ZSCQ === '' ? [] : ZSCQ.split(',');
         const ZSCQ_Auth = ZSCQ_IDArr.includes(String(LOGIN_USER_INFO.id));
-        console.log(
-          '🚀 ~ file: index.js:253 ~ handlePromiseAll ~ 灰度测试:',
-          ZSCQ_Auth,
-          ZSCQ_IDArr,
-          String(LOGIN_USER_INFO.id),
-        );
-        setGrayTest({ KQMK: KQDJ_Auth, DDMK: DDXM_Auth, ZSCQ: ZSCQ_Auth });
+        const XCHT_IDArr = XCHT === '' ? [] : XCHT.split(',');
+        const XCHT_Auth = XCHT_IDArr.includes(String(LOGIN_USER_INFO.id));
+        setGrayTest({ KQMK: KQDJ_Auth, DDMK: DDXM_Auth, ZSCQ: ZSCQ_Auth, XCHT: XCHT_Auth });
       }
       if (infoData.success) {
         const p = (str, isArr = true) => {
@@ -547,7 +553,7 @@ export default function ProjectDetail(props) {
           const glddxmId = glddxmIdArr.length > 0 ? glddxmIdArr[glddxmIdArr.length - 1] : undefined;
           //迭代项目下拉框数据 - 用于判断是否显示生成迭代、基本信息 - 迭代项目显示
           const itrListData =
-            (await QueryProjectListPara({
+            (await QueryIteProjectList({
               current: 1,
               pageSize: glddxmId, //这边是迭代项目id
               paging: -1,
@@ -557,7 +563,7 @@ export default function ProjectDetail(props) {
             })) || {};
 
           if (itrListData.success) {
-            // const itrListArr = [...JSON.parse(itrListData.projectRecord)].map(x => x.ID);
+            // const itrListArr = [...JSON.parse(itrListData.result)].map(x => x.ID);
             /**
              * 生成迭代按钮显示：
              * (软硬件 且 不包含硬件 或 软硬件 且 包含硬件 且 软件金额>0) 或 关联预算为科研预算
@@ -569,7 +575,7 @@ export default function ProjectDetail(props) {
               (XMJBXX.SFBHYJ === '2' || (XMJBXX.SFBHYJ === '1' && parseFloat(XMJBXX.RJYSJE) > 0));
             const isKYYS = XMJBXX.YSLX === '科研预算';
             setShowSCDD((isPrjExist && isNotCplHard) || isKYYS);
-            setPrjData(p => ({ ...p, glddxmData: [...JSON.parse(itrListData.projectRecord)] }));
+            setPrjData(p => ({ ...p, glddxmData: [...JSON.parse(itrListData.result)] }));
             // console.log('🚀 ~ isPrjExist , isNotCplHard:', isPrjExist, isNotCplHard);
           }
 
@@ -699,8 +705,12 @@ export default function ProjectDetail(props) {
           }
         }
       }
-
-      //考勤信息、迭代项目信息
+      if (inVcData.success) {
+        setPrjData(p => ({
+          ...p,
+          invCData: JSON.parse(inVcData.result), //信创合同信息展示
+        }));
+      }
 
       // e = performance.now();
       // console.log(`Request time: ${e - s} milliseconds`, s, e);
@@ -1346,6 +1356,7 @@ export default function ProjectDetail(props) {
               isLeader={isLeader}
               isBdgtMnger={isBdgtMnger}
               isDDXM={isDDXM}
+              grayTest={grayTest}
             />
             <SubPrjProgress dataProps={{ prjData, routes }} funcProps={{}} />
             {showKQXX && (

@@ -29,18 +29,18 @@ class LabelDetailPage extends Component {
     // console.log('routes', routes)
     // console.log('bqid', bqid)
     const result = routes.concat({name: '标签详情', pathname: pathname});
-    const newArr = []
-    let name = [];
-    for (let i = 0; i < result.length; i++) {
-      //判断在id这个数组中有没有找到id
-      if (name.indexOf(result[i].name) === -1) {
-        //把id用push存进id这个数组中
-        name.push(result[i].name);
-        newArr.push(result[i]);
-      }
-    }
+    // const newArr = []
+    // let name = [];
+    // for (let i = 0; i < result.length; i++) {
+    //   //判断在id这个数组中有没有找到id
+    //   if (name.indexOf(result[i].name) === -1) {
+    //     //把id用push存进id这个数组中
+    //     name.push(result[i].name);
+    //     newArr.push(result[i]);
+    //   }
+    // }
 
-    return (<LabelDetail dictionary={dictionary} routes={newArr} bqid={bqid}/>);
+    return (<LabelDetail dictionary={dictionary} routes={result} bqid={bqid}/>);
   }
 }
 

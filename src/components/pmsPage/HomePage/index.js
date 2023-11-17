@@ -139,17 +139,11 @@ export default function HomePage(props) {
           zscq: JSON.parse(roleData.testRole || '{}').ALLROLE?.includes('知识产权管理员'),
           hjry: JSON.parse(roleData.testRole || '{}').ALLROLE?.includes('获奖荣誉管理员'),
         });
-        const testRole = JSON.parse(roleData.testRole || '{}');
-        const { ZSCQ = '' } = testRole;
-        const ZSCQ_IDArr = ZSCQ === '' ? [] : ZSCQ.split(',');
-        const ZSCQ_Auth = ZSCQ_IDArr.includes(String(LOGIN_USER_INFO.id));
-        console.log(
-          '🚀 ~ file: index.js:253 ~ handlePromiseAll ~ 灰度测试:',
-          ZSCQ_Auth,
-          ZSCQ_IDArr,
-          String(LOGIN_USER_INFO.id),
-        );
-        setGrayTest(p => ({ ...p, ZSCQ: ZSCQ_Auth }));
+        // const testRole = JSON.parse(roleData.testRole || '{}');
+        // const { ZSCQ = '' } = testRole;
+        // const ZSCQ_IDArr = ZSCQ === '' ? [] : ZSCQ.split(',');
+        // const ZSCQ_Auth = ZSCQ_IDArr.includes(String(LOGIN_USER_INFO.id));
+        // setGrayTest(p => ({ ...p, ZSCQ: true }));
         //获取预算执行情况
         const budgetPromise = QueryBudgetOverviewInfo({
           org: Number(LOGIN_USER_INFO.org),
@@ -335,42 +329,7 @@ export default function HomePage(props) {
           });
         }
         if (sysNoticeResData.success) {
-          //灰度测试
-          const testRole = JSON.parse(roleData.testRole || '{}');
-          const { ZSCQ = '' } = testRole;
-          const ZSCQ_IDArr = ZSCQ === '' ? [] : ZSCQ.split(',');
-          const ZSCQ_Auth = ZSCQ_IDArr.includes(String(LOGIN_USER_INFO.id));
-          if (!ZSCQ_Auth) {
-            //获取全部系统公告数据
-            const sysNoticeResData2 = await FetchQueryOwnerMessage({
-              cxlx: 'GG',
-              date: Number(new moment().format('YYYYMMDD')),
-              paging: -1,
-              current: 1,
-              pageSize: 5,
-              total: -1,
-              sort: '',
-            });
-            function isJSON(str) {
-              try {
-                JSON.parse(str);
-              } catch (e) {
-                // 转换出错，抛出异常
-                return false;
-              }
-              return true;
-            }
-            setNoticeData(
-              [...sysNoticeResData2.record]
-                ?.filter(
-                  x =>
-                    !(x.xxlx === '4' && JSON.parse(isJSON(x.kzzd) ? x.kzzd : '{}').LX === 'HJRY'),
-                )
-                ?.slice(0, 5) || [],
-            );
-          } else {
             setNoticeData([...sysNoticeResData.record]);
-          }
         }
         if (overviewResData1.success && overviewResData2.success) {
           setOverviewInfo({

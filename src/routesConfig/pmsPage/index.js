@@ -358,4 +358,29 @@ exports.routes = [
     path: `${prefix}/AwardHonor`,
     component: './pmsPage/AwardHonor',
   },
+  {
+    // 信创合同列表
+    path: `${prefix}/InnovationContract/:params`,
+    component: './pmsPage/InnovationContract',
+  },
+  {
+    // 信创合同列表
+    path: `${prefix}/InnovationContract`,
+    component: './pmsPage/InnovationContract',
+  },
+  {
+    // 信创合同编辑
+    path: `${prefix}/InnovationContractEdit/:params`,
+    component: './pmsPage/InnovationContractEdit',
+  },
+  {
+    // 信创合同查看
+    path: `${prefix}/InnovationContractView/:params`,
+    component: './pmsPage/InnovationContractView',
+  },
+  {
+    // 文档模板库
+    path: `${prefix}/DocTemplateLib`,
+    component: './pmsPage/DocTemplateLib',
+  },
 ];

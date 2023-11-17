@@ -653,21 +653,14 @@ class MainPageLayout extends React.PureComponent {
                   {menuTree && menuTree.length > 0 && (
                     <Redirect exact from={`${prefix}/`} to={toDefaultLink} />
                   )}
-                  {/* {menuTreeLoaded && menuTree.length === 0 && <Redirect exact from={`${prefix}/`} to={`${prefix}/404`} />} */}
-                  {/* { menuTreeLoaded && menuTree.length === 0 && <Route render={NotPermit} />}
-                  { !menuTreeLoaded && <Redirect exact from={`${prefix}/`} to={`${prefix}/loading`} /> }
-                  { !menuTreeLoaded && <Route render={loading} /> } */}
                 </CacheSwitch>
               </TrackRouter>
             </Content>
             <div
               style={{
-                // textAlign: 'right',
-                // height: 0,
-                // transform: 'translateX(-3.5712rem) translateY(-2.5rem)',
-                color: '#000',
+                color: 'rgb(0, 0, 0, 0.7)',
                 position: 'absolute',
-                right: '20px',
+                left: '14px',
                 bottom: '4px',
               }}
             >

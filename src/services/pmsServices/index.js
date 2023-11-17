@@ -155,6 +155,12 @@ const {
     queryXCContractSubInfo,
     operateXCContract,
     transferXCContract,
+    queryProjectXCContract,
+    queryIteProjectList,
+    queryUndoMatters,
+    queryDocTemplateLibrary,
+    editDocTemplate,
+    queryDocType,
   },
 } = api;
 
@@ -1661,6 +1667,66 @@ export async function OperateXCContract(payload) {
 export async function TransferXCContract(payload) {
   const option = {
     url: transferXCContract,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 项目详情里查信创合同
+export async function QueryProjectXCContract(payload) {
+  const option = {
+    url: queryProjectXCContract,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 查询迭代项目
+export async function QueryIteProjectList(payload) {
+  const option = {
+    url: queryIteProjectList,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 查询未完成事项
+export async function QueryUndoMatters(payload) {
+  const option = {
+    url: queryUndoMatters,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 查询文档模板库
+export async function QueryDocTemplateLibrary(payload) {
+  const option = {
+    url: queryDocTemplateLibrary,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 编辑文档模板
+export async function EditDocTemplate(payload) {
+  const option = {
+    url: editDocTemplate,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 查询文档类型
+export async function QueryDocType(payload) {
+  const option = {
+    url: queryDocType,
     method: 'post',
     data: payload,
   };
