@@ -180,8 +180,9 @@ export default function PrjFinishModal(props) {
           </div>
           <div className="table-row">
             <div className="table-title">
-              以下事项还未完成
-              <span>（事项全部完成后且付款金额等于合同金额时，可进行项目完结）</span>：
+              {String(xmjd) !== '100' && '以下事项还未完成'}
+              <span>（事项全部完成后且付款金额等于合同金额时，可进行项目完结）</span>
+              {String(xmjd) !== '100' && '：'}
             </div>
             {tableData.length > 0 ? (
               <Table
