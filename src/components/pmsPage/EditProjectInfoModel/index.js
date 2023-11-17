@@ -647,7 +647,6 @@ class EditProjectInfoModel extends React.Component {
     haveType: 1,
     glddxmData: [], //关联迭代项目下拉框数据
     glddxmId: undefined, //关联迭代项目id - 编辑回显 - 类型为string
-    grayTest_DDMK: false, //灰度测试
   };
 
   componentWillMount() {
@@ -686,28 +685,9 @@ class EditProjectInfoModel extends React.Component {
     if (subItemFinish) {
       this.setState({ subItemFinish: true });
     }
-    //灰度测试 - DDMK
-    let LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
-    //获取登录角色数据 - 判断用户是否为领导
-    const roleRes =
-      (await QueryUserRole({
-        userId: Number(LOGIN_USER_INFO.id),
-      })) || {};
-    const testRole = JSON.parse(roleRes.testRole || '{}');
-    const { DDXM = '' } = testRole;
-    const DDXM_IDArr = DDXM === '' ? [] : DDXM.split(',');
-    const DDXM_Auth = DDXM_IDArr.includes(String(LOGIN_USER_INFO.id));
-    console.log(
-      '🚀 ~ file: index.js:253 ~ handlePromiseAll ~ DDXM_Auth:',
-      DDXM_Auth,
-      DDXM_IDArr,
-      String(LOGIN_USER_INFO.id),
-    );
-    this.setState({
-      grayTest_DDMK: DDXM_Auth,
-    });
+    
     setTimeout(function() {
-      _this.fetchInterface(DDXM_Auth);
+      _this.fetchInterface();
     }, 300);
   };
 
@@ -715,7 +695,7 @@ class EditProjectInfoModel extends React.Component {
     clearTimeout(timer);
   }
 
-  fetchInterface = async (grayTest_DDMK = false) => {
+  fetchInterface = async () => {
     // 查询软件清单
     this.fetchQuerySoftwareList();
     // 查询项目标签
@@ -743,13 +723,12 @@ class EditProjectInfoModel extends React.Component {
     if (this.state.basicInfo.projectId && this.state.basicInfo.projectId !== -1) {
       await this.fetchQueryProjectDetails({ projectId: this.state.basicInfo.projectId });
     }
-    //灰度测试后去掉条件
-    if (grayTest_DDMK) {
-      //.分割，取最后一个
-      const glddxmIdArr = this.state.glddxmId === '' ? [] : this.state.glddxmId?.split('.') || [];
-      // 获取关联迭代项目下拉框数据
-      await this.getGlddxmData(glddxmIdArr.length > 0 ? glddxmIdArr[glddxmIdArr.length - 1] : -1);
-    }
+
+    //.分割，取最后一个
+    const glddxmIdArr = this.state.glddxmId === '' ? [] : this.state.glddxmId?.split('.') || [];
+    // 获取关联迭代项目下拉框数据
+    await this.getGlddxmData(glddxmIdArr.length > 0 ? glddxmIdArr[glddxmIdArr.length - 1] : -1);
+
     //里程碑信息
     // 查询里程碑阶段信息
     await this.fetchQueryMilestoneStageInfo({ type: 'ALL' });
@@ -3313,35 +3292,34 @@ class EditProjectInfoModel extends React.Component {
               // window.location.href = '/#/pms/manage/ProjectInfo';
             } else {
               const { getFieldValue } = this.props.form;
-              //灰度测试后去掉条件
-              if (this.state.grayTest_DDMK) {
-                //关联迭代项目值有变化时（不等于原来的值）调用，有值入值，没值有迭代标签入-1，无则-2
-                if (getFieldValue('glddxm') !== glddxmId) {
-                  this.handleInitIterationProjectInfo(
-                    Number(
-                      getFieldValue('glddxm') !== undefined
-                        ? getFieldValue('glddxm')
-                        : getFieldValue('projectLabel')?.includes('14')
-                        ? -1
-                        : -2,
-                    ),
-                    Number(projectId),
-                  );
-                } else {
-                  console.log(
-                    "🚀 ~ getFieldValue('glddxm'):",
-                    String(getFieldValue('glddxm')),
-                    glddxmId === '',
-                  );
-                  //关联迭代项目值为undefined且有迭代标签时，入-1
-                  if (
-                    getFieldValue('glddxm') === undefined &&
-                    getFieldValue('projectLabel')?.includes('14')
-                  ) {
-                    this.handleInitIterationProjectInfo(-1, Number(projectId));
-                  }
+
+              //关联迭代项目值有变化时（不等于原来的值）调用，有值入值，没值有迭代标签入-1，无则-2
+              if (getFieldValue('glddxm') !== glddxmId) {
+                this.handleInitIterationProjectInfo(
+                  Number(
+                    getFieldValue('glddxm') !== undefined
+                      ? getFieldValue('glddxm')
+                      : getFieldValue('projectLabel')?.includes('14')
+                      ? -1
+                      : -2,
+                  ),
+                  Number(projectId),
+                );
+              } else {
+                console.log(
+                  "🚀 ~ getFieldValue('glddxm'):",
+                  String(getFieldValue('glddxm')),
+                  glddxmId === '',
+                );
+                //关联迭代项目值为undefined且有迭代标签时，入-1
+                if (
+                  getFieldValue('glddxm') === undefined &&
+                  getFieldValue('projectLabel')?.includes('14')
+                ) {
+                  this.handleInitIterationProjectInfo(-1, Number(projectId));
                 }
               }
+
               message.success('编辑项目成功！');
             }
             this.props.successCallBack();
@@ -4934,7 +4912,6 @@ class EditProjectInfoModel extends React.Component {
           this.fetchQueryStationInfo(Number(v), true);
         }
       };
-      if (!this.state.grayTest_DDMK) return null;
       if (getFieldValue('projectLabel')?.includes('14'))
         return (
           <Col

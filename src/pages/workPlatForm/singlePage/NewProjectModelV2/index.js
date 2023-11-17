@@ -173,7 +173,6 @@ class NewProjectModelV2 extends React.Component {
     haveType: 1,
     glddxmData: [], //关联迭代项目下拉框数据
     glddxmId: undefined, //关联迭代项目ID
-    grayTest_DDMK: false, //灰度测试后去掉
   };
 
   componentWillMount() {
@@ -189,35 +188,13 @@ class NewProjectModelV2 extends React.Component {
     const { xmid, projectType, type, scddProps = {} } = _this.props;
     console.log('propsprops', xmid, projectType);
     // const params = this.getUrlParams();
-    //灰度测试 - DDMK
-    let LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
-    //获取登录角色数据 - 判断用户是否为领导
-    const roleRes =
-      (await QueryUserRole({
-        userId: Number(LOGIN_USER_INFO.id),
-      })) || {};
-    const testRole = JSON.parse(roleRes.testRole || '{}');
-    const { DDXM = '' } = testRole;
-    const DDXM_IDArr = DDXM === '' ? [] : DDXM.split(',');
-    const DDXM_Auth = DDXM_IDArr.includes(String(LOGIN_USER_INFO.id));
-    console.log(
-      '🚀 ~ file: index.js:253 ~ handlePromiseAll ~ DDXM_Auth:',
-      DDXM_Auth,
-      DDXM_IDArr,
-      String(LOGIN_USER_INFO.id),
-    );
-    this.setState({
-      grayTest_DDMK: DDXM_Auth,
-    });
 
-    if (DDXM_Auth) {
-      //取消灰度测试时去掉条件
-      if (scddProps.glddxmId) {
-        this.setState({
-          glddxmId: scddProps.glddxmId,
-        });
-      }
+    if (scddProps.glddxmId) {
+      this.setState({
+        glddxmId: scddProps.glddxmId,
+      });
     }
+
     if (xmid && xmid !== -1) {
       // //console.log("paramsparams", params)
       // 修改项目操作
@@ -244,7 +221,7 @@ class NewProjectModelV2 extends React.Component {
       this.setState({ type: true });
     }
     setTimeout(function() {
-      _this.fetchInterface(scddProps.glddxmId, DDXM_Auth);
+      _this.fetchInterface(scddProps.glddxmId);
     }, 300);
   };
 
@@ -467,13 +444,13 @@ class NewProjectModelV2 extends React.Component {
     // //console.log("current", this.state.current)
   }
 
-  fetchInterface = async (glddxmId, DDMK = false) => {
+  fetchInterface = async glddxmId => {
     // 查询软件清单
     await this.fetchQuerySoftwareList();
     // 查询项目标签
     await this.fetchQueryProjectLabel();
 
-    if (glddxmId !== undefined || DDMK) {
+    if (glddxmId !== undefined) {
       // 获取关联迭代项目下拉框数据
       await this.getGlddxmData();
     }
@@ -520,7 +497,7 @@ class NewProjectModelV2 extends React.Component {
     }
 
     //glddxmId不为undefined时调用 - 生成迭代时
-    if (glddxmId !== undefined && DDMK) {
+    if (glddxmId !== undefined) {
       await this.fetchQueryProjectDetails({ projectId: glddxmId }, true);
     }
 
@@ -2741,14 +2718,13 @@ class NewProjectModelV2 extends React.Component {
               message.success('暂存草稿项目成功！', 1);
             } else {
               message.success('新建项目成功', 1);
-              if (this.state.grayTest_DDMK) {
-                //初始化迭代项目信息 - 包含迭代项目标签时且新建时 调用
-                getFieldValue('projectLabel')?.includes('14') &&
-                  this.handleInitIterationProjectInfo(
-                    Number(getFieldValue('glddxm') || -1),
-                    Number(projectId),
-                  );
-              }
+
+              //初始化迭代项目信息 - 包含迭代项目标签时且新建时 调用
+              getFieldValue('projectLabel')?.includes('14') &&
+                this.handleInitIterationProjectInfo(
+                  Number(getFieldValue('glddxm') || -1),
+                  Number(projectId),
+                );
             }
             this.props.successCallBack();
             //项目列表那边新建项目的时候，也跳转首页
@@ -3701,8 +3677,6 @@ class NewProjectModelV2 extends React.Component {
           this.fetchQueryStationInfo(Number(v), true);
         }
       };
-      //灰度测试后去掉
-      if (!this.state.grayTest_DDMK) return null;
       if (getFieldValue('projectLabel')?.includes('14'))
         return (
           <Row gutter={24}>

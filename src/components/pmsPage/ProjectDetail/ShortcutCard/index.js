@@ -225,7 +225,7 @@ export default function ShortcutCard(props) {
     });
   };
 
-  if (!((showKQXX && isMember()) || showSCDD)) return null;
+  // if (!((showKQXX && isMember()) || showSCDD)) return null;
   return (
     <div className="shortcut-card-box">
       <div className="top-title">快捷入口</div>

@@ -92,13 +92,11 @@ export default function ProjectDetail(props) {
     ZSCQ: false, //知识产权、获奖荣誉
     XCHT: false, //信创合同
   }); //灰度测试
-  let isDDXM = prjData.prjBasic?.XMBQ?.includes('迭代项目') && grayTest.DDMK; // 是否迭代项目
+  let isDDXM = prjData.prjBasic?.XMBQ?.includes('迭代项目'); // 是否迭代项目
   let isDDXMFK =
-    prjData.prjBasic?.XMBQ?.includes('迭代项目') &&
-    !prjData.prjBasic?.XMLX?.includes('自研项目') &&
-    grayTest.DDMK; // 是否迭代项目付款 - 标签有迭代项目且类型不为自研项目的展示，其他隐藏
+    prjData.prjBasic?.XMBQ?.includes('迭代项目') && !prjData.prjBasic?.XMLX?.includes('自研项目'); // 是否迭代项目付款 - 标签有迭代项目且类型不为自研项目的展示，其他隐藏
   const [showSCDD, setShowSCDD] = useState(false); //显示生成迭代
-  let showKQXX = prjData.prjBasic?.YSLX === '科研预算' && grayTest.KQMK; //显示考勤信息
+  let showKQXX = prjData.prjBasic?.YSLX === '科研预算'; //显示考勤信息
   let is_XMJL_FXMJL = [
     prjData.prjBasic?.XMJLID,
     ...(prjData.prjBasic?.FXMJL === '' ? [] : prjData.prjBasic?.FXMJL?.split(',') || []),
@@ -546,132 +544,126 @@ export default function ProjectDetail(props) {
         const DDXM_IDArr = DDXM === '' ? [] : DDXM.split(',');
         const DDXM_Auth = DDXM_IDArr.includes(String(LOGIN_USER_INFO.id));
 
-        //DDMK
-        if (DDXM_Auth) {
-          //.分割，取最后一个
-          const glddxmIdArr = XMJBXX.GLDDXM === '' ? [] : XMJBXX.GLDDXM?.split('.') || [];
-          const glddxmId = glddxmIdArr.length > 0 ? glddxmIdArr[glddxmIdArr.length - 1] : undefined;
-          //迭代项目下拉框数据 - 用于判断是否显示生成迭代、基本信息 - 迭代项目显示
-          const itrListData =
-            (await QueryIteProjectList({
-              current: 1,
-              pageSize: glddxmId, //这边是迭代项目id
-              paging: -1,
-              sort: '',
-              total: -1,
-              cxlx: 'DDXM',
-            })) || {};
+        //.分割，取最后一个
+        const glddxmIdArr = XMJBXX.GLDDXM === '' ? [] : XMJBXX.GLDDXM?.split('.') || [];
+        const glddxmId = glddxmIdArr.length > 0 ? glddxmIdArr[glddxmIdArr.length - 1] : undefined;
+        //迭代项目下拉框数据 - 用于判断是否显示生成迭代、基本信息 - 迭代项目显示
+        const itrListData =
+          (await QueryIteProjectList({
+            current: 1,
+            pageSize: glddxmId, //这边是迭代项目id
+            paging: -1,
+            sort: '',
+            total: -1,
+            cxlx: 'DDXM',
+          })) || {};
 
-          if (itrListData.success) {
-            // const itrListArr = [...JSON.parse(itrListData.result)].map(x => x.ID);
-            /**
-             * 生成迭代按钮显示：
-             * (软硬件 且 不包含硬件 或 软硬件 且 包含硬件 且 软件金额>0) 或 关联预算为科研预算
-             */
-            const isPrjExist = true;
-            // itrListArr.includes(String(xmid)); //且 关联项目数据包含本项目
-            const isNotCplHard =
-              XMJBXX.XMLX === '1' &&
-              (XMJBXX.SFBHYJ === '2' || (XMJBXX.SFBHYJ === '1' && parseFloat(XMJBXX.RJYSJE) > 0));
-            const isKYYS = XMJBXX.YSLX === '科研预算';
-            setShowSCDD((isPrjExist && isNotCplHard) || isKYYS);
-            setPrjData(p => ({ ...p, glddxmData: [...JSON.parse(itrListData.result)] }));
-            // console.log('🚀 ~ isPrjExist , isNotCplHard:', isPrjExist, isNotCplHard);
-          }
+        if (itrListData.success) {
+          // const itrListArr = [...JSON.parse(itrListData.result)].map(x => x.ID);
+          /**
+           * 生成迭代按钮显示：
+           * (软硬件 且 不包含硬件 或 软硬件 且 包含硬件 且 软件金额>0) 或 关联预算为科研预算
+           */
+          const isPrjExist = true;
+          // itrListArr.includes(String(xmid)); //且 关联项目数据包含本项目
+          const isNotCplHard =
+            XMJBXX.XMLX === '1' &&
+            (XMJBXX.SFBHYJ === '2' || (XMJBXX.SFBHYJ === '1' && parseFloat(XMJBXX.RJYSJE) > 0));
+          const isKYYS = XMJBXX.YSLX === '科研预算';
+          setShowSCDD((isPrjExist && isNotCplHard) || isKYYS);
+          setPrjData(p => ({ ...p, glddxmData: [...JSON.parse(itrListData.result)] }));
+          // console.log('🚀 ~ isPrjExist , isNotCplHard:', isPrjExist, isNotCplHard);
+        }
 
-          if (
-            XMJBXX.XMBQ?.includes('迭代项目') ||
-            (XMJBXX.GLDDXM === undefined && Number(XMJBXX.SFGLDD) > 0)
-          ) {
-            // 获取迭代项目付款记录
-            const paymentRecordData = (await QueryIteProjPayRcd({ projectId: Number(xmid) })) || {};
-            if (paymentRecordData.success) {
-              let paymentRecordArr = JSON.parse(paymentRecordData.fkxxResult);
-              let yearArr = JSON.parse(paymentRecordData.nfxxResult)?.filter(
-                x => Number(x.ID) !== Number(xmid),
-              );
-              let curYear = JSON.parse(paymentRecordData.nfxxResult)?.find(
-                x => Number(x.ID) === Number(xmid),
-              )?.NF;
-              setPrjData(p => ({
-                ...p,
-                paymentRecord: paymentRecordArr,
-                iterationYear: {
-                  currentYear: curYear,
-                  dropdown: yearArr,
-                },
-              }));
-            }
-          }
-
-          if (XMJBXX.XMBQ?.includes('迭代项目')) {
-            //获取项目迭代内容
-            const iterationCtnPromise = QueryProjectUpdateInfo({
-              projectId: Number(xmid),
-            });
-            //获取迭代项目付款计划
-            const iterationPaymentPromise = QueryIteProjPayPlan({ projectId: Number(xmid) });
-            const [iterationCtnRes, iterationPaymentRes] = await Promise.all([
-              iterationCtnPromise,
-              iterationPaymentPromise,
-            ]);
-            const iterationPaymentData = (await iterationPaymentRes) || {};
-            const iterationCtnData = (await iterationCtnRes) || {};
-            if (iterationCtnData.success) {
-              let iterationCtnArr = JSON.parse(iterationCtnData.result);
-              setPrjData(p => ({
-                ...p,
-                iterationCtn: iterationCtnArr,
-              }));
-            }
-            if (iterationPaymentData.success) {
-              setPrjData(p => ({
-                ...p,
-                iterationPayment: JSON.parse(iterationPaymentData.result),
-              }));
-            }
+        if (
+          XMJBXX.XMBQ?.includes('迭代项目') ||
+          (XMJBXX.GLDDXM === undefined && Number(XMJBXX.SFGLDD) > 0)
+        ) {
+          // 获取迭代项目付款记录
+          const paymentRecordData = (await QueryIteProjPayRcd({ projectId: Number(xmid) })) || {};
+          if (paymentRecordData.success) {
+            let paymentRecordArr = JSON.parse(paymentRecordData.fkxxResult);
+            let yearArr = JSON.parse(paymentRecordData.nfxxResult)?.filter(
+              x => Number(x.ID) !== Number(xmid),
+            );
+            let curYear = JSON.parse(paymentRecordData.nfxxResult)?.find(
+              x => Number(x.ID) === Number(xmid),
+            )?.NF;
+            setPrjData(p => ({
+              ...p,
+              paymentRecord: paymentRecordArr,
+              iterationYear: {
+                currentYear: curYear,
+                dropdown: yearArr,
+              },
+            }));
           }
         }
 
-        //KQMK
-        if (KQDJ_Auth) {
-          if (XMJBXX.YSLX === '科研预算') {
-            //获取考勤信息 - 月份数据
-            const attendanceMonthRes = await QueryMemberAttendanceRcd({
-              projectId: Number(xmid),
-              month: -1,
-              queryType: 'YF',
-            });
-            if (attendanceMonthRes.success) {
-              let YFArr = (JSON.parse(attendanceMonthRes.result) || [])
-                .map(x => String(x.YF))
-                .reverse();
-              if (YFArr.length > 0) {
-                //获取考勤信息 - 左侧信息
-                const attendanceRes = await QueryMemberAttendanceRcd({
-                  projectId: Number(xmid),
-                  month: Number(YFArr[YFArr.length - 1]),
-                  queryType: 'GL',
-                });
-                if (attendanceRes.success) {
-                  let attendanceArr = JSON.parse(attendanceRes.result);
-                  setPrjData(p => ({
-                    ...p,
-                    attendance: attendanceArr,
-                  }));
-                  setDaysData(p => ({
-                    ...p,
-                    curMonth: YFArr[YFArr.length - 1],
-                    monthData: YFArr,
-                    activeId: -1, //高亮的 RYID
-                    attendanceDays: [], //出勤天
-                    attendanceHalfDays: [], //出勤半天
-                    leaveDays: [], //请假天
-                    leaveHalfDays: [], //请假半天
-                    overTimeDays: [], //加班天
-                    overTimeHalfDays: [], //加班半天
-                  }));
-                }
+        if (XMJBXX.XMBQ?.includes('迭代项目')) {
+          //获取项目迭代内容
+          const iterationCtnPromise = QueryProjectUpdateInfo({
+            projectId: Number(xmid),
+          });
+          //获取迭代项目付款计划
+          const iterationPaymentPromise = QueryIteProjPayPlan({ projectId: Number(xmid) });
+          const [iterationCtnRes, iterationPaymentRes] = await Promise.all([
+            iterationCtnPromise,
+            iterationPaymentPromise,
+          ]);
+          const iterationPaymentData = (await iterationPaymentRes) || {};
+          const iterationCtnData = (await iterationCtnRes) || {};
+          if (iterationCtnData.success) {
+            let iterationCtnArr = JSON.parse(iterationCtnData.result);
+            setPrjData(p => ({
+              ...p,
+              iterationCtn: iterationCtnArr,
+            }));
+          }
+          if (iterationPaymentData.success) {
+            setPrjData(p => ({
+              ...p,
+              iterationPayment: JSON.parse(iterationPaymentData.result),
+            }));
+          }
+        }
+
+        if (XMJBXX.YSLX === '科研预算') {
+          //获取考勤信息 - 月份数据
+          const attendanceMonthRes = await QueryMemberAttendanceRcd({
+            projectId: Number(xmid),
+            month: -1,
+            queryType: 'YF',
+          });
+          if (attendanceMonthRes.success) {
+            let YFArr = (JSON.parse(attendanceMonthRes.result) || [])
+              .map(x => String(x.YF))
+              .reverse();
+            if (YFArr.length > 0) {
+              //获取考勤信息 - 左侧信息
+              const attendanceRes = await QueryMemberAttendanceRcd({
+                projectId: Number(xmid),
+                month: Number(YFArr[YFArr.length - 1]),
+                queryType: 'GL',
+              });
+              if (attendanceRes.success) {
+                let attendanceArr = JSON.parse(attendanceRes.result);
+                setPrjData(p => ({
+                  ...p,
+                  attendance: attendanceArr,
+                }));
+                setDaysData(p => ({
+                  ...p,
+                  curMonth: YFArr[YFArr.length - 1],
+                  monthData: YFArr,
+                  activeId: -1, //高亮的 RYID
+                  attendanceDays: [], //出勤天
+                  attendanceHalfDays: [], //出勤半天
+                  leaveDays: [], //请假天
+                  leaveHalfDays: [], //请假半天
+                  overTimeDays: [], //加班天
+                  overTimeHalfDays: [], //加班半天
+                }));
               }
             }
           }
@@ -809,15 +801,13 @@ export default function ProjectDetail(props) {
             payment: p(res.fkxxRecord).filter(y => y.HTID === x.ID),
           }));
 
-          if (grayTest.DDMK) {
-            const XMJBXX = p(res.xmjbxxRecord, false);
-            //是否显示生成迭代
-            const isNotCplHard =
-              XMJBXX.XMLX === '1' &&
-              (XMJBXX.SFBHYJ === '2' || (XMJBXX.SFBHYJ === '1' && parseFloat(XMJBXX.RJYSJE) > 0));
-            const isKYYS = prjBasic.YSLX === '科研预算';
-            setShowSCDD(isNotCplHard || isKYYS);
-          }
+          const XMJBXX = p(res.xmjbxxRecord, false);
+          //是否显示生成迭代
+          const isNotCplHard =
+            XMJBXX.XMLX === '1' &&
+            (XMJBXX.SFBHYJ === '2' || (XMJBXX.SFBHYJ === '1' && parseFloat(XMJBXX.RJYSJE) > 0));
+          const isKYYS = prjBasic.YSLX === '科研预算';
+          setShowSCDD(isNotCplHard || isKYYS);
 
           let obj = {
             prjBasic,
