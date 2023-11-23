@@ -285,7 +285,7 @@ export default function TableTabs(props) {
         <TabPane tab={`全部项目`} key="MX_ALL">
           {getTableContent({
             columns: tableClm,
-            rowKey: 'XMID',
+            rowKey: 'ID',
             dataSourse: data,
             loading,
           })}
@@ -293,7 +293,7 @@ export default function TableTabs(props) {
         <TabPane tab={`技术采购项目`} key="MX_JSCG">
           {getTableContent({
             columns: tableClm,
-            rowKey: 'XMID',
+            rowKey: 'ID',
             dataSourse: data,
             loading,
           })}
@@ -301,7 +301,7 @@ export default function TableTabs(props) {
         <TabPane tab={`人力外包项目`} key="MX_RLWB">
           {getTableContent({
             columns: tableClm,
-            rowKey: 'XMID',
+            rowKey: 'ID',
             dataSourse: data,
             loading,
           })}

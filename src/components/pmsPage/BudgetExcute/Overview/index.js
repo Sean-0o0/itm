@@ -5,6 +5,7 @@ import 'echarts/lib/chart/line';
 import 'echarts/lib/chart/custom';
 import 'echarts/lib/component/tooltip';
 import 'echarts/lib/component/legend';
+import 'echarts/lib/chart/radar';
 import ReactEchartsCore from 'echarts-for-react/lib/core';
 
 class Overview extends Component {
