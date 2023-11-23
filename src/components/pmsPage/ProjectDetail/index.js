@@ -100,7 +100,7 @@ export default function ProjectDetail(props) {
   let is_XMJL_FXMJL = [
     prjData.prjBasic?.XMJLID,
     ...(prjData.prjBasic?.FXMJL === '' ? [] : prjData.prjBasic?.FXMJL?.split(',') || []),
-  ].includes(String(LOGIN_USER_INFO.id)); //快捷入口，只有项目经理和副项目经理可以看到
+  ].includes(String(LOGIN_USER_INFO.id)); //快捷入口用的
   const [isGLY, setIsGLY] = useState({
     hjry: false,
     zscq: false,
@@ -1357,8 +1357,6 @@ export default function ProjectDetail(props) {
             )}
           </div>
           <div className="col-right">
-            {/* 快捷入口，只有项目经理和副项目经理可以看到 */}
-            {is_XMJL_FXMJL && (
               <ShortcutCard
                 dataProps={{
                   prjData,
@@ -1369,10 +1367,10 @@ export default function ProjectDetail(props) {
                   showKQXX,
                   isGLY,
                   grayTest,
+                  is_XMJL_FXMJL,
                 }}
                 funcProps={{ getPrjDtlData, setIsSpinning, handlePromiseAll, setShowSCDD }}
               />
-            )}
             <PrjMember
               routes={routes}
               prjData={prjData}

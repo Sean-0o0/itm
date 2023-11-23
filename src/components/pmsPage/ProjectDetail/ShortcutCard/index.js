@@ -22,6 +22,7 @@ export default function ShortcutCard(props) {
     showKQXX = false,
     isGLY = {},
     grayTest = {},
+    is_XMJL_FXMJL = false,
   } = dataProps;
   const { prjBasic = {}, member = [], contrastArr = [] } = prjData;
   const { getPrjDtlData, setIsSpinning, handlePromiseAll, setShowSCDD } = funcProps;
@@ -225,7 +226,8 @@ export default function ShortcutCard(props) {
     });
   };
 
-  // if (!((showKQXX && isMember()) || showSCDD)) return null;
+  //目前 非项目成员 无快捷入口
+  if (!isMember()) return null;
   return (
     <div className="shortcut-card-box">
       <div className="top-title">快捷入口</div>
@@ -313,12 +315,12 @@ export default function ShortcutCard(props) {
         data={{ xmid, xmjd: prjBasic.XMJD, contrastArr, refresh: handlePrjFinishRefresh }}
       />
       <div className="content">
-        {getShortcutItem('zscq', '知识产权', () => {}, intelPropertyMenu)}
-        {getShortcutItem('hjry', '获奖荣誉', () => {}, awardHonorMenu)}
-        {/* {getShortcutItem('xclr', '信创录入', () => {})} */}
+        {is_XMJL_FXMJL && getShortcutItem('zscq', '知识产权', () => {}, intelPropertyMenu)}
+        {is_XMJL_FXMJL && getShortcutItem('hjry', '获奖荣誉', () => {}, awardHonorMenu)}
         {showKQXX && isMember() && getShortcutItem('kqdj', '考勤登记', handleAttendanceRegister)}
-        {showSCDD && getShortcutItem('scdd', '生成迭代', createIterationPrj)}
-        {grayTest.DDMK &&
+        {is_XMJL_FXMJL && showSCDD && getShortcutItem('scdd', '生成迭代', createIterationPrj)}
+        {is_XMJL_FXMJL &&
+          grayTest.DDMK &&
           prjBasic.WJZT !== '1' &&
           getShortcutItem('xmwj', '项目完结', () => handlePrjFinish(xmid))}
       </div>
