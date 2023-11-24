@@ -511,7 +511,7 @@ export default connect(({ global = {} }) => ({
               onChange={onUploadChange}
               beforeUpload={onBeforeUpload}
               accept={
-                '.doc,.docx,.xml,.xls,.xlsx,.csv,.pdf,.txt,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+                '.doc,.docx,.xml,.xls,.xlsx,.csv,.jpg,.jpeg,.tif,.png,.pdf,.txt,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document'
               }
               fileList={fileList}
             >

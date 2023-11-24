@@ -52,7 +52,7 @@ export default function AttendanceInfo(props) {
         >
           {name}
           <div className="days-row">
-            {getDaysItem('出', '#3361ff', attendance)}
+            {getDaysItem('班', '#3361ff', attendance)}
             {getDaysItem('假', '#FF2F31', leave)}
             {getDaysItem('加', '#86E0FF', overTime)}
           </div>

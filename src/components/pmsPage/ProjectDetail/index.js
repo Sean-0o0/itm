@@ -96,7 +96,10 @@ export default function ProjectDetail(props) {
   let isDDXMFK =
     prjData.prjBasic?.XMBQ?.includes('迭代项目') && !prjData.prjBasic?.XMLX?.includes('自研项目'); // 是否迭代项目付款 - 标签有迭代项目且类型不为自研项目的展示，其他隐藏
   const [showSCDD, setShowSCDD] = useState(false); //显示生成迭代
-  let showKQXX = prjData.prjBasic?.YSLX === '科研预算'; //显示考勤信息
+  let showKQXX =
+    prjData.prjBasic?.YSLX === '科研预算' ||
+    prjData.prjBasic?.YSXMMC === '自研项目无预算' ||
+    prjData.prjBasic?.XMBQ?.includes('抵税扣除'); //显示考勤信息、考勤登记
   let is_XMJL_FXMJL = [
     prjData.prjBasic?.XMJLID,
     ...(prjData.prjBasic?.FXMJL === '' ? [] : prjData.prjBasic?.FXMJL?.split(',') || []),
@@ -628,7 +631,11 @@ export default function ProjectDetail(props) {
           }
         }
 
-        if (XMJBXX.YSLX === '科研预算') {
+        const showKQXX =
+          XMJBXX.YSLX === '科研预算' ||
+          XMJBXX.YSXMMC === '自研项目无预算' ||
+          XMJBXX.XMBQ?.includes('抵税扣除'); //显示考勤信息、考勤登记
+        if (showKQXX) {
           //获取考勤信息 - 月份数据
           const attendanceMonthRes = await QueryMemberAttendanceRcd({
             projectId: Number(xmid),
@@ -636,9 +643,7 @@ export default function ProjectDetail(props) {
             queryType: 'YF',
           });
           if (attendanceMonthRes.success) {
-            let YFArr = (JSON.parse(attendanceMonthRes.result) || [])
-              .map(x => String(x.YF))
-              .reverse();
+            let YFArr = (JSON.parse(attendanceMonthRes.result) || []).map(x => String(x.YF));
             if (YFArr.length > 0) {
               //获取考勤信息 - 左侧信息
               const attendanceRes = await QueryMemberAttendanceRcd({
@@ -1357,20 +1362,20 @@ export default function ProjectDetail(props) {
             )}
           </div>
           <div className="col-right">
-              <ShortcutCard
-                dataProps={{
-                  prjData,
-                  xmid,
-                  ZYXMKQLX,
-                  showSCDD,
-                  routes,
-                  showKQXX,
-                  isGLY,
-                  grayTest,
-                  is_XMJL_FXMJL,
-                }}
-                funcProps={{ getPrjDtlData, setIsSpinning, handlePromiseAll, setShowSCDD }}
-              />
+            <ShortcutCard
+              dataProps={{
+                prjData,
+                xmid,
+                ZYXMKQLX,
+                showSCDD,
+                routes,
+                showKQXX,
+                isGLY,
+                grayTest,
+                is_XMJL_FXMJL,
+              }}
+              funcProps={{ getPrjDtlData, setIsSpinning, handlePromiseAll, setShowSCDD }}
+            />
             <PrjMember
               routes={routes}
               prjData={prjData}

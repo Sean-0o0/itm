@@ -13,7 +13,7 @@ export default function RJZZ(props) {
     fromPrjDetail = false,
     isGLY,
   } = dataProps;
-  const { setUpldData, setIsTurnRed } = funcProps;
+  const { setUpldData, setIsTurnRed, getFieldValue } = funcProps;
   const {
     getInput,
     getSingleSelector,
@@ -50,7 +50,15 @@ export default function RJZZ(props) {
           })}
       {getInput('软件名称', 'name', rowData.NAME, labelCol, wrapperCol, 50)}
       {getInput('版本号', 'bbh', rowData.BBH, labelCol, wrapperCol, 10)}
-      {getInput('证书号', 'zsh', rowData.ZSH, labelCol, wrapperCol, 20)}
+      {getInput(
+        '证书号',
+        'zsh',
+        rowData.ZSH,
+        labelCol,
+        wrapperCol,
+        20,
+        String(getFieldValue('dqzt')) !== '1',
+      )}
       {isGLY &&
         getSingleTreeSelector({
           label: '联系人',
