@@ -1718,8 +1718,10 @@ class ItemBtn extends React.Component {
       width:
         lbModalTitle === '设备采购无合同发起' || lbModalTitle === '设备采购有合同发起'
           ? '1100px'
+          : lbModalTitle === '信委会议案流程发起'
+          ? '1000px'
           : '864px',
-      height: '700px',
+      height: '680px',
       style: { top: '10px' },
       visible: sendVisible,
       footer: null,

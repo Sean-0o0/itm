@@ -708,8 +708,8 @@ export default function IterationPayment(props) {
   const xwhModalProps = {
     isAllWindow: 1,
     title: lbModal.title,
-    width: '864px',
-    height: '700px',
+    width: '1000px',
+    height: '680px',
     style: { top: 10 },
     visible: lbModal.xwh,
     footer: null,
