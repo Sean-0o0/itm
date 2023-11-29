@@ -685,7 +685,7 @@ class EditProjectInfoModel extends React.Component {
     if (subItemFinish) {
       this.setState({ subItemFinish: true });
     }
-    
+
     setTimeout(function() {
       _this.fetchInterface();
     }, 300);
@@ -3475,14 +3475,17 @@ class EditProjectInfoModel extends React.Component {
     const {
       mileInfo: { milePostInfo = [] },
     } = this.state;
-
     // 多层数组的深拷贝方式  真暴力哦
     const mile = JSON.parse(JSON.stringify(milePostInfo));
     let matterInfo = mile[index].matterInfos;
     let sxlb = [];
-    const existCpl = (matterInfo[i]?.sxlb)[sx_index].zxzt === '1'; //存在已执行事项
+    const sxItem = (matterInfo[i]?.sxlb)[sx_index] || {};
+    const existCpl = sxItem.zxzt === '1'; //存在已执行事项
+    const existImp = sxItem.bksc === '1'; //存在重大事项
     if (existCpl) {
       message.warn('该事项已执行，无法删除', 1);
+    } else if (existImp) {
+      message.warn(sxItem.scsm, 1);
     } else {
       matterInfo[i].sxlb.forEach((item, index) => {
         if (index !== sx_index) {

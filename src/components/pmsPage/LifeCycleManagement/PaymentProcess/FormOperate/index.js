@@ -379,6 +379,7 @@ export default function FormOperate(props) {
                             网点：{item.wdmc}
                           </div>
                         }
+                        placement="topLeft"
                       >
                         <i
                           className="iconfont icon-bank"
@@ -467,7 +468,9 @@ export default function FormOperate(props) {
                 {glsbData?.map((item = {}, ind) => {
                   return (
                     <Select.Option key={item.ID} value={item.ID}>
-                      {item.BT}
+                      <Tooltip title={item.BT} placement="topLeft">
+                        {item.BT}
+                      </Tooltip>
                     </Select.Option>
                   );
                 })}
