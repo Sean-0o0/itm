@@ -19,6 +19,7 @@ const {
   pmsServices: { queryFileStream },
 } = api;
 import { EditDocTemplate, QueryDocType } from '../../../../../services/pmsServices';
+import { setParentSelectableFalse } from '../../../../../utils/pmsPublicUtils';
 
 export default Form.create()(function OprtModal(props) {
   const { visible, setVisible, form = {}, data = {} } = props;
@@ -157,6 +158,7 @@ export default Form.create()(function OprtModal(props) {
           }
           let arr = JSON.parse(res.result).filter(x => !existingTypes.includes(Number(x.ID)));
           let finalArr = toTreeData(arr);
+          finalArr.forEach(node => setParentSelectableFalse(node));
           setTypeSlt(finalArr);
           setIsSpinning(false);
         }

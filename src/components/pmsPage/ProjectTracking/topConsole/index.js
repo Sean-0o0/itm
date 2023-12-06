@@ -5,6 +5,7 @@ import TreeUtils from '../../../../utils/treeUtils';
 import {set} from 'store';
 import {connect} from "dva";
 import {FetchQueryOrganizationInfo} from "../../../../services/projectManage";
+import { setParentSelectableFalse } from '../../../../utils/pmsPublicUtils';
 
 const InputGroup = Input.Group;
 const {Option} = Select;
@@ -55,6 +56,7 @@ export default forwardRef(function TopConsole(props, ref) {
           //   fid: '11167',
           //   children: [],
           // });
+          data.forEach(node => setParentSelectableFalse(node))
           setOrgData([...data]);
         }
       })

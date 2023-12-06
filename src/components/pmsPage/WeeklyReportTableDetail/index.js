@@ -12,6 +12,7 @@ import {
 import moment from 'moment';
 import { FetchQueryOrganizationInfo } from '../../../services/projectManage';
 import TreeUtils from '../../../utils/treeUtils';
+import { setParentSelectableFalse } from '../../../utils/pmsPublicUtils';
 const { TabPane } = Tabs;
 
 export default function WeeklyReportTableDetail() {
@@ -100,7 +101,9 @@ export default function WeeklyReportTableDetail() {
             titleName: 'orgName',
             normalizeTitleName: 'title',
             normalizeKeyName: 'value',
-          })[0].children;
+          })[0].children[0];
+          data.selectable = false;
+          data.children?.forEach(node => setParentSelectableFalse(node));
           setOrgData(data);
           // console.log('🚀 ~ file: index.js:83 ~ getOrgData ~ data:', data);
           setOrgArr([...res.record]);

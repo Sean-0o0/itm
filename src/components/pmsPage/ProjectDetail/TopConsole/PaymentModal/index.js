@@ -13,6 +13,7 @@ import {
   Radio,
   Button,
   message,
+  Tooltip,
 } from 'antd';
 import moment from 'moment';
 import {
@@ -27,7 +28,7 @@ const { Step } = Steps;
 export default Form.create()(function PaymentModal(props) {
   const { dataProps = {}, funcProps = {}, form } = props;
   const { validateFields, getFieldValue, resetFields, getFieldDecorator, setFieldsValue } = form;
-  const { visible = false, paymentPlan = [], xmid } = dataProps;
+  const { visible = false, paymentPlan = [], xmid, dhtData = [] } = dataProps;
   const { setVisible } = funcProps;
   const [curStep, setCurStep] = useState(0); //当前tab ID
   const [isSpinning, setIsSpinning] = useState(false); //加载状态
@@ -279,12 +280,50 @@ export default Form.create()(function PaymentModal(props) {
     );
   };
 
+  //关联合同
+  const getGlht = () => {
+    return (
+      <Form.Item label="关联合同" labelCol={{ span: 6 }} wrapperCol={{ span: 18 }}>
+        {getFieldDecorator('glht', {
+          // initialValue: glhtid,
+          rules: [
+            {
+              required: true,
+              message: '关联合同不允许空值',
+            },
+          ],
+        })(
+          <Select
+            style={{ width: '100%', borderRadius: '8px !important' }}
+            placeholder="请选择关联合同"
+            showSearch
+            allowClear
+            optionFilterProp="children"
+            filterOption={(input, option) =>
+              option.props.children?.props?.children?.toLowerCase().indexOf(input.toLowerCase()) >=
+              0
+            }
+          >
+            {dhtData.map(x => (
+              <Select.Option key={x.ID} value={x.ID}>
+                <Tooltip title={x.GYSMC + '-' + x.QSRQ} placement="topLeft">
+                  {x.GYSMC + '-' + x.QSRQ}
+                </Tooltip>
+              </Select.Option>
+            ))}
+          </Select>,
+        )}
+      </Form.Item>
+    );
+  };
+
   const handleConfirm = () => {
     validateFields(err => {
       if (!err) {
-        if (getFieldValue('sfyfkjh') === 1 && selectedRowQS === undefined) {
-          message.error('请选择对应付款计划', 1);
-        } else if (JSON.stringify(confirmInfo) === '{}') {
+        // if (getFieldValue('sfyfkjh') === 1 && selectedRowQS === undefined) {
+        //   message.error('请选择对应付款计划', 1);
+        // } else
+        if (JSON.stringify(confirmInfo) === '{}') {
           message.error('请确认付款单单号是否正确', 1);
         } else {
           let params = {
@@ -293,7 +332,7 @@ export default Form.create()(function PaymentModal(props) {
             isLast: getFieldValue('yjfk'),
             payDate: Number(getFieldValue('sjfksj')?.format('YYYYMMDD')),
             payeeId: Number(confirmInfo.skzh?.id),
-            paymentNumber: selectedRowQS || 0,
+            paymentNumber: Number(getFieldValue('glht')) || 0,
             projectId: Number(xmid),
             yjyhtid: getFieldValue('glsb'),
           };
@@ -327,9 +366,10 @@ export default Form.create()(function PaymentModal(props) {
   const handleNext = () => {
     form.validateFields(err => {
       if (!err) {
-        if (getFieldValue('sfyfkjh') === 1 && selectedRowQS === undefined) {
-          message.error('请选择对应付款计划', 1);
-        } else if (JSON.stringify(confirmInfo) === '{}') {
+        // if (getFieldValue('sfyfkjh') === 1 && selectedRowQS === undefined) {
+        //   message.error('请选择对应付款计划', 1);
+        // } else
+        if (JSON.stringify(confirmInfo) === '{}') {
           message.error('请确认付款单单号是否正确', 1);
         } else {
           setCurStep(1);
@@ -428,18 +468,18 @@ export default Form.create()(function PaymentModal(props) {
               {getRadio('是否为硬件入围内付款', 'yjrwfk')}
             </Row>
             {getFieldValue('yjrwfk') === 1 && getGlsbcgyhtSelector()}
+            {dhtData.length > 0 && getGlht()}
             <Row>
-              {getRadio(
+              {/* {getRadio(
                 '是否有付款计划',
                 'sfyfkjh',
                 paymentPlan.length > 0 ? 1 : 2,
                 handleRadioChange,
-              )}
+              )} */}
               {getDatePicker()}
             </Row>
-            {getFieldValue('sfyfkjh') === 1 && getPaymentPlan()}
-            {getFieldValue('sfyfkjh') === 1 &&
-              getInputDisabled('说明', '只需要补录今年预算内的付款金额')}
+            {/* {getFieldValue('sfyfkjh') === 1 &&
+              getInputDisabled('说明', '只需要补录今年预算内的付款金额')} */}
           </Form>
         </div>
         <div className="confirm-info-box" style={curStep === 1 ? {} : { display: 'none' }}>

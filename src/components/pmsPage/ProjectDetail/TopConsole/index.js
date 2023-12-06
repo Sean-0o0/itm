@@ -35,6 +35,7 @@ export default function TopConsole(props) {
     setPrjData,
     isDDXM,
     grayTest = {},
+    isAdmin = false,
   } = props;
   const [fileAddVisible, setFileAddVisible] = useState(false); //项目信息修改弹窗显示
   const [src_fileAdd, setSrc_fileAdd] = useState({}); //项目信息修改弹窗显示
@@ -63,6 +64,7 @@ export default function TopConsole(props) {
     iterationYear = [],
     topic = [],
     award = [],
+    contrastArr = [],
   } = prjData;
   let LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
   const history = useHistory();
@@ -191,6 +193,10 @@ export default function TopConsole(props) {
     setFileAddVisible(true);
     let p = { xmid, type: true, projectStatus: 'SAVE' };
     prjBasic.FXMMC && (p.subItemFlag = true);
+    //项目编辑，管理员可以编辑所有项目，子项目的项目立项里程碑信息，也对管理员开放编辑
+    if (isAdmin) {
+      p.subItemFlag = false;
+    }
     setSrc_fileAdd(
       p,
       // `/#/single/pms/EditProject/${EncryptBase64(JSON.stringify(p))}`
@@ -338,7 +344,7 @@ export default function TopConsole(props) {
   };
 
   const btnMoreContent = () => {
-    if (String(LOGIN_USER_INFO.id) === '0')
+    // if (String(LOGIN_USER_INFO.id) === '0')
       return (
         <Menu>
           <SubMenu title={<span style={{ marginLeft: 20 }}>流程补录</span>}>
@@ -804,7 +810,7 @@ export default function TopConsole(props) {
         />
       )}
       <PaymentModal
-        dataProps={{ visible: lbmodal.fklcbl, paymentPlan: payment, xmid }}
+        dataProps={{ visible: lbmodal.fklcbl, paymentPlan: payment, xmid, dhtData: contrastArr }}
         funcProps={{ setVisible: v => setLbModal(p => ({ ...p, fklcbl: v })) }}
       />
       <Breadcrumb separator=">">
@@ -950,7 +956,7 @@ export default function TopConsole(props) {
           {grayTest.DDMK && prjBasic.WJZT === '1' && (
             <img src={iconCompleted} className="icon-completed" alt="图片：已完结" />
           )}
-          {allowEdit() && (
+          {(allowEdit() || String(LOGIN_USER_INFO.id) === '0') && (
             <Button className="btn-edit" onClick={handleEditPrjInfo}>
               编辑
             </Button>

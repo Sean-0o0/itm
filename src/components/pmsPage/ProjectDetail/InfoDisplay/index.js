@@ -139,13 +139,21 @@ export default function InfoDisplay(props) {
         <div className="payment-label">评标报告：</div>
         <div className="payment-plan">
           {arr.map((x, i) => (
-            <a
-              style={{ color: '#3361ff', display: 'block' }}
-              key={i}
-              onClick={() => handleFile(bidding.ID, x[1], x[0])}
-            >
-              {x[1]}
-            </a>
+            <Tooltip placement="topLeft" title={x[1]}>
+              <a
+                style={{
+                  width: '100%',
+                  color: '#3361ff',
+                  display: 'block',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                }}
+                key={i}
+                onClick={() => handleFile(bidding.ID, x[1], x[0])}
+              >
+                {x[1]}
+              </a>
+            </Tooltip>
           ))}
         </div>
       </div>

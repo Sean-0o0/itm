@@ -1,11 +1,16 @@
-import React, {useEffect, useState, forwardRef, useImperativeHandle} from 'react';
-import {Select, Button, Input, TreeSelect, Row, Col, Icon, message} from 'antd';
-import {QueryProjectListPara, QueryProjectListInfo, QueryProjectStatisticsList} from '../../../../services/pmsServices';
+import React, { useEffect, useState, forwardRef, useImperativeHandle } from 'react';
+import { Select, Button, Input, TreeSelect, Row, Col, Icon, message } from 'antd';
+import {
+  QueryProjectListPara,
+  QueryProjectListInfo,
+  QueryProjectStatisticsList,
+} from '../../../../services/pmsServices';
 import TreeUtils from '../../../../utils/treeUtils';
-import {set} from 'store';
+import { set } from 'store';
+import { setParentSelectableFalse } from '../../../../utils/pmsPublicUtils';
 
 const InputGroup = Input.Group;
-const {Option} = Select;
+const { Option } = Select;
 
 export default forwardRef(function TopConsole(props, ref) {
   const [amountSelector, setAmountSelector] = useState('1'); //项目金额下拉框，区间 '1'，大于 '2'
@@ -16,7 +21,7 @@ export default forwardRef(function TopConsole(props, ref) {
   const [prjNameData, setPrjNameData] = useState([]); //项目名称
   const [prjMngerData, setPrjMngerData] = useState([]); //项目经理
   const [orgData, setOrgData] = useState([]); //应用部门
-  const {XMLX} = props.dictionary; //
+  const { XMLX } = props.dictionary; //
   const [prjTypeData, setPrjTypeData] = useState([]); //项目类型
   //查询的值
   const [budget, setBudget] = useState(undefined); //关联预算
@@ -56,8 +61,7 @@ export default forwardRef(function TopConsole(props, ref) {
 
   useEffect(() => {
     getFilterData();
-    return () => {
-    };
+    return () => {};
   }, []);
 
   useImperativeHandle(
@@ -134,7 +138,7 @@ export default forwardRef(function TopConsole(props, ref) {
             if (indexData.indexOf(item.ZDBM) === -1) {
               indexData.push(item.ZDBM);
               if (b[item.ZDBM]) {
-                let treeDatamini = {children: []};
+                let treeDatamini = { children: [] };
                 if (item.ZDBM === '6') {
                   // console.log("b[item.ZDBM]",b["6"])
                   b[item.ZDBM].map(i => {
@@ -165,7 +169,7 @@ export default forwardRef(function TopConsole(props, ref) {
                   treeDatamini.ZYS = Number(item.ZYS);
                   treeDatamini.KZXYS = Number(item.KZXYS);
                   treeDatamini.ZDBM = item.ZDBM;
-                  treeDatamini.dropdownStyle = {color: '#666'};
+                  treeDatamini.dropdownStyle = { color: '#666' };
                   treeDatamini.selectable = false;
                   treeDatamini.children = b[item.ZDBM];
                 }
@@ -174,7 +178,7 @@ export default forwardRef(function TopConsole(props, ref) {
               childrenData.key = key;
               childrenData.value = key;
               childrenData.title = item.YSLX;
-              childrenData.dropdownStyle = {color: '#666'};
+              childrenData.dropdownStyle = { color: '#666' };
               childrenData.selectable = false;
               childrenData.children = childrenDatamini;
             }
@@ -228,6 +232,8 @@ export default forwardRef(function TopConsole(props, ref) {
             normalizeTitleName: 'title',
             normalizeKeyName: 'value',
           })[0].children[0];
+          xmlx.selectable = false;
+          xmlx.children?.forEach(node => setParentSelectableFalse(node));
           setPrjTypeData(p => [...[xmlx]]);
         }
       })
@@ -238,13 +244,7 @@ export default forwardRef(function TopConsole(props, ref) {
   };
 
   //查询按钮
-  const handleSearch = (
-    current = 1,
-    pageSize = 20,
-    queryType = 'BM',
-    sort = '',
-    tabsKey = '0'
-  ) => {
+  const handleSearch = (current = 1, pageSize = 20, queryType = 'BM', sort = '', tabsKey = '0') => {
     setTableLoading(true);
     setCurPage(current);
     setCurPageSize(pageSize);
@@ -384,7 +384,7 @@ export default forwardRef(function TopConsole(props, ref) {
             showSearch
             treeNodeFilterProp="title"
             dropdownClassName="newproject-treeselect"
-            dropdownStyle={{maxHeight: 300, overflow: 'auto'}}
+            dropdownStyle={{ maxHeight: 300, overflow: 'auto' }}
             treeData={prjTypeData}
             placeholder="请选择"
             onChange={handlePrjTypeChange}

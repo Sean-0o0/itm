@@ -8,6 +8,7 @@ import {
   FetchQueryBudgetProjects,
   FetchQueryOrganizationInfo,
 } from '../../../services/projectManage';
+import { setParentSelectableFalse } from '../../../utils/pmsPublicUtils';
 const { TabPane } = Tabs;
 
 export default function BudgetStatistic(props) {
@@ -96,6 +97,8 @@ export default function BudgetStatistic(props) {
             normalizeTitleName: 'title',
             normalizeKeyName: 'value',
           })[0].children[0].children[0].children;
+          data.selectable = false;
+          data.forEach(node => setParentSelectableFalse(node));
           setOrgData([...data]);
           setSpinningData(p => ({
             ...p,
@@ -208,6 +211,7 @@ export default function BudgetStatistic(props) {
             }
             return acc;
           }, []);
+          ysxmArr.forEach(node => setParentSelectableFalse(node));
           // console.log(ysxmArr);
           setFilterData(p => ({
             ...p,

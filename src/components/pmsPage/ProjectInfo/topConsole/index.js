@@ -3,6 +3,7 @@ import { Select, Button, Input, TreeSelect, Row, Col, Icon, message } from 'antd
 import { QueryProjectListPara, QueryProjectListInfo } from '../../../../services/pmsServices';
 import TreeUtils from '../../../../utils/treeUtils';
 import { set } from 'store';
+import { setParentSelectableFalse } from '../../../../utils/pmsPublicUtils';
 const InputGroup = Input.Group;
 const { Option } = Select;
 
@@ -133,8 +134,8 @@ export default forwardRef(function TopConsole(props, ref) {
                   // console.log("b[item.ZDBM]",b["6"])
                   b[item.ZDBM].map(i => {
                     let treeDatamini = {};
-                    treeDatamini.key = i.ID+ i.ysLXID;
-                    treeDatamini.value = i.ID+ i.ysLXID;
+                    treeDatamini.key = i.ID + i.ysLXID;
+                    treeDatamini.value = i.ID + i.ysLXID;
                     treeDatamini.title = i.YSXM;
                     treeDatamini.ID = i.ID;
                     treeDatamini.KGLYS = Number(i.KGLYS);
@@ -162,10 +163,9 @@ export default forwardRef(function TopConsole(props, ref) {
                   treeDatamini.ZDBM = item.ZDBM;
                   treeDatamini.dropdownStyle = { color: '#666' };
                   treeDatamini.selectable = false;
-                  treeDatamini.children = b[item.ZDBM]; 
+                  treeDatamini.children = b[item.ZDBM];
                   childrenDatamini.push(treeDatamini);
                 }
-               
               }
               childrenData.key = key;
               childrenData.value = key;
@@ -224,6 +224,8 @@ export default forwardRef(function TopConsole(props, ref) {
             normalizeTitleName: 'title',
             normalizeKeyName: 'value',
           })[0].children[0];
+          xmlx.selectable = false;
+          xmlx.children?.forEach(node => setParentSelectableFalse(node));
           setPrjTypeData(p => [...[xmlx]]);
         }
       })

@@ -3626,6 +3626,7 @@ class NewProjectModelV2 extends React.Component {
         title: '非招标方式采购',
         value: '0-2',
         key: '0-2',
+        selectable: false,
         children: [
           {
             title: '直采',

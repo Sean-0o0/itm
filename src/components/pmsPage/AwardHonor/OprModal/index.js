@@ -29,6 +29,7 @@ import YJKT from './YJKT';
 import KJJX from './KJJX';
 import KJJXSB from './KJJXSB';
 import YJKTSB from './YJKTSB';
+import { setParentSelectableFalse } from '../../../../utils/pmsPublicUtils';
 const { api } = config;
 const {
   pmsServices: { queryFileStream },
@@ -230,6 +231,7 @@ export default connect(({ global = {} }) => ({
                     });
                     return parentArr.length > 0;
                   });
+                  finalData.forEach(node => setParentSelectableFalse(node));
                   setSltData(p => ({ ...p, contact: [...finalData] }));
                   if (fromPrjDetail !== false) {
                     console.log('ggg');

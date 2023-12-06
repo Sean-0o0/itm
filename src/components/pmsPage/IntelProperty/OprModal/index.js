@@ -28,6 +28,7 @@ import HYBZ from './HYBZ';
 import QYBZ from './QYBZ';
 import axios from 'axios';
 import config from '../../../../utils/config';
+import { setParentSelectableFalse } from '../../../../utils/pmsPublicUtils';
 const { api } = config;
 const {
   pmsServices: { queryFileStream },
@@ -223,6 +224,7 @@ export default connect(({ global = {} }) => ({
                     });
                     return parentArr.length > 0;
                   });
+                  finalData.forEach(node => setParentSelectableFalse(node));
                   setSltData(p => ({ ...p, contact: [...finalData] }));
                   setIsSpinning(false);
                 }

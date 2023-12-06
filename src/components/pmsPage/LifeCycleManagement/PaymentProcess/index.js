@@ -137,11 +137,11 @@ const PaymentProcess = props => {
           fymxSum += Number(item.je);
           lcid = String(item.lcid);
           let detailInfo = JSON.stringify({
-            FYLX: item.fylxInfo.ID,
+            FYLX: item.fylxInfo.ID || '-1',
             JE: String(item.je),
             RQ: item.date,
-            FPLX: item.fplxInfo?.ID,
-            YSXM: item.ysxmInfo?.ID,
+            FPLX: item.fplxInfo?.ID || '-1',
+            YSXM: item.ysxmInfo?.ID || '-1',
             XFSY: item.consumptionReasons,
             SFWK: String(item.isFinalPay), //1,2
           });

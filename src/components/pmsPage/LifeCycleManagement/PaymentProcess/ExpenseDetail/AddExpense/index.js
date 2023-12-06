@@ -366,6 +366,16 @@ const AddExpense = props => {
     })
       .then(res => {
         if (res?.success) {
+          function setParentSelectableFalse(node) {
+            if (node.children && node.children.length > 0) {
+              // 如果节点有子节点
+              node.selectable = false; // 将该节点设置为不可选
+              node.children.forEach(child => {
+                // 遍历子节点
+                setParentSelectableFalse(child); // 递归处理子节点
+              });
+            }
+          }
           let fyTree = TreeUtils.toTreeData(JSON.parse(res.fylxRecord), {
             keyName: 'ID',
             pKeyName: 'FID',
@@ -374,6 +384,8 @@ const AddExpense = props => {
             normalizeKeyName: 'value',
             persistPrimaryData: true,
           })[0].children[0];
+          fyTree.selectable = false;
+          fyTree.children?.forEach(node => setParentSelectableFalse(node));
           setFylxData(p => [...JSON.parse(res.fylxRecord)]);
           let ysTree = TreeUtils.toTreeData(JSON.parse(res.ysxmRecord), {
             keyName: 'ID',
@@ -382,6 +394,8 @@ const AddExpense = props => {
             normalizeTitleName: 'title',
             normalizeKeyName: 'value',
           })[0].children[0];
+          ysTree.selectable = false;
+          ysTree.children?.forEach(node => setParentSelectableFalse(node));
           setYsxmData(p => [...JSON.parse(res.ysxmRecord)]);
           let obj = {
             fylxData: fyTree,

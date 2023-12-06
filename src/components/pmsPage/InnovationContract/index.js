@@ -11,6 +11,7 @@ import {
 import TableBox from './TableBox';
 import { DecryptBase64 } from '../../Common/Encrypt';
 import { FetchQueryOrganizationInfo } from '../../../services/projectManage';
+import { setParentSelectableFalse } from '../../../utils/pmsPublicUtils';
 
 export default connect(({ global }) => ({
   dictionary: global.dictionary,
@@ -53,7 +54,7 @@ export default connect(({ global }) => ({
       let obj = JSON.parse(DecryptBase64(params));
       // console.log('🚀 ~ file: index.js:43 ~ useLayoutEffect ~ obj:', obj);
     }
-    console.log("🚀 ~ file: index.js:53 ~ useLayoutEffect ~ params:", params)
+    console.log('🚀 ~ file: index.js:53 ~ useLayoutEffect ~ params:', params);
     queryTableData({});
     getUserRole();
     return () => {};
@@ -257,6 +258,7 @@ export default connect(({ global }) => ({
                   });
                   return parentArr.length > 0;
                 });
+                finalData.forEach(node => setParentSelectableFalse(node));
                 setSltData(p => ({ ...p, jbr: [...finalData] }));
                 setIsSpinning(false);
               }
