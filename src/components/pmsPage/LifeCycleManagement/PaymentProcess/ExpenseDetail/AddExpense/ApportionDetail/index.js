@@ -22,7 +22,7 @@ export default function ApportionDetail(props) {
   const { formData = {}, form = {}, bxbmData = [], bxbmOrigin = [] } = dataProps;
   const { isApportion = false, apportionmentData = [] } = formData;
   const { getFieldDecorator, getFieldValue, validateFields, resetFields, setFieldsValue } = form;
-  const { setFormData, setApportionErrors, setIsGx } = funcProps;
+  const { setFormData, setIsGx } = funcProps;
   const [selectedRowIds, setSelectedRowIds] = useState([]); //选中行id
   const [updateModalData, setUpdateModalData] = useState({
     visible: false,
@@ -193,87 +193,95 @@ export default function ApportionDetail(props) {
 
   //平均分摊
   const handleEven = () => {
-    Modal.confirm({
-      title: '确定平均分摊?',
-      content: '系统将根据费用金额，自动调整「分摊金额、分摊比例」，确定平均分摊？',
-      onOk: () => {
-        let data = [...apportionmentData];
-        let ftbl = parseFloat(
-          Decimal(100)
-            .div(data.length)
-            .toFixed(2),
-        );
-        if (Decimal(ftbl).times(data.length) === 100) {
-          const value = parseFloat(
-            Decimal(ftbl)
-              .div(100)
-              .times(getFieldValue('je') || 0)
+    try {
+      Modal.confirm({
+        title: '确定平均分摊?',
+        content: '系统将根据费用金额，自动调整「分摊金额、分摊比例」，确定平均分摊？',
+        onOk: () => {
+          let data = [...apportionmentData];
+          let ftbl = parseFloat(
+            Decimal(100)
+              .div(data.length)
               .toFixed(2),
           );
-          data.forEach(x => {
-            x['FTJE' + x.ID] = value;
-            x['FTBL' + x.ID] = ftbl;
-            setFieldsValue({
-              ['FTJE' + x.ID]: value,
-              ['FTBL' + x.ID]: ftbl,
+          if (
+            Decimal(ftbl)
+              .times(data.length)
+              .eq(100)
+          ) {
+            const value = parseFloat(
+              Decimal(ftbl)
+                .div(100)
+                .times(getFieldValue('je') || 0)
+                .toFixed(2),
+            );
+            data.forEach(x => {
+              x['FTJE' + x.ID] = value;
+              x['FTBL' + x.ID] = ftbl;
+              setFieldsValue({
+                ['FTJE' + x.ID]: value,
+                ['FTBL' + x.ID]: ftbl,
+              });
             });
-          });
-        } else if (ftbl * data.length > 100) {
-          data.forEach((x, i) => {
-            if (i === data.length - 1) {
-              ftbl = parseFloat(
+          } else if (Decimal(ftbl * data.length).gt(100)) {
+            data.forEach((x, i) => {
+              if (i === data.length - 1) {
+                ftbl = parseFloat(
+                  Decimal(ftbl)
+                    .mimus(
+                      Decimal(ftbl)
+                        .times(data.length)
+                        .minus(100),
+                    )
+                    .toFixed(2),
+                );
+              }
+              const value = parseFloat(
                 Decimal(ftbl)
-                  .mimus(
-                    Decimal(ftbl)
-                      .times(data.length)
-                      .minus(100),
-                  )
+                  .div(100)
+                  .times(getFieldValue('je') || 0)
                   .toFixed(2),
               );
-            }
-            const value = parseFloat(
-              Decimal(ftbl)
-                .div(100)
-                .times(getFieldValue('je') || 0)
-                .toFixed(2),
-            );
-            x['FTJE' + x.ID] = value;
-            x['FTBL' + x.ID] = ftbl;
-            setFieldsValue({
-              ['FTJE' + x.ID]: value,
-              ['FTBL' + x.ID]: ftbl,
+              x['FTJE' + x.ID] = value;
+              x['FTBL' + x.ID] = ftbl;
+              setFieldsValue({
+                ['FTJE' + x.ID]: value,
+                ['FTBL' + x.ID]: ftbl,
+              });
             });
-          });
-        } else if (ftbl * data.length < 100) {
-          data.forEach((x, i) => {
-            if (i === data.length - 1) {
-              ftbl = parseFloat(
-                Decimal(100)
-                  .minus(Decimal(ftbl).times(data.length))
-                  .plus(ftbl)
+          } else if (Decimal(ftbl * data.length).lt(100)) {
+            data.forEach((x, i) => {
+              if (i === data.length - 1) {
+                ftbl = parseFloat(
+                  Decimal(100)
+                    .minus(Decimal(ftbl).times(data.length))
+                    .plus(ftbl)
+                    .toFixed(2),
+                );
+              }
+              const value = parseFloat(
+                Decimal(ftbl)
+                  .div(100)
+                  .times(getFieldValue('je') || 0)
                   .toFixed(2),
               );
-            }
-            const value = parseFloat(
-              Decimal(ftbl)
-                .div(100)
-                .times(getFieldValue('je') || 0)
-                .toFixed(2),
-            );
-            x['FTJE' + x.ID] = value;
-            x['FTBL' + x.ID] = ftbl;
-            setFieldsValue({
-              ['FTJE' + x.ID]: value,
-              ['FTBL' + x.ID]: ftbl,
+              x['FTJE' + x.ID] = value;
+              x['FTBL' + x.ID] = ftbl;
+              setFieldsValue({
+                ['FTJE' + x.ID]: value,
+                ['FTBL' + x.ID]: ftbl,
+              });
             });
-          });
-        }
-        setFormData(p => ({
-          ...p,
-          apportionmentData: [...data],
-        }));
-      },
-    });
+          }
+          setFormData(p => ({
+            ...p,
+            apportionmentData: [...data],
+          }));
+        },
+      });
+    } catch (e) {
+      console.log('🚀 ~ file: index.js:281 ~ handleEven ~ e:', e);
+    }
   };
 
   //添加平均分摊
@@ -562,7 +570,6 @@ export default function ApportionDetail(props) {
           }));
           resetFields(['org', 'rate', 'amount', 'org-multiple']);
           setSelectedRowIds([]);
-          setApportionErrors([]);
         },
       });
     } else {

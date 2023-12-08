@@ -61,7 +61,7 @@ export default function UpdateModal(props) {
             const UUID = String(Date.now());
             let arr = getFieldValue('org-multiple').map((x, i) => {
               let item = bxbmOrigin.filter(y => y.ID === x);
-              let ykbid = item.length > 0 ? item[0]?.YKBID : '';
+              let ykbid = item.length > 0 ? item[0]?.id : '';
               return {
                 ID: UUID + i,
                 ['BXBM' + UUID + i]: x,
@@ -118,9 +118,9 @@ export default function UpdateModal(props) {
           dropdownStyle={{ maxHeight: 300, overflow: 'auto' }}
           style={{ width: '100%', borderRadius: '8px !important' }}
           treeData={bxbmData}
-          treeDefaultExpandedKeys={['1']}
+          treeDefaultExpandedKeys={['Fjg7WPFpfYdA00:1']}
           onChange={(v, txt, node) =>
-            setBxbmObj(p => ({ ...p, ykbid: node?.triggerNode?.props?.YKBID }))
+            setBxbmObj(p => ({ ...p, ykbid: node?.triggerNode?.props?.id }))
           }
         />,
       )}
@@ -150,7 +150,7 @@ export default function UpdateModal(props) {
             style={{ width: '100%', borderRadius: '8px !important' }}
             treeData={bxbmData}
             open={bxbmObj.open}
-            treeDefaultExpandedKeys={['1']}
+            treeDefaultExpandedKeys={['Fjg7WPFpfYdA00:1']}
             onDropdownVisibleChange={v => setBxbmObj(p => ({ ...p, open: v }))}
           />,
         )}

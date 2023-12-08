@@ -57,10 +57,10 @@ const EditableCell = props => {
                 treeNodeFilterProp="title"
                 placeholder="请选择"
                 dropdownStyle={{ maxHeight: 300, overflow: 'auto' }}
-                treeDefaultExpandedKeys={['1']}
+                treeDefaultExpandedKeys={['Fjg7WPFpfYdA00:1']}
                 style={{ width: '100%', borderRadius: '8px !important' }}
                 onChange={(v, txt, node) => {
-                  // console.log('🚀 ~ BXBM:', node?.triggerNode?.props?.YKBID);
+                  // console.log('🚀 ~ file: index.js:63 ~ getDecotator ~ node:', v);
                   formdecorate.validateFields(
                     [
                       recIndex, //只校验当前编辑项
@@ -69,7 +69,7 @@ const EditableCell = props => {
                       handleSave({
                         ...record,
                         [recIndex]: v,
-                        ['BXBMYKBID' + record.ID]: node?.triggerNode?.props?.YKBID,
+                        ['BXBMYKBID' + record.ID]: v,
                       });
                     },
                   );

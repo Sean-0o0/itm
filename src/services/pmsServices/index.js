@@ -161,6 +161,7 @@ const {
     queryDocTemplateLibrary,
     editDocTemplate,
     queryDocType,
+    queryDepartment,
   },
 } = api;
 
@@ -1727,6 +1728,16 @@ export async function EditDocTemplate(payload) {
 export async function QueryDocType(payload) {
   const option = {
     url: queryDocType,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 查询付款流程分摊明细 易快报 部门数据 
+export async function QueryDepartment(payload) {
+  const option = {
+    url: queryDepartment,
     method: 'post',
     data: payload,
   };

@@ -107,9 +107,9 @@ const ExpenseDetail = props => {
 
   //分摊 数据处理
   const getBxbmName = id => {
-    let arr = bxbmData.origin.filter(x => x.ID === id);
+    let arr = bxbmData.origin.filter(x => x.id === id);
     if (arr.length > 0) {
-      return arr[0].NAME;
+      return arr[0].name;
     }
     return '';
   };

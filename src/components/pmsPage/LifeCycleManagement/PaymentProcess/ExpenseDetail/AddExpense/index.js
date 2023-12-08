@@ -26,6 +26,7 @@ import {
   CheckInvoice,
   QueryApportionsInfo,
   QueryCreatePaymentInfo,
+  QueryDepartment,
 } from '../../../../../../services/pmsServices';
 import TreeUtils from '../../../../../../utils/treeUtils';
 import ApportionDetail from './ApportionDetail';
@@ -414,14 +415,21 @@ const AddExpense = props => {
   };
 
   //转树结构
-  function buildTree(list, label = 'title', value = 'value') {
+  function buildTree({
+    list,
+    label = 'title',
+    value = 'value',
+    valueField = 'ID',
+    titleField = 'NAME',
+    parentValueField = 'FID',
+  }) {
     let map = {};
     let treeData = [];
 
     list.forEach(item => {
-      map[item.ID] = item;
-      item[value] = item.ID;
-      item[label] = item.NAME;
+      map[item[valueField]] = item;
+      item[value] = item[valueField];
+      item[label] = item[titleField];
       item.children = [];
     });
 
@@ -431,19 +439,23 @@ const AddExpense = props => {
         node?.children.forEach(child => {
           traverse(child);
         });
+        sorter(node.children);
       } else {
         // 删除空的 children 数组
         delete node.children;
       }
     };
+    const sorter = (arr = []) => {
+      arr.sort((a, b) => Number(a.order || 0) - Number(b.order || 0));
+    };
 
     list.forEach(item => {
-      let parent = map[item.FID];
+      let parent = map[item[parentValueField]];
       if (!parent) {
         treeData.push(item);
       } else {
         parent.children.push(item);
-        item.fid = parent.ID;
+        item[parentValueField] = parent[valueField];
       }
     });
 
@@ -457,18 +469,44 @@ const AddExpense = props => {
 
   //查询创建单据时所需的分摊信息 - 报销部门下拉框数据
   const getApportionsInfo = () => {
+    QueryDepartment({
+      accessToken: '',
+      czr: 0,
+    })
+      .then(res => {
+        if (res?.success) {
+          // console.log('🚀 ~ @@@', JSON.parse(res.result));
+          let orgTree = buildTree({
+            list: JSON.parse(res.result),
+            valueField: 'id',
+            titleField: 'name',
+            parentValueField: 'parentId',
+          });
+          console.log('🚀 ~ file: index.js:342 ~ orgTree ~ orgTree:', orgTree);
+          setBxbmData(p => ({
+            ...p,
+            selectorData: [...orgTree],
+            origin: JSON.parse(res.result),
+          }));
+        }
+      })
+      .catch(e => {
+        console.error('🚀分摊信息', e);
+        message.error('分摊信息获取失败', 1);
+      });
     QueryApportionsInfo({
       queryType: 'ALL',
     })
       .then(res => {
         if (res?.success) {
-          console.log('🚀 ~ QueryApportionsInfo ~ res', JSON.parse(res.orgInfo));
-          let orgTree = buildTree(JSON.parse(res.orgInfo));
-          console.log('🚀 ~ file: index.js:342 ~ orgTree ~ orgTree:', orgTree);
+          // console.log('🚀 ~ QueryApportionsInfo ~ res', JSON.parse(res.orgInfo));
+          // let orgTree = buildTree({ list: JSON.parse(res.orgInfo) });
+          // console.log('🚀 ~ file: index.js:342 ~ orgTree ~ orgTree:', orgTree);
           setBxbmData(p => ({
-            selectorData: [...orgTree],
+            // selectorData: [...orgTree],
+            ...p,
             mb: JSON.parse(res.typeInfo)[0]?.YKBID,
-            origin: JSON.parse(res.orgInfo),
+            // origin: JSON.parse(res.orgInfo),
           }));
         }
       })

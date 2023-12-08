@@ -920,4 +920,10 @@ export default [
     url: '/projectManage/queryDocType',
     dis: '查询文档类型',
   },
+  {
+    code: '',
+    key: 'queryDepartment',
+    url: '/EKB/v1/queryDepartment',
+    dis: '查询付款流程分摊明细 易快报 部门数据',
+  },
 ];
