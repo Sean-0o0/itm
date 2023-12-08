@@ -483,7 +483,7 @@ export default connect(({ global }) => ({
                     resolve({
                       content: file.base64,
                       nrtitle: file.name,
-                      nrtype: '51',
+                      nrtype: '1',
                       filetype: '附件',
                     });
                   });
@@ -496,7 +496,7 @@ export default connect(({ global }) => ({
                     resolve({
                       content: base64,
                       nrtitle: fileName,
-                      nrtype: '51',
+                      nrtype: '1',
                       filetype: '附件',
                     });
                   };
