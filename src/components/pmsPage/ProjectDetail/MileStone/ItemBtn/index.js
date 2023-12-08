@@ -1704,7 +1704,11 @@ class ItemBtn extends React.Component {
       isAllWindow: 1,
       width: '760px',
       height:
-        lbModalTitle === '中标公告上传' || lbModalTitle === '中标公告修改' ? '310px' : '380px',
+        lbModalTitle === '中标公告上传' || lbModalTitle === '中标公告修改'
+          ? '310px'
+          : lbModalTitle.includes('验收报告')
+          ? '570px'
+          : '380px',
       title: lbModalTitle,
       style: { top: '60px' },
       visible: uploadVisible,

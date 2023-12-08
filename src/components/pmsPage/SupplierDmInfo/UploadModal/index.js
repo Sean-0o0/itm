@@ -17,6 +17,7 @@ function UploadModal(props) {
   const [newAddData, setNewAddData] = useState([]);
   const [isSpinning, setIsSpinning] = useState(false); //加载状态
   const [nextId, setNextId] = useState(0); //
+  const [upldError, setUpldError] = useState([]); //附件报红数据
   //防抖定时器
   let timer = null;
 
@@ -217,20 +218,22 @@ function UploadModal(props) {
                     setNewAddData([...newArr]);
                     const fn = item => {
                       if (fileList.findIndex(x => x.uid === item.uid) === -1) {
-                        setFileList(p => {
-                          let arr = [
-                            ...p,
-                            {
-                              ...item,
-                              uid: item.uid,
-                              name: item.name,
-                              status: item.status === 'uploading' ? 'done' : item.status,
-                              new: item.uid === +item.uid ? false : true,
-                              number: item.number || '',
-                            },
-                          ];
-                          return arr;
-                        });
+                        if (!upldError.includes(item.uid)) {
+                          setFileList(p => {
+                            let arr = [
+                              ...p,
+                              {
+                                ...item,
+                                uid: item.uid,
+                                name: item.name,
+                                status: item.status === 'uploading' ? 'done' : item.status,
+                                new: item.uid === +item.uid ? false : true,
+                                number: item.number || '',
+                              },
+                            ];
+                            return arr;
+                          });
+                        }
                       } else {
                         setFileList(p => {
                           let arr = p.filter(x => x.status !== 'removed');
@@ -280,6 +283,20 @@ function UploadModal(props) {
                     }
                   }}
                   beforeUpload={async (file, fileList) => {
+                    const arr1 = ['.doc', '.docx', '.pdf'];
+                    // 获取文件名中最后一个点的位置
+                    let lastDotIndex = (await file.name).lastIndexOf('.');
+                    const preChar = (await file.name).charAt(lastDotIndex - 1);
+                    console.log('🚀 ~ file: index.js:290 ~ beforeUpload={ ~ preChar:', preChar);
+                    if ((await file.size) === 0) {
+                      setUpldError(p => [...p, file.uid]);
+                      message.error(`不能上传0字节文件（${file.name}）！`, 2);
+                      return false;
+                    } else if (['.', '+'].includes(preChar)) {
+                      setUpldError(p => [...p, file.uid]);
+                      message.error(`文件名（${file.name}）不合法！`, 2);
+                      return false;
+                    }
                     console.log('🚀 ~ file: index.js:253 ~ beforeUpload:', file);
                     function readFile(file) {
                       return new Promise((resolve, reject) => {

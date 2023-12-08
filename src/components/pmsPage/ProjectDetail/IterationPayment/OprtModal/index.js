@@ -349,6 +349,7 @@ export default Form.create()(function OprtModal(props) {
     setFileList,
     isTurnRed,
     setIsTurnRed,
+    accept = '.doc,.docx,.xml,.xls,.xlsx,.7z,.zip,.rar,.csv,.jpg,.jpeg,.tif,.png,.pdf,.txt,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document',
   }) => {
     const onUploadDownload = file => {
       if (!file.url) {
@@ -417,9 +418,7 @@ export default Form.create()(function OprtModal(props) {
             multiple={true}
             onChange={onUploadChange}
             beforeUpload={onBeforeUpload}
-            accept={
-              '.doc,.docx,.xml,.pdf,.txt,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-            }
+            accept={accept}
             fileList={fileList}
           >
             <Button type="dashed">
@@ -550,6 +549,7 @@ export default Form.create()(function OprtModal(props) {
               setFileList: v => setUpldData(p => ({ ...p, cpsjg: v })),
               isTurnRed: upldData.cpsjgRed,
               setIsTurnRed: v => setUpldData(p => ({ ...p, cpsjgRed: v })),
+              accept: '*',
             })}
           </Row>
         </Form>
