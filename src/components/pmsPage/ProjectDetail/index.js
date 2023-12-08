@@ -19,7 +19,6 @@ import {
   QueryProjectUpdateInfo,
   QueryProjectXCContract,
   QueryUserRole,
-  QueryXCContractInfo,
 } from '../../../services/pmsServices/index';
 import { message, Spin } from 'antd';
 import { FetchQueryProjectLabel } from '../../../services/projectManage';
@@ -33,9 +32,13 @@ import IterationPayment from './IterationPayment';
 import AttendanceInfo from './AttendanceInfo';
 import moment from 'moment';
 import SubPrjProgress from './SubPrjProgress';
+import { connect } from 'dva';
 
-export default function ProjectDetail(props) {
-  const { routes, xmid, dictionary } = props;
+export default connect(({ global = {} }) => ({
+  userBasicInfo: global.userBasicInfo,
+  dictionary: global.dictionary,
+}))(function ProjectDetail(props) {
+  const { routes, xmid, dictionary = {}, userBasicInfo = {} } = props;
   const [isSpinning, setIsSpinning] = useState(false); //加载状态
   const [prjData, setPrjData] = useState({}); //项目信息-所有
   const {
@@ -85,6 +88,9 @@ export default function ProjectDetail(props) {
     overTimeDays: [], //加班天
     overTimeHalfDays: [], //加班半天
     monthData: [], //月份数据
+    otherPrjDays: [],
+    otherPrjHalfDays: [],
+    leftDays: undefined, //剩下的工作日
   }); //考勤信息
   const [grayTest, setGrayTest] = useState({
     KQMK: false, //考勤模块
@@ -668,6 +674,8 @@ export default function ProjectDetail(props) {
                   leaveHalfDays: [], //请假半天
                   overTimeDays: [], //加班天
                   overTimeHalfDays: [], //加班半天
+                  otherPrjDays: [],
+                  otherPrjHalfDays: [],
                 }));
               }
             }
@@ -1121,29 +1129,35 @@ export default function ProjectDetail(props) {
         memberId,
         month,
         projectId,
-        queryType: 'XMRYXQ',
+        queryType: 'XQ',
       });
       if (atdCalendarResult.success) {
         // console.log('🚀 ~ atdCalendarResult:', JSON.parse(atdCalendarResult.result));
         const atdCalendarArr = JSON.parse(atdCalendarResult.result);
         const attendanceDaysArr = atdCalendarArr
-          .filter(x => x.KQLX === 3)
+          .filter(x => x.KQLX === 3 && Number(x.XMMC) === Number(xmid))
           .map(x => moment(String(x.RQ)));
         const attendanceHalfDaysArr = atdCalendarArr
-          .filter(x => x.KQLX === 1)
+          .filter(x => x.KQLX === 1 && Number(x.XMMC) === Number(xmid))
           .map(x => moment(String(x.RQ)));
         const leaveDaysArr = atdCalendarArr
-          .filter(x => x.KQLX === 4)
+          .filter(x => x.KQLX === 4 && Number(x.XMMC) === Number(xmid))
           .map(x => moment(String(x.RQ)));
         const leaveHalfDaysArr = atdCalendarArr
-          .filter(x => x.KQLX === 2)
+          .filter(x => x.KQLX === 2 && Number(x.XMMC) === Number(xmid))
           .map(x => moment(String(x.RQ)));
         const overTimeDaysArr = atdCalendarArr
-          .filter(x => x.KQLX === 5)
+          .filter(x => x.KQLX === 5 && Number(x.XMMC) === Number(xmid))
           .map(x => moment(String(x.RQ)));
         const overTimeHalfDaysArr = atdCalendarArr
-          .filter(x => x.KQLX === 6)
+          .filter(x => x.KQLX === 6 && Number(x.XMMC) === Number(xmid))
           .map(x => moment(String(x.RQ)));
+        const otherPrjArr = atdCalendarArr
+          .filter(x => Number(x.XMMC) !== Number(xmid) && [3, 5, 4].includes(x.KQLX))
+          .map(x => ({ ...x, RQ: moment(String(x.RQ)) }));
+        const otherPrjHalfArr = atdCalendarArr
+          .filter(x => Number(x.XMMC) !== Number(xmid) && [1, 6, 2].includes(x.KQLX))
+          .map(x => ({ ...x, RQ: moment(String(x.RQ)) }));
         // console.log({
         //   curMonth: String(month),
         //   activeId: memberId,
@@ -1154,6 +1168,25 @@ export default function ProjectDetail(props) {
         //   overTimeDays: overTimeDaysArr,
         //   overTimeHalfDays: overTimeHalfDaysArr,
         // });
+        // let currentDay = moment(month, 'YYYYMM')
+        //   .clone()
+        //   .startOf('month');
+        // const workdaysRes = await QueryWeekday({
+        //   begin: Number(currentDay.format('YYYYMMDD')),
+        //   days: 31,
+        //   queryType: 'ALL',
+        // });
+        // if (workdaysRes?.success) {
+        //   let workdays = JSON.parse(workdaysRes.result)
+        //     .map(x => moment(String(x.GZR)))
+        //     .filter(x => x.month() === moment(month, 'YYYYMM').month());
+        //   //剩下的工作日
+        //   let leftDays = workdays.filter(
+        //     x =>
+        //       atdCalendarArr.map(z => moment(String(z.RQ))).findIndex(y => x.isSame(y, 'day')) ===
+        //       -1,
+        //   ).length;
+
         setDaysData(p => ({
           ...p,
           curMonth: String(month),
@@ -1164,8 +1197,14 @@ export default function ProjectDetail(props) {
           leaveHalfDays: leaveHalfDaysArr,
           overTimeDays: overTimeDaysArr,
           overTimeHalfDays: overTimeHalfDaysArr,
+          otherPrjDays: otherPrjArr,
+          otherPrjHalfDays: otherPrjHalfArr,
+          // leftDays, //剩下的工作日
         }));
         fn(false);
+        // } else {
+        //   fn(false);
+        // }
       }
     } catch (e) {
       message.error('考勤信息获取失败', 1);
@@ -1199,6 +1238,8 @@ export default function ProjectDetail(props) {
           leaveHalfDays: [], //请假半天
           overTimeDays: [], //加班天
           overTimeHalfDays: [], //加班半天
+          otherPrjDays: [],
+          otherPrjHalfDays: [],
         }));
         fn(false);
       }
@@ -1285,6 +1326,7 @@ export default function ProjectDetail(props) {
             (prjData.prjBasic?.GLDDXM === undefined && Number(prjData.prjBasic?.SFGLDD) > 0)
           }
           grayTest={grayTest}
+          isAdmin={userBasicInfo.id === '0'} //项目编辑，管理员可以编辑所有项目，子项目的项目立项里程碑信息，也对管理员开放编辑
         />
         <div className="detail-row">
           <div className="col-left">
@@ -1356,7 +1398,7 @@ export default function ProjectDetail(props) {
             <SubPrjProgress dataProps={{ prjData, routes }} funcProps={{}} />
             {showKQXX && (
               <AttendanceInfo
-                dataProps={{ prjData, xmid, daysData }}
+                dataProps={{ prjData, xmid, daysData, routes }}
                 funcProps={{ getCalendarData, getAttendanceData, setDaysData }}
               />
             )}
@@ -1398,4 +1440,4 @@ export default function ProjectDetail(props) {
       </div>
     </Spin>
   );
-}
+});

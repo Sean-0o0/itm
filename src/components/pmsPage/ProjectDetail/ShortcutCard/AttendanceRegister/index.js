@@ -1,27 +1,40 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, {
+  useEffect,
+  useState,
+  useCallback,
+  useMemo,
+  Fragment,
+  useRef,
+  useLayoutEffect,
+} from 'react';
 import {
   Button,
-  Form,
   message,
   Modal,
   Spin,
-  DatePicker,
   Input,
   Popconfirm,
-  Calendar,
-  Dropdown,
   Checkbox,
-  Row,
+  Icon,
+  Tooltip,
+  Dropdown,
   Menu,
 } from 'antd';
 import moment from 'moment';
 import {
   InsertProjectAttendanceRcd,
-  InsertProjectUpdateInfo,
   QueryMemberAttendanceRcd,
   QueryWeekday,
 } from '../../../../../services/pmsServices';
-const { TextArea } = Input;
+import FullCalendar from '@fullcalendar/react';
+import interactionPlugin from '@fullcalendar/interaction'; // for selectable
+import dayGridPlugin from '@fullcalendar/daygrid'; // for dayGridMonth view
+import locale from '@fullcalendar/core/locales/zh-cn'; //for Chinese local
+import RadioSltModal from './RadioSltModal';
+import tippy from 'tippy.js';
+import 'tippy.js/dist/tippy.css';
+import 'tippy.js/themes/light.css';
+import 'moment/locale/zh-cn';
 
 export default function AttendanceRegister(props) {
   const { xmid, visible = false, setVisible, ZYXMKQLX = [], handlePromiseAll } = props;
@@ -31,35 +44,62 @@ export default function AttendanceRegister(props) {
     attendanceHalf: [],
     leave: [],
     leaveHalf: [],
+    overtime: [],
+    overtimeHalf: [],
+    otherPrj: [],
+    otherPrjHalf: [],
   }); //选中数据
-  const [fastSlt, setFastSlt] = useState({
-    workdays: false, //工作日
-    normal: false, //无工时日期
-    reverse: false, //反选
-  }); //快速选择
-  const [dropdownVisible, setDropdownVisible] = useState(false); //下拉菜单显隐
   const [isSpinning, setIsSpinning] = useState(false); //加载状态
   const [constData, setConstData] = useState([]); //不可修改的回显数据
   let LOGIN_USER_ID = Number(JSON.parse(sessionStorage.getItem('user')).id);
-  const [otherPrj, setOtherPrj] = useState({
-    one: [],
-    half: [],
-  }); //其他项目的
+  const [fastSlting, setFastSlting] = useState([]); //快速选中的，不连续的
   const [curWorkDays, setCurWorkDays] = useState([]); //当月工作日
+  const [curNonWorkDays, setCurNonWorkDays] = useState([]); //当月非工作日
+  const [curAllDays, setCurAllDays] = useState([]); //当月所有
+  const [modalVisible, setModalVisible] = useState(false); //登记内容弹窗显隐
+  const [radioValue, setRadioValue] = useState({
+    type: 1,
+    time: 1,
+  }); //登记内容单选情况
+  const calendarRef = useRef(null);
+  const [fullAtdData, setFullAtdData] = useState({
+    checked: false,
+    originData: {},
+  }); //一键全勤
+  const selectedData = useMemo(
+    () =>
+      data.attendance.concat(
+        data.attendanceHalf,
+        data.leave,
+        data.leaveHalf,
+        data.overtime,
+        data.overtimeHalf,
+      ),
+    [JSON.stringify(data)],
+  ); // 已选择的数据
 
   useEffect(() => {
     if (visible) {
-      getCalendarData(
-        LOGIN_USER_ID,
-        Number(moment().format('YYYYMM')),
-        Number(xmid),
-        setIsSpinning,
-      );
+      setIsSpinning(true);
+      getCalendarData(LOGIN_USER_ID, Number(moment().format('YYYYMM')), Number(xmid), () => {});
+    }
+    if (calendarRef !== null && visible) {
+      setTimeout(() => {
+        calendarRef.current?.getApi().updateSize();
+        setIsSpinning(false);
+      }, 500);
     }
     return () => {};
-  }, [visible]);
+  }, [visible, calendarRef]);
 
-  // 获取考勤信息
+  useEffect(() => {
+    if (calendarRef !== null && !modalVisible) {
+      calendarRef.current?.getApi().unselect();
+    }
+    return () => {};
+  }, [modalVisible, calendarRef]);
+
+  // 获取考勤信息 - 初始化数据
   const getCalendarData = async (memberId, month, projectId, fn = () => {}) => {
     try {
       fn(true);
@@ -71,48 +111,51 @@ export default function AttendanceRegister(props) {
       });
       if (atdCalendarResult.success) {
         const atdCalendarArr = JSON.parse(atdCalendarResult.result);
+        const constDataArr = atdCalendarArr.map(x => moment(String(x.RQ)).format('YYYY-MM-DD'));
+        // console.log('🚀 ~ file: index.js:145 ~ getCalendarData ~ constDataArr:', constDataArr);
         const attendanceDaysArr = atdCalendarArr
-          .filter(x => x.KQLX === 3 || x.KQLX === 5)
-          .map(x => moment(String(x.RQ)));
+          .filter(x => x.KQLX === 3 && Number(x.XMMC) === Number(xmid))
+          .map(x => moment(String(x.RQ)).format('YYYY-MM-DD'));
         const attendanceHalfDaysArr = atdCalendarArr
-          .filter(x => x.KQLX === 1 || x.KQLX === 6)
-          .map(x => moment(String(x.RQ)));
+          .filter(x => x.KQLX === 1 && Number(x.XMMC) === Number(xmid))
+          .map(x => moment(String(x.RQ)).format('YYYY-MM-DD'));
         const leaveDaysArr = atdCalendarArr
-          .filter(x => x.KQLX === 4)
-          .map(x => moment(String(x.RQ)));
+          .filter(x => x.KQLX === 4 && Number(x.XMMC) === Number(xmid))
+          .map(x => moment(String(x.RQ)).format('YYYY-MM-DD'));
         const leaveHalfDaysArr = atdCalendarArr
-          .filter(x => x.KQLX === 2)
-          .map(x => moment(String(x.RQ)));
+          .filter(x => x.KQLX === 2 && Number(x.XMMC) === Number(xmid))
+          .map(x => moment(String(x.RQ)).format('YYYY-MM-DD'));
+        const overtimeDaysArr = atdCalendarArr
+          .filter(x => x.KQLX === 5 && Number(x.XMMC) === Number(xmid))
+          .map(x => moment(String(x.RQ)).format('YYYY-MM-DD'));
+        const overtimeHalfDaysArr = atdCalendarArr
+          .filter(x => x.KQLX === 6 && Number(x.XMMC) === Number(xmid))
+          .map(x => moment(String(x.RQ)).format('YYYY-MM-DD'));
         const otherPrjArr = atdCalendarArr
           .filter(x => Number(x.XMMC) !== Number(xmid) && [3, 5, 4].includes(x.KQLX))
-          .map(x => moment(String(x.RQ)));
+          .map(x => ({ ...x, RQ: moment(String(x.RQ)).format('YYYY-MM-DD') }));
         const otherPrjHalfArr = atdCalendarArr
           .filter(x => Number(x.XMMC) !== Number(xmid) && [1, 6, 2].includes(x.KQLX))
-          .map(x => moment(String(x.RQ)));
-        setOtherPrj({
-          one: otherPrjArr,
-          half: otherPrjHalfArr,
-        });
-        setConstData(
-          attendanceDaysArr.concat(attendanceHalfDaysArr, leaveDaysArr, leaveHalfDaysArr),
-        );
-        getWorkdaysOfMonth(
-          moment(String(month)),
-          attendanceDaysArr.concat(attendanceHalfDaysArr, leaveDaysArr, leaveHalfDaysArr),
-        );
+          .map(x => ({ ...x, RQ: moment(String(x.RQ)).format('YYYY-MM-DD') }));
+
+        setConstData(constDataArr);
+        getWorkdaysOfMonth(moment(String(month)), constDataArr, fn);
         setData(p => ({
           ...p,
           attendance: attendanceDaysArr,
           attendanceHalf: attendanceHalfDaysArr,
           leave: leaveDaysArr,
           leaveHalf: leaveHalfDaysArr,
+          overtime: overtimeDaysArr,
+          overtimeHalf: overtimeHalfDaysArr,
+          otherPrj: otherPrjArr,
+          otherPrjHalf: otherPrjHalfArr,
         }));
-        fn(false);
       }
     } catch (e) {
       message.error('考勤信息获取失败', 1);
       console.error('获取考勤信息', e);
-      fn(false);
+      setIsSpinning(false);
     }
   };
 
@@ -125,46 +168,67 @@ export default function AttendanceRegister(props) {
       cancelText: '取消',
       onOk: () => {
         setIsSpinning(true);
-        const isInclude = (d, dArr = []) => {
-          return dArr.findIndex(x => x.isSame(d, 'day')) !== -1;
+        const getMonth = x => {
+          return moment(x, 'YYYY-MM-DD').format('YYYYMM');
+        };
+        const getDate = x => {
+          return moment(x, 'YYYY-MM-DD').format('YYYYMMDD');
         };
         let arr1 = data.attendance
-          .filter(x => !isInclude(x, constData))
+          .filter(x => !constData.includes(x))
           .map(x => ({
             ID: '-1',
-            YF: x.format('YYYYMM'),
-            RQ: x.format('YYYYMMDD'),
+            YF: getMonth(x),
+            RQ: getDate(x),
             GS: '1',
-            KQLX: isInclude(x, curWorkDays) ? '3' : '5', //加班
+            KQLX: '3',
           }));
         let arr2 = data.attendanceHalf
-          .filter(x => !isInclude(x, constData))
+          .filter(x => !constData.includes(x))
           .map(x => ({
             ID: '-1',
-            YF: x.format('YYYYMM'),
-            RQ: x.format('YYYYMMDD'),
+            YF: getMonth(x),
+            RQ: getDate(x),
             GS: '0.5',
-            KQLX: isInclude(x, curWorkDays) ? '1' : '6', //加班
+            KQLX: '1',
           }));
         let arr3 = data.leave
-          .filter(x => !isInclude(x, constData))
+          .filter(x => !constData.includes(x))
           .map(x => ({
             ID: '-1',
-            YF: x.format('YYYYMM'),
-            RQ: x.format('YYYYMMDD'),
+            YF: getMonth(x),
+            RQ: getDate(x),
             GS: '0',
             KQLX: '4',
           }));
         let arr4 = data.leaveHalf
-          .filter(x => !isInclude(x, constData))
+          .filter(x => !constData.includes(x))
           .map(x => ({
             ID: '-1',
-            YF: x.format('YYYYMM'),
-            RQ: x.format('YYYYMMDD'),
+            YF: getMonth(x),
+            RQ: getDate(x),
             GS: '0.5',
             KQLX: '2',
           }));
-        const finalArr = arr1.concat(arr2, arr3, arr4);
+        let arr5 = data.overtime
+          .filter(x => !constData.includes(x))
+          .map(x => ({
+            ID: '-1',
+            YF: getMonth(x),
+            RQ: getDate(x),
+            GS: '1',
+            KQLX: '5', //加班
+          }));
+        let arr6 = data.overtimeHalf
+          .filter(x => !constData.includes(x))
+          .map(x => ({
+            ID: '-1',
+            YF: getMonth(x),
+            RQ: getDate(x),
+            GS: '0.5',
+            KQLX: '6', //加班
+          }));
+        const finalArr = arr1.concat(arr2, arr3, arr4, arr5, arr6);
         InsertProjectAttendanceRcd({
           count: finalArr.length,
           member: LOGIN_USER_ID,
@@ -176,7 +240,7 @@ export default function AttendanceRegister(props) {
               message.success('操作成功', 1);
               handlePromiseAll();
               setIsSpinning(false);
-              setVisible(false);
+              handleCancel();
             }
           })
           .catch(e => {
@@ -197,16 +261,19 @@ export default function AttendanceRegister(props) {
       attendanceHalf: [],
       leave: [],
       leaveHalf: [],
+      overtime: [],
+      overtimeHalf: [],
+      otherPrj: [],
+      otherPrjHalf: [],
     });
-    setFastSlt({
-      workdays: false, //工作日
-      normal: false, //无工时日期
-      reverse: false, //反选
+    setFullAtdData({
+      checked: false,
+      originData: {},
     });
   };
 
-  //工作日
-  const getWorkdaysOfMonth = (currentDate = moment(), constData = []) => {
+  //当月工作日、当月非工作日、当月所有
+  const getWorkdaysOfMonth = (currentDate = moment(), constData = [], fn = () => {}) => {
     let currentDay = currentDate.clone().startOf('month');
     QueryWeekday({
       begin: Number(currentDay.format('YYYYMMDD')),
@@ -218,10 +285,22 @@ export default function AttendanceRegister(props) {
           let arr = JSON.parse(res.result)
             .map(x => moment(String(x.GZR)))
             .filter(x => x.month() === currentDate.month())
-            .filter(x => constData.findIndex(y => y.isSame(x, 'day')) === -1);
-          console.log('🚀 ~ file: index.js:211 ~ getWorkdaysOfMonth', arr);
+            .map(x => moment(x).format('YYYY-MM-DD'))
+            .filter(x => !constData.includes(x));
+          const numDays = currentDay.daysInMonth();
+          const allDays = [];
+          for (let i = 0; i < numDays; i++) {
+            allDays[i] = currentDay
+              .clone()
+              .add(i, 'days')
+              .format('YYYY-MM-DD');
+          }
           setCurWorkDays(arr);
-          setIsSpinning(false);
+          setCurAllDays(allDays.filter(x => !constData.includes(x)));
+          setCurNonWorkDays(
+            allDays.filter(x => !arr.includes(x)).filter(x => !constData.includes(x)),
+          );
+          fn(false);
         }
       })
       .catch(e => {
@@ -231,316 +310,6 @@ export default function AttendanceRegister(props) {
       });
   };
 
-  //无工时 反选
-  const getFilteredDays = (removeArr = []) => {
-    // 获取当前月份的日期数量
-    const daysInMonth = moment().daysInMonth();
-
-    // 生成本月所有日期的数组
-    const allDates = [];
-    for (let i = 1; i <= daysInMonth; i++) {
-      allDates.push(i);
-    }
-
-    // 过滤掉数组 removeArr 中的日期
-    const filteredDates = allDates.filter(date => {
-      const momentDate = moment().date(date);
-      return !removeArr.some(momentObj => momentDate.isSame(momentObj, 'date'));
-    });
-
-    // 生成对应的 moment 对象数组
-    const momentArray = filteredDates.map(date => moment().date(date));
-
-    return momentArray;
-  };
-
-  //日期单元格
-  const renderCell = d => {
-    //是否包括这天
-    const isInclude = (d, dArr = []) => {
-      return dArr.findIndex(x => x.isSame(d, 'day')) !== -1;
-    };
-
-    //菜单配置
-    const menu = () => {
-      const handleItemClick = key => {
-        //     attendance: [],
-        // attendanceHalf: [],
-        // leave: [],
-        // leaveHalf: [],
-        switch (key) {
-          case '0':
-            setData(p => ({
-              selecting: [],
-              attendance: p.attendance.filter(x => !isInclude(x, p.selecting)),
-              attendanceHalf: p.attendanceHalf.filter(x => !isInclude(x, p.selecting)),
-              leave: p.leave.filter(x => !isInclude(x, p.selecting)),
-              leaveHalf: p.leaveHalf.filter(x => !isInclude(x, p.selecting)),
-            }));
-            break;
-          case '1':
-            setData(p => ({
-              selecting: [],
-              attendance: p.attendance.filter(x => !isInclude(x, p.selecting)),
-              attendanceHalf: [...p.attendanceHalf, ...p.selecting],
-              leave: p.leave.filter(x => !isInclude(x, p.selecting)),
-              leaveHalf: p.leaveHalf.filter(x => !isInclude(x, p.selecting)),
-            }));
-            break;
-          case '2':
-            setData(p => ({
-              selecting: [],
-              attendance: p.attendance.filter(x => !isInclude(x, p.selecting)),
-              attendanceHalf: p.attendanceHalf.filter(x => !isInclude(x, p.selecting)),
-              leave: p.leave.filter(x => !isInclude(x, p.selecting)),
-              leaveHalf: [...p.leaveHalf, ...p.selecting],
-            }));
-            break;
-          case '3':
-            setData(p => ({
-              selecting: [],
-              attendance: [...p.attendance, ...p.selecting],
-              attendanceHalf: p.attendanceHalf.filter(x => !isInclude(x, p.selecting)),
-              leave: p.leave.filter(x => !isInclude(x, p.selecting)),
-              leaveHalf: p.leaveHalf.filter(x => !isInclude(x, p.selecting)),
-            }));
-            break;
-          case '4':
-            setData(p => ({
-              selecting: [],
-              attendance: p.attendance.filter(x => !isInclude(x, p.selecting)),
-              attendanceHalf: p.attendanceHalf.filter(x => !isInclude(x, p.selecting)),
-              leave: [...p.leave, ...p.selecting],
-              leaveHalf: p.leaveHalf.filter(x => !isInclude(x, p.selecting)),
-            }));
-            break;
-          default:
-            break;
-        }
-        setFastSlt({ workdays: false, normal: false, reverse: false });
-        setDropdownVisible(false);
-      };
-      let menuData = ZYXMKQLX.filter(x => x.ibm !== '5' && x.ibm !== '6') || [];
-      if (
-        !isInclude(
-          d,
-          data.attendance.concat(data.attendanceHalf, data.leave, data.leaveHalf, constData),
-        )
-      )
-        menuData = menuData.filter(x => x.ibm !== '0');
-      if (isInclude(d, data.attendanceHalf.concat(constData)))
-        menuData = menuData.filter(x => x.ibm !== '1');
-      if (isInclude(d, data.leaveHalf.concat(constData)))
-        menuData = menuData.filter(x => x.ibm !== '2');
-      if (isInclude(d, data.attendance.concat(constData)))
-        menuData = menuData.filter(x => x.ibm !== '3');
-      if (isInclude(d, data.leave.concat(constData)))
-        menuData = menuData.filter(x => x.ibm !== '4');
-      return (
-        <Menu>
-          {menuData.map(x => (
-            <Menu.Item key={x.ibm} onClick={() => handleItemClick(x.ibm)}>
-              {x.note}
-            </Menu.Item>
-          ))}
-        </Menu>
-      );
-    };
-
-    //下拉显隐
-    const onVisibleChange = v =>
-      isInclude(d, data.selecting) && data.selecting[data.selecting.length - 1].isSame(d, 'day')
-        ? setDropdownVisible(v)
-        : setDropdownVisible(v);
-
-    //日期选择
-    const handleSelecting = () => {
-      if (!isInclude(d, constData)) {
-        if (isInclude(d, data.selecting)) {
-          setData(p => ({ ...p, selecting: p.selecting.filter(x => !x.isSame(d, 'day')) }));
-          setDropdownVisible(false);
-        } else {
-          setData(p => ({ ...p, selecting: [...p.selecting, d] }));
-          setDropdownVisible(true);
-        }
-      } else {
-        message.warn('无法操作已经保存的日期', 1);
-      }
-    };
-
-    return (
-      <Dropdown
-        overlay={menu}
-        trigger={['contextMenu']}
-        visible={
-          isInclude(d, data.selecting) && data.selecting[data.selecting.length - 1].isSame(d, 'day')
-            ? dropdownVisible
-            : false
-        }
-        onVisibleChange={onVisibleChange}
-        disabled={!isInclude(d, data.selecting)}
-      >
-        <div
-          className={
-            'ant-fullcalendar-date' +
-            (isInclude(d, data.selecting) ? ' ant-fullcalendar-selected-day' : '')
-          }
-          onClick={handleSelecting}
-        >
-          <div
-            className="ant-fullcalendar-value"
-            style={{
-              textAlign: 'center',
-              color:
-                isInclude(d, data.attendance) ||
-                isInclude(d, data.leave) ||
-                isInclude(d, otherPrj.one)
-                  ? '#fff'
-                  : '',
-              backgroundColor: isInclude(d, otherPrj.one)
-                ? '#d7d7d7'
-                : isInclude(d, data.attendance)
-                ? '#3361FF'
-                : isInclude(d, data.leave)
-                ? '#FF2F31'
-                : 'unset',
-              backgroundImage: isInclude(d, otherPrj.half)
-                ? 'linear-gradient(to bottom, white 50%, #d7d7d7 50%)'
-                : isInclude(d, data.attendanceHalf)
-                ? 'linear-gradient(to bottom, white 50%, #3361FF 50%)'
-                : isInclude(d, data.leaveHalf)
-                ? 'linear-gradient(to bottom, white 50%, #FF2F31 50%)'
-                : 'unset',
-            }}
-          >
-            {d.date()}
-            {isInclude(d, data.selecting) && (
-              <div
-                style={{
-                  width: 4,
-                  height: 4,
-                  borderRadius: '50%',
-                  backgroundColor: '#3361ff',
-                  margin: '2px auto',
-                }}
-              ></div>
-            )}
-          </div>
-          <div className="ant-fullcalendar-content"></div>
-        </div>
-      </Dropdown>
-    );
-  };
-
-  //快速选择
-  const getFastSlt = () => {
-    return (
-      <div className="fast-slt">
-        <div className="legend-box">
-          {/* <h3>图例</h3> */}
-          <div className="legend-row">
-            <div className="legend-item">
-              <div className="legend-rec"></div>
-              出勤
-            </div>
-            <div className="legend-item">
-              <div className="legend-rec-red"></div>
-              请假
-            </div>
-            <div className="legend-item">
-              <div className="legend-rec-grey"></div>
-              其他项目
-            </div>
-          </div>
-        </div>
-        <div className="slt-row">
-          <h3>快捷选择</h3>
-          <div className="check-row">
-            <Checkbox
-              checked={fastSlt.workdays}
-              onChange={e => {
-                setFastSlt({
-                  workdays: e.target.checked,
-                  normal: false,
-                  reverse: false,
-                });
-                // 调用函数获取本月所有工作日的 Moment 对象数组
-                if (e.target.checked) {
-                  setData(p => ({ ...p, selecting: curWorkDays }));
-                  setDropdownVisible(true);
-                } else {
-                  setData(p => ({ ...p, selecting: [] }));
-                  setDropdownVisible(false);
-                }
-              }}
-            >
-              本月工作日
-            </Checkbox>
-          </div>
-          <div className="check-row">
-            <Checkbox
-              checked={fastSlt.normal}
-              onChange={e => {
-                setFastSlt({
-                  workdays: false,
-                  normal: e.target.checked,
-                  reverse: false,
-                });
-                // 调用函数获取本月所有工作日的 Moment 对象数组
-                if (e.target.checked) {
-                  setData(p => ({
-                    ...p,
-                    selecting: getFilteredDays(
-                      data.attendance.concat(
-                        data.attendanceHalf,
-                        data.leave,
-                        data.leaveHalf,
-                        constData,
-                      ),
-                    ),
-                  }));
-                  setDropdownVisible(true);
-                } else {
-                  setData(p => ({ ...p, selecting: [] }));
-                  setDropdownVisible(false);
-                }
-              }}
-            >
-              本月无工时日期
-            </Checkbox>
-          </div>
-          {data.selecting?.length > 0 && (
-            <div className="check-row">
-              <Checkbox
-                checked={fastSlt.reverse}
-                onChange={e => {
-                  setFastSlt({
-                    workdays: false,
-                    normal: false,
-                    reverse: e.target.checked,
-                  });
-                  // 调用函数获取本月所有工作日的 Moment 对象数组
-                  if (e.target.checked) {
-                    setData(p => ({
-                      ...p,
-                      selecting: getFilteredDays([...p.selecting, ...constData]),
-                    }));
-                    setDropdownVisible(true);
-                  } else {
-                    setData(p => ({ ...p, selecting: [] }));
-                    setDropdownVisible(false);
-                  }
-                }}
-              >
-                本月反选
-              </Checkbox>
-            </div>
-          )}
-        </div>
-      </div>
-    );
-  };
-
   //日期面板变化回调
   const onPanelChange = date => {
     getCalendarData(LOGIN_USER_ID, Number(date.format('YYYYMM')), Number(xmid), setIsSpinning);
@@ -548,53 +317,336 @@ export default function AttendanceRegister(props) {
       ...p,
       selecting: [],
     }));
-    setFastSlt({
-      workdays: false, //工作日
-      normal: false, //无工时日期
-      reverse: false, //反选
+    setFullAtdData({
+      checked: false,
+      originData: {},
     });
   };
 
-  return (
-    <Modal
-      wrapClassName="editMessage-modify attendance-register-modal"
-      width={600}
-      maskClosable={false}
-      style={{ top: 10 }}
-      maskStyle={{ backgroundColor: 'rgb(0 0 0 / 30%)' }}
-      zIndex={103}
-      title={null}
-      visible={visible}
-      destroyOnClose={true}
-      onCancel={handleCancel}
-      footer={
-        <div className="modal-footer">
-          <Button className="btn-default" onClick={handleCancel}>
-            取消
-          </Button>
-          <Button loading={isSpinning} className="btn-primary" type="primary" onClick={handleOk}>
-            {constData.length > 0 ? '更新' : '保存'}
-          </Button>
-        </div>
+  //不同情况的显示
+  const events = useMemo(
+    () => [
+      ...data.attendance.map(x => ({
+        title: '出勤',
+        start: x,
+        display: 'background',
+        className: 'attendance' + (constData.includes(x) ? ' const-lock' : ''),
+      })),
+      ...data.attendanceHalf.map(x => ({
+        title: '出勤',
+        start: x,
+        display: 'background',
+        className: 'attendance-half' + (constData.includes(x) ? ' const-lock' : ''),
+      })),
+      ...data.leave.map(x => ({
+        title: '请假',
+        start: x,
+        display: 'background',
+        className: 'leave' + (constData.includes(x) ? ' const-lock' : ''),
+      })),
+      ...data.leaveHalf.map(x => ({
+        title: '请假',
+        start: x,
+        display: 'background',
+        className: 'leave-half' + (constData.includes(x) ? ' const-lock' : ''),
+      })),
+      ...data.overtime.map(x => ({
+        title: '加班',
+        start: x,
+        display: 'background',
+        className: 'overtime' + (constData.includes(x) ? ' const-lock' : ''),
+      })),
+      ...data.overtimeHalf.map(x => ({
+        title: '加班',
+        start: x,
+        display: 'background',
+        className: 'overtime-half' + (constData.includes(x) ? ' const-lock' : ''),
+      })),
+      ...data.overtime.map(x => ({
+        title: '加班',
+        start: x,
+        display: 'background',
+        className: 'overtime' + (constData.includes(x) ? ' const-lock' : ''),
+      })),
+      ...data.overtimeHalf.map(x => ({
+        title: '加班',
+        start: x,
+        display: 'background',
+        className: 'overtime-half' + (constData.includes(x) ? ' const-lock' : ''),
+      })),
+      ...data.otherPrj.map(x => ({
+        title: '其他项目',
+        start: x.RQ,
+        display: 'background',
+        className: 'other-prj' + (constData.includes(x.RQ) ? ' const-lock' : ''),
+        extendedProps: {
+          ...x,
+        },
+      })),
+      ...data.otherPrjHalf.map(x => ({
+        title: '其他项目',
+        start: x.RQ,
+        display: 'background',
+        className: 'other-prj-half' + (constData.includes(x.RQ) ? ' const-lock' : ''),
+        extendedProps: {
+          ...x,
+          half: true,
+        },
+      })),
+      //模拟选中
+      ...fastSlting.map(x => ({
+        title: '',
+        start: x,
+        display: 'background',
+        className: 'fc-highlight',
+      })),
+    ],
+    [
+      JSON.stringify(data),
+      JSON.stringify(fastSlting),
+      JSON.stringify(constData),
+      JSON.stringify(fastSlting),
+    ],
+  );
+
+  //模拟选中事件
+  const handleFastSlting = (dateArr = []) => {
+    setFastSlting(dateArr);
+    setData(p => ({ ...p, selecting: dateArr }));
+    setModalVisible(true);
+  };
+
+  //筛选日期下拉框
+  const menu = (
+    <Menu>
+      <Menu.Item
+        key="剩余工作日"
+        onClick={() => {
+          handleFastSlting(curWorkDays.filter(x => !selectedData.includes(x)));
+        }}
+        disabled={curWorkDays.filter(x => !selectedData.includes(x)).length === 0}
+      >
+        剩余工作日
+      </Menu.Item>
+      <Menu.Item
+        key="剩余非工作日"
+        onClick={() => {
+          handleFastSlting(curNonWorkDays.filter(x => !selectedData.includes(x)));
+        }}
+        disabled={curNonWorkDays.filter(x => !selectedData.includes(x)).length === 0}
+      >
+        剩余非工作日
+      </Menu.Item>
+      <Menu.Item
+        key="剩余日期全选"
+        onClick={() => {
+          handleFastSlting(curAllDays.filter(x => !selectedData.includes(x)));
+        }}
+        disabled={curAllDays.filter(x => !selectedData.includes(x)).length === 0}
+      >
+        剩余日期全选
+      </Menu.Item>
+    </Menu>
+  );
+
+  //选中事件
+  const onCalendarSlt = useCallback(
+    async info => {
+      const startDate = moment(info.startStr, 'YYYY-MM-DD');
+      const endDate = moment(info.endStr, 'YYYY-MM-DD');
+      const diff = endDate.diff(startDate, 'days'); // 计算天数差
+      const dateArr = []; // 日期数组，初始为空
+      for (let i = 0; i < diff; i++) {
+        const currentDate = startDate
+          .clone()
+          .add(i, 'days')
+          .format('YYYY-MM-DD');
+        dateArr.push(currentDate);
       }
-    >
-      <div className="body-title-box">
-        <strong>考勤登记</strong>
-      </div>
-      <Spin spinning={isSpinning} tip="加载中">
-        <div className="content">
-          <div className="left-calendar">
-            <div className="calendar-box">
-              <Calendar
-                onPanelChange={onPanelChange}
-                fullscreen={false}
-                dateFullCellRender={renderCell}
-              />
-            </div>
+      //包含已经保存的日期、其他项目
+      if (dateArr.findIndex(x => constData.includes(x)) !== -1) {
+        message.warn('无法操作已经保存的日期', 1);
+        calendarRef.current?.getApi().unselect();
+      } else {
+        setData(p => ({ ...p, selecting: dateArr }));
+        setModalVisible(true);
+      }
+    },
+    [constData],
+  );
+
+  //日期文本
+  const renderDayCell = useCallback(arg => {
+    const day = moment(arg.date);
+    if (day.date() === 1) return day.format('M月D日');
+    return day.date();
+  }, []);
+
+  //清空
+  const handleClearAll = () => {
+    getCalendarData(
+      LOGIN_USER_ID,
+      Number(moment(calendarRef.current?.getApi().getDate()).format('YYYYMM')),
+      Number(xmid),
+      setIsSpinning,
+    );
+  };
+
+  //一键全勤
+  const handleQuickFullAtd = e => {
+    const handleDataSave = dateArr => {
+      setData(p => {
+        for (var key in p) {
+          if (key !== 'selecting') {
+            p[key] = p[key].filter(x => !dateArr.includes(x));
+          }
+        }
+        return {
+          ...p,
+          selecting: [],
+          attendance: [...p.attendance, ...dateArr],
+        };
+      });
+    };
+    if (e.target.checked) {
+      //未被选择地本月工作日
+      const dateArr = curWorkDays.filter(x => !selectedData.includes(x));
+      setFullAtdData({
+        checked: e.target.checked,
+        originData: JSON.parse(JSON.stringify(data)), //用于恢复之前状态
+      });
+      handleDataSave(dateArr);
+    } else {
+      setData(fullAtdData.originData);
+      setFullAtdData(p => ({
+        ...p,
+        checked: e.target.checked,
+      }));
+    }
+  };
+
+  //自定义切换月份的按钮
+  const customButtons = useMemo(
+    () => ({
+      customPre: {
+        text: '',
+        icon: 'chevron-left',
+        click: () => {
+          calendarRef.current?.getApi().prev();
+          const curDate = moment(calendarRef.current?.getApi().getDate());
+          onPanelChange(curDate);
+        },
+      },
+      customNext: {
+        text: 'custom!',
+        icon: 'chevron-right',
+        click: () => {
+          calendarRef.current?.getApi().next();
+          const curDate = moment(calendarRef.current?.getApi().getDate());
+          onPanelChange(curDate);
+        },
+      },
+    }),
+    [calendarRef.current],
+  );
+
+  //eventMouseEnter
+  const eventMouseEnter = useCallback(info => {
+    if (info.el._tippy === undefined && JSON.stringify(info.event.extendedProps) !== '{}') {
+      tippy(info.el, {
+        interactive: true,
+        allowHTML: true,
+        content: info.event.extendedProps.XM,
+        placement: 'bottom',
+        arrow: false,
+        offset: [0, info.event.extendedProps.half ? -20 : 0],
+        theme: 'light',
+      });
+    }
+  }, []);
+
+  return (
+    <Fragment>
+      <Modal
+        wrapClassName="attendance-register-modal"
+        width={620}
+        maskClosable={false}
+        style={{ top: 10 }}
+        maskStyle={{ backgroundColor: 'rgb(0 0 0 / 30%)' }}
+        zIndex={103}
+        title={null}
+        visible={visible}
+        destroyOnClose={true}
+        onCancel={handleCancel}
+        footer={
+          <div className="modal-footer">
+            <Checkbox checked={fullAtdData.checked} onChange={handleQuickFullAtd}>
+              一键全勤
+              <Tooltip title="勾选后，本月剩余工作日全勤自动填充" overlayStyle={{ maxWidth: 260 }}>
+                <Icon type="question-circle" className="footer-question-circle" />
+              </Tooltip>
+            </Checkbox>
+            <Button className="cancel-btn" onClick={handleCancel}>
+              取消
+            </Button>
+            {selectedData.findIndex(x => !constData.includes(x)) !== -1 && (
+              <Popconfirm title="确定清空吗？" onConfirm={handleClearAll}>
+                <Button className="clearall-btn">清空</Button>
+              </Popconfirm>
+            )}
+            <Button loading={isSpinning} className="confirm-btn" type="primary" onClick={handleOk}>
+              {constData.length > 0 ? '更新' : '提交'}
+            </Button>
           </div>
-          {getFastSlt()}
+        }
+      >
+        <div className="body-title-box">
+          <strong>考勤登记</strong>
+          <Dropdown overlay={menu}>
+            <Button className="date-filter-dropdown-btn">
+              筛选日期 <Icon type="down" />
+            </Button>
+          </Dropdown>
         </div>
-      </Spin>
-    </Modal>
+        <Spin spinning={isSpinning} tip="加载中">
+          <div className="content">
+            <FullCalendar
+              ref={calendarRef}
+              firstDay={0}
+              selectable={true}
+              plugins={[dayGridPlugin, interactionPlugin]}
+              initialView="dayGridMonth"
+              locale={locale}
+              unselectAuto={modalVisible}
+              customButtons={customButtons}
+              headerToolbar={{
+                start: 'customPre,customNext,title',
+                center: null,
+                end: null,
+              }}
+              select={onCalendarSlt}
+              dayCellContent={renderDayCell}
+              events={events}
+              eventMouseEnter={eventMouseEnter}
+            />
+          </div>
+        </Spin>
+      </Modal>
+      <RadioSltModal
+        dataProps={{
+          visible: modalVisible,
+          radioValue,
+          data,
+          fullAtdData,
+        }}
+        funcProps={{
+          setVisible: setModalVisible,
+          setRadioValue,
+          setData,
+          setFastSlting,
+          setFullAtdData,
+        }}
+      />
+    </Fragment>
   );
 }

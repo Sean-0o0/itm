@@ -1,12 +1,17 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { Button, Calendar, message, Spin, Tabs } from 'antd';
+import React, { useState } from 'react';
+import { Calendar, Spin, Tabs, Dropdown, Menu } from 'antd';
 import moment from 'moment';
+// import tippy from 'tippy.js';
+// import 'tippy.js/dist/tippy.css';
+// import 'tippy.js/themes/light.css';
+import { Link } from 'react-router-dom';
+import { EncryptBase64 } from '../../../Common/Encrypt';
 
 const { TabPane } = Tabs;
 
 export default function AttendanceInfo(props) {
   const { dataProps = {}, funcProps = {} } = props;
-  const { prjData = {}, xmid, daysData = {} } = dataProps;
+  const { prjData = {}, xmid, daysData = {}, routes = [] } = dataProps;
   const { getCalendarData, getAttendanceData, setDaysData } = funcProps;
   const { attendance = [], prjBasic = {} } = prjData;
   const [isSpinning, setIsSpinning] = useState(false); //加载状态
@@ -28,6 +33,7 @@ export default function AttendanceInfo(props) {
       overTime = '--',
       leave = '--',
       key,
+      leftDays = '--',
     }) => {
       const getDaysItem = (label, bgColor, value) => (
         <div className="days-item" key={label}>
@@ -41,8 +47,20 @@ export default function AttendanceInfo(props) {
         </div>
       );
       const handleClick = () => {
-        if (daysData.activeId !== key)
+        if (daysData.activeId !== key) {
           getCalendarData(key, Number(daysData.curMonth), Number(xmid), p => setIsSpinning(p));
+          // setTimeout(() => {
+          // tippy('.ant-fullcalendar-value-diy-tooltip', {
+          //   interactive: true,
+          //   allowHTML: true,
+          //   content: ``,
+          //   placement: 'bottom',
+          //   arrow: false,
+          //   offset: [0, 5],
+          //   theme: 'light',
+          // });
+          // }, 200);
+        }
       };
       return (
         <div
@@ -50,7 +68,10 @@ export default function AttendanceInfo(props) {
           key={key}
           onClick={handleClick}
         >
-          {name}
+          <div className="staff-name">
+            {name}
+            <span>工作日剩余{leftDays}天</span>
+          </div>
           <div className="days-row">
             {getDaysItem('班', '#3361ff', attendance)}
             {getDaysItem('假', '#FF2F31', leave)}
@@ -75,6 +96,7 @@ export default function AttendanceInfo(props) {
               attendance: x.CQTS,
               leave: x.QJTS,
               overTime: x.JBTS,
+              leftDays: x.SYGZR,
             }),
           )}
           <i style={{ width: '32%' }}></i>
@@ -95,37 +117,90 @@ export default function AttendanceInfo(props) {
     const renderCell = d => {
       // 自定义单元格内容
       return (
-        <div className="ant-fullcalendar-date" style={{ pointerEvents: 'none' }}>
-          <div
-            className="ant-fullcalendar-value"
-            style={{
-              textAlign: 'center',
-              color:
-                isInclude(d, daysData.attendanceDays) ||
-                isInclude(d, daysData.leaveDays) ||
-                isInclude(d, daysData.overTimeDays)
-                  ? '#fff'
-                  : '',
-              backgroundColor: isInclude(d, daysData.attendanceDays)
-                ? '#3361ff'
-                : isInclude(d, daysData.leaveDays)
-                ? '#FF2F31'
-                : isInclude(d, daysData.overTimeDays)
-                ? '#86E0FF'
-                : 'unset',
-              backgroundImage: isInclude(d, daysData.attendanceHalfDays)
-                ? 'linear-gradient(to bottom, white 50%, #3361ff 50%)'
-                : isInclude(d, daysData.leaveHalfDays)
-                ? 'linear-gradient(to bottom, white 50%, #FF2F31 50%)'
-                : isInclude(d, daysData.overTimeHalfDays)
-                ? 'linear-gradient(to bottom, white 50%, #86E0FF 50%)'
-                : 'unset',
-            }}
-          >
-            {d.date()}
+        <Dropdown
+          overlay={
+            <Menu>
+              <Menu.Item key={9878}>
+                <Link
+                  to={{
+                    pathname: `/pms/manage/ProjectDetail/${EncryptBase64(
+                      JSON.stringify({
+                        xmid: daysData.otherPrjDays
+                          .concat(daysData.otherPrjHalfDays)
+                          .find(x => x.RQ.isSame(d, 'day'))?.XMMC,
+                      }),
+                    )}`,
+                    state: {
+                      routes,
+                    },
+                  }}
+                  style={{
+                    maxWidth: 380,
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    color: '#3361ff',
+                  }}
+                >
+                  {
+                    daysData.otherPrjDays
+                      .concat(daysData.otherPrjHalfDays)
+                      .find(x => x.RQ.isSame(d, 'day'))?.XM
+                  }
+                </Link>
+              </Menu.Item>
+            </Menu>
+          }
+          trigger={['hover']}
+          disabled={
+            !isInclude(
+              d,
+              daysData.otherPrjDays.concat(daysData.otherPrjHalfDays).map(x => x.RQ),
+            )
+          }
+        >
+          <div className="ant-fullcalendar-date">
+            <div
+              className="ant-fullcalendar-value"
+              style={{
+                textAlign: 'center',
+                color:
+                  isInclude(d, daysData.attendanceDays) ||
+                  isInclude(d, daysData.leaveDays) ||
+                  isInclude(d, daysData.overTimeDays)
+                    ? '#fff'
+                    : '',
+                backgroundColor: isInclude(d, daysData.attendanceDays)
+                  ? '#3361ff'
+                  : isInclude(d, daysData.leaveDays)
+                  ? '#FF2F31'
+                  : isInclude(d, daysData.overTimeDays)
+                  ? '#86E0FF'
+                  : isInclude(
+                      d,
+                      daysData.otherPrjDays.map(x => x.RQ),
+                    )
+                  ? '#D8D8D7'
+                  : 'unset',
+                backgroundImage: isInclude(d, daysData.attendanceHalfDays)
+                  ? 'linear-gradient(to bottom, white 50%, #3361ff 50%)'
+                  : isInclude(d, daysData.leaveHalfDays)
+                  ? 'linear-gradient(to bottom, white 50%, #FF2F31 50%)'
+                  : isInclude(d, daysData.overTimeHalfDays)
+                  ? 'linear-gradient(to bottom, white 50%, #86E0FF 50%)'
+                  : isInclude(
+                      d,
+                      daysData.otherPrjHalfDays.map(x => x.RQ),
+                    )
+                  ? 'linear-gradient(to bottom, white 50%, #D8D8D7 50%)'
+                  : 'unset',
+              }}
+            >
+              {d.date()}
+            </div>
+            <div className="ant-fullcalendar-content"></div>
           </div>
-          <div className="ant-fullcalendar-content"></div>
-        </div>
+        </Dropdown>
       );
     };
 

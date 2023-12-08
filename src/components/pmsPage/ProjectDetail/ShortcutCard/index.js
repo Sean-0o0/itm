@@ -45,9 +45,6 @@ export default function ShortcutCard(props) {
   const history = useHistory();
   const flowers = useRef(null);
 
-  useEffect(() => {
-    return () => {};
-  }, []);
 
   // 获取关联迭代项目下拉框数据 - 用于判断是否显示生成迭代
   const getGlddxmData = () => {
