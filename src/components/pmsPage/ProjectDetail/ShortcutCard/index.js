@@ -45,7 +45,6 @@ export default function ShortcutCard(props) {
   const history = useHistory();
   const flowers = useRef(null);
 
-
   // 获取关联迭代项目下拉框数据 - 用于判断是否显示生成迭代
   const getGlddxmData = () => {
     // setIsSpinning(true);
@@ -59,7 +58,7 @@ export default function ShortcutCard(props) {
     })
       .then(res => {
         if (res?.success) {
-          const data = [...JSON.parse(res.projectRecord)].map(x => String(x.ID));
+          const data = [...JSON.parse(res.result)].map(x => String(x.ID));
           const isPrjExist = data.includes(String(xmid));
           const isNotCplHard =
             prjBasic.XMLX === '软硬件项目' &&

@@ -20,9 +20,9 @@ const PaymentProcess = props => {
   //是否有合同 单选 1是 2否
   const [sfyht, setSfyht] = useState(1);
   //合同金额
-  const [htje, setHtje] = useState(0);
+  const [htje, setHtje] = useState(undefined);
   //已付款金额
-  const [yfkje, setYfkje] = useState(0);
+  const [yfkje, setYfkje] = useState(undefined);
   //申请日期
   const [sqrq, setSqrq] = useState(null);
   //账户范围 单选 1个人 2对公
@@ -222,8 +222,8 @@ const PaymentProcess = props => {
             `\n由项目信息技术综合管理平台发起 项目名称：${String(currentXmmc)}`,
           details,
           haveContract: String(sfyht),
-          contractAmount: String(getFieldValue('htje')),
-          paidAmount: String(getFieldValue('yfkje')),
+          contractAmount: String(getFieldValue('htje') || 0),
+          paidAmount: String(getFieldValue('yfkje') || 0),
           attQuantity: String(getFieldValue('fjzs')),
           legalEntity: getFieldValue('frst') || FRST.find(x => x.ibm === '1')?.cbm,
           orgId: String(LOGIN_USER_ORG_ID),
@@ -269,7 +269,7 @@ const PaymentProcess = props => {
                   message.success(`付款流程${operateType === 'send' ? '发起' : '草稿暂存'}成功`, 1);
                   if (onSuccess !== undefined) onSuccess(); //刷新数据
                   resetFields();
-                  closePaymentProcessModal();
+                  handleCancel();
                 }
               })
               .catch(e => {
@@ -326,10 +326,17 @@ const PaymentProcess = props => {
     message.success('账户添加成功', 1);
   };
 
+  //关闭弹窗
+  const handleCancel = () => {
+    closePaymentProcessModal();
+    resetFields();
+    setExpenseDetail([]);
+  };
+
   //底部按钮
   const footer = (
     <div className="modal-footer">
-      <Button loading={isSpinning} className="btn-default" onClick={closePaymentProcessModal}>
+      <Button loading={isSpinning} className="btn-default" onClick={handleCancel}>
         取消
       </Button>
       <Button
@@ -391,8 +398,9 @@ const PaymentProcess = props => {
         title={null}
         visible={paymentModalVisible}
         onOk={handleSubmit}
-        onCancel={closePaymentProcessModal}
+        onCancel={handleCancel}
         footer={footer}
+        destroyOnClose
       >
         <div className="body-title-box">
           <strong>付款流程发起</strong>

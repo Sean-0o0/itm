@@ -51,7 +51,7 @@ export default function FormOperate(props) {
     fklx,
     setFklx,
   } = formData;
-  const { getFieldDecorator, getFieldValue } = form;
+  const { getFieldDecorator, getFieldValue, setFieldsValue } = form;
   //收款账户
   const [skzh, setSkzh] = useState([]);
   const [fetching, setFetching] = useState(false); //在加载数据
@@ -503,6 +503,7 @@ export default function FormOperate(props) {
             wrapperCol={{ span: 16 }}
           >
             {getFieldDecorator('glht', {
+              initialValue: dhtData[0].ID,
               rules: [
                 {
                   required: true,
@@ -521,6 +522,12 @@ export default function FormOperate(props) {
                     ?.toLowerCase()
                     .indexOf(input.toLowerCase()) >= 0
                 }
+                onChange={v => {
+                  setFieldsValue({
+                    htje: Number(dhtData.find(x => x.ID === v)?.HTJE || 0),
+                    yfkje: Number(dhtData.find(x => x.ID === v)?.YFKJE || 0),
+                  });
+                }}
               >
                 {dhtData.map(x => (
                   <Option key={x.ID} value={x.ID}>
@@ -579,7 +586,9 @@ export default function FormOperate(props) {
     labelCol: 8,
     wrapperCol: 16,
     dataIndex: 'htje',
-    initialValue: rlwbData.ZJE ?? ddfkData.zcb ?? htje,
+    // 多合同时默认第一个的
+    initialValue:
+      rlwbData.ZJE ?? ddfkData.zcb ?? (dhtData.length > 1 ? Number(dhtData[0].HTJE) : htje),
     rules: [
       {
         required: true,
@@ -604,7 +613,8 @@ export default function FormOperate(props) {
     labelCol: 8,
     wrapperCol: 16,
     dataIndex: 'yfkje',
-    initialValue: yfkje,
+    //迭代付款时为0，多合同时默认第一个的
+    initialValue: ddfkData !== false ? 0 : dhtData.length > 1 ? Number(dhtData[0].YFKJE) : yfkje,
     rules: [
       {
         required: true,
@@ -662,17 +672,17 @@ export default function FormOperate(props) {
         {getDJLXRadio()}
       </Row>
       <Row>
-        {getInput(htjeInputProps)}
+        {dhtData.length > 1 && getGlhtSelector()}
         {getInput(fjzsInputProps)}
       </Row>
       <Row>
-        {getInput(yfkjeInputProps)}
+        {getInput(htjeInputProps)}
         {/* 硬件入围优先 */}
         {isHwPrj && getGlsbcgyhtSelector()}
         {!isHwPrj &&
           ddcgje !== 0 &&
           getRadio('付款类型', fklx, e => setFklx(e.target.value), '软件付款', '硬件付款')}
-        {dhtData.length > 1 && getGlhtSelector()}
+        {getInput(yfkjeInputProps)}
       </Row>
       <Row>
         {/* 不是硬件入围，再看单独采购金额 */}

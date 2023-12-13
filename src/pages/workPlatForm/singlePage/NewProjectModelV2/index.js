@@ -4039,6 +4039,7 @@ class NewProjectModelV2 extends React.Component {
                                       haveChild: Number(this.state.subItem),
                                       queryType: 'ALL',
                                     });
+                                    this.getGlddxmData();
                                   }}
                                 />
                                 <Icon

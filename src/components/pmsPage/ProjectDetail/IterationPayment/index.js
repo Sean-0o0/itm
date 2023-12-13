@@ -548,7 +548,7 @@ export default function IterationPayment(props) {
                       <Tooltip title={x.subject} placement="topLeft" key={x.subject}>
                         <div className="subject">{x.subject}</div>
                       </Tooltip>
-                      {this.props.dhtData.length > 1 && (
+                      {contrastArr?.length > 1 && (
                         <div
                           className="opr-btn"
                           key="关联合同"
