@@ -707,9 +707,7 @@ const AddExpense = props => {
                 });
               };
             }}
-            accept={
-              '.doc,.docx,.xml,.pdf,.txt,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-            }
+            accept={'*'}
             fileList={[...formData[dataIndex + 'FileList']]}
           >
             <Button type="dashed" className="add-expense-btn-default">
@@ -796,9 +794,7 @@ const AddExpense = props => {
                 };
               });
             }}
-            accept={
-              '.doc,.docx,.xml,.pdf,.txt,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-            }
+            accept={'*'}
             fileList={[...formData[dataIndex + 'FileList']]}
           >
             <Button type="dashed" className="add-expense-btn-default">

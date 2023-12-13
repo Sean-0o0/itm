@@ -1175,9 +1175,7 @@ class EditBidInfoModel extends React.Component {
                           };
                         });
                       }}
-                      accept={
-                        '.zip,.rar,.doc,.docx,.xml,.pdf,.txt,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-                      }
+                      accept={'*'}
                       fileList={[...fileList]}
                     >
                       <Button type="dashed">

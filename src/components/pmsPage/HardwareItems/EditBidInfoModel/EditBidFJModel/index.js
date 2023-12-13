@@ -332,9 +332,7 @@ class EditBidFJModel extends React.Component {
                         uploadFileParamsBD: newuploadFileList
                       })
                     }}
-                    accept={
-                      '.zip,.rar,.doc,.docx,.xml,.pdf,.txt,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-                    }
+                    accept={'*'}
                     fileList={fileListTempBD[bdid]}
                   >
                     <Button type="dashed">

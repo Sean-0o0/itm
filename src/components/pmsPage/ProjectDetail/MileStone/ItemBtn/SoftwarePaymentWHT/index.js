@@ -380,9 +380,7 @@ export default connect(({ global }) => ({
               }}
               multiple={true}
               onChange={onUploadChange}
-              accept={
-                '.doc,.docx,.xml,.pdf,.txt,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-              }
+              accept={'*'}
               fileList={fileList}
             >
               <Button type="dashed">

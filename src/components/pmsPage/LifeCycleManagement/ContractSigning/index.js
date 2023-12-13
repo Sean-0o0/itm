@@ -986,9 +986,7 @@ class ContractSigning extends React.Component {
                                   });
                                   console.log('uploadFileParams-cccc', this.state.uploadFileParams);
                                 }}
-                                accept={
-                                  '.doc,.docx,.xml,.pdf,.txt,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-                                }
+                                accept={'*'}
                                 fileList={[...fileList]}
                               >
                                 <Button type="dashed">
@@ -1091,9 +1089,7 @@ class ContractSigning extends React.Component {
                                     this.state.uploadFileParams2,
                                   );
                                 }}
-                                accept={
-                                  '.doc,.docx,.xml,.pdf,.txt,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-                                }
+                                accept={'*'}
                                 fileList={[...fileList2]}
                               >
                                 <Button type="dashed">

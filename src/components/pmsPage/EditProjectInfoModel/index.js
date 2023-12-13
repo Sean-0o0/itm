@@ -8932,9 +8932,7 @@ class EditProjectInfoModel extends React.Component {
                               multiple={true}
                               onChange={this.onUploadChange}
                               beforeUpload={this.onBeforeUpload}
-                              accept={
-                                '.doc,.docx,.xml,.pdf,.txt,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-                              }
+                              accept={'*'}
                               fileList={[...fileList]}
                             >
                               <Button type="dashed">

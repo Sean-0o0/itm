@@ -512,9 +512,7 @@ export default connect(({ global = {} }) => ({
               multiple={true}
               onChange={onUploadChange}
               beforeUpload={onBeforeUpload}
-              accept={
-                '.doc,.docx,.xml,.xls,.xlsx,.csv,.jpg,.jpeg,.tif,.png,.pdf,.txt,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-              }
+              accept={'*'}
               fileList={fileList}
             >
               <Button type="dashed">

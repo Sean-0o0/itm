@@ -510,9 +510,7 @@ class PollResultEnterModel extends React.Component {
                       onRemove={file => {
                         console.log('file--cc-rrr', file);
                       }}
-                      accept={
-                        '.doc,.docx,.xml,.pdf,.txt,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-                      }
+                      accept={'*'}
                       fileList={[...pollFileList]}
                     >
                       <Button type="dashed">

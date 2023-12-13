@@ -349,7 +349,7 @@ export default Form.create()(function OprtModal(props) {
     setFileList,
     isTurnRed,
     setIsTurnRed,
-    accept = '.doc,.docx,.xml,.xls,.xlsx,.7z,.zip,.rar,.csv,.jpg,.jpeg,.tif,.png,.pdf,.txt,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    accept = '*',
   }) => {
     const onUploadDownload = file => {
       if (!file.url) {
@@ -418,7 +418,7 @@ export default Form.create()(function OprtModal(props) {
             multiple={true}
             onChange={onUploadChange}
             beforeUpload={onBeforeUpload}
-            accept={accept}
+            accept={'*'}
             fileList={fileList}
           >
             <Button type="dashed">

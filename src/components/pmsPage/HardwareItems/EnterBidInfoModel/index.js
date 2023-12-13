@@ -768,9 +768,7 @@ class EnterBidInfoModel extends React.Component {
                 uploadFileParamsBD: newuploadFileList
               })
             }}
-            accept={
-              '.zip,.rar,.doc,.docx,.xml,.pdf,.txt,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-            }
+            accept={'*'}
             fileList={fileListTempBD[record.ID]}
           >
             <Button type="dashed">
@@ -1032,9 +1030,7 @@ class EnterBidInfoModel extends React.Component {
                       onRemove={file => {
                         console.log('file--cc-rrr', file);
                       }}
-                      accept={
-                        '.zip,.rar,.doc,.docx,.xml,.pdf,.txt,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-                      }
+                      accept={'*'}
                       fileList={[...fileList]}
                     >
                       <Button type="dashed">

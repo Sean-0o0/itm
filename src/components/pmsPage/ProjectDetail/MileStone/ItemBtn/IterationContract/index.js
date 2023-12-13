@@ -337,9 +337,7 @@ export default Form.create()(function IterationContract(props) {
             multiple={true}
             onChange={onUploadChange}
             beforeUpload={onBeforeUpload}
-            accept={
-              '.doc,.docx,.xml,.pdf,.txt,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-            }
+            accept={'*'}
             fileList={fileList}
           >
             <Button type="dashed">
