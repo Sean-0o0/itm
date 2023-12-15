@@ -588,7 +588,7 @@ export default function FormOperate(props) {
     dataIndex: 'htje',
     // 多合同时默认第一个的
     initialValue:
-      rlwbData.ZJE ?? ddfkData.zcb ?? (dhtData.length > 1 ? Number(dhtData[0].HTJE) : htje),
+      rlwbData.ZJE ?? ddfkData.zcb ?? (dhtData.length > 1 ? Number(dhtData[0].HTJE || 0) : htje),
     rules: [
       {
         required: true,
@@ -614,7 +614,8 @@ export default function FormOperate(props) {
     wrapperCol: 16,
     dataIndex: 'yfkje',
     //迭代付款时为0，多合同时默认第一个的
-    initialValue: ddfkData !== false ? 0 : dhtData.length > 1 ? Number(dhtData[0].YFKJE) : yfkje,
+    initialValue:
+      ddfkData !== false ? 0 : dhtData.length > 1 ? Number(dhtData[0].YFKJE || 0) : yfkje,
     rules: [
       {
         required: true,

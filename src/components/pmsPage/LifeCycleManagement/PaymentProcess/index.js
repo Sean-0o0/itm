@@ -20,9 +20,9 @@ const PaymentProcess = props => {
   //是否有合同 单选 1是 2否
   const [sfyht, setSfyht] = useState(1);
   //合同金额
-  const [htje, setHtje] = useState(undefined);
+  const [htje, setHtje] = useState(0);
   //已付款金额
-  const [yfkje, setYfkje] = useState(undefined);
+  const [yfkje, setYfkje] = useState(0);
   //申请日期
   const [sqrq, setSqrq] = useState(null);
   //账户范围 单选 1个人 2对公
@@ -110,8 +110,10 @@ const PaymentProcess = props => {
       .then(res => {
         if (res.code === 1) {
           const rec = JSON.parse(res.result);
-          setHtje(rec.htje);
-          setYfkje(rec.yfkje);
+          // setHtje(rec.htje);
+          // setYfkje(rec.yfkje);
+          setHtje(dhtData.length > 0 ? Number(dhtData[0].HTJE || 0) : 0);
+          setYfkje(dhtData.length > 0 ? Number(dhtData[0].YFKJE || 0) : 0);
           setUserykbid(rec.userykbid);
           setOrgykbid(rec.orgykbid);
           setIsSpinning(false);
