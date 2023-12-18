@@ -76,10 +76,11 @@ export default connect(({ global = {} }) => ({
       if (visible && rowData !== undefined) {
         setIsSpinning(true);
         handleFileStrParse(rowData?.FJ, {
-          objectName: 'TXMXX_ZSCQ',
-          columnName: 'FJ',
+          objectName: isSB ? 'TXMXX_HJRY_SBXQ' : 'TXMXX_HJRY',
+          columnName: isSB ? 'FJ' : 'CKZL',
           id: rowData?.ID,
         }).then(res => {
+          console.log('🚀 ~ file: index.js:83 ~ useEffect ~ res:', res);
           setUpldData(res || []);
           if (isSB) getPrjNameData();
           else setIsSpinning(false);
@@ -286,6 +287,7 @@ export default connect(({ global = {} }) => ({
               const reader = new FileReader();
               reader.onload = function() {
                 const base64 = reader.result.split(',')[1];
+                console.log('🚀 ~ file: index.js:290 ~ returnnewPromise ~ base64:', reader, base64);
                 const fileName = file.name;
                 resolve({
                   uid: Date.now() + '-' + index,
@@ -317,11 +319,12 @@ export default connect(({ global = {} }) => ({
               id,
               title: x[1],
               extr: x[0],
-              type: '',
+              // type: '',
             },
           }),
         ) || [];
       const resArr = await Promise.all(fjPromiseArr);
+      console.log('🚀 ~ file: index.js:327 ~ handleFileStrParse ~ resArr:', resArr);
       return convertBlobsToBase64(
         resArr.map(x => ({ name: JSON.parse(x?.config?.data || '{}').title, blob: x.data })),
       );
