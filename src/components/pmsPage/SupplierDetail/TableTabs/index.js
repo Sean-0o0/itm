@@ -87,6 +87,8 @@ export default function TableTabs(props) {
             setSplEvaluation(JSON.parse(res.gyspjRecord));
           }
           setTotal(res.totalrows);
+          setCurPage(current);
+          setCurPageSize(pageSize);
           setTableLoading(false);
         }
       })
