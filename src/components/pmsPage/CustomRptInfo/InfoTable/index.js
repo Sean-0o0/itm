@@ -25,113 +25,82 @@ export default function InfoTable(props) {
 
   useEffect(() => {
     if (columns.length > 0) {
-        QueryUserRole({
-          userId: LOGIN_USERID,
-        })
-          .then(res => {
-            if (res.success) {
-              const isLeader = res.role !== '普通人员';
-              const isBudgetMnger = res.zyrole === '预算管理人'; //是否预算管理人
-              let arr = [];
-              arr = columns.map(x => {
-                switch (x.dataIndex) {
-                  //金额类型
-                  case 'XMYSJE':
-                  case 'YSXMJE':
-                  case 'HTJE':
-                  case 'LVBZJ':
-                  case 'TBBZJ':
-                  case 'YFKFY':
-                  case 'WFKFY':
-                    return {
-                      title: x.title,
-                      dataIndex: x.dataIndex,
-                      key: x.dataIndex,
-                      width: (x.title?.length || 4) * 22,
-                      align: 'right',
-                      ellipsis: true,
-                      sorter: true,
-                      sortDirections: ['descend', 'ascend'],
-                      render: (txt, row) => (
-                        <span style={{ marginRight: 30 }}>
-                          {isLeader || LOGIN_USERID === Number(row.XMJLID) || isBudgetMnger
-                            ? getAmountFormat(txt)
-                            : '***'}
-                        </span>
-                      ),
-                    };
-                  //日期类型
-                  case 'LXSJ':
-                  case 'QSRQ':
-                  case 'FKSJ':
-                    return {
-                      title: x.title,
-                      dataIndex: x.dataIndex,
-                      key: x.dataIndex,
-                      width: (x.title?.length || 4) * 28,
-                      align: 'left',
-                      ellipsis: true,
-                      render: txt =>
-                        ['', null, undefined, ' '].includes(txt)
-                          ? ''
-                          : moment(txt).format('YYYY-MM-DD'),
-                    };
-                  //跳转类型
-                  case 'XMMC':
-                  case 'GYSMC':
-                    return {
-                      title: x.title,
-                      dataIndex: x.dataIndex,
-                      key: x.dataIndex,
-                      width: 170,
-                      align: 'left',
-                      ellipsis: true,
-                      render: (txt, row) => {
-                        let pathname = `/pms/manage/ProjectDetail/${EncryptBase64(
+      QueryUserRole({
+        userId: LOGIN_USERID,
+      })
+        .then(res => {
+          if (res.success) {
+            const isLeader = res.role !== '普通人员';
+            const isBudgetMnger = res.zyrole === '预算管理人'; //是否预算管理人
+            let arr = [];
+            arr = columns.map(x => {
+              switch (x.dataIndex) {
+                //金额类型
+                case 'XMYSJE':
+                case 'YSXMJE':
+                case 'HTJE':
+                case 'LVBZJ':
+                case 'TBBZJ':
+                case 'YFKFY':
+                case 'WFKFY':
+                  return {
+                    title: x.title,
+                    dataIndex: x.dataIndex,
+                    key: x.dataIndex,
+                    width: (x.title?.length || 4) * 22,
+                    align: 'right',
+                    ellipsis: true,
+                    sorter: true,
+                    sortDirections: ['descend', 'ascend'],
+                    render: (txt, row) => (
+                      <span style={{ marginRight: 30 }}>
+                        {isLeader || LOGIN_USERID === Number(row.XMJLID) || isBudgetMnger
+                          ? getAmountFormat(txt)
+                          : '***'}
+                      </span>
+                    ),
+                  };
+                //日期类型
+                case 'LXSJ':
+                case 'QSRQ':
+                case 'FKSJ':
+                  return {
+                    title: x.title,
+                    dataIndex: x.dataIndex,
+                    key: x.dataIndex,
+                    width: (x.title?.length || 4) * 28,
+                    align: 'left',
+                    ellipsis: true,
+                    render: txt =>
+                      ['', null, undefined, ' '].includes(txt)
+                        ? ''
+                        : moment(txt).format('YYYY-MM-DD'),
+                  };
+                //跳转类型
+                case 'XMMC':
+                case 'GYSMC':
+                  return {
+                    title: x.title,
+                    dataIndex: x.dataIndex,
+                    key: x.dataIndex,
+                    width: 170,
+                    align: 'left',
+                    ellipsis: true,
+                    render: (txt, row) => {
+                      let pathname = `/pms/manage/ProjectDetail/${EncryptBase64(
+                        JSON.stringify({
+                          xmid: row[x.jumpId],
+                        }),
+                      )}`;
+                      if (x.dataIndex === 'GYSMC') {
+                        pathname = `/pms/manage/SupplierDetail/${EncryptBase64(
                           JSON.stringify({
-                            xmid: row[x.jumpId],
+                            splId: row[x.jumpId],
                           }),
                         )}`;
-                        if (x.dataIndex === 'GYSMC') {
-                          pathname = `/pms/manage/SupplierDetail/${EncryptBase64(
-                            JSON.stringify({
-                              splId: row[x.jumpId],
-                            }),
-                          )}`;
-                        }
-                        return (
-                          <Tooltip title={txt} placement="topLeft">
-                            <Link
-                              style={{ color: '#3361ff' }}
-                              to={{
-                                pathname,
-                                state: {
-                                  routes,
-                                },
-                              }}
-                              className="table-link-strong"
-                            >
-                              {txt}
-                            </Link>
-                          </Tooltip>
-                        );
-                      },
-                    };
-                  case 'XMJL':
-                    return {
-                      title: x.title,
-                      dataIndex: x.dataIndex,
-                      key: x.dataIndex,
-                      width: 110,
-                      align: 'left',
-                      ellipsis: true,
-                      render: (txt, row) => {
-                        let pathname = `/pms/manage/staffDetail/${EncryptBase64(
-                          JSON.stringify({
-                            ryid: row[x.jumpId],
-                          }),
-                        )}`;
-                        return (
+                      }
+                      return (
+                        <Tooltip title={txt} placement="topLeft">
                           <Link
                             style={{ color: '#3361ff' }}
                             to={{
@@ -144,107 +113,139 @@ export default function InfoTable(props) {
                           >
                             {txt}
                           </Link>
-                        );
-                      },
-                    };
-                  //特殊类型
-                  case 'XMBQ':
-                    return {
-                      title: x.title,
-                      dataIndex: x.dataIndex,
-                      key: x.dataIndex,
-                      width: 260,
-                      align: 'left',
-                      ellipsis: true,
-                      render: (txt, row) => {
-                        return (
-                          <div className="prj-tags">
-                            {getTagData(txt, row[x.jumpId]).length > 0 && (
-                              <>
-                                {getTagData(txt, row[x.jumpId])
-                                  ?.slice(0, 2)
-                                  .map(x => (
-                                    <div key={x.id} className="tag-item">
-                                      <Link
-                                        style={{ color: '#3361ff' }}
-                                        to={{
-                                          pathname: `/pms/manage/labelDetail/${EncryptBase64(
-                                            JSON.stringify({
-                                              bqid: x.id,
-                                            }),
-                                          )}`,
-                                          state: {
-                                            routes,
-                                          },
-                                        }}
-                                        className="table-link-strong"
-                                      >
-                                        {x.name}
-                                      </Link>
-                                    </div>
-                                  ))}
-                                {getTagData(txt, row[x.jumpId])?.length > 2 && (
-                                  <Popover
-                                    overlayClassName="tag-more-popover"
-                                    content={
-                                      <div className="tag-more">
-                                        {getTagData(txt, row[x.jumpId])
-                                          ?.slice(2)
-                                          .map(x => (
-                                            <div key={x.id} className="tag-item">
-                                              <Link
-                                                style={{ color: '#3361ff' }}
-                                                to={{
-                                                  pathname: `/pms/manage/labelDetail/${EncryptBase64(
-                                                    JSON.stringify({
-                                                      bqid: x.id,
-                                                    }),
-                                                  )}`,
-                                                  state: {
-                                                    routes,
-                                                  },
-                                                }}
-                                                className="table-link-strong"
-                                              >
-                                                {x.name}
-                                              </Link>
-                                            </div>
-                                          ))}
-                                      </div>
-                                    }
-                                    title={null}
-                                  >
-                                    <div className="tag-item">
-                                      {getTagData(txt, row[x.jumpId])?.length - 2}+
-                                    </div>
-                                  </Popover>
-                                )}
-                              </>
-                            )}
-                          </div>
-                        );
-                      },
-                    };
-                  default:
-                    return {
-                      title: x.title,
-                      dataIndex: x.dataIndex,
-                      key: x.dataIndex,
-                      width: 150,
-                      align: 'left',
-                      ellipsis: true,
-                      render: txt => (
-                        <Tooltip title={txt} placement="topLeft">
-                          <span style={{ cursor: 'default' }}>{txt}</span>
                         </Tooltip>
-                      ),
-                    };
-                }
-              });
-              setTableColumns(arr);
-            }
-          })
-          .catch(e => {});
+                      );
+                    },
+                  };
+                case 'XMJL':
+                  return {
+                    title: x.title,
+                    dataIndex: x.dataIndex,
+                    key: x.dataIndex,
+                    width: 110,
+                    align: 'left',
+                    ellipsis: true,
+                    render: (txt, row) => {
+                      let pathname = `/pms/manage/staffDetail/${EncryptBase64(
+                        JSON.stringify({
+                          ryid: row[x.jumpId],
+                        }),
+                      )}`;
+                      return (
+                        <Link
+                          style={{ color: '#3361ff' }}
+                          to={{
+                            pathname,
+                            state: {
+                              routes,
+                            },
+                          }}
+                          className="table-link-strong"
+                        >
+                          {txt}
+                        </Link>
+                      );
+                    },
+                  };
+                //特殊类型
+                case 'XMBQ':
+                  return {
+                    title: x.title,
+                    dataIndex: x.dataIndex,
+                    key: x.dataIndex,
+                    width: 260,
+                    align: 'left',
+                    ellipsis: true,
+                    render: (txt, row) => {
+                      return (
+                        <div className="prj-tags">
+                          {getTagData(txt, row[x.jumpId]).length > 0 && (
+                            <>
+                              {getTagData(txt, row[x.jumpId])
+                                ?.slice(0, 2)
+                                .map(x => (
+                                  <div key={x.id} className="tag-item">
+                                    <Link
+                                      style={{ color: '#3361ff' }}
+                                      to={{
+                                        pathname: `/pms/manage/labelDetail/${EncryptBase64(
+                                          JSON.stringify({
+                                            bqid: x.id,
+                                          }),
+                                        )}`,
+                                        state: {
+                                          routes,
+                                        },
+                                      }}
+                                      className="table-link-strong"
+                                    >
+                                      {x.name}
+                                    </Link>
+                                  </div>
+                                ))}
+                              {getTagData(txt, row[x.jumpId])?.length > 2 && (
+                                <Popover
+                                  overlayClassName="tag-more-popover"
+                                  content={
+                                    <div className="tag-more">
+                                      {getTagData(txt, row[x.jumpId])
+                                        ?.slice(2)
+                                        .map(x => (
+                                          <div key={x.id} className="tag-item">
+                                            <Link
+                                              style={{ color: '#3361ff' }}
+                                              to={{
+                                                pathname: `/pms/manage/labelDetail/${EncryptBase64(
+                                                  JSON.stringify({
+                                                    bqid: x.id,
+                                                  }),
+                                                )}`,
+                                                state: {
+                                                  routes,
+                                                },
+                                              }}
+                                              className="table-link-strong"
+                                            >
+                                              {x.name}
+                                            </Link>
+                                          </div>
+                                        ))}
+                                    </div>
+                                  }
+                                  title={null}
+                                >
+                                  <div className="tag-item">
+                                    {getTagData(txt, row[x.jumpId])?.length - 2}+
+                                  </div>
+                                </Popover>
+                              )}
+                            </>
+                          )}
+                        </div>
+                      );
+                    },
+                  };
+                default:
+                  return {
+                    title: x.title,
+                    dataIndex: x.dataIndex,
+                    key: x.dataIndex,
+                    width: 150,
+                    align: 'left',
+                    ellipsis: true,
+                    render: txt => (
+                      <Tooltip title={txt} placement="topLeft">
+                        <span style={{ cursor: 'default' }}>{txt}</span>
+                      </Tooltip>
+                    ),
+                  };
+              }
+            });
+            setTableColumns(arr);
+            console.log("🚀 ~ file: index.js:246 ~ useEffect ~ arr:", arr)
+          }
+        })
+        .catch(e => {});
       // console.log('🚀 ~ file: index.js:21 ~ useEffect ~ columns:', columns);
     }
     return () => {};
@@ -365,7 +366,7 @@ export default function InfoTable(props) {
       >
         <Table
           columns={tableColumns}
-          rowKey={'XMID'}
+          rowKey={row => row.XMID + String(bbid)}
           dataSource={tableData.data}
           onChange={handleTableChange}
           // pagination={{

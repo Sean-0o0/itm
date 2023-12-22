@@ -20,6 +20,10 @@ export default function SiderRptList(props) {
     setStatus,
     hangleDataRestore,
     getIsSaved,
+    setRptName,
+    setRptNameOrigin,
+    setSelectingData,
+    setSelectedData,
   } = funcProps;
   // const [bbmc, setBbmc] = useState(''); //报表名称
   // const [isSpinning, setIsSpinning] = useState(false); //加载状态
@@ -176,6 +180,17 @@ export default function SiderRptList(props) {
       }
       setStatus('adding');
     }
+    setSelectedData({
+      ...selectedOrigin,
+      conditionFilter: [{ ...selectedOrigin.conditionFilter[0], SELECTORVALUE: undefined }],
+    });
+    setSelectingData({
+      conditionFilter: [],
+      conditionGroup: [],
+      columnFields: [],
+    });
+    setRptName('未命名报表');
+    setRptNameOrigin('未命名报表');
   };
 
   return (

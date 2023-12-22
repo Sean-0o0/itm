@@ -277,7 +277,7 @@ const PaymentProcess = props => {
               .catch(e => {
                 setIsSpinning(false);
                 console.error(' ~ e:', e);
-                message.error(e.note, 1);
+                message.error(e.note, 3);
               });
           },
         });

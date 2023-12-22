@@ -653,7 +653,10 @@ export default function InfoDisplay(props) {
             </div>
             <div className="info-item" key="关联预算项目执行率">
               <span>执行率：</span>
-              {((Number(prjBasic.YSYYS || 0) * 100) / Number(prjBasic.KZXYS || 0)).toFixed(2) + '%'}
+              {(Number(prjBasic.KZXYS || 0) === 0
+                ? 0
+                : ((Number(prjBasic.YSYYS || 0) * 100) / Number(prjBasic.KZXYS || 0)).toFixed(2)) +
+                '%'}
             </div>
           </div>
         </div>

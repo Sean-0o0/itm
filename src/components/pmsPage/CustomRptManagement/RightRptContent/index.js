@@ -38,6 +38,7 @@ export default function RightRptContent(props) {
     dragKey,
     rptName,
     editingId = -1,
+    selectedOrigin,
   } = dataProps;
   const {
     setIsSpinning,
@@ -49,6 +50,8 @@ export default function RightRptContent(props) {
     hangleDataRestore,
     getRptList,
     setStatus,
+    getEditData,
+    setRptNameOrigin,
   } = funcProps;
   const [popoverVisible, setPopoverVisible] = useState({
     setting: false, //字段设置
@@ -789,8 +792,8 @@ export default function RightRptContent(props) {
               message.success('保存成功', 1);
               getRptList(); //刷新数据
               getHistoryData(editingId);
-              // setStatus('normal');
-              setIsSpinning(false);
+              getEditData(status === 'adding' ? res.bbid : editingId);
+              // setIsSpinning(false);
             }
           })
           .catch(e => {

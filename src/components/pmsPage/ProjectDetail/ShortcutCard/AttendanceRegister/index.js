@@ -333,7 +333,7 @@ export default function AttendanceRegister(props) {
         className: 'attendance' + (constData.includes(x) ? ' const-lock' : ''),
       })),
       ...data.attendanceHalf.map(x => ({
-        title: '出勤',
+        title: '出勤半天',
         start: x,
         display: 'background',
         className: 'attendance-half' + (constData.includes(x) ? ' const-lock' : ''),
@@ -345,7 +345,7 @@ export default function AttendanceRegister(props) {
         className: 'leave' + (constData.includes(x) ? ' const-lock' : ''),
       })),
       ...data.leaveHalf.map(x => ({
-        title: '请假',
+        title: '请假半天',
         start: x,
         display: 'background',
         className: 'leave-half' + (constData.includes(x) ? ' const-lock' : ''),
@@ -357,19 +357,7 @@ export default function AttendanceRegister(props) {
         className: 'overtime' + (constData.includes(x) ? ' const-lock' : ''),
       })),
       ...data.overtimeHalf.map(x => ({
-        title: '加班',
-        start: x,
-        display: 'background',
-        className: 'overtime-half' + (constData.includes(x) ? ' const-lock' : ''),
-      })),
-      ...data.overtime.map(x => ({
-        title: '加班',
-        start: x,
-        display: 'background',
-        className: 'overtime' + (constData.includes(x) ? ' const-lock' : ''),
-      })),
-      ...data.overtimeHalf.map(x => ({
-        title: '加班',
+        title: '加班半天',
         start: x,
         display: 'background',
         className: 'overtime-half' + (constData.includes(x) ? ' const-lock' : ''),
@@ -628,6 +616,7 @@ export default function AttendanceRegister(props) {
               dayCellContent={renderDayCell}
               events={events}
               eventMouseEnter={eventMouseEnter}
+              showNonCurrentDates={false}
             />
           </div>
         </Spin>

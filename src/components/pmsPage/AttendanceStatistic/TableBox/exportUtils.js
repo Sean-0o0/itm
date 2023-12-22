@@ -1,7 +1,7 @@
 import * as XLSX from 'xlsx';
 import { message } from 'antd';
 
-const handleExport = (list = [], headList = [], sheetName = 'sheetName.xlsx') => {
+const handleExport = ({list = [], headList = [], sheetNames = ['sheetName.xlsx'], sheetName}) => {
   function deleteChildren(arr) {
     let childs = arr;
     for (let i = childs.length; i--; i > 0) {
@@ -341,46 +341,53 @@ const handleExport = (list = [], headList = [], sheetName = 'sheetName.xlsx') =>
     message.warn('导出数据为空');
     return;
   }
-  //删除Children为空，不然数据对不上
-  headList = deleteChildren(headList);
-  // excel表头
-  let excelHeader = buildHeader(headList);
-  // 头部行数，用来固定表头
-  let headerRows = excelHeader.length;
-  // 提取数据
-  let dataList = extractData(list, headList);
-  excelHeader.push(...dataList, []);
-  // 计算合并
-  let merges = doMerges(excelHeader);
-  // 生成sheet
-  let ws = aoa_to_sheet(excelHeader, headerRows);
-  // 单元格合并
-  ws['!merges'] = merges;
-  // 头部冻结
-  ws['!freeze'] = {
-    xSplit: '1',
-    ySplit: '' + headerRows,
-    topLeftCell: 'B' + (headerRows + 1),
-    activePane: 'bottomRight',
-    state: 'frozen',
-  };
-  // 设置行宽
-  let arr = [];
-  const num = excelHeader[0].length;
-  // ws['!rows'] = [{
-  //     hpx: 100
-  // }]
-  for (let i = 0; i < num; i++) {
-    arr.push({
-      wpx: 120,
+  const getSheets = (listArr = [], headList = [], sheetNames) => {
+    const wsArr = listArr.map(list => {
+      //删除Children为空，不然数据对不上
+      headList = deleteChildren(headList);
+      // excel表头
+      let excelHeader = buildHeader(headList);
+      // 头部行数，用来固定表头
+      let headerRows = excelHeader.length;
+      // 提取数据
+      let dataList = extractData(list, headList);
+      excelHeader.push(...dataList, []);
+      // 计算合并
+      let merges = doMerges(excelHeader);
+      // 生成sheet
+      let ws = aoa_to_sheet(excelHeader, headerRows);
+      // 单元格合并
+      ws['!merges'] = merges;
+      // 头部冻结
+      ws['!freeze'] = {
+        xSplit: '1',
+        ySplit: '' + headerRows,
+        topLeftCell: 'B' + (headerRows + 1),
+        activePane: 'bottomRight',
+        state: 'frozen',
+      };
+      // 设置行宽
+      let arr = [];
+      const num = excelHeader[0].length;
+      for (let i = 0; i < num; i++) {
+        arr.push({
+          wpx: 120,
+        });
+      }
+      ws['!cols'] = arr;
+      return ws;
     });
-  }
-  ws['!cols'] = arr;
-  let workbook = {
-    SheetNames: [sheetName],
-    Sheets: {},
+    return sheetNames.reduce((acc, key, index) => {
+      acc[key] = wsArr[index];
+      return acc;
+    }, {});
   };
-  workbook.Sheets[sheetName] = ws;
+  let workbook = {
+    SheetNames: sheetNames,
+    Sheets: getSheets(list, headList, sheetNames),
+  };
+
+  // workbook.Sheets[sheetName] = ws;
   // excel样式
   let wopts = {
     bookType: 'xlsx',

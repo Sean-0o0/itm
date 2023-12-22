@@ -69,6 +69,7 @@ export default function AnalyzeRepsCard(props) {
         routes: [{ name: '个人工作台', pathname: location.pathname }],
         bbid: i.BBID,
         bbmc: i.BBMC,
+        cjrid: i.CJRID,
       }),
     )}`;
   };

@@ -128,7 +128,7 @@ export default Form.create()(function PaymentModal(props) {
   const getRadio = (
     label,
     dataIndex,
-    initialValue = 1,
+    initialValue = 2,
     onChange = () => {},
     txt1 = '是',
     txt2 = '否',
@@ -515,10 +515,21 @@ export default Form.create()(function PaymentModal(props) {
               </div>
             </Col>
           </Row>
-          <div className="info-item">
+          <Row>
+            <Col span={12}>
+            <div className="info-item">
             <span>付款总金额（元）：</span>
             {getAmountFormat(confirmInfo.fkzje)}
           </div>
+            </Col>
+            <Col span={12}>
+              <div className="info-item">
+                <span>状态：</span>
+                {confirmInfo.state}
+              </div>
+            </Col>
+          </Row>
+         
           <div className="info-item">
             <span>收款账户：</span>
             {confirmInfo.skzh?.info !== '匹配成功' && '系统中无该收款账户，无法展示'}

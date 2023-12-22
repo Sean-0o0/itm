@@ -180,9 +180,9 @@ export default function CustomRptManagement(props) {
       .then(res => {
         if (res?.success) {
           const obj = JSON.parse(res.mbxx)[0];
-          let filterData = JSON.parse(obj.QDZSSXZD);
+          let filterData = JSON.parse(obj.QDZSSXZD||'[]');
           if (filterData.length > 0) {
-            filterData.forEach(x => {
+            filterData.forEach((x, index) => {
               if (x.TJBCXLX) {
                 QueryCustomQueryCriteria({
                   queryType: x.TJBCXLX,
@@ -223,11 +223,18 @@ export default function CustomRptManagement(props) {
                     setRptName(obj.BBMC);
                     setRptNameOrigin(obj.BBMC);
                     setStatus('editing');
-                    setIsSpinning(false);
+                    index ===
+                      filterData.reduceRight((acc, obj, index) => {
+                        if (obj.TJBCXLX !== undefined && acc === -1) {
+                          return index;
+                        }
+                        return acc;
+                      }, -1) && setIsSpinning(false);
                   })
                   .catch(e => {
                     console.error('🚀', e);
                     message.error(x.TJBCXLX + '信息获取失败', 1);
+                    setIsSpinning(false);
                   });
               } else {
                 setSelectedData({
@@ -243,7 +250,13 @@ export default function CustomRptManagement(props) {
                 setRptName(obj.BBMC);
                 setRptNameOrigin(obj.BBMC);
                 setStatus('editing');
-                setIsSpinning(false);
+                index ===
+                  filterData.reduceRight((acc, obj, index) => {
+                    if (obj.TJBCXLX !== undefined && acc === -1) {
+                      return index;
+                    }
+                    return acc;
+                  }, -1) && setIsSpinning(false);
               }
             });
           } else {
@@ -430,6 +443,10 @@ export default function CustomRptManagement(props) {
             getBasicData,
             setStatus,
             getIsSaved,
+            setRptName,
+            setRptNameOrigin,
+            setSelectingData,
+            setSelectedData,
           }}
         />
         {status === 'normal' ? (
@@ -449,6 +466,7 @@ export default function CustomRptManagement(props) {
               selectingData,
               selectedData,
               editingId,
+              selectedOrigin,
             }}
             funcProps={{
               setStatus,
@@ -460,6 +478,8 @@ export default function CustomRptManagement(props) {
               setSelectedData,
               hangleDataRestore,
               getRptList,
+              getEditData,
+              setRptNameOrigin,
             }}
           />
         )}

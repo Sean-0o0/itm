@@ -96,7 +96,7 @@ export default function AttendanceInfo(props) {
               attendance: x.CQTS,
               leave: x.QJTS,
               overTime: x.JBTS,
-              leftDays: x.SYGZR,
+              leftDays: x.SYGZR || 0,
             }),
           )}
           <i style={{ width: '32%' }}></i>

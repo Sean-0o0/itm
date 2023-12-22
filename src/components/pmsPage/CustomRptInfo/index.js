@@ -119,99 +119,67 @@ export default function CustomRptInfo(props) {
       };
     });
     let filterData = JSON.parse(obj.QDZSSXZD);
-    if (filterData.length > 0) {
-      filterData.forEach(x => {
-        //TJBCXLX用于查询下拉框数据入参
-        if (x.TJBCXLX) {
-          QueryCustomQueryCriteria({
+    filterData.forEach(async x => {
+      //TJBCXLX用于查询下拉框数据入参
+      if (x.TJBCXLX) {
+        try {
+          const res = await QueryCustomQueryCriteria({
             queryType: x.TJBCXLX,
-          })
-            .then(res => {
-              if (res?.success) {
-                if (x.TJBCXLX === 'YSXM') {
-                  function uniqueFunc(arr, uniId) {
-                    const res = new Map();
-                    return arr.filter(item => !res.has(item[uniId]) && res.set(item[uniId], 1));
-                  }
-                  let type = uniqueFunc(JSON.parse(res.result), 'YSLXID');
-                  let origin = JSON.parse(res.result);
-                  x.SELECTORDATA = {
-                    type,
-                    origin,
-                  };
-                  // if (type.length > 0)
-                  //   x.SELECTORVALUE = {
-                  //     type: type[0]?.YSLXID,
-                  //     typeObj: type[0],
-                  //     value: [],
-                  //   };
-                } else if (x.ZJLX === 'TREE-MULTIPLE') {
-                  x.SELECTORDATA = buildTree(JSON.parse(res.result));
-                } else if (x.ZJLX === 'RADIO') {
-                  // x.SELECTORVALUE = false;
-                } else if (x.ZJLX === 'RADIO-XMZT') {
-                  // x.SELECTORVALUE = false;
-                } else {
-                  x.SELECTORDATA = JSON.parse(res.result);
-                }
+          });
+          // .then(res => {
+          if (res?.success) {
+            if (x.TJBCXLX === 'YSXM') {
+              function uniqueFunc(arr, uniId) {
+                const res = new Map();
+                return arr.filter(item => !res.has(item[uniId]) && res.set(item[uniId], 1));
               }
-            })
-            .then(() => {
-              let finalObj = {
-                rptName: obj.BBMC,
-                authIds: obj.KJR?.split(';'),
-                columns,
-                filterData,
-                groupData: JSON.parse(obj.QDZSZHZD),
-                origin: {
-                  columns: JSON.parse(obj.QDZSBTZD),
-                  filterData: JSON.parse(obj.QDZSSXZD),
-                  groupData: JSON.parse(obj.QDZSZHZD),
-                },
+              let type = uniqueFunc(JSON.parse(res.result), 'YSLXID');
+              let origin = JSON.parse(res.result);
+              x.SELECTORDATA = {
+                type,
+                origin,
               };
-              setData(finalObj);
-              console.log('🚀 ~ file: index.js:169 ~ .then ~ finalObj:', finalObj);
-              getSQL({}, finalObj);
-            })
-            .catch(e => {
-              console.error('🚀', e);
-              message.error(x.TJBCXLX + '信息获取失败', 1);
-            });
-        } else {
-          //没有TJBCXLX的，比如金额输入框的
-          let finalObj = {
-            rptName: obj.BBMC,
-            authIds: obj.KJR?.split(';'),
-            columns,
-            filterData,
-            groupData: JSON.parse(obj.QDZSZHZD),
-            origin: {
-              columns: JSON.parse(obj.QDZSBTZD),
-              filterData: JSON.parse(obj.QDZSSXZD),
-              groupData: JSON.parse(obj.QDZSZHZD),
-            },
-          };
-          setData(finalObj);
-          getSQL({}, finalObj);
+              // if (type.length > 0)
+              //   x.SELECTORVALUE = {
+              //     type: type[0]?.YSLXID,
+              //     typeObj: type[0],
+              //     value: [],
+              //   };
+            } else if (x.ZJLX === 'TREE-MULTIPLE') {
+              x.SELECTORDATA = buildTree(JSON.parse(res.result));
+            } else if (x.ZJLX === 'RADIO') {
+              // x.SELECTORVALUE = false;
+            } else if (x.ZJLX === 'RADIO-XMZT') {
+              // x.SELECTORVALUE = false;
+            } else {
+              x.SELECTORDATA = JSON.parse(res.result);
+            }
+          }
+          // })
+          // .catch(e => {
+          //   console.error('🚀', e);
+          //   message.error(x.TJBCXLX + '信息获取失败', 1);
+          // });
+        } catch (error) {
+          console.error('🚀', error);
+          message.error(x.TJBCXLX + '信息获取失败', 1);
         }
-      });
-    } else {
-      //没有筛选条件的
-      let finalObj = {
-        rptName: obj.BBMC,
-        authIds: obj.KJR?.split(';'),
-        columns,
-        filterData,
+      }
+    });
+    let finalObj = {
+      rptName: obj.BBMC,
+      authIds: obj.KJR?.split(';'),
+      columns,
+      filterData,
+      groupData: JSON.parse(obj.QDZSZHZD),
+      origin: {
+        columns: JSON.parse(obj.QDZSBTZD),
+        filterData: JSON.parse(obj.QDZSSXZD),
         groupData: JSON.parse(obj.QDZSZHZD),
-        origin: {
-          columns: JSON.parse(obj.QDZSBTZD),
-          filterData: JSON.parse(obj.QDZSSXZD),
-          groupData: JSON.parse(obj.QDZSZHZD),
-        },
-      };
-      setData(finalObj);
-      getSQL({}, finalObj);
-    }
+      },
+    };
+    setData(finalObj);
+    getSQL({}, finalObj);
   };
 
   //表格数据 - 查询按钮

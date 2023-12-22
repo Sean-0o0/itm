@@ -87,16 +87,17 @@ export default function AttendanceStatistic(props) {
     QuerySelfDevProjWHstatistics(params)
       .then(res => {
         if (res?.success) {
-          setSummaryData(
+          const obj =
             (queryType === 'KQTJ'
               ? JSON.parse(res.statisticsResult)[0]
-              : JSON.parse(res.summaryResult)[0]) || {},
-          );
-          console.log(
-            (queryType === 'KQTJ'
-              ? JSON.parse(res.statisticsResult)[0]
-              : JSON.parse(res.summaryResult)[0]) || {},
-          );
+              : JSON.parse(res.summaryResult)[0]) || {};
+          setSummaryData(obj);
+          // console.log(
+          //   (queryType === 'KQTJ'
+          //     ? JSON.parse(res.statisticsResult)[0]
+          //     : JSON.parse(res.summaryResult)[0]) || {},
+          // );
+          setTableData(p => (p.length > 0 ? [...p, obj] : p));
           setSpinningData(p => ({
             ...p,
             spinning: false,

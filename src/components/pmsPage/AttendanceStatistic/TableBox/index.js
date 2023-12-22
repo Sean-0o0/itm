@@ -21,6 +21,7 @@ import { EncryptBase64 } from '../../../Common/Encrypt';
 import handleExport from './exportUtils.js';
 import axios from 'axios';
 import config from '../../../../utils/config';
+import ExportModal from './ExportModal';
 const { api } = config;
 const {
   pmsServices: { attendanceStatisticExportExcel },
@@ -31,9 +32,11 @@ const { MonthPicker } = DatePicker;
 
 const TableBox = props => {
   const { dataProps = {}, funcProps = {} } = props;
-  const { tableData = {}, filterData = {}, activeKey, summaryData = {} } = dataProps;
+  const { tableData = [], filterData = {}, activeKey, summaryData = {} } = dataProps;
+  console.log('🚀 ~ file: index.js:36 ~ TableBox ~ tableData:', tableData);
   const { setFilterData = () => {}, queryTableData = () => {} } = funcProps;
   const [columns, setColumns] = useState([]); //列配置
+  const [exportModalVisible, setExportModalVisible] = useState(false); //导出弹窗显隐
   const location = useLocation();
 
   useEffect(() => {
@@ -48,6 +51,28 @@ const TableBox = props => {
             align: 'center',
             fixed: 'left',
             ellipsis: true,
+            render: (txt, row, index) => {
+              if (index === tableData.length - 1) {
+                return {
+                  children: (
+                    <div
+                      style={{
+                        fontSize: '14px',
+                        fontFamily: 'PingFangSC-Regular, PingFang SC',
+                        fontWeight: 'bold',
+                        color: '#606266',
+                      }}
+                    >
+                      {row.NR}：
+                    </div>
+                  ),
+                  props: {
+                    colSpan: 2,
+                  },
+                };
+              }
+              return txt;
+            },
           },
           {
             title: '姓名',
@@ -56,7 +81,14 @@ const TableBox = props => {
             key: 'RYMC',
             ellipsis: true,
             fixed: 'left',
-            render: (txt, row) => {
+            render: (txt, row, index) => {
+              if (index === tableData.length - 1)
+                return {
+                  children: '',
+                  props: {
+                    colSpan: 0,
+                  },
+                };
               return (
                 <Link
                   style={{ color: '#3361ff' }}
@@ -92,6 +124,16 @@ const TableBox = props => {
                 width: 60,
                 align: 'center',
                 ellipsis: true,
+                render: (txt, row, index) => {
+                  if (index === tableData.length - 1)
+                    return {
+                      children: row['YF_' + x],
+                      props: {
+                        colSpan: 2,
+                      },
+                    };
+                  return txt;
+                },
               },
               {
                 title: '加班',
@@ -100,6 +142,16 @@ const TableBox = props => {
                 width: 60,
                 align: 'center',
                 ellipsis: true,
+                render: (txt, row, index) => {
+                  if (index === tableData.length - 1)
+                    return {
+                      children: '',
+                      props: {
+                        colSpan: 0,
+                      },
+                    };
+                  return txt;
+                },
               },
             ],
           })),
@@ -124,6 +176,28 @@ const TableBox = props => {
             ellipsis: true,
             align: 'center',
             fixed: 'left',
+            render: (txt, row, index) => {
+              if (index === tableData.length - 1) {
+                return {
+                  children: (
+                    <div
+                      style={{
+                        fontSize: '14px',
+                        fontFamily: 'PingFangSC-Regular, PingFang SC',
+                        fontWeight: 'bold',
+                        color: '#606266',
+                      }}
+                    >
+                      {row.NR}：
+                    </div>
+                  ),
+                  props: {
+                    colSpan: 2,
+                  },
+                };
+              }
+              return txt;
+            },
           },
           {
             title: '姓名',
@@ -132,7 +206,14 @@ const TableBox = props => {
             key: 'RYMC',
             ellipsis: true,
             fixed: 'left',
-            render: (txt, row) => {
+            render: (txt, row, index) => {
+              if (index === tableData.length - 1)
+              return {
+                children: '',
+                props: {
+                  colSpan: 0,
+                },
+              };
               return (
                 <Link
                   style={{ color: '#3361ff' }}
@@ -205,7 +286,7 @@ const TableBox = props => {
       }
     }
     return () => {};
-  }, [activeKey, JSON.stringify(filterData)]);
+  }, [activeKey, JSON.stringify(filterData), JSON.stringify(tableData)]);
 
   const getDate = (year, month) => {
     //month，0表示1月
@@ -360,27 +441,26 @@ const TableBox = props => {
           a.download = `考勤统计（${filterData.year.format('YYYY')}）.xlsx`;
           a.href = href;
           a.click();
-          //记录下载历史
-          this.inSertHistorySingle(wdid);
         })
         .catch(err => {
           console.error('🚀导出数据', err);
           message.error('导出数据获取失败', 1);
         });
     } else {
-      handleExport(
-        activeKey === 'KQTJ'
-          ? [...tableData, { ...summaryData, RYMC: summaryData.NR + '：' }]
-          : [...tableData, { ...summaryData, RYMC: summaryData.NR + '：' }],
-        [...columns],
-        `月度汇总（${filterData.month.format('YYYYMM')}）.xlsx`,
-      );
+      setExportModalVisible(true);
     }
   };
 
   return (
     <>
       <div className="table-box">
+        <ExportModal
+          visible={exportModalVisible}
+          setVisible={setExportModalVisible}
+          xmid={Number(filterData.prjId)}
+          defaultDate={filterData.month}
+          columns={[...columns.map(x => ({ ...x, title: String(x.title) }))]}
+        />
         <div className="filter-row">
           <div className="console-item">
             <div className="item-label">项目名称</div>
@@ -444,7 +524,7 @@ const TableBox = props => {
             pagination={false}
             bordered //记得注释
           />
-          {tableFooter(summaryData)}
+          {/* {tableFooter(summaryData)} */}
         </div>
       </div>
     </>
