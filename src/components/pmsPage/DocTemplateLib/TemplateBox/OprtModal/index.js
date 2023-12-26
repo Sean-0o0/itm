@@ -364,15 +364,14 @@ export default Form.create()(function OprtModal(props) {
       id,
       type,
       file: '[]',
-      operateTyp: 'DELETE',
+      operateType: 'DELETE',
     })
       .then(res => {
         if (res?.success) {
-          refresh();
-          setIsSpinning(false);
+          refresh({});
           message.success('操作成功', 1);
-          setModalData(false);
-          resetFields();
+          setIsSpinning(false);
+          onCancel();
         }
       })
       .catch(e => {
