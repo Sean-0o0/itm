@@ -16,7 +16,7 @@ import {
 } from 'antd';
 import moment from 'moment';
 import RJZZ from './RJZZ';
-import { FetchQueryOrganizationInfo } from '../../../../services/projectManage';
+import { FetchQueryOrganizationInfo, QueryDocTemplate } from '../../../../services/projectManage';
 import {
   EditIPRInfo,
   FetchQueryOwnerProjectList,
@@ -33,6 +33,7 @@ const { api } = config;
 const {
   pmsServices: { queryFileStream },
 } = api;
+
 
 export default connect(({ global = {} }) => ({
   userBasicInfo: global.userBasicInfo,
@@ -70,6 +71,9 @@ export default connect(({ global = {} }) => ({
     }); //下拉框数据
     const [upldError, setUpldError] = useState([]); //附件报红数据
 
+    /** 模板数据 */
+    const [docTemplateList, setDocTemplateList] = useState([])
+
     useEffect(() => {
       if (visible) {
         if (rowData !== undefined) {
@@ -87,7 +91,7 @@ export default connect(({ global = {} }) => ({
           getPrjNameData();
         }
       }
-      return () => {};
+      return () => { };
     }, [visible, rowData]);
 
     //项目名称下拉数据
@@ -248,7 +252,7 @@ export default connect(({ global = {} }) => ({
           fileArray.map((file, index) => {
             return new Promise((resolve, reject) => {
               const reader = new FileReader();
-              reader.onload = function() {
+              reader.onload = function () {
                 const base64 = reader.result.split(',')[1];
                 const fileName = file.name;
                 resolve({
@@ -260,7 +264,7 @@ export default connect(({ global = {} }) => ({
                   url: '',
                 });
               };
-              reader.onerror = function(error) {
+              reader.onerror = function (error) {
                 reject(error);
               };
               reader.readAsDataURL(file.blob);
@@ -290,6 +294,37 @@ export default connect(({ global = {} }) => ({
         resArr.map(x => ({ name: JSON.parse(x?.config?.data || '{}').title, blob: x.data })),
       );
     };
+
+
+    /** 下载申报材料示例 */
+    const QueryDocTemplateHandle = async () => {
+      setIsSpinning(true);
+      const res = await QueryDocTemplate({
+        fileType: 0,
+        fileTypeName: type === 'RJZZ' ? '软件著作权申报材料示例' : '发明专利申报材料示例'
+      })
+      if (res.code === 1) {
+        const obj = JSON.parse(res.result)
+        const { FJ: fileList } = obj[0]
+        setDocTemplateList(fileList)
+      }
+      setIsSpinning(false);
+    }
+
+    useEffect(() => {
+      QueryDocTemplateHandle().catch((err) => {
+        message.error(`查询文档示例失败${err}`, 2)
+        setIsSpinning(false);
+      })
+    }, [type])
+
+    const downloadHandle = (url) => {
+      const iframe = document.createElement("iframe");
+      iframe.style.display = "none"; // 不可见
+      iframe.style.height = "0"; // 高度为0
+      iframe.src = url; // 下载地址
+      document.body.appendChild(iframe); // 必须有，iframe挂在到dom树触发请求
+    }
 
     //单选普通下拉框
     const getSingleSelector = ({
@@ -374,9 +409,12 @@ export default connect(({ global = {} }) => ({
       wrapperCol,
       maxLength,
       disabled,
+      colSpan,
+      inputWidth,
+      inputHeight
     ) => {
       return (
-        <Col span={12}>
+        <Col span={colSpan ?? 12}>
           <Form.Item label={label} labelCol={{ span: labelCol }} wrapperCol={{ span: wrapperCol }}>
             {getFieldDecorator(dataIndex, {
               initialValue,
@@ -390,7 +428,7 @@ export default connect(({ global = {} }) => ({
               <Input
                 placeholder={disabled ? '待定' : '请输入' + label}
                 allowClear
-                style={{ width: '100%' }}
+                style={{ width: `${inputWidth ?? 100}%`, height: `${inputHeight ?? ''}px` }}
                 maxLength={maxLength}
                 disabled={disabled}
               />,
@@ -556,6 +594,68 @@ export default connect(({ global = {} }) => ({
       );
     };
 
+    /** 灰色背景div文字 */
+    const getGrayDiv = (colSpan, formLabel, labelCol, wrapperCol, content, isLabelWrap) => {
+      return (
+        <Col span={colSpan} className={isLabelWrap ? 'GrayDivBox_LabelWrap' : ''}>
+          <Form.Item
+            labelAlign='right'
+            label={formLabel}
+            labelCol={{ span: labelCol }}
+            wrapperCol={{ span: wrapperCol }}
+          >
+            <div
+              style={{
+                width: '100%', minHeight: 32, marginTop: 5, lineHeight: '22px', padding: '4px 10px',
+                backgroundColor: 'rgb(245, 245, 245)', border: '1px solid rgb(217, 217, 217)',
+                borderRadius: 4, fontSize: 14
+              }}>
+              {content}
+            </div>
+          </Form.Item>
+        </Col>
+      );
+    };
+
+    //自定义下载框
+    const getDownloadBox = (
+      colSpan,
+      label,
+      labelCol,
+      wrapperCol,
+      boxMarginLeft
+    ) => {
+      return (
+        <div className='intelProperty_getDownload' style={{ marginLeft: boxMarginLeft ? boxMarginLeft : '' }}>
+          <Col span={colSpan}>
+            <Form.Item label={label} labelCol={{ span: labelCol }} wrapperCol={{ span: wrapperCol }}>
+              <div className='intelProperty_getDownloadBox'>
+                {docTemplateList.length !== 0 &&
+                  docTemplateList.map((item) => {
+                    return (
+                      <div className='getDownloadBoxitem' >
+                        <div className='leftBox'>
+                          <img className='leftBox_wordIcon' src={require('../../../../assets/show/wordIcon.png')}></img>
+                        </div>
+
+                        <div className='rightBox'>
+                          <a className='rightBox_content' href={item.url} title={item.fileName} download>{item.fileName}</a>
+                          <Icon className='rightBox_btn' type="download" onClick={() => {
+                            downloadHandle(item.url)
+                          }} />
+                        </div>
+                      </div>
+                    )
+                  })
+                }
+              </div>
+            </Form.Item>
+          </Col>
+        </div >
+      );
+    };
+
+
     //提交数据
     const onOk = () => {
       validateFields(async (err, values) => {
@@ -574,13 +674,13 @@ export default connect(({ global = {} }) => ({
                 return new Promise((resolve, reject) => {
                   const reader = new FileReader();
 
-                  reader.onload = function() {
+                  reader.onload = function () {
                     const base64 = reader.result.split(',')[1];
                     const fileName = file.name;
                     resolve({ name: fileName, data: base64 });
                   };
 
-                  reader.onerror = function(error) {
+                  reader.onerror = function (error) {
                     reject(error);
                   };
 
@@ -677,6 +777,9 @@ export default connect(({ global = {} }) => ({
         case 'QYBZ':
           prefix = '企业标准';
           break;
+        case 'RJZZ':
+          prefix = '软件著作权';
+          break;
         default:
           prefix = '软件著作权';
           break;
@@ -705,6 +808,8 @@ export default connect(({ global = {} }) => ({
                 getSingleTreeSelector,
                 getInputDisabled,
                 getDatePicker,
+                getDownloadBox,
+                getGrayDiv
               }}
               dataProps={{
                 rowData,
@@ -718,6 +823,7 @@ export default connect(({ global = {} }) => ({
                 isGLY,
               }}
               funcProps={{ setUpldData, setIsTurnRed, getFieldValue }}
+              dictionary={dictionary}
             />
           );
         case 'HYBZ':
@@ -780,6 +886,8 @@ export default connect(({ global = {} }) => ({
                 getSingleTreeSelector,
                 getInputDisabled,
                 getDatePicker,
+                getDownloadBox,
+                getGrayDiv
               }}
               dataProps={{
                 rowData,
@@ -792,6 +900,7 @@ export default connect(({ global = {} }) => ({
                 isGLY,
               }}
               funcProps={{ setUpldData, setIsTurnRed, getFieldValue }}
+              dictionary={dictionary}
             />
           );
       }
@@ -803,7 +912,9 @@ export default connect(({ global = {} }) => ({
           <strong>{getTitle(type, oprType)}</strong>
         </div>
         <Spin spinning={isSpinning} tip="加载中">
-          <Form className="content-box" style={type === 'QYBZ' ? { height: 260 } : {}}>
+          <Form className="content-box" style={type === 'QYBZ' ? { height: 260 }
+            : type === 'RJZZ' ? { height: 450 }
+              : type === 'FMZL' ? { height: 450 } : {}}>
             {getContent(type)}
           </Form>
         </Spin>

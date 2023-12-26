@@ -49,7 +49,7 @@ export default function ShowAllModal(props) {
       }));
       setDate([]);
     }
-    return () => {};
+    return () => { };
   }, [visible]);
 
   //列配置
@@ -60,7 +60,7 @@ export default function ShowAllModal(props) {
       key: 'txnr',
       ellipsis: false,
       render: (txt, row) => {
-        const handleClick = () => {
+        const handleClick = async () => {
           if (row.xxlx === '4') {
             if (row.gqts !== '') {
               message.warn(JSON.parse(row.gqts).tsnr, 1);
@@ -188,7 +188,7 @@ export default function ShowAllModal(props) {
         setVisible={v => setHjryData(p => ({ ...p, visible: v }))}
         type={hjryData.type}
         data={hjryData}
-        refresh={() => {}}
+        refresh={() => { }}
         isGLY={isGLY}
       />
       <Spin spinning={tableData.loading} tip="加载中">
@@ -214,7 +214,7 @@ export default function ShowAllModal(props) {
               total: tableData.total,
             }}
             scroll={{ y: 298 }}
-            // bordered
+          // bordered
           />
         </div>
       </Spin>

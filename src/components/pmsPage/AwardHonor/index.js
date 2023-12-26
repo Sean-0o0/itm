@@ -1,4 +1,4 @@
-import React, { useLayoutEffect, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useState } from 'react';
 import { Button, message, Spin, Tabs } from 'antd';
 import moment from 'moment';
 import { QueryAwardAndHonorList, QueryIPRList, QueryUserRole } from '../../../services/pmsServices';
@@ -27,6 +27,7 @@ export default function AwardHonor(props) {
     total: 0,
     sort: '',
   });
+
   const [filterData, setFilterData] = useState({
     awardName: undefined,
     awardLevel: undefined,
@@ -64,7 +65,7 @@ export default function AwardHonor(props) {
       queryTableData({});
       getUserRole();
     }
-    return () => {};
+    return () => { };
   }, [params]);
 
   //获取用户角色

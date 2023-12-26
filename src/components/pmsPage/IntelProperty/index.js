@@ -63,7 +63,7 @@ export default function IntelProperty(props) {
       queryTableData({});
       getUserRole();
     }
-    return () => {};
+    return () => { };
   }, [params]);
 
   //获取用户角色

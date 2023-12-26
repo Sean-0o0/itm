@@ -34,15 +34,16 @@ const TableBox = props => {
     subTableData,
   } = dataProps;
   const {
-    setFilterData = () => {},
-    queryTableData = () => {},
-    setSpinningData = () => {},
-    setTableData = () => {},
+    setFilterData = () => { },
+    queryTableData = () => { },
+    setSpinningData = () => { },
+    setTableData = () => { },
     allowEdit,
     setExpandedRowKeys,
     setSubTableData,
     getSubTableData,
   } = funcProps;
+
   const [modalData, setModalData] = useState({
     visible: false, //显隐
     oprType: 'ADD',
@@ -51,6 +52,7 @@ const TableBox = props => {
     fromPrjDetail: false, //入口是否在项目详情
     parentRow: undefined, //申报行的父行数据{}
   }); //操作弹窗
+
   const location = useLocation();
 
   //列配置
@@ -363,38 +365,38 @@ const TableBox = props => {
       },
       activeKey === 'KJJX'
         ? {
-            title: '获奖情况',
-            dataIndex: 'HJQK',
-            key: 'HJQK',
-            width: '7%',
-            ellipsis: true,
-            render: txt => getNote(HJQK, txt),
-          }
+          title: '获奖情况',
+          dataIndex: 'HJQK',
+          key: 'HJQK',
+          width: '7%',
+          ellipsis: true,
+          render: txt => getNote(HJQK, txt),
+        }
         : {
-            title: '课题状态',
-            dataIndex: 'KTZT',
-            key: 'KTZT',
-            width: '7%',
-            ellipsis: true,
-            render: txt => getNote(KTZT, txt),
-          },
+          title: '课题状态',
+          dataIndex: 'KTZT',
+          key: 'KTZT',
+          width: '7%',
+          ellipsis: true,
+          render: txt => getNote(KTZT, txt),
+        },
       activeKey === 'KJJX'
         ? {
-            title: '获奖时间',
-            dataIndex: 'HJSJ',
-            key: 'HJSJ',
-            width: '10%',
-            ellipsis: true,
-            render: txt => (txt ? moment(String(txt)).format('YYYY-MM-DD') : ''),
-          }
+          title: '获奖时间',
+          dataIndex: 'HJSJ',
+          key: 'HJSJ',
+          width: '10%',
+          ellipsis: true,
+          render: txt => (txt ? moment(String(txt)).format('YYYY-MM-DD') : ''),
+        }
         : {
-            title: '结题时间',
-            dataIndex: 'JTSJ',
-            key: 'JTSJ',
-            width: '10%',
-            ellipsis: true,
-            render: txt => (txt ? moment(String(txt)).format('YYYY-MM-DD') : ''),
-          },
+          title: '结题时间',
+          dataIndex: 'JTSJ',
+          key: 'JTSJ',
+          width: '10%',
+          ellipsis: true,
+          render: txt => (txt ? moment(String(txt)).format('YYYY-MM-DD') : ''),
+        },
       {
         title: '修改时间',
         dataIndex: 'XGSJ',
@@ -592,7 +594,7 @@ const TableBox = props => {
       SBJZRQ: turnString(row.SBJZRQ) ? moment(turnString(row.SBJZRQ)) : undefined,
       FJ: row.CKZL,
     };
-    console.log('🚀 ~ file: index.js:252 ~ handleEdit ~ rowData:', rowData);
+    // console.log('🚀 ~ file: index.js:252 ~ handleEdit ~ rowData:', rowData);
     setModalData({
       visible: true,
       oprType: 'UPDATE',
@@ -631,7 +633,7 @@ const TableBox = props => {
       JTSJ: turnString(row.JTSJ) ? moment(turnString(row.JTSJ)) : undefined,
       FJ: row.FJ,
     };
-    console.log('🚀 ~ file: index.js:252 ~ handleEdit ~ rowData:', rowData);
+    // console.log('🚀 ~ file: index.js:252 ~ handleEdit ~ rowData:', rowData);
     setModalData({
       visible: true,
       oprType: 'UPDATE',
@@ -734,6 +736,7 @@ const TableBox = props => {
           data={modalData}
           refresh={handleModalRefresh}
           isGLY={isGLY}
+          tableData2={{ asdasd: 'asdas' }}
         />
         <div className="filter-row">
           <div className="console-item">

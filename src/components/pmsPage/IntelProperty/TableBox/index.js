@@ -25,9 +25,9 @@ const TableBox = props => {
     HYBZLX = [],
   } = dataProps;
   const {
-    setFilterData = () => {},
-    queryTableData = () => {},
-    setSpinningData = () => {},
+    setFilterData = () => { },
+    queryTableData = () => { },
+    setSpinningData = () => { },
     allowEdit,
   } = funcProps;
   const [modalData, setModalData] = useState({

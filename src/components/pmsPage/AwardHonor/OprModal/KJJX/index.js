@@ -20,7 +20,7 @@ export default function KJJX(props) {
           labelCol,
           wrapperCol,
           sltArr: JXJB,
-          onChange: () => {},
+          onChange: () => { },
           valueField: 'ibm',
           titleField: 'note',
         })}
