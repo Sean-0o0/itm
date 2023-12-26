@@ -61,7 +61,7 @@ export default function KJJXSB(props) {
     return formatDate
   }
 
-  const searchSollapseInfo = async () => {
+  const searchCollapseInfo = async () => {
     const params = {
       "awardName": parentRow.JXMC,
       "tab": "KJJX",
@@ -84,7 +84,7 @@ export default function KJJXSB(props) {
 
   useEffect(() => {
     if (!parentRow.JXJB || !parentRow.FQDW || !parentRow.SBJZRQ || !parentRow.FQDW | !parentRow.SBJZRQ) {
-      searchSollapseInfo().catch((err) => {
+      searchCollapseInfo().catch((err) => {
         message.error(`查询科技奖项详情信息失败${err}`, 2)
         setIsLoading(false)
       })
@@ -92,7 +92,7 @@ export default function KJJXSB(props) {
   }, [])
 
   return (
-    <Spin spinning={isLoading} tip='加载中' >
+    <Spin spinning={isLoading} indicator={<></>} >
 
       <Collapse
         className='AwardHonor-Collapse'

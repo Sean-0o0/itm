@@ -16,11 +16,12 @@ import {
 } from 'antd';
 import moment from 'moment';
 import RJZZ from './RJZZ';
-import { FetchQueryOrganizationInfo, QueryDocTemplate } from '../../../../services/projectManage';
+import { FetchQueryOrganizationInfo, } from '../../../../services/projectManage';
 import {
   EditIPRInfo,
   FetchQueryOwnerProjectList,
   QueryMemberInfo,
+  QueryDocTemplate
 } from '../../../../services/pmsServices';
 import { connect } from 'dva';
 import FMZL from './FMZL';
@@ -654,6 +655,7 @@ export default connect(({ global = {} }) => ({
         </div >
       );
     };
+
 
 
     //提交数据

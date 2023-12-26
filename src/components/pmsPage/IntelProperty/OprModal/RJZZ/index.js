@@ -31,14 +31,13 @@ export default function RJZZ(props) {
 
   return (
     <Fragment>
-
-      <div className='IntelProperty-newAddPane' style={{ marginLeft: '-3px' }}>
-        {getGrayDiv(24, '申报说明', 3, 21, props.dictionary.ZSCQSBSM[0].note)}
-
-        {getDownloadBox(24, '示例材料', 3, 21,)}
-      </div>
-
       <Row gutter={32}>
+        <div className='IntelProperty-newAddPane' style={{ marginLeft: '-3px' }}>
+          {getGrayDiv(24, '申报说明', 3, 21, props.dictionary.ZSCQSBSM[0].note)}
+
+          {getDownloadBox(24, '示例材料', 3, 21,)}
+        </div>
+
         {fromPrjDetail !== false //便是入口为项目详情，这时值为{xmmc,xmid}
           ? getInputDisabled({
             label: '项目名称',

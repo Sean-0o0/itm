@@ -15,12 +15,13 @@ import {
   Tooltip,
 } from 'antd';
 import moment from 'moment';
-import { FetchQueryOrganizationInfo, QueryDocTemplate } from '../../../../services/projectManage';
+import { FetchQueryOrganizationInfo } from '../../../../services/projectManage';
 import {
   FetchQueryOwnerProjectList,
   OperateAwardAndHonor,
   QueryAwardAndHonorList,
   QueryMemberInfo,
+  QueryDocTemplate
 } from '../../../../services/pmsServices';
 import { connect } from 'dva';
 import axios from 'axios';

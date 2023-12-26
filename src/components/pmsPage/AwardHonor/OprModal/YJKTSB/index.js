@@ -52,7 +52,7 @@ export default function YJKTSB(props) {
     return formatDate
   }
 
-  const searchSollapseInfo = async () => {
+  const searchCollapseInfo = async () => {
     const params = {
       "awardName": parentRow.JXMC,
       "tab": "YJKT",
@@ -75,7 +75,7 @@ export default function YJKTSB(props) {
 
   useEffect(() => {
     if (!parentRow.JXJB || !parentRow.FQDW || !parentRow.SBJZRQ || !parentRow.FQDW | !parentRow.SBJZRQ) {
-      searchSollapseInfo().catch((err) => {
+      searchCollapseInfo().catch((err) => {
         message.error(`查询研究课题详情信息失败${err}`, 2)
         setIsLoading(false)
       })
@@ -84,7 +84,7 @@ export default function YJKTSB(props) {
 
 
   return (
-    <Spin spinning={isLoading} tip='加载中'>
+    <Spin spinning={isLoading} indicator={<></>}>
       <Collapse
         className='AwardHonor-Collapse'
         bordered={false}

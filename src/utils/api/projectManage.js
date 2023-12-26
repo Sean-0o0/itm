@@ -32,10 +32,4 @@ export default [
   { code: '', key: 'insertSubProjects', url: '/projectManage/insertSubProjects', dis: '集合项目-新增子项目' },
   { code: '', key: 'querySubProjectsInfo', url: '/projectManage/querySubProjectsInfo', dis: '集合项目-查询子项目' },
   { code: '', key: 'queryHWTenderFile', url: '/projectManage/queryHWTenderFile', dis: '硬件项目-查询硬件标段信息的附件' },
-  {
-    code: '',
-    key: 'queryDocTemplate',
-    url: '/projectManage/queryDocTemplate',
-    dis: '查询文档模板',
-  },
 ];

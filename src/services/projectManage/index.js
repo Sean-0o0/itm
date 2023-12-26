@@ -3,7 +3,6 @@ import config from '../../utils/config';
 
 const { api } = config;
 const { projectManage: {
-  queryDocTemplate,
   querySoftwareList,
   queryProjectLabel,
   queryOrganizationInfo,
@@ -260,15 +259,5 @@ export async function FetchQueryHWTenderFile(payload, configObj) {
     data: payload,
   };
   return request(option, configObj);
-}
-
-// 查询文档模板
-export async function QueryDocTemplate(payload) {
-  const option = {
-    url: queryDocTemplate,
-    method: 'post',
-    data: payload,
-  };
-  return request(option);
 }
 

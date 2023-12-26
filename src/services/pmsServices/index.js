@@ -4,6 +4,7 @@ import config from '../../utils/config';
 const { api } = config;
 const {
   pmsServices: {
+    queryDocTemplate,
     queryLiftcycleMilestone,
     queryLifecycleStuff,
     queryOwnerWorkflow,
@@ -1743,3 +1744,14 @@ export async function QueryDepartment(payload) {
   };
   return request(option);
 }
+
+// 查询文档模板
+export async function QueryDocTemplate(payload) {
+  const option = {
+    url: queryDocTemplate,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+

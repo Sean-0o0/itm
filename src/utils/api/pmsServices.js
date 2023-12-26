@@ -926,4 +926,10 @@ export default [
     url: '/EKB/v1/queryDepartment',
     dis: '查询付款流程分摊明细 易快报 部门数据',
   },
+  {
+    code: '',
+    key: 'queryDocTemplate',
+    url: '/projectManage/queryDocTemplate',
+    dis: '查询文档模板',
+  },
 ];
