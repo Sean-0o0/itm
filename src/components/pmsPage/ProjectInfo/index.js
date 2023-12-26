@@ -15,17 +15,17 @@ export default function ProjectInfo(props) {
   const topConsoleRef = useRef(null);
   const [queryType, setQueryType] = useState('ALL'); //
   const [prjMnger, setPrjMnger] = useState(undefined); //项目经理
-  const [isComplete, setIsComplete] = useState(false); //
+  const [isComplete, setIsComplete] = useState(false);
 
   useEffect(() => {
     getTableData({});
-    return () => {};
+    return () => { };
   }, []);
 
   useEffect(() => {
     setCurPage(1);
     setCurPageSize(20);
-    return () => {};
+    return () => { };
   }, [cxlx]);
 
   useEffect(() => {
@@ -35,7 +35,7 @@ export default function ProjectInfo(props) {
       setQueryType(cxlx);
       setPrjMnger(String(prjManager));
     }
-    return () => {};
+    return () => { };
   }, [isComplete, prjManager, cxlx]);
 
   //获取表格数据

@@ -15,7 +15,7 @@ import {
   Tooltip,
 } from 'antd';
 import moment from 'moment';
-import { FetchQueryOrganizationInfo } from '../../../../services/projectManage';
+import { FetchQueryOrganizationInfo, } from '../../../../services/projectManage';
 import {
   FetchQueryOwnerProjectList,
   OperateAwardAndHonor,

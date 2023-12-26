@@ -79,7 +79,9 @@ export default function InfoTable(props) {
 
   //表格操作后更新数据
   const handleTableChange = (pagination, filters, sorter, extra) => {
-    console.log('handleTableChange', pagination, filters, sorter, extra);
+
+    // console.log('    yaer,    yaer,', year)
+
     const { current = 1, pageSize = 20 } = pagination;
     if (sorter.order !== undefined) {
       if (sorter.order === 'ascend') {
@@ -108,6 +110,16 @@ export default function InfoTable(props) {
 
   //列配置
   const columns = [
+    {
+      title: '年份',
+      dataIndex: 'year',
+      width: '5%',
+      key: 'year',
+      ellipsis: true,
+      render: text => (
+        <span style={{ cursor: 'default' }}>{text}</span>
+      ),
+    },
     {
       title: '项目名称',
       dataIndex: 'projectName',
@@ -214,7 +226,7 @@ export default function InfoTable(props) {
     {
       title: '应用部门',
       dataIndex: 'orgs',
-      width: '15%',
+      width: '14%',
       key: 'orgs',
       ellipsis: true,
       render: text => (
@@ -299,7 +311,7 @@ export default function InfoTable(props) {
       },
     },
     {
-      title: '项目状态',
+      title: '状态',
       dataIndex: 'projectStatus',
       key: 'projectStatus',
       width: '7%',
@@ -379,7 +391,7 @@ export default function InfoTable(props) {
             showTotal: t => `共 ${total} 条数据`,
             total: total,
           }}
-          // bordered
+        // bordered
         />
       </div>
     </div>

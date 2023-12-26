@@ -20,7 +20,7 @@ export default function YJKTSB(props) {
 
   const [collapseInfo, setCollapseInfo] = useState({})
 
-  // 使用父组件的setIsSpinning会被状态重置
+  // 使用父组件的setIsSpinning会被状态重置(竞态)；要用也可以，监听父组件isSpining所改变的变量，!isSpining的情况才发新的async请求
   const [isLoading, setIsLoading] = useState(false)
 
   const {

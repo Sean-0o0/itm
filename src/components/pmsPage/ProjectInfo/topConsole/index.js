@@ -1,10 +1,9 @@
-import React, { useEffect, useState, forwardRef, useImperativeHandle } from 'react';
-import { Select, Button, Input, TreeSelect, Row, Col, Icon, message } from 'antd';
+import React, { useEffect, useState, forwardRef, useImperativeHandle, useMemo } from 'react';
+import { Select, Button, Input, TreeSelect, Row, Col, Icon, message, DatePicker } from 'antd';
 import { QueryProjectListPara, QueryProjectListInfo } from '../../../../services/pmsServices';
 import TreeUtils from '../../../../utils/treeUtils';
-import { set } from 'store';
+import moment from 'moment';
 import { setParentSelectableFalse } from '../../../../utils/pmsPublicUtils';
-const InputGroup = Input.Group;
 const { Option } = Select;
 
 export default forwardRef(function TopConsole(props, ref) {
@@ -19,6 +18,8 @@ export default forwardRef(function TopConsole(props, ref) {
   const { XMLX } = props.dictionary; //
   const [prjTypeData, setPrjTypeData] = useState([]); //项目类型
   //查询的值
+  const [year, setYear] = useState(moment()) //年
+  const [isYearOpen, setIsYearOpen] = useState(false) // 是否打开年面板
   const [budget, setBudget] = useState(undefined); //关联预算
   const [budgetValue, setBudgetValue] = useState(undefined); //关联预算-为了重置
   const [budgetType, setBudgetType] = useState('1'); //关联预算类型id
@@ -51,7 +52,7 @@ export default forwardRef(function TopConsole(props, ref) {
 
   useEffect(() => {
     getFilterData();
-    return () => {};
+    return () => { };
   }, [projectManager]);
 
   useImperativeHandle(
@@ -74,7 +75,7 @@ export default forwardRef(function TopConsole(props, ref) {
       gtAmount,
       ltAmount,
       minAmount,
-      maxAmount,
+      maxAmount
     ],
   );
 
@@ -235,6 +236,12 @@ export default forwardRef(function TopConsole(props, ref) {
       });
   };
 
+  // useEffect(() => {
+  //   console.log('yearyearyear111', year)
+
+
+  // }, [year])
+
   //查询按钮
   const handleSearch = (
     current = 1,
@@ -247,6 +254,7 @@ export default forwardRef(function TopConsole(props, ref) {
     setCurPage(current);
     setCurPageSize(pageSize);
     setQueryType('ALL');
+    setYear(year)
     let params = {
       current,
       pageSize,
@@ -254,7 +262,10 @@ export default forwardRef(function TopConsole(props, ref) {
       sort,
       total: -1,
       queryType,
+      year: moment.isMoment(year) ? new Date(year.valueOf()).getFullYear() : ''
     };
+    // console.log('111',, '2222', year ? new Date(year.valueOf()).getFullYear() : '')
+
     if (budget !== undefined && budget !== '') {
       params.budgetProject = Number(budget);
       params.budgetType = Number(budgetType);
@@ -312,7 +323,7 @@ export default forwardRef(function TopConsole(props, ref) {
       })
       .catch(e => {
         console.error('handleSearch', e);
-        message.error('查询失败', 1);
+        message.error('查询项目列表失败', 1);
         setTableLoading(false);
       });
   };
@@ -331,6 +342,7 @@ export default forwardRef(function TopConsole(props, ref) {
     setMinAmount(undefined); //项目金额，最小
     setMaxAmount(undefined); //项目金额，最大
     setLtAmount(undefined); //项目金额，小于
+    setYear(undefined); //年
   };
 
   // onChange-start
@@ -404,9 +416,35 @@ export default forwardRef(function TopConsole(props, ref) {
   };
   // onChange-end
 
+
   return (
     <div className="top-console">
+
+      {/* 第一行 */}
       <div className="item-box">
+        <div className="console-item">
+          <div className="item-label">项目年份</div>
+          <DatePicker
+            mode="year"
+            className="item-selector"
+            value={year}
+            open={isYearOpen}
+            placeholder="请选择年份"
+            format="YYYY"
+            allowClear
+            onChange={(date, dateString) => {
+              setYear(date)
+            }}
+            onPanelChange={(value, mode) => {
+              setYear(value)
+              setIsYearOpen(false)
+            }}
+            onOpenChange={(futureStatus) => {
+              setIsYearOpen(futureStatus)
+            }}
+          />
+        </div>
+
         <div className="console-item">
           <div className="item-label">项目经理</div>
           <Select
@@ -428,6 +466,7 @@ export default forwardRef(function TopConsole(props, ref) {
             ))}
           </Select>
         </div>
+
         <div className="console-item">
           <div className="item-label">项目名称</div>
           <Select
@@ -449,6 +488,21 @@ export default forwardRef(function TopConsole(props, ref) {
             ))}
           </Select>
         </div>
+
+        <Button
+          className="btn-search"
+          type="primary"
+          onClick={() => handleSearch(curPage, curPageSize, prjMnger, 'ALL')}
+        >
+          查询
+        </Button>
+        <Button className="btn-reset" onClick={handleReset}>
+          重置
+        </Button>
+      </div>
+
+      {/* 第二行 */}
+      <div className="item-box">
         <div className="console-item">
           <div className="item-label">项目类型</div>
           <TreeSelect
@@ -466,18 +520,7 @@ export default forwardRef(function TopConsole(props, ref) {
             treeDefaultExpandAll
           />
         </div>
-        <Button
-          className="btn-search"
-          type="primary"
-          onClick={() => handleSearch(curPage, curPageSize, prjMnger, 'ALL')}
-        >
-          查询
-        </Button>
-        <Button className="btn-reset" onClick={handleReset}>
-          重置
-        </Button>
-      </div>
-      <div className="item-box">
+
         <div className="console-item">
           <div className="item-label">项目标签</div>
           <TreeSelect
@@ -512,6 +555,7 @@ export default forwardRef(function TopConsole(props, ref) {
             }}
           />
         </div>
+
         <div className="console-item">
           <div className="item-label">应用部门</div>
           <TreeSelect
@@ -543,21 +587,7 @@ export default forwardRef(function TopConsole(props, ref) {
             className={'label-selector-arrow' + (orgOpen ? ' selector-rotate' : '')}
           />
         </div>
-        <div className="console-item">
-          <div className="item-label">关联预算</div>
-          <TreeSelect
-            allowClear
-            className="item-selector"
-            showSearch
-            treeNodeFilterProp="title"
-            dropdownClassName="newproject-treeselect"
-            dropdownStyle={{ maxHeight: 300, overflow: 'auto' }}
-            treeData={budgetData}
-            placeholder="请选择"
-            onChange={handleBudgetChange}
-            value={budgetValue}
-          />
-        </div>
+
         {filterFold && (
           <div className="filter-unfold" onClick={() => setFilterFold(false)}>
             更多
@@ -565,8 +595,27 @@ export default forwardRef(function TopConsole(props, ref) {
           </div>
         )}
       </div>
+
+
+      {/* 第三行 */}
       {!filterFold && (
         <div className="item-box">
+          <div className="console-item">
+            <div className="item-label">关联预算</div>
+            <TreeSelect
+              allowClear
+              className="item-selector"
+              showSearch
+              treeNodeFilterProp="title"
+              dropdownClassName="newproject-treeselect"
+              dropdownStyle={{ maxHeight: 300, overflow: 'auto' }}
+              treeData={budgetData}
+              placeholder="请选择"
+              onChange={handleBudgetChange}
+              value={budgetValue}
+            />
+          </div>
+
           <div className="console-last-item">
             <div className="item-txt">项目金额</div>
             <div className="item-compact">
@@ -619,12 +668,18 @@ export default forwardRef(function TopConsole(props, ref) {
               )}
             </div>
           </div>
+
+
           <div className="filter-unfold" onClick={() => setFilterFold(true)}>
             收起
             <i className="iconfont icon-up" />
           </div>
+
         </div>
       )}
+
+
+
     </div>
   );
 });
