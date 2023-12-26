@@ -932,4 +932,58 @@ export default [
     url: '/projectManage/queryDocTemplate',
     dis: '查询文档模板',
   },
+  {
+    code: '',
+    key: 'fileTypeCheck',
+    url: '/projectManage/fileTypeCheck',
+    dis: '文件类型判断',
+  },
+  {
+    code: '',
+    key: 'queryEmployeeAppraiseList',
+    url: '/projectManage/queryEmployeeAppraiseList',
+    dis: '查询人员评价列表',
+  },
+  {
+    code: '',
+    key: 'operateEmployeeAppraise',
+    url: '/projectManage/operateEmployeeAppraise',
+    dis: '编辑人员评价',
+  },
+  {
+    code: '',
+    key: 'queryProjectAppraiseSwitchList',
+    url: '/projectManage/queryProjectAppraiseSwitchList',
+    dis: '查询评价开关页面的项目信息',
+  },
+  {
+    code: '',
+    key: 'generateBudgetCarryoverInfo',
+    url: '/projectManage/generateBudgetCarryoverInfo',
+    dis: '生成预算结转信息',
+  },
+  {
+    code: '',
+    key: 'operateBudgetCarryoverInfo',
+    url: '/projectManage/operateBudgetCarryoverInfo',
+    dis: '项目预算结转',
+  },
+  {
+    code: '',
+    key: 'operateCapitalBeginYearBudgetInfo',
+    url: '/projectManage/operateCapitalBeginYearBudgetInfo',
+    dis: '编辑资本性年初预算信息',
+  },
+  {
+    code: '',
+    key: 'queryProjectBudgetCarryoverInfo',
+    url: '/projectManage/queryProjectBudgetCarryoverInfo',
+    dis: '查询项目预算结转信息',
+  },
+  {
+    code: '',
+    key: 'queryCapitalBudgetCarryoverInfo',
+    url: '/projectManage/queryCapitalBudgetCarryoverInfo',
+    dis: '查询资本性年初预算结转信息',
+  },
 ];

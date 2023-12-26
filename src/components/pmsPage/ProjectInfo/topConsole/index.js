@@ -291,7 +291,7 @@ export default forwardRef(function TopConsole(props, ref) {
       }
     }
     if (org.length !== 0) {
-      params.orgId = org.join(';|;');
+      params.orgId = org.map(x => x.value).join(';|;');
     }
     // if (org !== undefined && org !== '') {
     //   params.orgId = Number(org);
@@ -491,7 +491,7 @@ export default forwardRef(function TopConsole(props, ref) {
             maxTagPlaceholder={extraArr => {
               return `等${extraArr.length + 2}个`;
             }}
-            showCheckedStrategy={TreeSelect.SHOW_PARENT}
+            showCheckedStrategy={TreeSelect.SHOW_CHILD}
             treeNodeFilterProp="title"
             dropdownClassName="newproject-treeselect"
             dropdownStyle={{ maxHeight: 300, overflow: 'auto' }}
@@ -525,7 +525,8 @@ export default forwardRef(function TopConsole(props, ref) {
             maxTagPlaceholder={extraArr => {
               return `等${extraArr.length + 2}个`;
             }}
-            showCheckedStrategy={TreeSelect.SHOW_PARENT}
+            showCheckedStrategy={TreeSelect.SHOW_ALL}
+            treeCheckStrictly
             treeNodeFilterProp="title"
             dropdownClassName="newproject-treeselect"
             dropdownStyle={{ maxHeight: 300, overflow: 'auto' }}

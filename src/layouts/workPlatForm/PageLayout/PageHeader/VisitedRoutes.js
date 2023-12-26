@@ -77,8 +77,9 @@ function VisitedRoutes(props) {
       const parts = newPathname.split('/');
       const finalPathname = parts.slice(0, 4).join('/'); //取pms/manage/xx
       // console.log('🚀 ~ urlArr, newPathname:', urlArr, newPathname, finalPathname);
-      // const index = urlArr.findIndex(x => x.includes(newPathname) || newPathname.includes(x));
-      const index = urlArr.findIndex(x => x.includes(finalPathname) || finalPathname.includes(x));
+      // const index = urlArr.findIndex(x => x.includes(finalPathname) || finalPathname.includes(x));
+      const index = urlArr.findIndex(x => x.includes(finalPathname));
+      // console.log("🚀 ~ file: VisitedRoutes.js:82 ~ useEffect ~ index:", index)
       if (index !== -1) {
         urlArr.splice(index, 1, newPathname); //若有相同的pms/manage/xx，则原位替换，只保留一个
         setUrls([...urlArr]);
@@ -324,6 +325,14 @@ function VisitedRoutes(props) {
               {
                 title: '信创合同信息查看',
                 urlEnd: 'InnovationContractView',
+              },
+              {
+                title: '人员评价',
+                urlEnd: 'MutualEvaluation',
+              },
+              {
+                title: '人员评价情况',
+                urlEnd: 'MutualEvaluationSituation',
               },
             ];
             urlEndArr.forEach(x => {

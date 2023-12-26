@@ -27,10 +27,9 @@ export default function TopConsole(props) {
 
   //查询的值
 
-  
   const handleReset = () => {
     // console.log('kkkk');
-    let arr = [...data.filterData];
+    let arr = JSON.parse(JSON.stringify(data.filterData));
     arr.forEach(y => {
       if (y.ZJLX === 'MULTIPLE' || y.ZJLX === 'TREE-MULTIPLE') {
         y.SELECTORVALUE = [];

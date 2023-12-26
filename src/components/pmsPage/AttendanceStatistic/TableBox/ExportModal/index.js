@@ -9,7 +9,14 @@ import * as XLSX from 'xlsx';
 import handleExport from '../exportUtils';
 
 function ExportModal(props) {
-  const { visible, setVisible, form, xmid = -1, defaultDate = moment(), columns = [] } = props;
+  const {
+    visible,
+    setVisible,
+    form,
+    xmid = -1,
+    defaultDate = moment(),
+    getColumns = () => {},
+  } = props;
   const { validateFields, setFieldsValue, resetFields, getFieldDecorator } = form;
   const [isSpinning, setIsSpinning] = useState(false); //加载状态
   const [open, setOpen] = useState(false);
@@ -81,13 +88,21 @@ function ExportModal(props) {
             }
             return acc;
           }, []);
+
           // console.log('🚀 ~ file: index.js:97 ~ dataList ~ dataList:', dataList);
           const sheetNames = monthRange.map(x => moment(String(x.month)).format('YYYY年MM月'));
+          const columnList = monthRange.map(x =>
+            getColumns(x.year, moment(String(x.month)).month()).map(x => ({
+              ...x,
+              title: String(x.title),
+            })),
+          );
+          console.log('🚀 ~ file: index.js:97 ~ validateFields ~ columnList:', columnList);
           setIsSpinning(false);
           // console.log("🚀 ~ file: index.js:100 ~ validateFields ~ sheetNames:", sheetNames)；
           handleExport({
             list: dataList,
-            headList: columns,
+            headList: columnList,
             sheetNames,
             sheetName: `月度汇总（${values.range[0].format('YYYYMM')}-${values.range[1].format(
               'YYYYMM',

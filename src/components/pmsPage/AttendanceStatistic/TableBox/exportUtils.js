@@ -1,7 +1,7 @@
 import * as XLSX from 'xlsx';
 import { message } from 'antd';
 
-const handleExport = ({list = [], headList = [], sheetNames = ['sheetName.xlsx'], sheetName}) => {
+const handleExport = ({ list = [], headList = [], sheetNames = ['sheetName.xlsx'], sheetName }) => {
   function deleteChildren(arr) {
     let childs = arr;
     for (let i = childs.length; i--; i > 0) {
@@ -342,15 +342,15 @@ const handleExport = ({list = [], headList = [], sheetNames = ['sheetName.xlsx']
     return;
   }
   const getSheets = (listArr = [], headList = [], sheetNames) => {
-    const wsArr = listArr.map(list => {
+    const wsArr = listArr.map((list, index) => {
       //删除Children为空，不然数据对不上
-      headList = deleteChildren(headList);
+      headList[index] = deleteChildren(headList[index]);
       // excel表头
-      let excelHeader = buildHeader(headList);
+      let excelHeader = buildHeader(headList[index]);
       // 头部行数，用来固定表头
       let headerRows = excelHeader.length;
       // 提取数据
-      let dataList = extractData(list, headList);
+      let dataList = extractData(list, headList[index]);
       excelHeader.push(...dataList, []);
       // 计算合并
       let merges = doMerges(excelHeader);

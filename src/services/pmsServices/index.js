@@ -163,6 +163,15 @@ const {
     editDocTemplate,
     queryDocType,
     queryDepartment,
+    fileTypeCheck,
+    queryEmployeeAppraiseList,
+    operateEmployeeAppraise,
+    queryProjectAppraiseSwitchList,
+    generateBudgetCarryoverInfo,
+    operateBudgetCarryoverInfo,
+    operateCapitalBeginYearBudgetInfo,
+    queryProjectBudgetCarryoverInfo,
+    queryCapitalBudgetCarryoverInfo
   },
 } = api;
 
@@ -1735,7 +1744,7 @@ export async function QueryDocType(payload) {
   return request(option);
 }
 
-// 查询付款流程分摊明细 易快报 部门数据 
+// 查询付款流程分摊明细 易快报 部门数据
 export async function QueryDepartment(payload) {
   const option = {
     url: queryDepartment,
@@ -1755,3 +1764,92 @@ export async function QueryDocTemplate(payload) {
   return request(option);
 }
 
+// 文件类型判断
+export async function FileTypeCheck(payload) {
+  const option = {
+    url: fileTypeCheck,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 查询人员评价列表
+export async function QueryEmployeeAppraiseList(payload) {
+  const option = {
+    url: queryEmployeeAppraiseList,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 编辑人员评价
+export async function OperateEmployeeAppraise(payload) {
+  const option = {
+    url: operateEmployeeAppraise,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 查询评价开关页面的项目信息
+export async function QueryProjectAppraiseSwitchList(payload) {
+  const option = {
+    url: queryProjectAppraiseSwitchList,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 生成预算结转信息
+export async function GenerateBudgetCarryoverInfo(payload) {
+  const option = {
+    url: generateBudgetCarryoverInfo,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 项目预算结转
+export async function OperateBudgetCarryoverInfo(payload) {
+  const option = {
+    url: operateBudgetCarryoverInfo,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 编辑资本性年初预算信息
+export async function OperateCapitalBeginYearBudgetInfo(payload) {
+  const option = {
+    url: operateCapitalBeginYearBudgetInfo,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 查询项目预算结转信息
+export async function QueryProjectBudgetCarryoverInfo(payload) {
+  const option = {
+    url: queryProjectBudgetCarryoverInfo,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 查询项目预算结转信息
+export async function QueryCapitalBudgetCarryoverInfo(payload) {
+  const option = {
+    url: queryCapitalBudgetCarryoverInfo,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}

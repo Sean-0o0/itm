@@ -383,4 +383,44 @@ exports.routes = [
     path: `${prefix}/DocTemplateLib`,
     component: './pmsPage/DocTemplateLib',
   },
+  {
+    // 人员互评
+    path: `${prefix}/MutualEvaluation/:params`,
+    component: './pmsPage/MutualEvaluation',
+  },
+  {
+    // 人员互评
+    path: `${prefix}/MutualEvaluation`,
+    component: './pmsPage/MutualEvaluation',
+  },
+  {
+    // 人员评价情况
+    path: `${prefix}/MutualEvaluationSituation/:params`,
+    component: './pmsPage/MutualEvaluationSituation',
+  },
+  {
+    // 人员评价情况
+    path: `${prefix}/MutualEvaluationSituation`,
+    component: './pmsPage/MutualEvaluationSituation',
+  },
+  {
+    // 统计分析 - 预算结转
+    path: `${prefix}/BudgetStatistic/:params`,
+    component: './pmsPage/BudgetStatistic',
+  },
+  {
+    // 统计分析 - 预算结转
+    path: `${prefix}/BudgetCarryover`,
+    component: './pmsPage/BudgetCarryover',
+  },
+  {
+    // 预算结转 - 预算填报
+    path: `${prefix}/BudgetSubmit/:params`,
+    component: './pmsPage/BudgetSubmit',
+  },
+  {
+    // 预算结转 - 预算填报
+    path: `${prefix}/BudgetSubmit`,
+    component: './pmsPage/BudgetSubmit',
+  },
 ];

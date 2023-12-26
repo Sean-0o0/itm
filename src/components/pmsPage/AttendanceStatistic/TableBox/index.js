@@ -208,12 +208,12 @@ const TableBox = props => {
             fixed: 'left',
             render: (txt, row, index) => {
               if (index === tableData.length - 1)
-              return {
-                children: '',
-                props: {
-                  colSpan: 0,
-                },
-              };
+                return {
+                  children: '',
+                  props: {
+                    colSpan: 0,
+                  },
+                };
               return (
                 <Link
                   style={{ color: '#3361ff' }}
@@ -451,6 +451,126 @@ const TableBox = props => {
     }
   };
 
+  const getYDHZColumns = (year, month) => {
+    console.log("🚀 ~ file: index.js:455 ~ getYDHZColumns ~ year, month:", year, month)
+    return [
+      {
+        title: '序号',
+        dataIndex: 'XH',
+        key: 'XH',
+        width: 50,
+        ellipsis: true,
+        align: 'center',
+        fixed: 'left',
+        render: (txt, row, index) => {
+          if (index === tableData.length - 1) {
+            return {
+              children: (
+                <div
+                  style={{
+                    fontSize: '14px',
+                    fontFamily: 'PingFangSC-Regular, PingFang SC',
+                    fontWeight: 'bold',
+                    color: '#606266',
+                  }}
+                >
+                  {row.NR}：
+                </div>
+              ),
+              props: {
+                colSpan: 2,
+              },
+            };
+          }
+          return txt;
+        },
+      },
+      {
+        title: '姓名',
+        dataIndex: 'RYMC',
+        width: 100,
+        key: 'RYMC',
+        ellipsis: true,
+        fixed: 'left',
+        render: (txt, row, index) => {
+          if (index === tableData.length - 1)
+            return {
+              children: '',
+              props: {
+                colSpan: 0,
+              },
+            };
+          return (
+            <Link
+              style={{ color: '#3361ff' }}
+              to={{
+                pathname: `/pms/manage/staffDetail/${EncryptBase64(
+                  JSON.stringify({
+                    ryid: row.RYID,
+                  }),
+                )}`,
+                state: {
+                  routes: [{ name: '考勤统计', pathname: location.pathname }],
+                },
+              }}
+              className="table-link-strong"
+            >
+              {txt}
+            </Link>
+          );
+        },
+      },
+      ...getDate(year, month).map(x => ({
+        title: x.date,
+        dataIndex: 'DATE' + x.date,
+        key: 'DATE' + x.date,
+        width: 80,
+        ellipsis: true,
+        align: 'center',
+        children: [
+          {
+            title: x.week,
+            dataIndex: 'RQ_' + x.date,
+            key: 'RQ_' + x.date,
+            width: 80,
+            align: 'center',
+            ellipsis: true,
+          },
+        ],
+      })),
+      {
+        title: '请假天数',
+        dataIndex: 'QJTS',
+        width: 100,
+        align: 'right',
+        key: 'QJTS',
+        ellipsis: true,
+        sorter: (a, b) => Number(a.QJTS || 0) - Number(b.QJTS || 0),
+        sortDirections: ['descend', 'ascend'],
+      },
+      {
+        title: '出勤天数（不含加班）',
+        dataIndex: 'CQTS',
+        width: 180,
+        align: 'right',
+        key: 'CQTS',
+        ellipsis: true,
+        sorter: (a, b) => Number(a.CQTS || 0) - Number(b.CQTS || 0),
+        sortDirections: ['descend', 'ascend'],
+      },
+      {
+        title: '加班天数',
+        dataIndex: 'JBTS',
+        width: 100,
+        align: 'right',
+        key: 'JBTS',
+        ellipsis: true,
+        sorter: (a, b) => Number(a.JBTS || 0) - Number(b.JBTS || 0),
+        sortDirections: ['descend', 'ascend'],
+      },
+    ];
+  };
+
   return (
     <>
       <div className="table-box">
@@ -459,7 +579,7 @@ const TableBox = props => {
           setVisible={setExportModalVisible}
           xmid={Number(filterData.prjId)}
           defaultDate={filterData.month}
-          columns={[...columns.map(x => ({ ...x, title: String(x.title) }))]}
+          getColumns={getYDHZColumns}
         />
         <div className="filter-row">
           <div className="console-item">

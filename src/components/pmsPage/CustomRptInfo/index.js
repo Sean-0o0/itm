@@ -29,6 +29,7 @@ export default function CustomRptInfo(props) {
   useEffect(() => {
     if (bbid !== -1) {
       getData();
+      setIsUnfold(false)
     }
     return () => {};
   }, [bbid, bbmc]);
@@ -222,7 +223,7 @@ export default function CustomRptInfo(props) {
           }
           bmArr.push(x.BM);
         } else if (x.ZJLX === 'RANGE') {
-          SXSJ = [x.SELECTORVALUE.min || 0, x.SELECTORVALUE.max || 9999999999];
+          SXSJ = [x.SELECTORVALUE.min ?? 0, x.SELECTORVALUE.max ?? 9999999999];
           bmArr.push(x.BM);
         } else if (x.ZJLX === 'RADIO') {
           //是否为父项目，暂时写死以下情况
@@ -268,11 +269,25 @@ export default function CustomRptInfo(props) {
         } else {
           bmArr.push(x.BM);
         }
-        sxtjArr.push({
-          SXLX,
-          SXTJ,
-          SXSJ,
-        });
+        if (
+          !(
+            (x.ZJLX === 'RADIO' && x.SELECTORVALUE === undefined) ||
+            (x.ZJLX === 'RADIO-XMZT' && x.SELECTORVALUE === undefined) ||
+            (x.ZJLX === 'RANGE' &&
+              ['', undefined, null].includes(x.SELECTORVALUE.min) &&
+              ['', undefined, null].includes(x.SELECTORVALUE.max)) ||
+            (x.ZJLX === 'DATE' &&
+              ['', undefined, null].includes(x.SELECTORVALUE.min) &&
+              ['', undefined, null].includes(x.SELECTORVALUE.max))
+          )
+        ) {
+          //当前里程碑和是否父项目这种单选的条件空了也不要把条件传过来
+          sxtjArr.push({
+            SXLX,
+            SXTJ,
+            SXSJ,
+          });
+        }
       }
       delete x.SELECTORDATA;
     });
@@ -381,7 +396,6 @@ export default function CustomRptInfo(props) {
                 });
                 finalArr.push(temp);
               });
-              console.log('🚀 ~ file: index.js:321 ~ handleExport ~ finalArr:', finalArr);
               //导出的顺序
               let titleOrder = [];
               data.columns.forEach(e => {
