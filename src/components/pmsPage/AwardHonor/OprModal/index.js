@@ -675,7 +675,6 @@ export default connect(({ global = {} }) => ({
 
     //自定义下载框
     const getDownloadBox = (colSpan, label, labelCol, wrapperCol, boxMarginLeft, clickRowData) => {
-      // console.log('clickRowData', clickRowData)
 
       const { CKZL } = clickRowData
       const obj = JSON.parse(CKZL)

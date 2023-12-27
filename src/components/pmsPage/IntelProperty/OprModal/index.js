@@ -817,6 +817,7 @@ export default connect(({ global = {} }) => ({
                 ZLLX,
                 fromPrjDetail,
                 isGLY,
+                docTemplateList
               }}
               funcProps={{ setUpldData, setIsTurnRed, getFieldValue }}
               dictionary={dictionary}
@@ -894,6 +895,7 @@ export default connect(({ global = {} }) => ({
                 DQZT: ZSCQDQZT,
                 fromPrjDetail,
                 isGLY,
+                docTemplateList
               }}
               funcProps={{ setUpldData, setIsTurnRed, getFieldValue }}
               dictionary={dictionary}

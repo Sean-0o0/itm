@@ -14,6 +14,7 @@ export default function FMZL(props) {
     ZLLX = [],
     fromPrjDetail = false,
     isGLY,
+    docTemplateList
   } = dataProps;
   const { setUpldData, setIsTurnRed, getFieldValue } = funcProps;
   const {
@@ -35,7 +36,7 @@ export default function FMZL(props) {
         <div className='IntelProperty-newAddPane' style={{ marginLeft: '-3px', marginBottom: '-7px' }}>
           {getGrayDiv(24, '申报说明', 3, 21, props.dictionary.ZSCQSBSM[1].note, '', '6px')}
 
-          {getDownloadBox(24, '参考材料', 3, 21, '14px')}
+          {docTemplateList.length !== 0 && getDownloadBox(24, '参考材料', 3, 21, '14px')}
         </div>
 
         {fromPrjDetail !== false //便是入口为项目详情，这时值为{xmmc,xmid}

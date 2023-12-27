@@ -83,7 +83,7 @@ export default function KJJXSB(props) {
   }
 
   useEffect(() => {
-    if (!parentRow.JXJB || !parentRow.FQDW || !parentRow.SBJZRQ || !parentRow.FQDW | !parentRow.SBJZRQ) {
+    if (!parentRow.JXJB || !parentRow.FQDW || !parentRow.SBJZRQ || !parentRow.CKZL) {
       searchCollapseInfo().catch((err) => {
         message.error(`查询科技奖项详情信息失败${err}`, 2)
         setIsLoading(false)
@@ -133,7 +133,9 @@ export default function KJJXSB(props) {
             {parentRow.JXJB
               ? getGrayDiv(12, '奖项级别', labelCol, wrapperCol, judgeAwardLevel(parentRow.JXJB), '',)
               : collapseInfo.JXJB && getGrayDiv(12, '奖项级别', labelCol, wrapperCol, judgeAwardLevel(collapseInfo.JXJB), '',)}
+          </Row>
 
+          <Row gutter={rowGutter}>
             {parentRow.FQDW
               ? getGrayDiv(12, '发起单位', labelCol, wrapperCol, parentRow.FQDW, '', '6px')
               : collapseInfo.FQDW && getGrayDiv(12, '发起单位', labelCol, wrapperCol, collapseInfo.FQDW, '', '6px')}
@@ -142,6 +144,9 @@ export default function KJJXSB(props) {
               ? getGrayDiv(12, '申报截止日期', labelCol, wrapperCol, dateFormater(parentRow.SBJZRQ), true, '6px')
               : collapseInfo.SBJZRQ && getGrayDiv(12, '申报截止日期', labelCol, wrapperCol, dateFormater(collapseInfo.SBJZRQ), true, '6px')}
 
+          </Row>
+
+          <Row gutter={rowGutter}>
             {parentRow.CKZL
               ? getDownloadBox(24, '参考资料', 3, 21, '-4px', parentRow)
               : collapseInfo.CKZL && getDownloadBox(24, '参考资料', 3, 21, '-4px', collapseInfo)}

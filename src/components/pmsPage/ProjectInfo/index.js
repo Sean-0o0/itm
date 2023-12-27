@@ -1,8 +1,9 @@
 import React, { useEffect, useState, useRef } from 'react';
 import InfoTable from './InfoTable';
 import TopConsole from './TopConsole';
-import { QueryProjectListInfo } from '../../../services/pmsServices';
+import { QueryProjectListInfo, QueryBudgetStatistics } from '../../../services/pmsServices';
 import { message } from 'antd';
+import moment from 'moment';
 
 export default function ProjectInfo(props) {
   const [tableData, setTableData] = useState([]); //表格数据-项目列表
@@ -16,6 +17,49 @@ export default function ProjectInfo(props) {
   const [queryType, setQueryType] = useState('ALL'); //
   const [prjMnger, setPrjMnger] = useState(undefined); //项目经理
   const [isComplete, setIsComplete] = useState(false);
+
+  const [year, setYear] = useState() //年
+  const [isQueryDefaultYear, setIsQueryDefaultYear] = useState(true) // 是否在计算默认年份
+  const defaultYearRef = useRef(undefined)
+
+  const queryDefaultYear = async () => {
+    setIsQueryDefaultYear(true)
+    let curYear = new Date().getFullYear()
+    const queryParams = {
+      "budgetType": "ZB",
+      "current": 1,
+      "pageSize": 20,
+      "paging": 1,
+      "queryType": "YSTJ",
+      "sort": "",
+      "total": -1,
+      "year": curYear
+    }
+    const res = await QueryBudgetStatistics(queryParams)
+    if (res.code === 1) {
+      const { budgetInfo } = res
+      const obj = JSON.parse(budgetInfo)
+      if (obj.length === 0) {
+        curYear--;
+      }
+      setYear(moment().year(curYear))
+      defaultYearRef.current = moment().year(curYear)
+      setIsQueryDefaultYear(false)
+    }
+
+  }
+
+  useEffect(() => {
+    queryDefaultYear().catch((err) => {
+      message.error(`计算默认年份失败${err}`, 2)
+      setIsQueryDefaultYear(false)
+    })
+  }, [])
+
+  useEffect(() => {
+    getTableData({})
+  }, [isQueryDefaultYear])
+
 
   useEffect(() => {
     getTableData({});
@@ -44,10 +88,11 @@ export default function ProjectInfo(props) {
     pageSize = 20,
     projectManager = -1,
     cxlx = 'ALL',
-    sort = 'XH DESC,ID DESC',
+    sort = 'XMNF DESC,XH DESC,ID DESC',
   }) => {
     setTableLoading(true);
     try {
+      if (isQueryDefaultYear === true) return;
       const res = await QueryProjectListInfo({
         projectManager,
         current,
@@ -56,14 +101,16 @@ export default function ProjectInfo(props) {
         sort,
         total: -1,
         queryType: cxlx,
+        year: moment.isMoment(year) ? new Date(year.valueOf()).getFullYear() : ''
       });
       if (res?.success) {
         setTableData(p => [...JSON.parse(res.record)]);
-        console.log(res.totalrows);
         setTotal(res.totalrows);
         setTableLoading(false);
         setIsComplete(true);
       }
+
+
     } catch (error) {
       message.error('表格数据查询失败', 1);
       setTableLoading(false);
@@ -87,6 +134,9 @@ export default function ProjectInfo(props) {
         setQueryType={setQueryType}
         prjMnger={prjMnger}
         setPrjMnger={setPrjMnger}
+        year={year}
+        setYear={setYear}
+        defaultYearRef={defaultYearRef}
       />
       <InfoTable
         tableData={tableData}

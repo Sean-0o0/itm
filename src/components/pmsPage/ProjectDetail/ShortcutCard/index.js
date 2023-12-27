@@ -196,7 +196,7 @@ export default function ShortcutCard(props) {
       <div className="item" key="FMZL" onClick={() => handleAddIntelProperty('FMZL')}>
         发明专利
       </div>
-      <div className="item" key="HYBZ" onClick={() => handleAddIntelProperty('HYZZ')}>
+      <div className="item" key="HYBZ" onClick={() => handleAddIntelProperty('HYBZ')}>
         行业标准
       </div>
       <div className="item" key="QYBZ" onClick={() => handleAddIntelProperty('QYBZ')}>

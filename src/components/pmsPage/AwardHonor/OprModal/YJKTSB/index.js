@@ -83,13 +83,17 @@ export default function YJKTSB(props) {
 
 
   useEffect(() => {
-    if (!parentRow.JXJB || !parentRow.FQDW || !parentRow.SBJZRQ || !parentRow.FQDW | !parentRow.SBJZRQ) {
+
+
+
+    if (!parentRow.FQDW || !parentRow.SBJZRQ || !parentRow.CKZL) {
       searchCollapseInfo().catch((err) => {
         message.error(`查询研究课题详情信息失败${err}`, 2)
         setIsLoading(false)
       })
     }
   }, [])
+
 
 
 
@@ -135,9 +139,13 @@ export default function YJKTSB(props) {
               ? getGrayDiv(12, '发起单位', labelCol, wrapperCol, parentRow.FQDW, '',)
               : collapseInfo.FQDW && getGrayDiv(12, '发起单位', labelCol, wrapperCol, collapseInfo.FQDW, '',)}
 
+          </Row>
+
+          <Row gutter={rowGutter}>
             {parentRow.SBJZRQ
               ? getGrayDiv(12, '申报截止日期', labelCol, wrapperCol, dateFormater(parentRow.SBJZRQ), true, '6px')
-              : collapseInfo.SBJZRQ && getGrayDiv(12, '申报截止日期', labelCol, wrapperCol, dateFormater(collapseInfo.SBJZRQ), true, '6px')}
+              : collapseInfo.SBJZRQ && getGrayDiv(12, '申报截止日期', labelCol, wrapperCol, dateFormater(collapseInfo.SBJZRQ), true, '6px')
+            }
 
             {parentRow.CKZL
               ? getDownloadBox(24, '参考资料', 3, 21, '-10px', parentRow)

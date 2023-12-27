@@ -1,4 +1,4 @@
-import React, { useEffect, useState, forwardRef, useImperativeHandle, useMemo } from 'react';
+import React, { useEffect, useState, forwardRef, useImperativeHandle, useMemo, useRef } from 'react';
 import { Select, Button, Input, TreeSelect, Row, Col, Icon, message, DatePicker, Spin } from 'antd';
 import { QueryProjectListPara, QueryProjectListInfo } from '../../../../services/pmsServices';
 import TreeUtils from '../../../../utils/treeUtils';
@@ -22,7 +22,9 @@ export default forwardRef(function TopConsole(props, ref) {
   const [budgetValue, setBudgetValue] = useState(undefined); //关联预算-为了重置
   const [budgetType, setBudgetType] = useState('1'); //关联预算类型id
   const [label, setLabel] = useState([]); //项目标签
-  const [prjName, setPrjName] = useState(undefined); //项目名称
+  const [prjName, setPrjName] = useState(undefined);   //项目名称（下拉框） ---弃用
+  const [projectName, setProjectName] = useState(undefined) //项目名称（输入框）
+
   // const [prjMnger, setPrjMnger] = useState(undefined); //项目经理
   const [org, setOrg] = useState([]); //应用部门
   const [prjType, setPrjType] = useState(undefined); //项目类型
@@ -33,7 +35,7 @@ export default forwardRef(function TopConsole(props, ref) {
   const [labelOpen, setLabelOpen] = useState(false); //下拉框展开
   const [orgOpen, setOrgOpen] = useState(false); //下拉框展开
 
-  const [year, setYear] = useState(moment()) //年
+
   const [isYearOpen, setIsYearOpen] = useState(false) // 是否打开年面板
 
 
@@ -50,18 +52,11 @@ export default forwardRef(function TopConsole(props, ref) {
     setQueryType,
     prjMnger,
     setPrjMnger,
+    year,
+    setYear,
+    defaultYearRef
   } = props;
 
-  const queryDefaultYear = async () => {
-
-  }
-
-  useEffect(() => {
-    queryDefaultYear().catch((err) => {
-      message.error(`查询默认年份失败${err}`, 2)
-      setiIsFilterBarLoading(false)
-    })
-  }, [])
 
   useEffect(() => {
     getFilterData();
@@ -81,14 +76,15 @@ export default forwardRef(function TopConsole(props, ref) {
       budgetValue,
       budgetType,
       label,
-      prjName,
+      // prjName,
       prjMnger,
       org,
       prjType,
       gtAmount,
       ltAmount,
       minAmount,
-      maxAmount
+      maxAmount,
+      year
     ],
   );
 
@@ -250,18 +246,12 @@ export default forwardRef(function TopConsole(props, ref) {
   };
 
   //查询按钮
-  const handleSearch = (
-    current = 1,
-    pageSize = 20,
-    prjMnger = undefined,
-    queryType = 'ALL',
-    sort = 'XH DESC,ID DESC',
-  ) => {
+  const handleSearch = (current = 1, pageSize = 20, prjMnger = undefined, queryType = 'ALL', sort = 'XMNF DESC,XH DESC,ID DESC',) => {
     setTableLoading(true);
     setCurPage(current);
     setCurPageSize(pageSize);
     setQueryType('ALL');
-    setYear(year)
+
     let params = {
       current,
       pageSize,
@@ -269,16 +259,18 @@ export default forwardRef(function TopConsole(props, ref) {
       sort,
       total: -1,
       queryType,
-      year: moment.isMoment(year) ? new Date(year.valueOf()).getFullYear() : ''
+      year: moment.isMoment(year) ? new Date(year.valueOf()).getFullYear() : '',
     };
-    // console.log('111',, '2222', year ? new Date(year.valueOf()).getFullYear() : '')
 
     if (budget !== undefined && budget !== '') {
       params.budgetProject = Number(budget);
       params.budgetType = Number(budgetType);
     }
-    if (prjName !== undefined && prjName !== '') {
-      params.projectId = Number(prjName);
+    // if (prjName !== undefined && prjName !== '') {
+    //   params.projectId = Number(prjName);
+    // }
+    if (projectName !== undefined && projectName !== '') {
+      params.projectName = projectName
     }
     if (prjMnger !== undefined && prjMnger !== '') {
       params.projectManager = Number(prjMnger);
@@ -341,7 +333,8 @@ export default forwardRef(function TopConsole(props, ref) {
     setBudgetValue(undefined); //关联预算-单纯为了重置
     setBudgetType('1'); //预算类型
     setLabel([]); //项目标签
-    setPrjName(undefined); //项目名称
+    // setPrjName(undefined); //项目名称
+    setProjectName(undefined)
     setPrjMnger(undefined); //项目经理
     setOrg([]); //应用部门
     setPrjType(undefined); //项目类型
@@ -349,7 +342,7 @@ export default forwardRef(function TopConsole(props, ref) {
     setMinAmount(undefined); //项目金额，最小
     setMaxAmount(undefined); //项目金额，最大
     setLtAmount(undefined); //项目金额，小于
-    setYear(undefined); //年
+    setYear(defaultYearRef.current); //默认年
   };
 
   // onChange-start
@@ -368,11 +361,11 @@ export default forwardRef(function TopConsole(props, ref) {
     setPrjMnger(v);
   };
   //项目名称
-  const handlePrjNameChange = v => {
-    // console.log('handlePrjMngerChange', v);
-    // if (v === undefined) v = '';
-    setPrjName(v);
-  };
+  // const handlePrjNameChange = v => {
+  //   // console.log('handlePrjMngerChange', v);
+  //   // if (v === undefined) v = '';
+  //   setPrjName(v);
+  // };
   //项目类型
   const handlePrjTypeChange = v => {
     // console.log('handlePrjTypeChange', v);
@@ -426,9 +419,9 @@ export default forwardRef(function TopConsole(props, ref) {
 
   return (
     <div className="top-console">
-
       {/* 第一行 */}
       <div className="item-box">
+
         <div className="console-item">
           <div className="item-label">项目年份</div>
           <DatePicker
@@ -451,6 +444,9 @@ export default forwardRef(function TopConsole(props, ref) {
             }}
           />
         </div>
+
+
+
 
         <div className="console-item">
           <div className="item-label">项目经理</div>
@@ -476,7 +472,7 @@ export default forwardRef(function TopConsole(props, ref) {
 
         <div className="console-item">
           <div className="item-label">项目名称</div>
-          <Select
+          {/* <Select
             className="item-selector"
             dropdownClassName={'item-selector-dropdown'}
             filterOption={(input, option) =>
@@ -493,7 +489,21 @@ export default forwardRef(function TopConsole(props, ref) {
                 {x.XMMC}
               </Option>
             ))}
-          </Select>
+          </Select> */}
+
+          <Input
+            className="item-selector"
+            allowClear
+            placeholder="请输入"
+            value={projectName}
+            onChange={(e) => {
+              const { target: { value: val } } = e
+              setProjectName(val)
+            }}
+          >
+          </Input>
+
+
         </div>
 
         <Button
@@ -684,7 +694,6 @@ export default forwardRef(function TopConsole(props, ref) {
 
         </div>
       )}
-
     </div>
   );
 });
