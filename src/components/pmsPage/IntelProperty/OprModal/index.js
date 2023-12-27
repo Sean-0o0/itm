@@ -317,7 +317,7 @@ export default connect(({ global = {} }) => ({
         message.error(`查询文档示例失败${err}`, 2)
         setIsSpinning(false);
       })
-    }, [type])
+    }, [type, visible])
 
     const downloadHandle = (url) => {
       const iframe = document.createElement("iframe");
@@ -596,9 +596,11 @@ export default connect(({ global = {} }) => ({
     };
 
     /** 灰色背景div文字 */
-    const getGrayDiv = (colSpan, formLabel, labelCol, wrapperCol, content, isLabelWrap) => {
+    const getGrayDiv = (colSpan, formLabel, labelCol, wrapperCol, content, isLabelWrap, boxMarginBottom) => {
       return (
-        <Col span={colSpan} className={isLabelWrap ? 'GrayDivBox_LabelWrap' : ''}>
+        <Col span={colSpan} className={isLabelWrap ? 'GrayDivBox_LabelWrap' : ''}
+          style={{ marginBottom: boxMarginBottom ? boxMarginBottom : '' }}
+        >
           <Form.Item
             labelAlign='right'
             label={formLabel}
@@ -619,39 +621,31 @@ export default connect(({ global = {} }) => ({
     };
 
     //自定义下载框
-    const getDownloadBox = (
-      colSpan,
-      label,
-      labelCol,
-      wrapperCol,
-      boxMarginLeft
-    ) => {
+    const getDownloadBox = (colSpan, label, labelCol, wrapperCol, boxPaddingLeft) => {
       return (
-        <div className='intelProperty_getDownload' style={{ marginLeft: boxMarginLeft ? boxMarginLeft : '' }}>
-          <Col span={colSpan}>
-            <Form.Item label={label} labelCol={{ span: labelCol }} wrapperCol={{ span: wrapperCol }}>
-              <div className='intelProperty_getDownloadBox'>
-                {docTemplateList.length !== 0 &&
-                  docTemplateList.map((item) => {
-                    return (
-                      <div className='getDownloadBoxitem' >
-                        <div className='leftBox'>
-                          <img className='leftBox_wordIcon' src={require('../../../../assets/show/wordIcon.png')}></img>
-                        </div>
-
-                        <div className='rightBox'>
-                          <a className='rightBox_content' href={item.url} title={item.fileName} download>{item.fileName}</a>
-                          <Icon className='rightBox_btn' type="download" onClick={() => {
-                            downloadHandle(item.url)
-                          }} />
-                        </div>
+        <div className='intelProperty_getDownload' style={{ paddingLeft: boxPaddingLeft ? boxPaddingLeft : '' }}>
+          <Form.Item label={label} labelCol={{ span: labelCol }} wrapperCol={{ span: wrapperCol }}>
+            <div className='intelProperty_getDownloadBox'>
+              {docTemplateList.length !== 0 &&
+                docTemplateList.map((item) => {
+                  return (
+                    <div className='getDownloadBoxitem' >
+                      <div className='leftBox'>
+                        <img className='leftBox_wordIcon' src={require('../../../../assets/show/wordIcon.png')}></img>
                       </div>
-                    )
-                  })
-                }
-              </div>
-            </Form.Item>
-          </Col>
+
+                      <div className='rightBox'>
+                        <a className='rightBox_content' href={item.url} title={item.fileName} download>{item.fileName}</a>
+                        <Icon className='rightBox_btn' type="download" onClick={() => {
+                          downloadHandle(item.url)
+                        }} />
+                      </div>
+                    </div>
+                  )
+                })
+              }
+            </div>
+          </Form.Item>
         </div >
       );
     };

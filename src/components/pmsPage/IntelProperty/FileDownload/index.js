@@ -11,7 +11,7 @@ export default function FileDownload(props) {
   const { fileStr = '{}', params = {} } = props;
 
   useEffect(() => {
-    return () => {};
+    return () => { };
   }, []);
 
   //单个下载

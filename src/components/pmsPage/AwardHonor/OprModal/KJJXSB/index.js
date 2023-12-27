@@ -126,22 +126,26 @@ export default function KJJXSB(props) {
                 value: parentRow.JXMC,
                 labelCol,
                 wrapperCol,
+                isRequired: false
               })}
 
             {/* parentRow是只读属性，无法修改 */}
             {parentRow.JXJB
-              ? getGrayDiv(12, '奖项级别', labelCol, wrapperCol, judgeAwardLevel(parentRow.JXJB))
-              : collapseInfo.JXJB && getGrayDiv(12, '奖项级别', labelCol, wrapperCol, judgeAwardLevel(collapseInfo.JXJB))}
+              ? getGrayDiv(12, '奖项级别', labelCol, wrapperCol, judgeAwardLevel(parentRow.JXJB), '',)
+              : collapseInfo.JXJB && getGrayDiv(12, '奖项级别', labelCol, wrapperCol, judgeAwardLevel(collapseInfo.JXJB), '',)}
 
             {parentRow.FQDW
-              ? getGrayDiv(12, '发起单位', labelCol, wrapperCol, parentRow.FQDW)
-              : collapseInfo.FQDW && getGrayDiv(12, '发起单位', labelCol, wrapperCol, collapseInfo.FQDW)}
+              ? getGrayDiv(12, '发起单位', labelCol, wrapperCol, parentRow.FQDW, '', '6px')
+              : collapseInfo.FQDW && getGrayDiv(12, '发起单位', labelCol, wrapperCol, collapseInfo.FQDW, '', '6px')}
 
             {parentRow.SBJZRQ
-              ? getGrayDiv(12, '申报截止日期', labelCol, wrapperCol, dateFormater(parentRow.SBJZRQ), true)
-              : collapseInfo.SBJZRQ && getGrayDiv(12, '申报截止日期', labelCol, wrapperCol, dateFormater(collapseInfo.SBJZRQ), true)}
+              ? getGrayDiv(12, '申报截止日期', labelCol, wrapperCol, dateFormater(parentRow.SBJZRQ), true, '6px')
+              : collapseInfo.SBJZRQ && getGrayDiv(12, '申报截止日期', labelCol, wrapperCol, dateFormater(collapseInfo.SBJZRQ), true, '6px')}
 
-            {getDownloadBox(24, '示例材料', 3, 21, '-5px')}
+            {parentRow.CKZL
+              ? getDownloadBox(24, '参考资料', 3, 21, '-4px', parentRow)
+              : collapseInfo.CKZL && getDownloadBox(24, '参考资料', 3, 21, '-4px', collapseInfo)}
+
           </Row>
 
         </Collapse.Panel>

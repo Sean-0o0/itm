@@ -26965,15 +26965,16 @@ li.ant-select-tree-treenode-disabled>.ant-select-tree-node-content-wrapper span 
   resize: none !important;
 }
 
-//自定义下载组件
+//自定义下载组件_IntelProperty
 .intelProperty_getDownload {
+  width: 98%;
 
   .ant-col {
     // padding-left: 11px !important;
   }
 
   .intelProperty_getDownloadBox {
-    width: 105.3%;
+    width: 105.5%;
     display: flex;
     flex-wrap: wrap;
 
@@ -27052,6 +27053,96 @@ li.ant-select-tree-treenode-disabled>.ant-select-tree-node-content-wrapper span 
     }
   }
 }
+
+//自定义下载组件_AwardHonor
+.intelProperty_getDownload_AwardHonor {
+  width: 100%;
+
+  .ant-col {
+    // padding-left: 11px !important;
+  }
+
+  .intelProperty_getDownloadBox {
+    width: 106%;
+    display: flex;
+    flex-wrap: wrap;
+
+    .getDownloadBoxitem {
+      height: 48px;
+      display: flex;
+      max-width: 46%;
+      flex-grow: 1;
+      flex-basis: calc(50% - 20px);
+      padding-top: 9px;
+      margin-right: 20px;
+      padding-left: 10px;
+      border-radius: 4px;
+      margin-bottom: 10px;
+      padding-right: 10px;
+      padding-bottom: 9px;
+      background-color: #fafafa;
+
+      .leftBox {
+        display: flex;
+        position: relative;
+        align-items: center;
+        flex-shrink: 0;
+        margin-right: 10px;
+        justify-content: center;
+
+        &_wordIcon {
+          width: 24px;
+          height: 24px;
+          font-size: 1.5rem;
+        }
+      }
+
+      .rightBox {
+        flex: 1 1;
+        display: flex;
+        min-width: 0;
+        align-items: baseline;
+        flex-direction: column;
+        justify-content: space-between;
+
+        &_content {
+          color: #333;
+          display: inline-block;
+          overflow: hidden;
+          font-size: 14px;
+          max-width: 100%;
+          word-wrap: normal;
+          flex-shrink: 0;
+          font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+          font-weight: 400;
+          line-height: 17px;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+          letter-spacing: 0em;
+
+          &:hover {
+            text-decoration: underline !important;
+            color: #54a9df !important;
+          }
+        }
+
+        &_btn {
+          color: #999;
+          padding-top: 2px;
+          font-size: 14px;
+          color: rgba(0, 0, 0, 0.25);
+          cursor: pointer !important;
+
+          &:hover {
+            text-decoration: underline !important;
+            color: #54a9df !important;
+          }
+        }
+      }
+    }
+  }
+}
+
 
 //自定义灰色盒子标签换行
 .GrayDivBox_LabelWrap {
@@ -27208,6 +27299,7 @@ li.ant-select-tree-treenode-disabled>.ant-select-tree-node-content-wrapper span 
 
 .carryover-modal {
   .default-modal();
+
   .ant-modal .content-box {
     padding-bottom: 0;
   }
@@ -27221,16 +27313,18 @@ li.ant-select-tree-treenode-disabled>.ant-select-tree-node-content-wrapper span 
 
   .budget-submit-box-spin {
     height: 100%;
-    & > div > .ant-spin {
+
+    &>div>.ant-spin {
       max-height: unset;
     }
+
     .ant-spin-container {
       height: 100%;
       display: flex;
       overflow: hidden;
       flex-direction: column;
 
-      & > .content-box {
+      &>.content-box {
         position: relative;
         display: flex;
         flex-grow: 1;
@@ -27259,9 +27353,11 @@ li.ant-select-tree-treenode-disabled>.ant-select-tree-node-content-wrapper span 
             font-size: 20px;
             transition: all 0.3s;
           }
+
           .row-title-icon-rotate {
             transform: rotate(90deg);
           }
+
           span {
             margin-left: 6px;
             font-size: 20px;
@@ -27295,21 +27391,25 @@ li.ant-select-tree-treenode-disabled>.ant-select-tree-node-content-wrapper span 
           align-items: center;
           justify-content: space-between;
           transition: color 0.3s;
+
           span {
             flex-grow: 1;
             text-overflow: ellipsis;
             overflow: hidden;
             white-space: nowrap;
             cursor: pointer;
+
             &:hover {
               color: #3361ff;
             }
           }
+
           .icon-download {
             flex-shrink: 0;
             margin-left: 8px;
             font-size: 16px;
             cursor: pointer;
+
             &:hover {
               color: #3361ff;
             }
@@ -27328,7 +27428,7 @@ li.ant-select-tree-treenode-disabled>.ant-select-tree-node-content-wrapper span 
         }
       }
 
-      & > .opr-btn-row {
+      &>.opr-btn-row {
         flex-shrink: 0;
         padding: 10px 24px;
         border-top: 1px solid #eeeff1;
@@ -27338,9 +27438,11 @@ li.ant-select-tree-treenode-disabled>.ant-select-tree-node-content-wrapper span 
         flex-direction: row;
         align-items: center;
         margin-top: auto;
+
         .btn-submit {
           .antd-btn-primary();
         }
+
         .btn-cancel {
           margin-left: auto;
           .antd-btn-default();

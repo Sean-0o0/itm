@@ -32,10 +32,10 @@ export default function FMZL(props) {
   return (
     <Fragment>
       <Row gutter={32}>
-        <div className='IntelProperty-newAddPane' style={{ marginLeft: '-3px' }}>
-          {getGrayDiv(24, '申报说明', 3, 21, props.dictionary.ZSCQSBSM[1].note)}
+        <div className='IntelProperty-newAddPane' style={{ marginLeft: '-3px', marginBottom: '-7px' }}>
+          {getGrayDiv(24, '申报说明', 3, 21, props.dictionary.ZSCQSBSM[1].note, '', '6px')}
 
-          {getDownloadBox(24, '示例材料', 3, 21,)}
+          {getDownloadBox(24, '参考材料', 3, 21, '14px')}
         </div>
 
         {fromPrjDetail !== false //便是入口为项目详情，这时值为{xmmc,xmid}

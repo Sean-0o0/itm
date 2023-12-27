@@ -1,5 +1,5 @@
 import React, { useEffect, useState, forwardRef, useImperativeHandle, useMemo } from 'react';
-import { Select, Button, Input, TreeSelect, Row, Col, Icon, message, DatePicker } from 'antd';
+import { Select, Button, Input, TreeSelect, Row, Col, Icon, message, DatePicker, Spin } from 'antd';
 import { QueryProjectListPara, QueryProjectListInfo } from '../../../../services/pmsServices';
 import TreeUtils from '../../../../utils/treeUtils';
 import moment from 'moment';
@@ -18,8 +18,6 @@ export default forwardRef(function TopConsole(props, ref) {
   const { XMLX } = props.dictionary; //
   const [prjTypeData, setPrjTypeData] = useState([]); //项目类型
   //查询的值
-  const [year, setYear] = useState(moment()) //年
-  const [isYearOpen, setIsYearOpen] = useState(false) // 是否打开年面板
   const [budget, setBudget] = useState(undefined); //关联预算
   const [budgetValue, setBudgetValue] = useState(undefined); //关联预算-为了重置
   const [budgetType, setBudgetType] = useState('1'); //关联预算类型id
@@ -35,6 +33,10 @@ export default forwardRef(function TopConsole(props, ref) {
   const [labelOpen, setLabelOpen] = useState(false); //下拉框展开
   const [orgOpen, setOrgOpen] = useState(false); //下拉框展开
 
+  const [year, setYear] = useState(moment()) //年
+  const [isYearOpen, setIsYearOpen] = useState(false) // 是否打开年面板
+
+
   const {
     setTableLoading,
     setTableData,
@@ -49,6 +51,17 @@ export default forwardRef(function TopConsole(props, ref) {
     prjMnger,
     setPrjMnger,
   } = props;
+
+  const queryDefaultYear = async () => {
+
+  }
+
+  useEffect(() => {
+    queryDefaultYear().catch((err) => {
+      message.error(`查询默认年份失败${err}`, 2)
+      setiIsFilterBarLoading(false)
+    })
+  }, [])
 
   useEffect(() => {
     getFilterData();
@@ -235,12 +248,6 @@ export default forwardRef(function TopConsole(props, ref) {
         message.error('下拉框信息查询失败', 1);
       });
   };
-
-  // useEffect(() => {
-  //   console.log('yearyearyear111', year)
-
-
-  // }, [year])
 
   //查询按钮
   const handleSearch = (
@@ -677,8 +684,6 @@ export default forwardRef(function TopConsole(props, ref) {
 
         </div>
       )}
-
-
 
     </div>
   );

@@ -50,7 +50,8 @@ export default connect(({ global = {} }) => ({
       userBasicInfo = {},
       form = {},
       refresh,
-      isGLY
+      isGLY,
+      tableData
     } = props;
     const {
       visible,
@@ -72,9 +73,6 @@ export default connect(({ global = {} }) => ({
       tableData: [],
     }); //下拉框数据
     const [upldError, setUpldError] = useState([]); //附件报红数据
-
-    /** 模板数据 */
-    const [docTemplateList, setDocTemplateList] = useState([])
 
     useEffect(() => {
       if (visible && rowData !== undefined) {
@@ -334,36 +332,6 @@ export default connect(({ global = {} }) => ({
       );
     };
 
-    /** 下载申报材料示例 */
-    const QueryDocTemplateHandle = async () => {
-      setIsSpinning(true);
-      const res = await QueryDocTemplate({
-        fileType: 0,
-        fileTypeName: type === 'KJJX' ? '科技奖项申报材料示例' : '研究课题申报材料示例'
-      })
-      if (res.code === 1) {
-        const obj = JSON.parse(res.result)
-        const { FJ: fileList } = obj[0]
-        setDocTemplateList(fileList)
-      }
-      setIsSpinning(false);
-    }
-
-    useEffect(() => {
-      QueryDocTemplateHandle().catch((err) => {
-        message.error(`查询文档示例失败${err}`, 2)
-        setIsSpinning(false);
-      })
-    }, [type])
-
-    const downloadHandle = (url) => {
-      const iframe = document.createElement("iframe");
-      iframe.style.display = "none"; // 不可见
-      iframe.style.height = "0"; // 高度为0
-      iframe.src = url; // 下载地址
-      document.body.appendChild(iframe); // 必须有，iframe挂在到dom树触发请求
-    }
-
 
     //单选普通下拉框
     const getSingleSelector = ({
@@ -590,11 +558,11 @@ export default connect(({ global = {} }) => ({
     };
 
     //输入框 - 灰
-    const getInputDisabled = ({ label, dataIndex, initialValue, value, labelCol, wrapperCol }) => {
+    const getInputDisabled = ({ label, dataIndex, initialValue, value, labelCol, wrapperCol, isRequired }) => {
       return (
         <Col span={12}>
           <Form.Item
-            required
+            required={isRequired ?? true}
             label={label}
             labelCol={{ span: labelCol }}
             wrapperCol={{ span: wrapperCol }}
@@ -652,9 +620,11 @@ export default connect(({ global = {} }) => ({
     };
 
     /** 灰色背景div文字 */
-    const getGrayDiv = (colSpan, formLabel, labelCol, wrapperCol, content, isLabelWrap) => {
+    const getGrayDiv = (colSpan, formLabel, labelCol, wrapperCol, content, isLabelWrap, boxMarginBottom) => {
       return (
-        <Col span={colSpan} className={isLabelWrap ? 'GrayDivBox_LabelWrap' : ''}>
+        <Col span={colSpan} className={isLabelWrap ? 'GrayDivBox_LabelWrap' : ''}
+          style={{ marginBottom: boxMarginBottom ? boxMarginBottom : '' }}
+        >
           <Form.Item
             labelAlign='right'
             label={formLabel}
@@ -674,21 +644,50 @@ export default connect(({ global = {} }) => ({
       );
     };
 
+    //单个下载
+    const handleSingleDownload = (rowID, fileID, fileName) => {
+      axios({
+        method: 'POST',
+        url: queryFileStream,
+        responseType: 'blob',
+        data: {
+          objectName: 'TXMXX_HJRY', //获奖荣誉     TXMXX_ZSCQ',//知识产权
+          columnName: 'CKZL', //参考资料
+          id: rowID, //rowid
+          title: fileName, //文件名
+          extr: fileID,  // 文件ID
+        },
+      })
+        .then(res => {
+          const href = URL.createObjectURL(res.data);
+          const link = document.createElement('a');
+          link.href = href;
+          link.setAttribute('download', fileName);
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          URL.revokeObjectURL(href); // 释放临时的文件URL资源
+        })
+        .catch(err => {
+          message.error(err);
+        });
+    };
+
     //自定义下载框
-    const getDownloadBox = (
-      colSpan,
-      label,
-      labelCol,
-      wrapperCol,
-      boxMarginLeft
-    ) => {
+    const getDownloadBox = (colSpan, label, labelCol, wrapperCol, boxMarginLeft, clickRowData) => {
+      // console.log('clickRowData', clickRowData)
+
+      const { CKZL } = clickRowData
+      const obj = JSON.parse(CKZL)
+      const { items: fileListArrArr } = obj
+
       return (
-        <div className='intelProperty_getDownload' style={{ marginLeft: boxMarginLeft ? boxMarginLeft : '' }}>
+        <div className='intelProperty_getDownload_AwardHonor' style={{ marginLeft: boxMarginLeft ? boxMarginLeft : '' }}>
           <Col span={colSpan}>
             <Form.Item label={label} labelCol={{ span: labelCol }} wrapperCol={{ span: wrapperCol }}>
               <div className='intelProperty_getDownloadBox'>
-                {docTemplateList.length !== 0 &&
-                  docTemplateList.map((item) => {
+                {
+                  fileListArrArr.map((itemArr) => {
                     return (
                       <div className='getDownloadBoxitem' >
                         <div className='leftBox'>
@@ -696,9 +695,12 @@ export default connect(({ global = {} }) => ({
                         </div>
 
                         <div className='rightBox'>
-                          <a className='rightBox_content' href={item.url} title={item.fileName} download>{item.fileName}</a>
+                          <div className='rightBox_content'
+                            onClick={() => {
+                              handleSingleDownload(clickRowData.ID, itemArr[0], itemArr[1])
+                            }}>{itemArr[1]}</div>
                           <Icon className='rightBox_btn' type="download" onClick={() => {
-                            downloadHandle(item.url)
+                            handleSingleDownload(clickRowData.ID, itemArr[0], itemArr[1])
                           }} />
                         </div>
                       </div>
@@ -929,7 +931,8 @@ export default connect(({ global = {} }) => ({
                 fromPrjDetail,
                 parentRow,
                 userBasicInfo,
-                isGLY
+                isGLY,
+                tableData
               }}
               funcProps={{ setUpldData, setIsTurnRed, getFieldValue, }}
             />

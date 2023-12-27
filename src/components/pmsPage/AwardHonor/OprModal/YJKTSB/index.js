@@ -1,6 +1,13 @@
 import React, { useEffect, Fragment, useState } from 'react';
-import { Row, Collapse, Icon, Spin } from 'antd';
+import { Row, Collapse, Icon, Spin, message } from 'antd';
 import { QueryAwardAndHonorList, } from '../../../../../services/pmsServices';
+import config from '../../../../../utils/config';
+import axios from 'axios';
+const { api } = config;
+const {
+  pmsServices: { queryFileStream },
+} = api;
+
 
 export default function YJKTSB(props) {
   const { components = {}, dataProps = {}, funcProps = {} } = props;
@@ -14,6 +21,7 @@ export default function YJKTSB(props) {
     fromPrjDetail = false,
     parentRow = {},
     isGLY,
+    tableData
   } = dataProps;
 
   const { setUpldData, setIsTurnRed, getFieldValue, } = funcProps;
@@ -73,6 +81,7 @@ export default function YJKTSB(props) {
     }
   }
 
+
   useEffect(() => {
     if (!parentRow.JXJB || !parentRow.FQDW || !parentRow.SBJZRQ || !parentRow.FQDW | !parentRow.SBJZRQ) {
       searchCollapseInfo().catch((err) => {
@@ -81,6 +90,7 @@ export default function YJKTSB(props) {
       })
     }
   }, [])
+
 
 
   return (
@@ -117,18 +127,21 @@ export default function YJKTSB(props) {
                 value: parentRow.KTMC,
                 labelCol,
                 wrapperCol,
+                isRequired: false
               })}
 
             {/* parentRow是只读属性，无法修改 */}
             {parentRow.FQDW
-              ? getGrayDiv(12, '发起单位', labelCol, wrapperCol, parentRow.FQDW)
-              : collapseInfo.FQDW && getGrayDiv(12, '发起单位', labelCol, wrapperCol, collapseInfo.FQDW)}
+              ? getGrayDiv(12, '发起单位', labelCol, wrapperCol, parentRow.FQDW, '',)
+              : collapseInfo.FQDW && getGrayDiv(12, '发起单位', labelCol, wrapperCol, collapseInfo.FQDW, '',)}
 
             {parentRow.SBJZRQ
-              ? getGrayDiv(12, '申报截止日期', labelCol, wrapperCol, dateFormater(parentRow.SBJZRQ), true)
-              : collapseInfo.SBJZRQ && getGrayDiv(12, '申报截止日期', labelCol, wrapperCol, dateFormater(collapseInfo.SBJZRQ), true)}
+              ? getGrayDiv(12, '申报截止日期', labelCol, wrapperCol, dateFormater(parentRow.SBJZRQ), true, '6px')
+              : collapseInfo.SBJZRQ && getGrayDiv(12, '申报截止日期', labelCol, wrapperCol, dateFormater(collapseInfo.SBJZRQ), true, '6px')}
 
-            {getDownloadBox(24, '示例材料', 3, 21, '-11px')}
+            {parentRow.CKZL
+              ? getDownloadBox(24, '参考资料', 3, 21, '-10px', parentRow)
+              : collapseInfo.CKZL && getDownloadBox(24, '参考资料', 3, 21, '-10px', collapseInfo)}
           </Row>
 
 

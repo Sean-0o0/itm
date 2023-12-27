@@ -445,15 +445,19 @@ const TableBox = props => {
   return (
     <>
       <div className="table-box">
-        <OprModal
-          visible={modalData.visible}
-          setVisible={v => setModalData(p => ({ ...p, visible: v }))}
-          oprType={modalData.oprType}
-          type={activeKey}
-          rowData={modalData.rowData}
-          refresh={handleModalRefresh}
-          isGLY={isGLY}
-        />
+        {
+          modalData.visible &&
+          <OprModal
+            visible={modalData.visible}
+            setVisible={v => setModalData(p => ({ ...p, visible: v }))}
+            oprType={modalData.oprType}
+            type={activeKey}
+            rowData={modalData.rowData}
+            refresh={handleModalRefresh}
+            isGLY={isGLY}
+          />
+        }
+
         <div className="filter-row">
           <div className="console-item">
             <div className="item-label">{getInputName(activeKey)}</div>

@@ -27,16 +27,17 @@ export default function RJZZ(props) {
   } = components;
   const labelCol = 6;
   const wrapperCol = 18;
-
+  const rowGutter = 32
 
   return (
     <Fragment>
-      <Row gutter={32}>
-        <div className='IntelProperty-newAddPane' style={{ marginLeft: '-3px' }}>
-          {getGrayDiv(24, '申报说明', 3, 21, props.dictionary.ZSCQSBSM[0].note)}
+      <Row gutter={rowGutter}>
+        <div className='IntelProperty-newAddPane' style={{ marginLeft: '-3px', marginBottom: '-7px' }}>
+          {getGrayDiv(24, '申报说明', 3, 21, props.dictionary.ZSCQSBSM[0].note, '', '6px')}
 
-          {getDownloadBox(24, '示例材料', 3, 21,)}
+          {getDownloadBox(24, '参考材料', 3, 21, '14px')}
         </div>
+
 
         {fromPrjDetail !== false //便是入口为项目详情，这时值为{xmmc,xmid}
           ? getInputDisabled({
@@ -61,6 +62,7 @@ export default function RJZZ(props) {
           })}
 
         {getInput('软件名称', 'name', rowData.NAME, labelCol, wrapperCol, 50)}
+
 
         {getInput('版本号', 'bbh', rowData.BBH, labelCol, wrapperCol, 10)}
 

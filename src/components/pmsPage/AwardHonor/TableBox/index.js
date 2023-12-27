@@ -736,7 +736,7 @@ const TableBox = props => {
           data={modalData}
           refresh={handleModalRefresh}
           isGLY={isGLY}
-          tableData2={{ asdasd: 'asdas' }}
+          tableData={tableData}
         />
         <div className="filter-row">
           <div className="console-item">
