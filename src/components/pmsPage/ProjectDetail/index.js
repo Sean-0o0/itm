@@ -113,6 +113,7 @@ export default connect(({ global = {} }) => ({
   const [isGLY, setIsGLY] = useState({
     hjry: false,
     zscq: false,
+    rypj: false, //人员评价
   }); //是否管理员
   // var s = 0;
   // var e = 0;
@@ -275,6 +276,7 @@ export default connect(({ global = {} }) => ({
         setIsGLY({
           zscq: JSON.parse(roleData.testRole || '{}').ALLROLE?.includes('知识产权管理员'),
           hjry: JSON.parse(roleData.testRole || '{}').ALLROLE?.includes('获奖荣誉管理员'),
+          rypj: JSON.parse(roleData.testRole || '{}').ALLROLE?.includes('人员评价管理员'),
         });
         //灰度测试
         const testRole = JSON.parse(roleData.testRole || '{}');

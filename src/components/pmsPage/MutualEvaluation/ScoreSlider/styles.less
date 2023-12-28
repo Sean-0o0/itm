@@ -1,0 +1,144 @@
+.sliderWrapper {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  user-select: none;
+  font-family: PingFangSC, PingFang SC;
+  font-weight: 400;
+  font-size: 12px;
+  width: 311px;
+}
+
+.sliderBox {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.sliderItem {
+  position: relative;
+  height: 24px;
+  width: 24px;
+  line-height: 24px;
+  text-align: center;
+  // border: 1px solid #e1e1e1;
+  background-color: #f0f2f5;
+  color: #c0c4cc;
+  margin-left: 2px;
+  transition: background-color 0.3s ease-in-out, background-image 0.3s ease-in-out,
+    color 0.3s ease-in-out;
+  cursor: pointer;
+  flex-shrink: 0;
+
+  &:first-child {
+    border-radius: 4px 0 0 4px;
+    margin-left: 0;
+  }
+
+  &:last-child {
+    border-radius: 0 4px 4px 0;
+  }
+}
+
+// .sliderItemBg {
+//   position: absolute;
+//   top: 0;
+//   left: 0;
+//   height: 24px;
+//   width: 24px;
+//   background-color: #f0f2f5;
+//   transition: background-color 0.3s ease-in-out, background-image 0.3s ease-in-out,
+//     color 0.3s ease-in-out;
+//   cursor: pointer;
+
+//   &:first-child {
+//     border-radius: 4px 0 0 4px;
+//   }
+//   &:nth-last-child(2) {
+//     border-radius: 0 4px 4px 0;
+//   }
+//   z-index: -1;
+// }
+
+.sliderItemHalfHovered {
+  background-image: linear-gradient(to right, #819efaaf 50%, transparent 50%);
+  color: #fff;
+}
+
+.sliderItemHovered {
+  background-image: linear-gradient(to right, #819efaaf 100%, transparent 0%);
+  color: #fff;
+
+  // &::after,
+  // &::before {
+  //   animation: fade-in 0.3s ease-in-out forwards;
+  // }
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+}
+
+.sliderItemSlted {
+  background-color: #3361ff;
+  color: #fff;
+}
+
+.sliderItemHalfSlted {
+  background-image: linear-gradient(to right, #3361ff 50%, #f0f2f5 50%);
+  color: #fff;
+}
+
+.scoreNum {
+  color: #3361ff;
+  font-size: 16px;
+  font-weight: bold;
+  margin-left: 16px;
+}
+
+.sliderItemTooltip {
+  text-align: center;
+  & > div {
+    & > div {
+      &:first-child {
+        background-color: transparent;
+        &::before {
+          background-color: #3361ff;
+        }
+      }
+      &:last-child {
+        text-align: center;
+        background-color: #3361ff;
+        color: #fff;
+      }
+    }
+  }
+}
+
+.sliderItemBar {
+  position: absolute;
+  top: -4px;
+  left: 0px;
+  height: 32px;
+  width: 2px;
+  border-radius: 1px;
+  background-color: #3361ff;
+  cursor: pointer;
+  transition: background-color 0.3s ease-in-out;
+  &:hover {
+    background-color: #819efaaf;
+  }
+}
+
+.backToZero {
+  width: 2px;
+  height: 32px;
+  background-color: transparent;
+  cursor: pointer;
+}

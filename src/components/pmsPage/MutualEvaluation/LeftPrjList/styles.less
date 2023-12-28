@@ -1,0 +1,105 @@
+.prjListBox {
+  height: calc(100% - 64px);
+  overflow: hidden;
+  overflow-y: auto;
+  &::-webkit-scrollbar {
+    width: 10px;
+    background-color: #ffffff;
+    border-radius: 5px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: #dbdfe6;
+    border-radius: 5px;
+  }
+}
+
+.prjItem {
+  padding: 16px 0 0 24px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: background-color 0.3s ease-in-out;
+  &:hover {
+    background-color: #9bb1fe1a;
+  }
+}
+
+.itemTop {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  font-family: PingFangSC, PingFang SC;
+}
+
+.itemName {
+  font-size: 16px;
+  font-weight: bold;
+  color: #303133;
+  line-height: 24px;
+  flex-grow: 1;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.statusTag {
+  flex-shrink: 0;
+  padding: 0 8px;
+  background-color: #c0c4cc;
+  border-radius: 4px 0px 0px 4px;
+  font-size: 12px;
+  font-weight: 400;
+  color: #ffffff;
+  line-height: 20px;
+  height: 20px;
+}
+
+.itemMiddle {
+  //项目标签
+  width: 100%;
+  color: #606266;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-top: 4px;
+}
+
+.tagItem {
+  color: #3361ff;
+  font-size: 12px;
+  border: 1px solid rgba(51, 97, 255, 0.3);
+  border-radius: 4px;
+  background-color: #3363ff14;
+  padding: 1px 8px 2px 8px;
+  margin-right: 8px;
+  // max-width: 88px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  line-height: initial;
+  flex-shrink: 0;
+  cursor: pointer;
+
+  &:hover {
+    font-weight: bold;
+  }
+
+  &:last-child {
+    margin-right: 0;
+  }
+}
+
+.itemBottom {
+  margin-top: 8px;
+  font-family: PingFangSC, PingFang SC;
+  padding-bottom: 16px;
+  margin-right: 16px;
+  box-shadow: inset 0px -1px 0px 0px #ebeef5;
+}
+
+.grayTxtItem {
+  font-size: 12px;
+  font-weight: 400;
+  color: #909399;
+  line-height: 20px;
+}

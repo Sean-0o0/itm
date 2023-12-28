@@ -279,6 +279,17 @@ export default connect(({ global }) => ({
     }
   };
 
+  //人员评价
+  const jumpToMutualValuation = item => {
+    //带项目名称过去模糊搜索
+    window.location.href = `/#/pms/manage/MutualEvaluation/${EncryptBase64(
+      JSON.stringify({
+        xmmc: item.xmmc,
+        routes: [{ name: '个人工作台', pathname: location.pathname }],
+      }),
+    )}`;
+  };
+
   //打开跟踪信息编辑弹窗
   const openTrackingEditModal = item => {
     if (item.kzzd && item.kzzd !== '') {
@@ -393,6 +404,8 @@ export default connect(({ global }) => ({
         return jumpToCustomReportDetail(item);
       case '项目概况信息未填写':
         return openTrackingEditModal(item);
+      case '开启人员评分':
+        return jumpToMutualValuation(item);
 
       //暂不处理
       case '外包人员录用信息提交':

@@ -13,6 +13,7 @@ import {
   FetchQueryCustomReportList,
   QueryProjectTracking,
   QueryProjectDraft,
+  QueryWeekday,
 } from '../../../services/pmsServices';
 import CptBudgetCard from './CptBudgetCard';
 import GuideCard from './GuideCard';
@@ -118,13 +119,39 @@ export default function HomePage(props) {
   useEffect(() => {
     if (LOGIN_USER_INFO.id !== undefined) {
       s = performance.now();
-      handlePromiseAll();
+      getDefaultYear();
     }
     return () => {};
   }, [LOGIN_USER_INFO.id]);
 
+  //获取默认年份
+  const getDefaultYear = () => {
+    setIsSpinning(true);
+    QueryWeekday({
+      begin: 20600101,
+      days: 31,
+      queryType: 'YSCKNF',
+    })
+      .then(res => {
+        if (res?.success) {
+          const data = JSON.parse(res.result);
+          if (data.length > 0) {
+            const year = data[0].YSCKNF ? moment(String(data[0].YSCKNF), 'YYYY') : moment();
+            handlePromiseAll(year.year());
+            //默认统计年份
+            setStatisticYearData(p => ({ ...p, currentYear: year.year() }));
+          }
+        }
+      })
+      .catch(e => {
+        console.error('🚀默认年份', e);
+        message.error('默认年份获取失败', 1);
+        setIsSpinning(false);
+      });
+  };
+
   //初次加载
-  const handlePromiseAll = async (year = moment().year()) => {
+  const handlePromiseAll = async (year = statisticYearData.currentYear) => {
     try {
       setIsSpinning(true);
       //获取用户角色
@@ -329,7 +356,7 @@ export default function HomePage(props) {
           });
         }
         if (sysNoticeResData.success) {
-            setNoticeData([...sysNoticeResData.record]);
+          setNoticeData([...sysNoticeResData.record]);
         }
         if (overviewResData1.success && overviewResData2.success) {
           setOverviewInfo({

@@ -34,21 +34,21 @@ const ProjecDetail = props => {
     }
   }
   //去重 考虑到从标签详情页面回退到项目详情页面的情况
-  // const newArr = [];
-  // let name = [];
-  // for (let i = 0; i < routes2.length; i++) {
-  //   //判断在id这个数组中有没有找到id
-  //   if (name.indexOf(routes2[i].name) === -1) {
-  //     //把id用push存进id这个数组中
-  //     name.push(routes2[i].name);
-  //     newArr.push(routes2[i]);
-  //   }
-  // }
+  const newArr = [];
+  let name = [];
+  for (let i = 0; i < routes2.length; i++) {
+    //判断在id这个数组中有没有找到id
+    if (name.indexOf(routes2[i].name) === -1) {
+      //把id用push存进id这个数组中
+      name.push(routes2[i].name);
+      newArr.push(routes2[i]);
+    }
+  }
   // console.log('🚀 ~ file: index.js ~ line 12 ~ ProjecDetail ~ routes2', newArr);
 
   return (
     <Fragment>
-      <ProjectDetailTab dictionary={dictionary} routes={routes2} xmid={xmid}></ProjectDetailTab>
+      <ProjectDetailTab dictionary={dictionary} routes={newArr} xmid={xmid}></ProjectDetailTab>
     </Fragment>
   );
 };
