@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Modal, message, Popover } from 'antd';
 import moment from 'moment';
-import { FinishProject, QueryIteProjectList, QueryUserRole } from '../../../../services/pmsServices';
+import { FinishProject, QueryIteProjectList, QueryUserRole, QueryEmployeeAppraiseList } from '../../../../services/pmsServices';
 import AttendanceRegister from './AttendanceRegister';
 import NewProjectModelV2 from '../../../../pages/workPlatForm/singlePage/NewProjectModelV2';
 import { EncryptBase64 } from '../../../Common/Encrypt';
@@ -279,10 +279,29 @@ export default function ShortcutCard(props) {
 
   /** 判断是否展示人员互评弹窗 */
   const judgeMutualEvaluationShow = async () => {
+    //判断有没有评价列表
+    const hasEvaluationData = async () => {
+      let queryRes = false
+      const queryListParams = {
+        "queryType": "XMGK",
+        "userType": "XMJL"
+      }
+      const listRes = await QueryEmployeeAppraiseList(queryListParams)
+      if (listRes.code === 1) {
+        const { gkResult } = listRes
+        const listObj = JSON.parse(gkResult)
+        if (listObj.length !== 0) {
+          queryRes = true
+        }
+      }
+      return queryRes
+    }
+
+    //判断是否项目人员
     const judgeIsMember = () => {
       let isInclude = false
       member.forEach((item) => {
-        if (item.RYID === String(LOGIN_USER_INFO.id)) {
+        if (item.RYID === String(LOGIN_USER_INFO.id)) { //项目经理一定是项目成员
           isInclude = true
         }
       })
@@ -294,7 +313,9 @@ export default function ShortcutCard(props) {
       const { role: loginRole } = res
       //互评按钮，仅项目人员可看，角色为信息技术事业部领导和一级部门领导的不能看
       if (loginRole !== '信息技术事业部领导' && loginRole !== '一级部门领导' && judgeIsMember() === true) {
-        setIsMutualEvaluationIconShow(true)
+        //同时还得有数据
+        const hasData = await hasEvaluationData()
+        hasData && setIsMutualEvaluationIconShow(true)
       }
     }
   }
@@ -425,6 +446,8 @@ export default function ShortcutCard(props) {
             : getShortcutItem('mutualEvaluation', '人员互评', () => { mutualEvaluationClick(false) },)
           )
         }
+
+
 
       </div>
 
