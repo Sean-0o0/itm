@@ -36,7 +36,7 @@ export default function KJJXSB(props) {
   const wrapperCol = 18;
   const rowGutter = 32
 
-  const [collapseInfo, setCollapseInfo] = useState({})
+  const [collapseInfo, setCollapseInfo] = useState({}) //查询出来的信息
 
   // 使用父组件的setIsSpinning会被状态重置(竞态)；要用也可以，监听父组件isSpining所改变的变量，!isSpining的情况才发新的async请求
   const [isLoading, setIsLoading] = useState(false)
@@ -62,9 +62,9 @@ export default function KJJXSB(props) {
     return formatDate
   }
 
-  const searchCollapseInfo = async () => {
+  const searchCollapseInfo = async (awardName) => {
     const params = {
-      "awardName": parentRow.JXMC,
+      "awardName": awardName ? awardName : parentRow.JXMC,
       "tab": "KJJX",
       "current": 1,
       "pageSize": 20,
@@ -93,7 +93,12 @@ export default function KJJXSB(props) {
   }, [])
 
   useEffect(() => {
-
+    if (!!fromPrjDetail === true && singleSelectorSelectedTitleRef.current !== '') {
+      searchCollapseInfo(singleSelectorSelectedTitleRef.current).catch((err) => {
+        message.error(`查询科技奖项详情信息失败${err}`, 2)
+        setIsLoading(false)
+      })
+    }
   }, [singleSelectorSelectedTitleRef.current])
 
   return (
@@ -141,6 +146,9 @@ export default function KJJXSB(props) {
                 : collapseInfo.JXJB && getGrayDiv(12, '奖项级别', labelCol, wrapperCol, judgeAwardLevel(collapseInfo.JXJB), '',)
               )
             }
+            {!!fromPrjDetail === true && singleSelectorSelectedTitleRef.current !== ''
+              && collapseInfo.JXJB && getGrayDiv(12, '奖项级别', labelCol, wrapperCol, judgeAwardLevel(collapseInfo.JXJB), '',)
+            }
           </Row>
 
           <Row gutter={rowGutter}>
@@ -150,12 +158,18 @@ export default function KJJXSB(props) {
                 : collapseInfo.FQDW && getGrayDiv(12, '发起单位', labelCol, wrapperCol, collapseInfo.FQDW, '', '6px')
               )
             }
+            {!!fromPrjDetail === true && singleSelectorSelectedTitleRef.current !== ''
+              && collapseInfo.FQDW && getGrayDiv(12, '发起单位', labelCol, wrapperCol, collapseInfo.FQDW, '', '6px')
+            }
 
             {fromPrjDetail === false &&
               (parentRow.SBJZRQ
                 ? getGrayDiv(12, '申报截止日期', labelCol, wrapperCol, dateFormater(parentRow.SBJZRQ), true, '6px')
                 : collapseInfo.SBJZRQ && getGrayDiv(12, '申报截止日期', labelCol, wrapperCol, dateFormater(collapseInfo.SBJZRQ), true, '6px')
               )
+            }
+            {!!fromPrjDetail === true && singleSelectorSelectedTitleRef.current !== ''
+              && collapseInfo.SBJZRQ && getGrayDiv(12, '申报截止日期', labelCol, wrapperCol, dateFormater(collapseInfo.SBJZRQ), true, '6px')
             }
 
           </Row>
@@ -167,7 +181,9 @@ export default function KJJXSB(props) {
                 : collapseInfo.CKZL && getDownloadBox(24, '参考资料', 3, 21, '-4px', collapseInfo)
               )
             }
-
+            {!!fromPrjDetail === true && singleSelectorSelectedTitleRef.current !== ''
+              && collapseInfo.CKZL && getDownloadBox(24, '参考资料', 3, 21, '-4px', collapseInfo)
+            }
           </Row>
 
         </Collapse.Panel>

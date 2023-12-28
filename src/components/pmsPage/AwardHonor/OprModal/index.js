@@ -360,8 +360,12 @@ export default connect(({ global = {} }) => ({
             })(
               <Select placeholder="请选择" optionFilterProp="children" showSearch allowClear
                 onChange={(value, option) => {
-                  const { children: text } = option.props
-                  singleSelectorSelectedTitleRef.current = text
+                  if (option !== undefined) {
+                    const { children: text } = option.props
+                    singleSelectorSelectedTitleRef.current = text
+                  } else {
+                    singleSelectorSelectedTitleRef.current = ''
+                  }
                 }}
               >
                 {sltArr.map(x => (

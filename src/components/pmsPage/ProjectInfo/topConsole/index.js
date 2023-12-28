@@ -58,7 +58,7 @@ export default forwardRef(function TopConsole(props, ref) {
 
 
   useEffect(() => {
-    // getFilterData();
+    getFilterData();
     return () => { };
   }, [projectManager]);
 
