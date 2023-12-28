@@ -22,8 +22,7 @@ export default forwardRef(function TopConsole(props, ref) {
   const [budgetValue, setBudgetValue] = useState(undefined); //关联预算-为了重置
   const [budgetType, setBudgetType] = useState('1'); //关联预算类型id
   const [label, setLabel] = useState([]); //项目标签
-  const [prjName, setPrjName] = useState(undefined);   //项目名称（下拉框） ---弃用
-  const [projectName, setProjectName] = useState(undefined) //项目名称（输入框）
+  const [prjName, setPrjName] = useState(undefined);   //项目名称（下拉框）
 
   // const [prjMnger, setPrjMnger] = useState(undefined); //项目经理
   const [org, setOrg] = useState([]); //应用部门
@@ -59,7 +58,7 @@ export default forwardRef(function TopConsole(props, ref) {
 
 
   useEffect(() => {
-    getFilterData();
+    // getFilterData();
     return () => { };
   }, [projectManager]);
 
@@ -76,7 +75,7 @@ export default forwardRef(function TopConsole(props, ref) {
       budgetValue,
       budgetType,
       label,
-      // prjName,
+      prjName,
       prjMnger,
       org,
       prjType,
@@ -266,11 +265,11 @@ export default forwardRef(function TopConsole(props, ref) {
       params.budgetProject = Number(budget);
       params.budgetType = Number(budgetType);
     }
-    // if (prjName !== undefined && prjName !== '') {
+    // if (prjName !== undefined && prjName !== '') { //原本下拉框的代码
     //   params.projectId = Number(prjName);
     // }
-    if (projectName !== undefined && projectName !== '') {
-      params.projectName = projectName
+    if (prjName !== undefined && prjName !== '') {  //输入框
+      params.projectName = prjName
     }
     if (prjMnger !== undefined && prjMnger !== '') {
       params.projectManager = Number(prjMnger);
@@ -333,8 +332,8 @@ export default forwardRef(function TopConsole(props, ref) {
     setBudgetValue(undefined); //关联预算-单纯为了重置
     setBudgetType('1'); //预算类型
     setLabel([]); //项目标签
-    // setPrjName(undefined); //项目名称
-    setProjectName(undefined)
+    setPrjName(undefined); //项目名称
+    // setProjectName(undefined)
     setPrjMnger(undefined); //项目经理
     setOrg([]); //应用部门
     setPrjType(undefined); //项目类型
@@ -360,7 +359,7 @@ export default forwardRef(function TopConsole(props, ref) {
     // if (v === undefined) v = '';
     setPrjMnger(v);
   };
-  //项目名称
+  //项目名称 --原本的下拉框
   // const handlePrjNameChange = v => {
   //   // console.log('handlePrjMngerChange', v);
   //   // if (v === undefined) v = '';
@@ -478,9 +477,9 @@ export default forwardRef(function TopConsole(props, ref) {
             filterOption={(input, option) =>
               option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
             }
-            showSearch
+            showSearch   
             allowClear
-            onChange={handlePrjNameChange}
+            onChange={handlePrjNameChange}   
             value={prjName}
             placeholder="请选择"
           >
@@ -495,10 +494,10 @@ export default forwardRef(function TopConsole(props, ref) {
             className="item-selector"
             allowClear
             placeholder="请输入"
-            value={projectName}
+            value={prjName}
             onChange={(e) => {
               const { target: { value: val } } = e
-              setProjectName(val)
+              setPrjName(val)
             }}
           >
           </Input>

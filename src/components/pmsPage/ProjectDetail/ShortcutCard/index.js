@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Modal, message, Popover } from 'antd';
 import moment from 'moment';
-import { FinishProject, QueryIteProjectList } from '../../../../services/pmsServices';
+import { FinishProject, QueryIteProjectList, QueryUserRole } from '../../../../services/pmsServices';
 import AttendanceRegister from './AttendanceRegister';
 import NewProjectModelV2 from '../../../../pages/workPlatForm/singlePage/NewProjectModelV2';
 import { EncryptBase64 } from '../../../Common/Encrypt';
@@ -22,18 +22,26 @@ export default function ShortcutCard(props) {
     showKQXX = false,
     isGLY = {},
     grayTest = {},
-    is_XMJL_FXMJL = false,
+    is_XMJL_FXMJL = false, // 是否是项目经理或者副项目经理
   } = dataProps;
+
   const { prjBasic = {}, member = [], contrastArr = [] } = prjData;
+
   const { getPrjDtlData, setIsSpinning, handlePromiseAll, setShowSCDD } = funcProps;
+
   let LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
+
   const [modalVisible, setModalVisible] = useState({
     attendanceRegister: false,
     createIterationPrj: false,
     intelProperty: false,
     awardHonor: false,
     prjFinish: false, //项目完结
+    mutualEvaluation: false // 人员互评
   }); //弹窗显隐
+
+  const [isMutualEvaluationIconShow, setIsMutualEvaluationIconShow] = useState(false) //是否显示人员互评图标
+
   const [IPAHData, setIPAHData] = useState({
     oprType: 'ADD',
     rowData: undefined,
@@ -42,6 +50,7 @@ export default function ShortcutCard(props) {
     fromPrjDetail: false, //入口是否在项目详情
     parentRow: undefined, //申报行的父行数据{}
   }); //知识产权、获奖荣誉
+
   const history = useHistory();
   const flowers = useRef(null);
 
@@ -80,7 +89,14 @@ export default function ShortcutCard(props) {
     return arr.includes(String(LOGIN_USER_INFO.id));
   };
 
-  //获取快捷方式块
+  /**
+   * 获取快捷方式块
+   * @param {*} imgTxt 图片名称
+   * @param {*} txt  文字标题
+   * @param {*} fn 图片点击的回调函数
+   * @param {*} content 鼠标hover显示的可选列表
+   * @returns 
+   */
   const getShortcutItem = (imgTxt, txt, fn, content) => {
     return (
       <div className="shortcut-item" onClick={fn}>
@@ -187,7 +203,7 @@ export default function ShortcutCard(props) {
     }));
   };
 
-  //知识产权、获奖荣誉选项
+  //知识产权选项
   const intelPropertyMenu = (
     <div className="list">
       <div className="item" key="RJZZ" onClick={() => handleAddIntelProperty('RJZZ')}>
@@ -204,6 +220,8 @@ export default function ShortcutCard(props) {
       </div>
     </div>
   );
+
+  //获奖荣誉选项
   const awardHonorMenu = (
     <div className="list">
       <div className="item" key="KJJX" onClick={() => handleAddAwardHonor('KJJX')}>
@@ -215,12 +233,82 @@ export default function ShortcutCard(props) {
     </div>
   );
 
+  /** 人员互评选项 */
+  const mutualEvaluationMenu = (
+    <div className="list">
+      <div className="item" key="RYHP" onClick={() => { switchToEmployeePage('evaluation') }}>
+        人员互评
+      </div>
+      <div className="item" key="PJZTGL" onClick={() => { switchToEmployeePage('manage') }}>
+        评价状态管理
+      </div>
+    </div>
+  );
+
   //跳转
   const handleModalRefresh = (name, obj = {}) => {
     history.push({
       pathname: `/pms/manage/${name}/${EncryptBase64(JSON.stringify(obj))}`,
     });
   };
+
+  /**
+   * 人员互评跳转
+   * @param {*} switchType  evaluation：互评  manage：评价管理
+   */
+  const switchToEmployeePage = (switchType) => {
+    if (switchType === 'evaluation') {
+      //传参项目名称到人员互评界面
+      console.log('prjData', prjData)
+    }
+    else if (switchType === 'manage') {
+      //弹窗展示评价状态管理页面
+
+    }
+
+  }
+
+  /**
+   * 点击人员互评
+   */
+  const mutualEvaluationClick = (isMemuShow) => {
+    if (isMemuShow === false) {
+      switchToEmployeePage('evaluation')
+    }
+  }
+
+  /** 判断是否展示人员互评弹窗 */
+  const judgeMutualEvaluationShow = async () => {
+    const judgeIsMember = () => {
+      let isInclude = false
+      member.forEach((item) => {
+        if (item.RYID === String(LOGIN_USER_INFO.id)) {
+          isInclude = true
+        }
+      })
+      return isInclude
+    }
+    const { id } = LOGIN_USER_INFO
+    const res = await QueryUserRole({ userId: id })
+    if (res.code === 1) {
+      const { role: loginRole } = res
+      //互评按钮，仅项目人员可看，角色为信息技术事业部领导和一级部门领导的不能看
+      if (loginRole !== '信息技术事业部领导' && loginRole !== '一级部门领导' && judgeIsMember() === true) {
+        setIsMutualEvaluationIconShow(true)
+      }
+    }
+  }
+
+  useEffect(() => {
+    if (member.length !== 0) {
+      judgeMutualEvaluationShow().catch((err) => {
+        message.error(`判断是否展示人员互评图标失败${err}`, 2)
+      })
+    }
+  }, [member])
+
+
+
 
   //目前 非项目成员 无快捷入口
   if (!isMember()) return null;
@@ -235,6 +323,7 @@ export default function ShortcutCard(props) {
         ZYXMKQLX={ZYXMKQLX}
         handlePromiseAll={handlePromiseAll}
       />
+
       {/* 知识产权 */}
       {modalVisible.intelProperty && (
         <OprIPModal
@@ -248,6 +337,7 @@ export default function ShortcutCard(props) {
           isGLY={isGLY.zscq}
         />
       )}
+
       {/* 获奖荣誉 */}
       {modalVisible.awardHonor && (
         <OprAHModal
@@ -258,6 +348,7 @@ export default function ShortcutCard(props) {
           isGLY={isGLY.hjry}
         />
       )}
+
       {/* 生成迭代新建项目 */}
       <Modal
         wrapClassName="editMessage-modify xbjgEditStyle"
@@ -304,22 +395,39 @@ export default function ShortcutCard(props) {
           }} //生成迭代需要用的参数
         />
       </Modal>
+
       {/* 项目完结 */}
       <PrjFinishModal
         visible={modalVisible.prjFinish}
         setVisible={v => setModalVisible(p => ({ ...p, prjFinish: v }))}
         data={{ xmid, xmjd: prjBasic.XMJD, contrastArr, refresh: handlePrjFinishRefresh }}
       />
+
       <div className="content">
-        {is_XMJL_FXMJL && getShortcutItem('zscq', '知识产权', () => {}, intelPropertyMenu)}
-        {is_XMJL_FXMJL && getShortcutItem('hjry', '获奖荣誉', () => {}, awardHonorMenu)}
+        {is_XMJL_FXMJL && getShortcutItem('zscq', '知识产权', () => { }, intelPropertyMenu)}
+
+        {is_XMJL_FXMJL && getShortcutItem('hjry', '获奖荣誉', () => { }, awardHonorMenu)}
+
         {showKQXX && isMember() && getShortcutItem('kqdj', '考勤登记', handleAttendanceRegister)}
+
         {is_XMJL_FXMJL && showSCDD && getShortcutItem('scdd', '生成迭代', createIterationPrj)}
+
         {is_XMJL_FXMJL &&
           grayTest.DDMK &&
           prjBasic.WJZT !== '1' &&
           getShortcutItem('xmwj', '项目完结', () => handlePrjFinish(xmid))}
+
+        {isMutualEvaluationIconShow &&
+          (is_XMJL_FXMJL
+            // 项目经理和副项目经理点击时，出现浮窗，可选人员互评或评价状态管理
+            ? getShortcutItem('mutualEvaluation', '人员互评', () => { mutualEvaluationClick(true) }, mutualEvaluationMenu)
+            // 普通人员 直接跳转人员评价页面
+            : getShortcutItem('mutualEvaluation', '人员互评', () => { mutualEvaluationClick(false) },)
+          )
+        }
+
       </div>
+
       <canvas
         ref={flowers}
         height={400}

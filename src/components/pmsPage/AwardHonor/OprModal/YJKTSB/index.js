@@ -21,7 +21,8 @@ export default function YJKTSB(props) {
     fromPrjDetail = false,
     parentRow = {},
     isGLY,
-    tableData
+    tableData,
+    singleSelectorSelectedTitleRef
   } = dataProps;
 
   const { setUpldData, setIsTurnRed, getFieldValue, } = funcProps;
@@ -83,9 +84,6 @@ export default function YJKTSB(props) {
 
 
   useEffect(() => {
-
-
-
     if (!parentRow.FQDW || !parentRow.SBJZRQ || !parentRow.CKZL) {
       searchCollapseInfo().catch((err) => {
         message.error(`查询研究课题详情信息失败${err}`, 2)
@@ -93,8 +91,6 @@ export default function YJKTSB(props) {
       })
     }
   }, [])
-
-
 
 
   return (
@@ -113,6 +109,7 @@ export default function YJKTSB(props) {
         >
           <Row gutter={rowGutter}>
             {fromPrjDetail !== false
+              // 从 项目详情进入
               ? getSingleSelector({
                 label: '选择课题',
                 dataIndex: 'awardId',
@@ -124,6 +121,7 @@ export default function YJKTSB(props) {
                 valueField: 'ID',
                 titleField: 'KTMC',
               })
+              // 从其他地方进入
               : getInputDisabled({
                 label: '选择课题',
                 dataIndex: 'awardId',
@@ -135,21 +133,29 @@ export default function YJKTSB(props) {
               })}
 
             {/* parentRow是只读属性，无法修改 */}
-            {parentRow.FQDW
-              ? getGrayDiv(12, '发起单位', labelCol, wrapperCol, parentRow.FQDW, '',)
-              : collapseInfo.FQDW && getGrayDiv(12, '发起单位', labelCol, wrapperCol, collapseInfo.FQDW, '',)}
+            {fromPrjDetail === false &&
+              (parentRow.FQDW
+                ? getGrayDiv(12, '发起单位', labelCol, wrapperCol, parentRow.FQDW, '',)
+                : collapseInfo.FQDW && getGrayDiv(12, '发起单位', labelCol, wrapperCol, collapseInfo.FQDW, '',)
+              )
+            }
 
           </Row>
 
           <Row gutter={rowGutter}>
-            {parentRow.SBJZRQ
-              ? getGrayDiv(12, '申报截止日期', labelCol, wrapperCol, dateFormater(parentRow.SBJZRQ), true, '6px')
-              : collapseInfo.SBJZRQ && getGrayDiv(12, '申报截止日期', labelCol, wrapperCol, dateFormater(collapseInfo.SBJZRQ), true, '6px')
+            {fromPrjDetail === false &&
+              (parentRow.SBJZRQ
+                ? getGrayDiv(12, '申报截止日期', labelCol, wrapperCol, dateFormater(parentRow.SBJZRQ), true, '6px')
+                : collapseInfo.SBJZRQ && getGrayDiv(12, '申报截止日期', labelCol, wrapperCol, dateFormater(collapseInfo.SBJZRQ), true, '6px')
+              )
             }
 
-            {parentRow.CKZL
-              ? getDownloadBox(24, '参考资料', 3, 21, '-10px', parentRow)
-              : collapseInfo.CKZL && getDownloadBox(24, '参考资料', 3, 21, '-10px', collapseInfo)}
+            {fromPrjDetail === false &&
+              (parentRow.CKZL
+                ? getDownloadBox(24, '参考资料', 3, 21, '-10px', parentRow)
+                : collapseInfo.CKZL && getDownloadBox(24, '参考资料', 3, 21, '-10px', collapseInfo)
+              )
+            }
           </Row>
 
 

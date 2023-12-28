@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   Button,
   Form,
@@ -73,6 +73,8 @@ export default connect(({ global = {} }) => ({
       tableData: [],
     }); //下拉框数据
     const [upldError, setUpldError] = useState([]); //附件报红数据
+
+    const singleSelectorSelectedTitleRef = useRef('') //getSingleSelector选中项的值---用于加载数据
 
     useEffect(() => {
       if (visible && rowData !== undefined) {
@@ -332,7 +334,6 @@ export default connect(({ global = {} }) => ({
       );
     };
 
-
     //单选普通下拉框
     const getSingleSelector = ({
       label,
@@ -357,7 +358,12 @@ export default connect(({ global = {} }) => ({
                 },
               ],
             })(
-              <Select placeholder="请选择" optionFilterProp="children" showSearch allowClear>
+              <Select placeholder="请选择" optionFilterProp="children" showSearch allowClear
+                onChange={(value, option) => {
+                  const { children: text } = option.props
+                  singleSelectorSelectedTitleRef.current = text
+                }}
+              >
                 {sltArr.map(x => (
                   <Select.Option key={x[valueField]} value={x[valueField]}>
                     {x[titleField]}
@@ -902,7 +908,8 @@ export default connect(({ global = {} }) => ({
                 parentRow,
                 userBasicInfo,
                 isGLY,
-                JXJB
+                JXJB,
+                singleSelectorSelectedTitleRef
               }}
               funcProps={{ setUpldData, setIsTurnRed, getFieldValue, }}
             />
@@ -931,7 +938,8 @@ export default connect(({ global = {} }) => ({
                 parentRow,
                 userBasicInfo,
                 isGLY,
-                tableData
+                tableData,
+                singleSelectorSelectedTitleRef
               }}
               funcProps={{ setUpldData, setIsTurnRed, getFieldValue, }}
             />
