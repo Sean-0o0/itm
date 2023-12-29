@@ -403,24 +403,24 @@ exports.routes = [
     path: `${prefix}/MutualEvaluationSituation`,
     component: './pmsPage/MutualEvaluationSituation',
   },
-  // {
-  //   // 统计分析 - 预算结转
-  //   path: `${prefix}/BudgetCarryover/:params`,
-  //   component: './pmsPage/BudgetCarryover',
-  // },
-  // {
-  //   // 统计分析 - 预算结转
-  //   path: `${prefix}/BudgetCarryover`,
-  //   component: './pmsPage/BudgetCarryover',
-  // },
-  // {
-  //   // 预算结转 - 预算填报
-  //   path: `${prefix}/BudgetSubmit/:params`,
-  //   component: './pmsPage/BudgetSubmit',
-  // },
-  // {
-  //   // 预算结转 - 预算填报
-  //   path: `${prefix}/BudgetSubmit`,
-  //   component: './pmsPage/BudgetSubmit',
-  // },
+  {
+    // 统计分析 - 预算结转
+    path: `${prefix}/BudgetCarryover/:params`,
+    component: './pmsPage/BudgetCarryover',
+  },
+  {
+    // 统计分析 - 预算结转
+    path: `${prefix}/BudgetCarryover`,
+    component: './pmsPage/BudgetCarryover',
+  },
+  {
+    // 预算结转 - 预算填报
+    path: `${prefix}/BudgetSubmit/:params`,
+    component: './pmsPage/BudgetSubmit',
+  },
+  {
+    // 预算结转 - 预算填报
+    path: `${prefix}/BudgetSubmit`,
+    component: './pmsPage/BudgetSubmit',
+  },
 ];

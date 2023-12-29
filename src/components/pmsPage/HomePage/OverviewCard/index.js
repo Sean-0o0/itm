@@ -292,15 +292,39 @@ export default connect(({ global }) => ({
 
   //预算结转
   const jumpToBudgetCarryover = (item = {}) => {
+    let xmmc = item.xmmc;
+    if (
+      (item.kzzd !== '' && item.sxmc === '预算审核被退回') ||
+      item.sxmc === '项目预算结转待查看'
+    ) {
+      xmmc = JSON.parse(item.kzzd || '{}').YSXM || '';
+    }
     //带项目名称过去模糊搜索
     window.location.href = `/#/pms/manage/BudgetCarryover/${EncryptBase64(
       JSON.stringify({
         fromHome: true, //来自首页的
-        xmmc: item.xmmc,
+        xmmc,
         tab: item.sxmc === '预算审核被退回' ? 'ZB' : 'YSJZ', //目前3个，只有 预算审核被退回 是 ZB tab
         routes: [{ name: '个人工作台', pathname: location.pathname }],
       }),
     )}`;
+    if (item.sxmc === '项目预算结转待查看') {
+      UpdateMessageState({
+        zxlx: 'EXECUTE',
+        xxid: item.xxid,
+      })
+        .then((ret = {}) => {
+          const { code = 0, note = '', record = [] } = ret;
+          if (code === 1) {
+            //刷新数据
+            reflush();
+          }
+        })
+        .catch(error => {
+          message.error('操作失败', 1);
+          console.error('项目预算结转待查看', !error.success ? error.message : error.note);
+        });
+    }
   };
 
   //打开跟踪信息编辑弹窗

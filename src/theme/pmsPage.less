@@ -26519,7 +26519,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
           margin-right: 1px;
           width: 40px;
           text-align: center;
-          white-space: wrap;
+          white-space: normal;
           padding: 8px 12px;
           height: unset;
           max-height: 200px;
@@ -26698,7 +26698,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
                   line-height: 22px;
                   // text-overflow: ellipsis;
                   // overflow: hidden;
-                  white-space: wrap;
+                  white-space: normal;
 
                   span {
                     color: #303133;
@@ -27335,6 +27335,14 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
       overflow: hidden;
       flex-direction: column;
 
+      .breadcrumb-box {
+        height: 52px;
+        display: flex;
+        align-items: center;
+        flex-shrink: 0;
+        padding-left: 24px;
+      }
+
       & > .content-box {
         position: relative;
         display: flex;
@@ -27345,8 +27353,19 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
         flex-direction: column;
         overflow: hidden;
         overflow-y: auto;
-        margin: 24px 24px 0 24px;
+        margin: 0 24px;
         padding: 16px 24px 0 24px;
+
+        .ant-input[disabled],
+        .ant-radio-disabled + span,
+        .ant-input-number-disabled,
+        .ant-select-disabled {
+          color: #303133;
+        }
+
+        .ant-input-number-disabled:hover {
+          border-color: #d9d9d9;
+        }
 
         .budget-submit-col {
           width: 33.33%;
@@ -27417,7 +27436,9 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
             align-items: center;
             justify-content: space-between;
             transition: color 0.3s;
-            &:first-child{
+            color: #303133;
+
+            &:first-child {
               margin-top: 0px;
             }
 

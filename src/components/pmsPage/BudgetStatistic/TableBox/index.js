@@ -432,6 +432,7 @@ const TableBox = props => {
         budgetId: filterData.budgetPrj !== undefined ? Number(filterData.budgetPrj) : undefined,
         org: filterData.org !== undefined ? Number(filterData.org) : undefined,
         director: filterData.director,
+        sort: '',
       });
     }
     return;

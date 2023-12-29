@@ -162,6 +162,8 @@ function VisitedRoutes(props) {
       /^\/pms\/manage\/InnovationContract/,
       /^\/pms\/manage\/InnovationContractEdit/,
       /^\/pms\/manage\/InnovationContractView/,
+      /^\/pms\/manage\/BudgetSubmit/,
+      /^\/pms\/manage\/Carryover/,
     ];
     regExpArr.forEach(regExp => {
       matchFilter(regExp);
@@ -333,6 +335,14 @@ function VisitedRoutes(props) {
               {
                 title: '人员评价情况',
                 urlEnd: 'MutualEvaluationSituation',
+              },
+              {
+                title: '预算录入',
+                urlEnd: 'BudgetCarryover',
+              },
+              {
+                title: '预算填报',
+                urlEnd: 'BudgetSubmit',
               },
             ];
             urlEndArr.forEach(x => {
