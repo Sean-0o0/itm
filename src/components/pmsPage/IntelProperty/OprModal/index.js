@@ -306,8 +306,10 @@ export default connect(({ global = {} }) => ({
       })
       if (res.code === 1) {
         const obj = JSON.parse(res.result)
-        const { FJ: fileList } = obj[0]
-        setDocTemplateList(fileList)
+        if (obj.length !== 0) {
+          const { FJ: fileList } = obj[0]
+          'FJ' in obj[0] && fileList?.length !== 0 && setDocTemplateList(fileList)
+        }
       }
       setIsSpinning(false);
     }

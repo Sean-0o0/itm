@@ -4,6 +4,7 @@ import { QueryProjectListPara, QueryProjectListInfo } from '../../../../services
 import TreeUtils from '../../../../utils/treeUtils';
 import moment from 'moment';
 import { setParentSelectableFalse } from '../../../../utils/pmsPublicUtils';
+
 const { Option } = Select;
 
 export default forwardRef(function TopConsole(props, ref) {
@@ -22,8 +23,7 @@ export default forwardRef(function TopConsole(props, ref) {
   const [budgetValue, setBudgetValue] = useState(undefined); //关联预算-为了重置
   const [budgetType, setBudgetType] = useState('1'); //关联预算类型id
   const [label, setLabel] = useState([]); //项目标签
-  const [prjName, setPrjName] = useState(undefined);   //项目名称（下拉框）
-
+  const [prjName, setPrjName] = useState(undefined);   //项目名称
   // const [prjMnger, setPrjMnger] = useState(undefined); //项目经理
   const [org, setOrg] = useState([]); //应用部门
   const [prjType, setPrjType] = useState(undefined); //项目类型
@@ -34,12 +34,13 @@ export default forwardRef(function TopConsole(props, ref) {
   const [labelOpen, setLabelOpen] = useState(false); //下拉框展开
   const [orgOpen, setOrgOpen] = useState(false); //下拉框展开
 
+  // const [isYearOpen, setIsYearOpen] = useState(false) // 是否打开年面板
+  const [undertakingDepartmentObj, setUndertakingDepartmentObj] = useState({ // 承接部门
+    data: [],
+    isOpen: false,
+  })
 
-  const [isYearOpen, setIsYearOpen] = useState(false) // 是否打开年面板
-
-
-  const {
-    setTableLoading,
+  const { setTableLoading,
     setTableData,
     projectManager,
     setTotal,
@@ -51,9 +52,12 @@ export default forwardRef(function TopConsole(props, ref) {
     setQueryType,
     prjMnger,
     setPrjMnger,
-    year,
-    setYear,
-    defaultYearRef
+    // year,
+    // setYear,
+    // defaultYearRef
+    dateRange,
+    setDateRange,
+    defaultDateRangeRef
   } = props;
 
 
@@ -70,6 +74,7 @@ export default forwardRef(function TopConsole(props, ref) {
         handleReset,
       };
     },
+    //筛选栏的每个组件的值都得转发到父组件，否则切换分页的时候状态丢失
     [
       budget,
       budgetValue,
@@ -83,7 +88,8 @@ export default forwardRef(function TopConsole(props, ref) {
       ltAmount,
       minAmount,
       maxAmount,
-      year
+      // year,
+      dateRange
     ],
   );
 
@@ -258,9 +264,12 @@ export default forwardRef(function TopConsole(props, ref) {
       sort,
       total: -1,
       queryType,
-      year: moment.isMoment(year) ? new Date(year.valueOf()).getFullYear() : '',
+      // year: moment.isMoment(year) ? new Date(year.valueOf()).getFullYear() : '', //年
     };
-
+    if (dateRange.length !== 0) {
+      params.startTime = moment(dateRange[0]).format('YYYYMMDD');//日期区间
+      params.endTime = moment(dateRange[1]).format('YYYYMMDD');
+    }
     if (budget !== undefined && budget !== '') {
       params.budgetProject = Number(budget);
       params.budgetType = Number(budgetType);
@@ -299,18 +308,22 @@ export default forwardRef(function TopConsole(props, ref) {
         params.amountBig = Number(ltAmount);
       }
     }
-    if (org.length !== 0) {
-      params.orgId = org.map(x => x.value).join(';|;');
-    }
     // if (org !== undefined && org !== '') {
     //   params.orgId = Number(org);
     // }
+    if (org.length !== 0) {
+      params.orgId = org.map(x => x.value).join(';|;'); //应用部门
+    }
+    if (undertakingDepartmentObj.data.length !== 0) {
+      params.undertakingDepartment = Number(undertakingDepartmentObj.data[0].value) //承接部门
+    }
     if (label.length !== 0) {
       params.projectLabel = label.join(';|;');
     }
     if (prjType !== undefined && prjType !== '') {
       params.projectType = Number(prjType);
     }
+
     QueryProjectListInfo(params)
       .then(res => {
         if (res?.success) {
@@ -320,8 +333,7 @@ export default forwardRef(function TopConsole(props, ref) {
         }
       })
       .catch(e => {
-        console.error('handleSearch', e);
-        message.error('查询项目列表失败', 1);
+        message.error(`查询项目列表失败${e}`, 1);
         setTableLoading(false);
       });
   };
@@ -333,7 +345,6 @@ export default forwardRef(function TopConsole(props, ref) {
     setBudgetType('1'); //预算类型
     setLabel([]); //项目标签
     setPrjName(undefined); //项目名称
-    // setProjectName(undefined)
     setPrjMnger(undefined); //项目经理
     setOrg([]); //应用部门
     setPrjType(undefined); //项目类型
@@ -341,7 +352,9 @@ export default forwardRef(function TopConsole(props, ref) {
     setMinAmount(undefined); //项目金额，最小
     setMaxAmount(undefined); //项目金额，最大
     setLtAmount(undefined); //项目金额，小于
-    setYear(defaultYearRef.current); //默认年
+    // setYear(defaultYearRef.current); //默认年
+    setDateRange(defaultDateRangeRef.current); //默认日期区间
+    setUndertakingDepartmentObj({ data: [], isOpen: false }) // 承接部门
   };
 
   // onChange-start
@@ -413,6 +426,19 @@ export default forwardRef(function TopConsole(props, ref) {
     // console.log('handleBtAmountChange', v.target.value);
     setMaxAmount(v.target.value);
   };
+  /** 承接部门————值变化 */
+  const undertakingDepartmentObjChangeHandle = (newArr) => {
+    if (newArr.length === 0) {
+      setUndertakingDepartmentObj({ ...undertakingDepartmentObj, data: [] })
+    }
+    if (newArr.length === 1) {
+      setUndertakingDepartmentObj({ ...undertakingDepartmentObj, data: newArr })
+    }
+    if (newArr.length === 2) {
+      const formatArr = [newArr[1]]
+      setUndertakingDepartmentObj({ ...undertakingDepartmentObj, data: formatArr })
+    }
+  }
   // onChange-end
 
 
@@ -422,8 +448,19 @@ export default forwardRef(function TopConsole(props, ref) {
       <div className="item-box">
 
         <div className="console-item">
-          <div className="item-label">项目年份</div>
-          <DatePicker
+          <div className="item-label">项目日期</div>
+          <DatePicker.RangePicker
+            className="item-selector"
+            placeholder={['开始日期', '结束日期']}
+            allowClear
+            value={dateRange}
+            onChange={(dates, dateStrings) => {
+              setDateRange(dates)
+            }}
+          >
+          </DatePicker.RangePicker>
+
+          {/* <DatePicker
             mode="year"
             className="item-selector"
             value={year}
@@ -441,10 +478,8 @@ export default forwardRef(function TopConsole(props, ref) {
             onOpenChange={(futureStatus) => {
               setIsYearOpen(futureStatus)
             }}
-          />
+          /> */}
         </div>
-
-
 
 
         <div className="console-item">
@@ -471,25 +506,6 @@ export default forwardRef(function TopConsole(props, ref) {
 
         <div className="console-item">
           <div className="item-label">项目名称</div>
-          {/* <Select
-            className="item-selector"
-            dropdownClassName={'item-selector-dropdown'}
-            filterOption={(input, option) =>
-              option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-            }
-            showSearch   
-            allowClear
-            onChange={handlePrjNameChange}   
-            value={prjName}
-            placeholder="请选择"
-          >
-            {prjNameData.map((x, i) => (
-              <Option key={i} value={x.XMID}>
-                {x.XMMC}
-              </Option>
-            ))}
-          </Select> */}
-
           <Input
             className="item-selector"
             allowClear
@@ -502,13 +518,30 @@ export default forwardRef(function TopConsole(props, ref) {
           >
           </Input>
 
-
+          {/* <Select
+            className="item-selector"
+            dropdownClassName={'item-selector-dropdown'}
+            filterOption={(input, option) =>
+              option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+            }
+            showSearch
+            allowClear
+            onChange={handlePrjNameChange}
+            value={prjName}
+            placeholder="请选择"
+          >
+            {prjNameData.map((x, i) => (
+              <Option key={i} value={x.XMID}>
+                {x.XMMC}
+              </Option>
+            ))}
+          </Select> */}
         </div>
 
         <Button
           className="btn-search"
           type="primary"
-          onClick={() => handleSearch(curPage, curPageSize, prjMnger, 'ALL')}
+          onClick={() => handleSearch(1, curPageSize, prjMnger, 'ALL')}
         >
           查询
         </Button>
@@ -573,35 +606,32 @@ export default forwardRef(function TopConsole(props, ref) {
         </div>
 
         <div className="console-item">
-          <div className="item-label">应用部门</div>
+          <div className="item-label">承接部门</div>
           <TreeSelect
             allowClear
             showArrow
+            multiple={true}
             className="item-selector"
             showSearch
-            treeCheckable
-            maxTagCount={2}
-            maxTagTextLength={42}
-            maxTagPlaceholder={extraArr => {
-              return `等${extraArr.length + 2}个`;
-            }}
+            treeDefaultExpandedKeys={['1', '8857']}
             showCheckedStrategy={TreeSelect.SHOW_ALL}
             treeCheckStrictly
             treeNodeFilterProp="title"
             dropdownClassName="newproject-treeselect"
             dropdownStyle={{ maxHeight: 300, overflow: 'auto' }}
-            treeData={orgData}
             placeholder="请选择"
-            onChange={handleOrgChange}
-            value={org}
-            treeDefaultExpandedKeys={['1', '8857']}
-            open={orgOpen}
-            onDropdownVisibleChange={v => setOrgOpen(v)}
+            treeCheckable
+            treeData={orgData}
+            value={undertakingDepartmentObj.data}
+            onChange={(value, label, extra) => {
+              undertakingDepartmentObjChangeHandle(value)
+            }}
+            open={undertakingDepartmentObj.isOpen}
+            onDropdownVisibleChange={(open) => {
+              setUndertakingDepartmentObj({ ...undertakingDepartmentObj, isOpen: open })
+            }}
           />
-          <Icon
-            type="down"
-            className={'label-selector-arrow' + (orgOpen ? ' selector-rotate' : '')}
-          />
+
         </div>
 
         {filterFold && (
@@ -616,6 +646,39 @@ export default forwardRef(function TopConsole(props, ref) {
       {/* 第三行 */}
       {!filterFold && (
         <div className="item-box">
+
+          <div className="console-item">
+            <div className="item-label">应用部门</div>
+            <TreeSelect
+              allowClear
+              showArrow
+              className="item-selector"
+              showSearch
+              treeCheckable
+              maxTagCount={2}
+              maxTagTextLength={42}
+              maxTagPlaceholder={extraArr => {
+                return `等${extraArr.length + 2}个`;
+              }}
+              showCheckedStrategy={TreeSelect.SHOW_ALL}
+              treeCheckStrictly
+              treeNodeFilterProp="title"
+              dropdownClassName="newproject-treeselect"
+              dropdownStyle={{ maxHeight: 300, overflow: 'auto' }}
+              treeData={orgData}
+              placeholder="请选择"
+              onChange={handleOrgChange}
+              value={org}
+              treeDefaultExpandedKeys={['1', '8857']}
+              open={orgOpen}
+              onDropdownVisibleChange={v => setOrgOpen(v)}
+            />
+            <Icon
+              type="down"
+              className={'label-selector-arrow' + (orgOpen ? ' selector-rotate' : '')}
+            />
+          </div>
+
           <div className="console-item">
             <div className="item-label">关联预算</div>
             <TreeSelect
