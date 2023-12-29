@@ -306,6 +306,7 @@ export default function ShortcutCard(props) {
     const hasEvaluationData = async () => {
       let queryRes = false;
       const queryListParams = {
+        projectName: prjBasic.XMMC,
         queryType: 'XMGK',
         userType: 'XMJL',
       };
@@ -452,14 +453,14 @@ export default function ShortcutCard(props) {
         visible={modalVisible.pjztgl}
         setVisible={v => setModalVisible(p => ({ ...p, pjztgl: v }))}
         routes={routes}
-        refresh={() => {}}
+        refresh={() => { }}
         projectManager={isGLY.rypj ? undefined : Number(LOGIN_USER_INFO.id)}
         projectName={prjBasic.XMMC}
       />
       <div className="content">
-        {is_XMJL_FXMJL && getShortcutItem('zscq', '知识产权', () => {}, intelPropertyMenu)}
+        {is_XMJL_FXMJL && getShortcutItem('zscq', '知识产权', () => { }, intelPropertyMenu)}
 
-        {is_XMJL_FXMJL && getShortcutItem('hjry', '获奖荣誉', () => {}, awardHonorMenu)}
+        {is_XMJL_FXMJL && getShortcutItem('hjry', '获奖荣誉', () => { }, awardHonorMenu)}
 
         {showKQXX && isMember() && getShortcutItem('kqdj', '考勤登记', handleAttendanceRegister)}
 
@@ -474,18 +475,18 @@ export default function ShortcutCard(props) {
           isMutualEvaluationIconShow &&
           (is_XMJL_FXMJL
             ? // 项目经理和副项目经理点击时，出现浮窗，可选人员互评或评价状态管理
-              getShortcutItem(
-                'mutualEvaluation',
-                '人员互评',
-                () => {
-                  mutualEvaluationClick(true);
-                },
-                mutualEvaluationMenu,
-              )
+            getShortcutItem(
+              'mutualEvaluation',
+              '人员互评',
+              () => {
+                mutualEvaluationClick(true);
+              },
+              mutualEvaluationMenu,
+            )
             : // 普通人员 直接跳转人员评价页面
-              getShortcutItem('mutualEvaluation', '人员互评', () => {
-                mutualEvaluationClick(false);
-              }))}
+            getShortcutItem('mutualEvaluation', '人员互评', () => {
+              mutualEvaluationClick(false);
+            }))}
       </div>
 
       <canvas
