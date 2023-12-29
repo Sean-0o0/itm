@@ -148,7 +148,7 @@ export default connect(({ global = {} }) => ({
 
             return treeData;
           }
-          let data = toTreeData(res.record)[0].children[0].children;
+          let data = toTreeData(res.record)[0].children[0].children[0].children;
           data.forEach(node => {
             setParentSelectableFalse(node);
           });
