@@ -345,6 +345,7 @@ export default function ShortcutCard(props) {
         //同时还得有数据
         const hasData = await hasEvaluationData();
         hasData && setIsMutualEvaluationIconShow(true);
+        !hasData && setIsMutualEvaluationIconShow(false);
       }
     }
   };
@@ -453,7 +454,11 @@ export default function ShortcutCard(props) {
         visible={modalVisible.pjztgl}
         setVisible={v => setModalVisible(p => ({ ...p, pjztgl: v }))}
         routes={routes}
-        refresh={() => { }}
+        refresh={() => {
+          judgeMutualEvaluationShow().catch(err => {
+            message.error(`判断是否展示人员互评图标失败${err}`, 2);
+          });
+        }}
         projectManager={isGLY.rypj ? undefined : Number(LOGIN_USER_INFO.id)}
         projectName={prjBasic.XMMC}
       />

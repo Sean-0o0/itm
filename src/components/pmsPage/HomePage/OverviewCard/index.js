@@ -294,8 +294,8 @@ export default connect(({ global }) => ({
   const jumpToBudgetCarryover = (item = {}) => {
     let xmmc = item.xmmc;
     if (
-      (item.kzzd !== '' && item.sxmc === '预算审核被退回') ||
-      item.sxmc === '项目预算结转待查看'
+      item.kzzd !== '' &&
+      (item.sxmc === '预算审核被退回' || item.sxmc === '项目预算结转待查看')
     ) {
       xmmc = JSON.parse(item.kzzd || '{}').YSXM || '';
     }
@@ -466,6 +466,12 @@ export default connect(({ global }) => ({
     setFileAddVisible(false);
   };
 
+  const getXMMC = item => {
+    if ((item.kzzd !== '' && item.sxmc === '预算审核被退回') || item.sxmc === '项目预算结转待查看')
+      return JSON.parse(item.kzzd || '{}').YSXM || '';
+    return item.xmmc;
+  };
+
   //待办块
   const getToDoItem = data => {
     return (
@@ -473,7 +479,7 @@ export default connect(({ global }) => ({
         {data?.map(item => (
           <div className="todo-card-box" key={item.xxid}>
             <div className="todo-card-title">
-              <div className="todo-card-xmmc">{item.xmmc}</div>
+              <div className="todo-card-xmmc">{getXMMC(item)}</div>
               <div className="todo-deal-box">
                 <div
                   className="todo-to-deal"
