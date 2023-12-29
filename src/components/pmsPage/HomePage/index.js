@@ -347,11 +347,24 @@ export default function HomePage(props) {
           });
         }
         if (todoResData.success) {
-          setToDoData([...todoResData.record]);
+          const DDXM_AUTH = JSON.parse(roleData.testRole || '{}').ALLROLE?.includes(
+            '迭代项目灰度测试人员',
+          );
+          let data = [...todoResData.record];
+          if (!DDXM_AUTH) {
+            data = [...todoResData.record].filter(
+              x =>
+                !x.sxmc?.includes('开启人员评分') &&
+                !x.sxmc?.includes('预算审核被退回') &&
+                !x.sxmc?.includes('项目预算结转待查看') &&
+                !x.sxmc?.includes('结转项目被退回'),
+            );
+          }
+          setToDoData(data);
           setTotal(p => {
             return {
               ...p,
-              todo: todoResData.totalrows,
+              todo: data.length,
             };
           });
         }

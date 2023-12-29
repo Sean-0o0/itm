@@ -331,11 +331,14 @@ export default function OpenValuationModal(props) {
   ];
 
   //表格操作后更新数据
-  const handleTableChange = useCallback((pagination = {}) => {
-    const { current = 1, pageSize = 20 } = pagination;
-    getPrjList({ current, pageSize, projectManager });
-    return;
-  }, []);
+  const handleTableChange = useCallback(
+    (pagination = {}) => {
+      const { current = 1, pageSize = 20 } = pagination;
+      getPrjList({ current, pageSize, projectManager, ...filterData });
+      return;
+    },
+    [JSON.stringify(filterData), projectManager],
+  );
 
   //弹窗参数
   const modalProps = {

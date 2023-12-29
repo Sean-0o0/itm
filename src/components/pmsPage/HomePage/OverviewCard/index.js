@@ -280,11 +280,24 @@ export default connect(({ global }) => ({
   };
 
   //人员评价
-  const jumpToMutualValuation = item => {
+  const jumpToMutualValuation = (item = {}) => {
     //带项目名称过去模糊搜索
     window.location.href = `/#/pms/manage/MutualEvaluation/${EncryptBase64(
       JSON.stringify({
         xmmc: item.xmmc,
+        routes: [{ name: '个人工作台', pathname: location.pathname }],
+      }),
+    )}`;
+  };
+
+  //预算结转
+  const jumpToBudgetCarryover = (item = {}) => {
+    //带项目名称过去模糊搜索
+    window.location.href = `/#/pms/manage/BudgetCarryover/${EncryptBase64(
+      JSON.stringify({
+        fromHome: true, //来自首页的
+        xmmc: item.xmmc,
+        tab: item.sxmc === '预算审核被退回' ? 'ZB' : 'YSJZ', //目前3个，只有 预算审核被退回 是 ZB tab
         routes: [{ name: '个人工作台', pathname: location.pathname }],
       }),
     )}`;
@@ -406,6 +419,10 @@ export default connect(({ global }) => ({
         return openTrackingEditModal(item);
       case '开启人员评分':
         return jumpToMutualValuation(item);
+      case '预算审核被退回':
+      case '项目预算结转待查看':
+      case '结转项目被退回':
+        return jumpToBudgetCarryover(item);
 
       //暂不处理
       case '外包人员录用信息提交':
