@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Table, Popover, message, Tooltip } from 'antd';
+import { Button, Table, Popover, message, Tooltip, Popconfirm } from 'antd';
 // import InfoDetail from '../InfoDetail';
 import BridgeModel from '../../../Common/BasicModal/BridgeModel.js';
 import { EncryptBase64 } from '../../../Common/Encrypt';
@@ -140,9 +140,14 @@ export default function InfoTable(props) {
       {/*  />*/}
       {/*)}*/}
       <div className="btn-add-prj-box">
-        {/*<Button type="primary" className="btn-add-prj" onClick={() => setVisible(true)}>*/}
-        {/*  新增*/}
-        {/*</Button>*/}
+        <Popconfirm
+          title="是否确定导出当前查询数据？"
+          onConfirm={() => handleSearch(1, curPageSize, 'ID ASC', columns)}
+        >
+          <Button type="primary" className="btn-add-prj">
+            导出
+          </Button>
+        </Popconfirm>
       </div>
       <div className="project-info-table-box">
         <Table

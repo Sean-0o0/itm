@@ -11,6 +11,16 @@ class InfoTable extends Component {
     gwbm: '',
   };
 
+  componentDidUpdate(prevProps, prevState, snapshot) {
+    if (this.props.defaultYear !== prevProps.defaultYear) {
+      this.setState({
+        activeKey: '0',
+        queryType: 'MX_ALL',
+        gwbm: '',
+      });
+    }
+  }
+
   handleTab = id => {
     let queryType = '';
     let gwbm = '';

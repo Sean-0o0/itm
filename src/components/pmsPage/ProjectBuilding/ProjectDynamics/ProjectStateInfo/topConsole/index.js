@@ -9,6 +9,7 @@ import {
 import TreeUtils from '../../../../../../utils/treeUtils';
 import {set} from 'store';
 import {Link} from "react-router-dom";
+import moment from 'moment';
 
 const InputGroup = Input.Group;
 const {Option} = Select;
@@ -52,13 +53,14 @@ export default forwardRef(function TopConsole(props, ref) {
     prjName,
     setPrjName,
     prjType,
+    defaultYear = moment().year(),
   } = props;
 
   useEffect(() => {
-    getFilterData();
+    getFilterData(defaultYear);
     return () => {
     };
-  }, [projectManager]);
+  }, [projectManager, defaultYear]);
 
   useImperativeHandle(
     ref,
@@ -80,6 +82,7 @@ export default forwardRef(function TopConsole(props, ref) {
       ltAmount,
       minAmount,
       maxAmount,
+      defaultYear,
     ],
   );
 
@@ -187,7 +190,7 @@ export default forwardRef(function TopConsole(props, ref) {
   };
 
   //顶部下拉框查询数据
-  const getFilterData = () => {
+  const getFilterData = (year) => {
     QueryProjectListPara({
       current: 1,
       czr: 0,
@@ -196,6 +199,7 @@ export default forwardRef(function TopConsole(props, ref) {
       sort: '',
       total: -1,
       cxlx: 'XMLB',
+      year: year ?? defaultYear
     })
       .then(res => {
         if (res?.success) {
@@ -261,7 +265,7 @@ export default forwardRef(function TopConsole(props, ref) {
       "totalrowsWJ": -1,
       "totalrowsXWH": -1,
       "totalrowsZBH": -1,
-      "year": 2023
+      "year": defaultYear
     };
     if (prjName !== undefined && prjName !== '') {
       params.projectID = Number(prjName);

@@ -5,6 +5,7 @@ import InfoTable from './InfoTable'
 import {message, Spin, Radio} from 'antd'
 import {QueryProjectDynamics, QueryProjectGeneralInfo, QueryUserRole} from '../../../services/pmsServices'
 import ProjectDynamics from "./ProjectDynamics";
+import moment from 'moment'
 
 class ProjectBuilding extends Component {
   state = {
@@ -77,6 +78,14 @@ class ProjectBuilding extends Component {
       this.state.radioKeys === "项目动态" && this.queryProjectDynamics()
     }
 
+    componentDidUpdate(prevProps, prevState, snapshot) {
+      console.log("🚀 ~ file: index.js:82 ~ ProjectBuilding ~ componentDidUpdate ~ prevProps:", prevProps.defaultYear,this.props.defaultYear)
+      if (this.props.defaultYear !== prevProps.defaultYear) {
+        this.fetchRole();
+        this.handleRadioChange({target:{value:'项目列表'}});
+      }
+    }
+
     fetchRole = () => {
         const LOGIN_USERID = JSON.parse(sessionStorage.getItem("user"))?.id;
         this.setState({
@@ -120,7 +129,10 @@ class ProjectBuilding extends Component {
             queryType: queryType,
             role: role,
             ...pageParam,
-            ...param
+            ...param,
+            year: this.props.defaultYear ?? moment().year(),
+            paging: 1,
+            total: -1,
         }).then(res => {
             const { code = 0, fxxx, jrxz, ryxx, xmxx, note, totalrows: total } = res
             if (code > 0) {
@@ -184,7 +196,7 @@ class ProjectBuilding extends Component {
       "totalrowsWJ": -1,
       "totalrowsXWH": -1,
       "totalrowsZBH": -1,
-      "year": 2023
+      year: this.props.defaultYear ?? moment().year(),
     }
     QueryProjectDynamics({
       ...payload
@@ -379,7 +391,7 @@ class ProjectBuilding extends Component {
             <TopConsole routes={routes}/>
             <div className="overview-box">
               {data.map((item, index) => {
-                return <Overview routes={routes} role={role} orgid={orgid} key={index} data={item} order={index}/>
+                return <Overview routes={routes} defaultYear={this.props.defaultYear} role={role} orgid={orgid} key={index} data={item} order={index}/>
               })
               }
             </div>
@@ -416,11 +428,14 @@ class ProjectBuilding extends Component {
                 //项目动态信息-总办会信息
                 prjDynamicsZBHInfo={prjDynamicsZBHInfo}
                 totalrowsZBH={totalrowsZBH}
+                defaultYear={this.props.defaultYear}
               />
             }
             {
               radioKeys === "项目列表" &&
               <InfoTable xmxx={xmxx} routes={routes} role={role} pageParam={pageParam} tableLoading={tableLoading}
+                         defaultYear={this.props.defaultYear}
+                         radioKeys={radioKeys}
                          fetchData={this.queryProjectGeneralInfo} handleRadioChange={this.handleRadioChange}/>
             }
           </div></Spin>);

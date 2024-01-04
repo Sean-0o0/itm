@@ -4,11 +4,12 @@ import TopConsole from './TopConsole';
 import { Breadcrumb, message } from 'antd';
 import { QueryProjectDynamics } from '../../../../../services/pmsServices';
 import { Link } from 'react-router-dom';
+import moment from 'moment';
 
 const { Item } = Breadcrumb;
 
 export default function ProjectStatisticsInfo(props) {
-  const { cxlx, routes = [] } = props;
+  const { cxlx, routes = [], defaultYear = moment().year() } = props;
   const [tableData, setTableData] = useState([]); //表格数据-项目列表
   const [tableLoading, setTableLoading] = useState(false); //表格加载状态
   const [total, setTotal] = useState(0); //数据总数
@@ -23,13 +24,13 @@ export default function ProjectStatisticsInfo(props) {
     // console.log("1231231312",cxlx)
     if (cxlx !== '') {
       setQueryType(cxlx);
-      getTableData(cxlx);
+      getTableData(cxlx, defaultYear);
     }
     return () => {};
-  }, [cxlx]);
+  }, [cxlx, defaultYear]);
 
   //获取表格数据
-  const getTableData = queryType => {
+  const getTableData = (queryType, year) => {
     setCurPage(1);
     setCurPageSize(20);
     setTableLoading(true);
@@ -51,7 +52,7 @@ export default function ProjectStatisticsInfo(props) {
       totalrowsWJ: -1,
       totalrowsXWH: -1,
       totalrowsZBH: -1,
-      year: 2023,
+      year: year ?? defaultYear
     };
     QueryProjectDynamics({
       ...payload,
@@ -147,6 +148,7 @@ export default function ProjectStatisticsInfo(props) {
         setPrjMnger={setPrjMnger}
         prjName={prjName}
         setPrjName={setPrjName}
+        defaultYear={defaultYear}
       />
       <InfoTable
         routes={routes}

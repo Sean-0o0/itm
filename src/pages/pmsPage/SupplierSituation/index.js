@@ -1,6 +1,7 @@
 import React, { Fragment } from 'react';
 import { connect } from 'dva';
 import SupplierSituationTab from '../../../components/pmsPage/SupplierSituation/index';
+import { DecryptBase64 } from '../../../components/Common/Encrypt';
 const SupplierSituation = props => {
   const {
     match: {
@@ -28,9 +29,17 @@ const SupplierSituation = props => {
       newArr.push(routes2[i]);
     }
   }
+  let jsonParam = {};
+  if (props.match?.params?.params !== undefined) {
+    jsonParam = JSON.parse(DecryptBase64(encryptParams) || '{}');
+  }
   return (
     <Fragment>
-      <SupplierSituationTab dictionary={dictionary} routes={newArr}></SupplierSituationTab>
+      <SupplierSituationTab
+        dictionary={dictionary}
+        routes={newArr}
+        defaultYear={jsonParam.defaultYear}
+      ></SupplierSituationTab>
     </Fragment>
   );
 };

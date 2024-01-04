@@ -4,6 +4,7 @@ import TopConsole from './TopConsole';
 import {QueryProjectListInfo, QueryProjectStatisticsList} from '../../../services/pmsServices';
 import {Breadcrumb, message} from 'antd';
 import {Link} from "react-router-dom";
+import moment from 'moment';
 
 const {Item} = Breadcrumb;
 
@@ -13,7 +14,7 @@ export default function ProjectStatisticsInfo(props) {
   const [total, setTotal] = useState(0); //数据总数
   const [curPage, setCurPage] = useState(1); //当前页码
   const [curPageSize, setCurPageSize] = useState(20); //每页数量
-  const {cxlx, memberID, orgID, routes = []} = props;
+  const {cxlx, memberID, orgID, routes = [], defaultYear = moment().year()} = props;
   const topConsoleRef = useRef(null);
   const [queryType, setQueryType] = useState('BM'); //
   const [prjMnger, setPrjMnger] = useState(undefined); //项目经理
@@ -32,12 +33,12 @@ export default function ProjectStatisticsInfo(props) {
     console.log('🚀 ~ file: index.js:20 ~ useEffect ~ cxlx:', cxlx, orgID, memberID);
     if (cxlx !== '') {
       if (cxlx === 'BM' && orgID !== '') {
-        getTableData({cxlx, memberID, orgID});
+        getTableData({cxlx, memberID, orgID, defaultYear});
         setTabsKey('0')
         setQueryType(cxlx);
       }
       if (cxlx === 'RY' && memberID !== '') {
-        getTableData({cxlx, memberID, orgID});
+        getTableData({cxlx, memberID, orgID, defaultYear});
         setTabsKey('0')
         setQueryType(cxlx);
       }
@@ -55,6 +56,7 @@ export default function ProjectStatisticsInfo(props) {
                                 tabsKey = '0',
                                 memberID,
                                 orgID,
+                                year
                               }) => {
     setTableLoading(true);
     try {
@@ -64,6 +66,7 @@ export default function ProjectStatisticsInfo(props) {
         paging: 1,
         sort,
         total: -1,
+        year: year ?? defaultYear
       }
       if (cxlx !== '') {
         payload.queryType = cxlx;
@@ -145,6 +148,7 @@ export default function ProjectStatisticsInfo(props) {
         prjType={prjType}
         setPrjType={setPrjType}
         tabsKey={tabsKey}
+        defaultYear={defaultYear}
       />
       <InfoTable
         routes={routes}

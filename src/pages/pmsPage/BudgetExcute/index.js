@@ -1,11 +1,18 @@
 import { connect } from 'dva';
 import React, { Component } from 'react';
+import { DecryptBase64 } from '../../../components/Common/Encrypt';
 import BudgetExcute from '../../../components/pmsPage/BudgetExcute';
 
 class BudgetExcutePage extends Component {
   state = {};
   render() {
-    const { dictionary, location = {} } = this.props;
+    const {
+      dictionary,
+      location = {},
+      match: {
+        params: { params: encryptParams = '' },
+      },
+    } = this.props;
     const { pathname = '', state = {} } = location;
     const { routes = [] } = state;
     const item = routes.length ? routes[routes.length - 1] : '';
@@ -15,8 +22,11 @@ class BudgetExcutePage extends Component {
     } else {
       result = routes;
     }
-
-    return <BudgetExcute dictionary={dictionary} routes={result} />;
+    let jsonParam = {};
+    if (this.props.match.params.params !== undefined) {
+      jsonParam = JSON.parse(DecryptBase64(encryptParams) || '{}');
+    }
+    return <BudgetExcute dictionary={dictionary} routes={result} defaultYear={jsonParam.defaultYear} />;
   }
 }
 

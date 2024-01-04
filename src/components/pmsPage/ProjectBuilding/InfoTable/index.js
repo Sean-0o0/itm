@@ -11,6 +11,16 @@ class InfoTable extends Component {
     gwbm: '',
   };
 
+  componentDidUpdate(prevProps, prevState, snapshot) {
+    if (this.props.defaultYear !== prevProps.defaultYear) {
+      this.setState({
+        activeKey: '1',
+        queryType: 'MX_ALL',
+        gwbm: '',
+      });
+    }
+  }
+
   handleTab = id => {
     let queryType = '';
     let gwbm = '';
@@ -40,10 +50,10 @@ class InfoTable extends Component {
   };
 
   operations = () => {
-    const { handleRadioChange } = this.props;
+    const { handleRadioChange, radioKeys="项目列表" } = this.props;
     return (
       <div className="top-tabs-boxs">
-        <Radio.Group defaultValue="项目列表" buttonStyle="solid" onChange={handleRadioChange}>
+        <Radio.Group value={radioKeys} buttonStyle="solid" onChange={handleRadioChange}>
           <Radio.Button value="项目列表">
             <i className="iconfont icon-xmlb" />
             项目列表

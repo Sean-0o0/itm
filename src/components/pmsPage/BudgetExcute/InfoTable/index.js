@@ -10,6 +10,15 @@ class InfoTable extends Component {
     queryType: 'MX_ZB',
   };
 
+  componentDidUpdate(prevProps, prevState, snapshot) {
+    if (this.props.defaultYear !== prevProps.defaultYear) {
+      this.setState({
+        activeKey: 'MX_ZB',
+        queryType: 'MX_ZB',
+      });
+    }
+  }
+
   handleTab = id => {
     let queryType = id;
     this.setState(
@@ -37,6 +46,7 @@ class InfoTable extends Component {
         <Tabs onChange={this.handleTab} type="card" activeKey={activeKey}>
           <TabPane tab="资本性预算" key="MX_ZB">
             <StaffTable
+              defaultYear={this.props.defaultYear}
               routes={routes}
               orgid={orgid}
               role={role}
@@ -51,6 +61,7 @@ class InfoTable extends Component {
           </TabPane>
           <TabPane tab="非资本性预算" key="MX_FZB">
             <StaffTable
+              defaultYear={this.props.defaultYear}
               routes={routes}
               orgid={orgid}
               role={role}
@@ -65,6 +76,7 @@ class InfoTable extends Component {
           </TabPane>
           <TabPane tab="科研预算" key="MX_KY">
             <StaffTable
+              defaultYear={this.props.defaultYear}
               routes={routes}
               orgid={orgid}
               role={role}
@@ -80,6 +92,7 @@ class InfoTable extends Component {
           {role === '二级部门领导' && (
             <TabPane tab="其他支付" key="MX_QT">
               <StaffTable
+                defaultYear={this.props.defaultYear}
                 routes={routes}
                 orgid={orgid}
                 role={role}

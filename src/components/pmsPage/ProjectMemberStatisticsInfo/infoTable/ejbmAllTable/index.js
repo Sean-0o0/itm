@@ -46,6 +46,7 @@ export default function EjbmAllTable(props) {
     bmid,
     activeKeyFlag,
     setActiveKeyFlag,
+    defaultYear,
   } = props; //表格数据
   const location = useLocation();
   // console.log("🚀 ~ file: index.js:15 ~ InfoTable ~ location:", location)
@@ -350,7 +351,7 @@ export default function EjbmAllTable(props) {
     getTableDataMember('EJBM_ALL', item.ORGID)
   }
 
-  const getTableDataMember = (queryType = 'EJBM_ALL', id) => {
+  const getTableDataMember = (queryType = 'EJBM_ALL', id, year) => {
     setMemberLoading(true);
     // YJBM_ALL|全部一级部门（部门id和人员id都不用传）;
     // YJBM_LD|查询对应一级部门下的部门领导数据（传一级部门的id）;
@@ -366,7 +367,8 @@ export default function EjbmAllTable(props) {
       "paging": 1,
       "queryType": queryType,
       "sort": '',
-      "total": -1
+      "total": -1,
+      year: year ?? defaultYear,
     }
     QueryProjectStatistics({
       ...payload
@@ -428,7 +430,7 @@ export default function EjbmAllTable(props) {
           {
             compareRYVisible && (
               <DataComparisonRY userId={userId} closeModal={closeCompareRYVisibleModal}
-                                visible={compareRYVisible}/>
+                                visible={compareRYVisible} defaultYear={defaultYear}/>
             )}
           <div className="info-table-content">
             {
@@ -529,7 +531,7 @@ export default function EjbmAllTable(props) {
           {
             compareBMVisible && (
               <DataComparisonBM orgId={orgId} closeModal={closeCompareBMVisibleModal}
-                                visible={compareBMVisible}/>
+                                visible={compareBMVisible} defaultYear={defaultYear}/>
             )}
           <div className="info-table-content">
             {
@@ -623,7 +625,7 @@ export default function EjbmAllTable(props) {
           {
             compareRYVisible && (
               <DataComparisonRY userId={userId} closeModal={closeCompareRYVisibleModal}
-                                visible={compareRYVisible}/>
+                                visible={compareRYVisible} defaultYear={defaultYear}/>
             )}
           <div className="info-table-content">
             {
@@ -724,7 +726,7 @@ export default function EjbmAllTable(props) {
           {
             compareBMVisible && (
               <DataComparisonBM orgId={orgId} closeModal={closeCompareBMVisibleModal}
-                                visible={compareBMVisible}/>
+                                visible={compareBMVisible} defaultYear={defaultYear}/>
             )}
           <div className="info-table-content">
             {

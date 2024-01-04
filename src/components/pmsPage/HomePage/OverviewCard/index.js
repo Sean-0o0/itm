@@ -467,7 +467,7 @@ export default connect(({ global }) => ({
   };
 
   const getXMMC = item => {
-    if ((item.kzzd !== '' && item.sxmc === '预算审核被退回') || item.sxmc === '项目预算结转待查看')
+    if (item.kzzd !== '' && (item.sxmc === '预算审核被退回' || item.sxmc === '项目预算结转待查看'))
       return JSON.parse(item.kzzd || '{}').YSXM || '';
     return item.xmmc;
   };
@@ -827,7 +827,12 @@ export default connect(({ global }) => ({
               unit: '项',
               width: '22%',
               linkTo: {
-                pathname: `/pms/manage/projectBuilding`,
+                pathname: `/pms/manage/projectBuilding/${EncryptBase64(
+                  JSON.stringify({
+                    defaultYear: statisticYearData.currentYear,
+                    routes: [{ name: '个人工作台', pathname: location.pathname }],
+                  }),
+                )}`,
                 state: {
                   routes: [{ name: '个人工作台', pathname: location.pathname }],
                 },
@@ -841,7 +846,12 @@ export default connect(({ global }) => ({
               unit: '人',
               width: '22%',
               linkTo: {
-                pathname: `/pms/manage/departmentOverview`,
+                pathname: `/pms/manage/departmentOverview/${EncryptBase64(
+                  JSON.stringify({
+                    defaultYear: statisticYearData.currentYear,
+                    routes: [{ name: '个人工作台', pathname: location.pathname }],
+                  }),
+                )}`,
                 state: {
                   routes: [{ name: '个人工作台', pathname: location.pathname }],
                 },
@@ -856,7 +866,12 @@ export default connect(({ global }) => ({
               unit: '万元',
               width: '34%',
               linkTo: {
-                pathname: `/pms/manage/BudgetExcute`,
+                pathname: `/pms/manage/BudgetExcute/${EncryptBase64(
+                  JSON.stringify({
+                    defaultYear: statisticYearData.currentYear,
+                    routes: [{ name: '个人工作台', pathname: location.pathname }],
+                  }),
+                )}`,
                 state: {
                   routes: [{ name: '个人工作台', pathname: location.pathname }],
                 },
@@ -870,7 +885,12 @@ export default connect(({ global }) => ({
               unit: '家',
               width: '22%',
               linkTo: {
-                pathname: `/pms/manage/SupplierSituation`,
+                pathname: `/pms/manage/SupplierSituation/${EncryptBase64(
+                  JSON.stringify({
+                    defaultYear: statisticYearData.currentYear,
+                    routes: [{ name: '个人工作台', pathname: location.pathname }],
+                  }),
+                )}`,
                 state: {
                   routes: [{ name: '个人工作台', pathname: location.pathname }],
                 },

@@ -55,6 +55,7 @@ export default function DataComparisonBM(props) {
     orgId = '',
     visible = false,
     closeModal,
+    defaultYear,
   } = props; //表格数据
   const location = useLocation();
 
@@ -62,11 +63,11 @@ export default function DataComparisonBM(props) {
     getOrgData();
     if (orgId !== undefined) {
       setPrjMnger(String(orgId));
-      getTableData('DBM', orgId)
+      getTableData('DBM', orgId, defaultYear)
     }
     return () => {
     }
-  }, [orgId, visible]);
+  }, [orgId, visible, defaultYear]);
   // console.log("🚀 ~ file: index.js:15 ~ InfoTable ~ location:", location)
 
 
@@ -208,7 +209,7 @@ export default function DataComparisonBM(props) {
   };
 
 
-  const getTableData = (queryType = 'DBM', v) => {
+  const getTableData = (queryType = 'DBM', v, year) => {
     setMemberLoading(true);
     console.log("String(v)", String(v))
     // YJBM_ALL|全部一级部门（部门id和人员id都不用传）;
@@ -228,7 +229,8 @@ export default function DataComparisonBM(props) {
       "paging": 1,
       "queryType": queryType,
       "sort": '',
-      "total": -1
+      "total": -1,
+      year: year ?? defaultYear,
     }
     QueryProjectStatistics({
       ...payload

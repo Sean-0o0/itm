@@ -33,6 +33,7 @@ export default function YjbmAllTable(props) {
     setLoading,
     getTableData,
     tabsKeyCallback,
+    defaultYear,
   } = props; //表格数据
   const location = useLocation();
 
@@ -243,7 +244,7 @@ export default function YjbmAllTable(props) {
     getTableData('YJBM_ALL')
   }
 
-  const getTableDataMember = (queryType = 'EJBM_ALL', id) => {
+  const getTableDataMember = (queryType = 'EJBM_ALL', id, year) => {
     setMemberLoading(true);
     // YJBM_ALL|全部一级部门（部门id和人员id都不用传）;
     // YJBM_LD|查询对应一级部门下的部门领导数据（传一级部门的id）;
@@ -259,7 +260,8 @@ export default function YjbmAllTable(props) {
       "paging": 1,
       "queryType": queryType,
       "sort": '',
-      "total": -1
+      "total": -1,
+      year: year ?? defaultYear,
     }
     QueryProjectStatistics({
       ...payload

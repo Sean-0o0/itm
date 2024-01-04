@@ -18,52 +18,57 @@ export default function ProjectInfo(props) {
   const [prjMnger, setPrjMnger] = useState(undefined); //项目经理
   const [isComplete, setIsComplete] = useState(false);
 
-  const [dateRange, setDateRange] = useState([]) //日期区间
+  const [dateRange, setDateRange] = useState([ 
+    moment().subtract(1, 'year').startOf('year'),
+    moment().subtract(1, 'year').endOf('year')
+  ]) //日期区间
+
   const [isQueryDefaultDateRange, setIsQueryDefaultDateRange] = useState(true) // 是否在计算默认日期区间
   const defaultDateRangeRef = useRef([])
+
 
   /**
    * 查询默认日期区间
    */
-  const queryDefaultDateRange = async () => {
-    setIsQueryDefaultDateRange(true)
-    let curYear = new Date().getFullYear()
-    const queryParams = {
-      "budgetType": "ZB",
-      "current": 1,
-      "pageSize": 20,
-      "paging": 1,
-      "queryType": "YSTJ",
-      "sort": "",
-      "total": -1,
-      'year': curYear
-    }
-    const res = await QueryBudgetStatistics(queryParams)
-    if (res.code === 1) {
-      const { budgetInfo } = res
-      const obj = JSON.parse(budgetInfo)
-      if (obj.length === 0) {
-        curYear--;
-      }
-      const startDay = `${curYear}-01-01 00:00:00`
-      const endDay = `${curYear}-12-31 23:59:59`
-      const computedDateRange = [moment(startDay), moment(endDay)]
-      setDateRange(computedDateRange)
-      defaultDateRangeRef.current = computedDateRange
-      setIsQueryDefaultDateRange(false)
-    }
-  }
+  // const queryDefaultDateRange = async () => {
+  //   setIsQueryDefaultDateRange(true)
+  //   let curYear = new Date().getFullYear()
+  //   const queryParams = {
+  //     "budgetType": "ZB",
+  //     "current": 1,
+  //     "pageSize": 20,
+  //     "paging": 1,
+  //     "queryType": "YSTJ",
+  //     "sort": "",
+  //     "total": -1,
+  //     'year': curYear
+  //   }
+  //   const res = await QueryBudgetStatistics(queryParams)
+  //   if (res.code === 1) {
+  //     const { budgetInfo } = res
+  //     const obj = JSON.parse(budgetInfo)
+  //     if (obj.length === 0) {
+  //       curYear--;
+  //     }
+  //     const startDay = `${curYear}-01-01 00:00:00`
+  //     const endDay = `${curYear}-12-31 23:59:59`
+  //     const computedDateRange = [moment(startDay), moment(endDay)]
+  //     setDateRange(computedDateRange)
+  //     defaultDateRangeRef.current = computedDateRange
+  //     setIsQueryDefaultDateRange(false)
+  //   }
+  // }
 
-  useEffect(() => {
-    queryDefaultDateRange().catch((err) => {
-      message.error(`计算默认日期区间失败${err}`, 2)
-      setIsQueryDefaultDateRange(false)
-    })
-  }, [])
+  // useEffect(() => {
+    // queryDefaultDateRange().catch((err) => {
+    //   message.error(`计算默认日期区间失败${err}`, 2)
+    //   setIsQueryDefaultDateRange(false)
+    // })
+  // }, [])
 
-  useEffect(() => {
-    getTableData({})
-  }, [isQueryDefaultDateRange])
+  // useEffect(() => {
+  //   getTableData({})
+  // }, [isQueryDefaultDateRange])
 
   //TIP：——————————————————以下有关year的代码最好不要删；需求在变动，也许又改为按年份匹配；——————————————————
   // const [year, setYear] = useState() //年
@@ -117,6 +122,10 @@ export default function ProjectInfo(props) {
   useEffect(() => {
     setCurPage(1);
     setCurPageSize(20);
+    setDateRange([
+      moment().subtract(1, 'year').startOf('year'),
+      moment().subtract(1, 'year').endOf('year')
+    ]);
     return () => { };
   }, [cxlx]);
 
@@ -140,7 +149,7 @@ export default function ProjectInfo(props) {
   }) => {
     setTableLoading(true);
     try {
-      if (isQueryDefaultDateRange === true) return;
+      // if (isQueryDefaultDateRange === true) return;
       // if(isQueryDefaultYear === true) return;
       const defaultParams = {
         projectManager,

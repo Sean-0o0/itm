@@ -18,6 +18,7 @@ const ProjectStateInfo = props => {
   if (props.match.params.params !== undefined) {
     obj = JSON.parse(DecryptBase64(encryptParams));
     cxlx = obj.cxlx;
+    defaultYear = obj.defaultYear;
     // setParams(JSON.parse(DecryptBase64(encryptParams)));
     // console.log('🚀 ~ file: index.js:20 ~ ProjecDetail ~ obj:', obj);
     // console.log('🚀 ~ file: index.js ~ line 12 ~ ProjecDetail ~ routes', routes);
@@ -51,7 +52,7 @@ const ProjectStateInfo = props => {
 
   return (
     <Fragment>
-      <ProjectStateInfoTab dictionary={props.dictionary} routes={newArr} cxlx={cxlx}/>
+      <ProjectStateInfoTab dictionary={props.dictionary} routes={newArr} cxlx={cxlx} defaultYear={defaultYear}/>
     </Fragment>
   );
 };

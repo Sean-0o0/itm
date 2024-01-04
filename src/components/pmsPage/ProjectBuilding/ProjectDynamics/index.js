@@ -39,6 +39,7 @@ export default function ProjectDynamics(props) {
     prjDynamicsZBHInfo = [],
     totalrowsZBH = 0,
     routes = [],
+    defaultYear = moment().year()
   } = props;
   const location = useLocation();
 
@@ -124,6 +125,7 @@ export default function ProjectDynamics(props) {
                     pathname: `/pms/manage/ProjectStateInfo/${EncryptBase64(
                       JSON.stringify({
                         cxlx: 'XWH',
+                        defaultYear,
                       }),
                     )}`,
                     state: {
@@ -217,6 +219,7 @@ export default function ProjectDynamics(props) {
                     pathname: `/pms/manage/ProjectStateInfo/${EncryptBase64(
                       JSON.stringify({
                         cxlx: 'ZBH',
+                        defaultYear,
                       }),
                     )}`,
                     state: {
@@ -310,6 +313,7 @@ export default function ProjectDynamics(props) {
                     pathname: `/pms/manage/ProjectStateInfo/${EncryptBase64(
                       JSON.stringify({
                         cxlx: 'XMLX',
+                        defaultYear,
                       }),
                     )}`,
                     state: {
@@ -404,6 +408,7 @@ export default function ProjectDynamics(props) {
                     pathname: `/pms/manage/ProjectStateInfo/${EncryptBase64(
                       JSON.stringify({
                         cxlx: 'HTQS',
+                        defaultYear,
                       }),
                     )}`,
                     state: {
@@ -498,6 +503,7 @@ export default function ProjectDynamics(props) {
                     pathname: `/pms/manage/ProjectStateInfo/${EncryptBase64(
                       JSON.stringify({
                         cxlx: 'SXXM',
+                        defaultYear,
                       }),
                     )}`,
                     state: {
@@ -592,6 +598,7 @@ export default function ProjectDynamics(props) {
                     pathname: `/pms/manage/ProjectStateInfo/${EncryptBase64(
                       JSON.stringify({
                         cxlx: 'FKXM',
+                        defaultYear,
                       }),
                     )}`,
                     state: {
@@ -686,6 +693,7 @@ export default function ProjectDynamics(props) {
                     pathname: `/pms/manage/ProjectStateInfo/${EncryptBase64(
                       JSON.stringify({
                         cxlx: 'WJXM',
+                        defaultYear,
                       }),
                     )}`,
                     state: {

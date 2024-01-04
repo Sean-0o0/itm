@@ -58,6 +58,7 @@ class StaffTable extends Component {
       org: orgid,
       queryType: queryType,
       role: role,
+      year: this.props.defaultYear,
     })
       .then(res => {
         const { code = 0, note = '', zbysxmxx, fzbysxmxx, kyysxmxx } = res;
@@ -799,7 +800,7 @@ class StaffTable extends Component {
               // expandIconColumnIndex={1}
               // expandIconAsCell={false}
               footer={tableFooter}
-              rowKey={(row, index) => index + queryType}
+              rowKey={(row, index) => index + queryType + this.props.defaultYear}
               dataSource={tableData}
               onChange={this.handleTableChange}
               pagination={false}

@@ -1,4 +1,11 @@
-import React, { useEffect, useState, forwardRef, useImperativeHandle, useMemo, useRef } from 'react';
+import React, {
+  useEffect,
+  useState,
+  forwardRef,
+  useImperativeHandle,
+  useMemo,
+  useRef,
+} from 'react';
 import { Select, Button, Input, TreeSelect, Row, Col, Icon, message, DatePicker, Spin } from 'antd';
 import { QueryProjectListPara, QueryProjectListInfo } from '../../../../services/pmsServices';
 import TreeUtils from '../../../../utils/treeUtils';
@@ -23,7 +30,7 @@ export default forwardRef(function TopConsole(props, ref) {
   const [budgetValue, setBudgetValue] = useState(undefined); //关联预算-为了重置
   const [budgetType, setBudgetType] = useState('1'); //关联预算类型id
   const [label, setLabel] = useState([]); //项目标签
-  const [prjName, setPrjName] = useState(undefined);   //项目名称
+  const [prjName, setPrjName] = useState(undefined); //项目名称
   // const [prjMnger, setPrjMnger] = useState(undefined); //项目经理
   const [org, setOrg] = useState([]); //应用部门
   const [prjType, setPrjType] = useState(undefined); //项目类型
@@ -33,14 +40,17 @@ export default forwardRef(function TopConsole(props, ref) {
   const [maxAmount, setMaxAmount] = useState(undefined); //项目金额，最大
   const [labelOpen, setLabelOpen] = useState(false); //下拉框展开
   const [orgOpen, setOrgOpen] = useState(false); //下拉框展开
+  const [filterTime, setFilterTime] = useState(''); //filter有变化
 
   // const [isYearOpen, setIsYearOpen] = useState(false) // 是否打开年面板
-  const [undertakingDepartmentObj, setUndertakingDepartmentObj] = useState({ // 承接部门
+  const [undertakingDepartmentObj, setUndertakingDepartmentObj] = useState({
+    // 承接部门
     data: [],
     isOpen: false,
-  })
+  });
 
-  const { setTableLoading,
+  const {
+    setTableLoading,
     setTableData,
     projectManager,
     setTotal,
@@ -57,13 +67,12 @@ export default forwardRef(function TopConsole(props, ref) {
     // defaultYearRef
     dateRange,
     setDateRange,
-    defaultDateRangeRef
+    defaultDateRangeRef,
   } = props;
-
 
   useEffect(() => {
     getFilterData();
-    return () => { };
+    return () => {};
   }, [projectManager]);
 
   useImperativeHandle(
@@ -74,7 +83,7 @@ export default forwardRef(function TopConsole(props, ref) {
         handleReset,
       };
     },
-    //筛选栏的每个组件的值都得转发到父组件，否则切换分页的时候状态丢失
+    //筛选栏的每个组件的值都得转发到父组件，否则切换分页的时候状态丢失 -- 目前有问题
     [
       budget,
       budgetValue,
@@ -88,8 +97,12 @@ export default forwardRef(function TopConsole(props, ref) {
       ltAmount,
       minAmount,
       maxAmount,
+      filterTime,
+      // dateRange,
+      // undertakingDepartmentObj,
       // year,
-      dateRange
+      JSON.stringify(dateRange),
+      JSON.stringify(undertakingDepartmentObj.data),
     ],
   );
 
@@ -251,7 +264,13 @@ export default forwardRef(function TopConsole(props, ref) {
   };
 
   //查询按钮
-  const handleSearch = (current = 1, pageSize = 20, prjMnger = undefined, queryType = 'ALL', sort = 'XMNF DESC,XH DESC,ID DESC',) => {
+  const handleSearch = ({
+    current = 1,
+    pageSize = 20,
+    prjMnger = undefined,
+    queryType = 'ALL',
+    sort = 'XMNF DESC,XH DESC,ID DESC',
+  }) => {
     setTableLoading(true);
     setCurPage(current);
     setCurPageSize(pageSize);
@@ -267,7 +286,7 @@ export default forwardRef(function TopConsole(props, ref) {
       // year: moment.isMoment(year) ? new Date(year.valueOf()).getFullYear() : '', //年
     };
     if (dateRange.length !== 0) {
-      params.startTime = moment(dateRange[0]).format('YYYYMMDD');//日期区间
+      params.startTime = moment(dateRange[0]).format('YYYYMMDD'); //日期区间
       params.endTime = moment(dateRange[1]).format('YYYYMMDD');
     }
     if (budget !== undefined && budget !== '') {
@@ -277,8 +296,9 @@ export default forwardRef(function TopConsole(props, ref) {
     // if (prjName !== undefined && prjName !== '') { //原本下拉框的代码
     //   params.projectId = Number(prjName);
     // }
-    if (prjName !== undefined && prjName !== '') {  //输入框
-      params.projectName = prjName
+    if (prjName !== undefined && prjName !== '') {
+      //输入框
+      params.projectName = prjName;
     }
     if (prjMnger !== undefined && prjMnger !== '') {
       params.projectManager = Number(prjMnger);
@@ -315,7 +335,7 @@ export default forwardRef(function TopConsole(props, ref) {
       params.orgId = org.map(x => x.value).join(';|;'); //应用部门
     }
     if (undertakingDepartmentObj.data.length !== 0) {
-      params.undertakingDepartment = Number(undertakingDepartmentObj.data[0].value) //承接部门
+      params.undertakingDepartment = Number(undertakingDepartmentObj.data[0].value); //承接部门
     }
     if (label.length !== 0) {
       params.projectLabel = label.join(';|;');
@@ -353,8 +373,15 @@ export default forwardRef(function TopConsole(props, ref) {
     setMaxAmount(undefined); //项目金额，最大
     setLtAmount(undefined); //项目金额，小于
     // setYear(defaultYearRef.current); //默认年
-    setDateRange(defaultDateRangeRef.current); //默认日期区间
-    setUndertakingDepartmentObj({ data: [], isOpen: false }) // 承接部门
+    setDateRange([
+      moment()
+        .subtract(1, 'year')
+        .startOf('year'),
+      moment()
+        .subtract(1, 'year')
+        .endOf('year'),
+    ]); //默认日期区间
+    setUndertakingDepartmentObj({ data: [], isOpen: false }); // 承接部门
   };
 
   // onChange-start
@@ -388,6 +415,8 @@ export default forwardRef(function TopConsole(props, ref) {
   const handleLabelChange = v => {
     // console.log('handleLabelChange', v);
     setLabel(p => [...v]);
+    setFilterTime(v.join(';'));
+    console.log('🚀 ~ file: index.js:402 ~ handleLabelChange ~ new Date().getTime():', v.join(';'));
   };
   //应用部门
   const handleOrgChange = v => {
@@ -427,26 +456,24 @@ export default forwardRef(function TopConsole(props, ref) {
     setMaxAmount(v.target.value);
   };
   /** 承接部门————值变化 */
-  const undertakingDepartmentObjChangeHandle = (newArr) => {
+  const undertakingDepartmentObjChangeHandle = newArr => {
     if (newArr.length === 0) {
-      setUndertakingDepartmentObj({ ...undertakingDepartmentObj, data: [] })
+      setUndertakingDepartmentObj({ ...undertakingDepartmentObj, data: [] });
     }
     if (newArr.length === 1) {
-      setUndertakingDepartmentObj({ ...undertakingDepartmentObj, data: newArr })
+      setUndertakingDepartmentObj({ ...undertakingDepartmentObj, data: newArr });
     }
     if (newArr.length === 2) {
-      const formatArr = [newArr[1]]
-      setUndertakingDepartmentObj({ ...undertakingDepartmentObj, data: formatArr })
+      const formatArr = [newArr[1]];
+      setUndertakingDepartmentObj({ ...undertakingDepartmentObj, data: formatArr });
     }
-  }
+  };
   // onChange-end
-
 
   return (
     <div className="top-console">
       {/* 第一行 */}
       <div className="item-box">
-
         <div className="console-item">
           <div className="item-label">项目日期</div>
           <DatePicker.RangePicker
@@ -455,10 +482,9 @@ export default forwardRef(function TopConsole(props, ref) {
             allowClear
             value={dateRange}
             onChange={(dates, dateStrings) => {
-              setDateRange(dates)
+              setDateRange(dates);
             }}
-          >
-          </DatePicker.RangePicker>
+          ></DatePicker.RangePicker>
 
           {/* <DatePicker
             mode="year"
@@ -480,7 +506,6 @@ export default forwardRef(function TopConsole(props, ref) {
             }}
           /> */}
         </div>
-
 
         <div className="console-item">
           <div className="item-label">项目经理</div>
@@ -511,12 +536,13 @@ export default forwardRef(function TopConsole(props, ref) {
             allowClear
             placeholder="请输入"
             value={prjName}
-            onChange={(e) => {
-              const { target: { value: val } } = e
-              setPrjName(val)
+            onChange={e => {
+              const {
+                target: { value: val },
+              } = e;
+              setPrjName(val);
             }}
-          >
-          </Input>
+          ></Input>
 
           {/* <Select
             className="item-selector"
@@ -541,7 +567,14 @@ export default forwardRef(function TopConsole(props, ref) {
         <Button
           className="btn-search"
           type="primary"
-          onClick={() => handleSearch(1, curPageSize, prjMnger, 'ALL')}
+          onClick={() =>
+            handleSearch({
+              current: 1,
+              pageSize: curPageSize,
+              prjMnger: prjMnger,
+              queryType: 'ALL',
+            })
+          }
         >
           查询
         </Button>
@@ -624,14 +657,13 @@ export default forwardRef(function TopConsole(props, ref) {
             treeData={orgData}
             value={undertakingDepartmentObj.data}
             onChange={(value, label, extra) => {
-              undertakingDepartmentObjChangeHandle(value)
+              undertakingDepartmentObjChangeHandle(value);
             }}
             open={undertakingDepartmentObj.isOpen}
-            onDropdownVisibleChange={(open) => {
-              setUndertakingDepartmentObj({ ...undertakingDepartmentObj, isOpen: open })
+            onDropdownVisibleChange={open => {
+              setUndertakingDepartmentObj({ ...undertakingDepartmentObj, isOpen: open });
             }}
           />
-
         </div>
 
         {filterFold && (
@@ -642,11 +674,9 @@ export default forwardRef(function TopConsole(props, ref) {
         )}
       </div>
 
-
       {/* 第三行 */}
       {!filterFold && (
         <div className="item-box">
-
           <div className="console-item">
             <div className="item-label">应用部门</div>
             <TreeSelect
@@ -748,12 +778,10 @@ export default forwardRef(function TopConsole(props, ref) {
             </div>
           </div>
 
-
           <div className="filter-unfold" onClick={() => setFilterFold(true)}>
             收起
             <i className="iconfont icon-up" />
           </div>
-
         </div>
       )}
     </div>

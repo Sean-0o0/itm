@@ -9,9 +9,10 @@ import {
 } from '../../../services/pmsServices';
 import { Spin, Breadcrumb, message } from 'antd';
 import { Link } from 'react-router-dom';
+import moment from 'moment';
 
 export default function SupplierSituation(props) {
-  const { dictionary = [], routes = [] } = props;
+  const { dictionary = [], routes = [], defaultYear = moment().year() } = props;
   let LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
   const { GYSLX, WBRYGW } = dictionary;
   const [isSpinning, setIsSpinning] = useState(false); //加载状态
@@ -20,14 +21,16 @@ export default function SupplierSituation(props) {
   const [total, setTotal] = useState(0); //数据总数
   const [rankingData, setRankingData] = useState([]); //供应商排名数据
   const [uesrRole, setUserRole] = useState(''); //用户角色
+  const [curTab, setCurTab] = useState('MX_ALL'); //当前tab
 
   useEffect(() => {
-    getUserRole();
+    getUserRole(defaultYear);
+    setCurTab('MX_ALL');
     return () => {};
-  }, []);
+  }, [defaultYear]);
 
   //获取用户角色
-  const getUserRole = () => {
+  const getUserRole = year => {
     setIsSpinning(true);
     QueryUserRole({
       userId: String(LOGIN_USER_INFO.id),
@@ -35,7 +38,7 @@ export default function SupplierSituation(props) {
       .then(res => {
         if (res?.code === 1) {
           const { role = '' } = res;
-          getRankingData(role);
+          getRankingData(role, year);
           setUserRole(role);
         }
       })
@@ -45,7 +48,7 @@ export default function SupplierSituation(props) {
       });
   };
   //获取供应商排名数据
-  const getRankingData = role => {
+  const getRankingData = (role, year) => {
     QuerySupplierOverviewInfo({
       org: Number(LOGIN_USER_INFO.org),
       queryType: 'MX',
@@ -55,12 +58,13 @@ export default function SupplierSituation(props) {
       pageSize: 9999,
       total: -1,
       sort: '',
+      year,
     })
       .then(res => {
         if (res?.success) {
           setRankingData(p => [...JSON.parse(res.gysxx)]);
           // console.log('🚀 ~ setRankingData:', JSON.parse(res.gysxx));
-          getTableData({ role });
+          getTableData({ role, year });
         }
       })
       .catch(e => {
@@ -69,9 +73,9 @@ export default function SupplierSituation(props) {
       });
   };
   //获取报表格数据
-  const getTableData = ({ role, queryType = 'MX_ALL', current = 1, pageSize = 10 }) => {
+  const getTableData = ({ role, queryType = 'MX_ALL', current = 1, pageSize = 10, year }) => {
     setTableLoading(true);
-
+    let yearNum = year !== undefined ? year : defaultYear;
     QuerySupplierOverviewInfo({
       org: Number(LOGIN_USER_INFO.org),
       queryType,
@@ -81,6 +85,7 @@ export default function SupplierSituation(props) {
       pageSize,
       total: -1,
       sort: '',
+      year: yearNum,
     })
       .then(res => {
         if (res?.success) {
@@ -132,6 +137,8 @@ export default function SupplierSituation(props) {
           loading={tableLoading}
           role={uesrRole}
           routes={routes}
+          curTab={curTab}
+          setCurTab={setCurTab}
         />
       </Spin>
     </div>

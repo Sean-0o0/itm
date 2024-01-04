@@ -8,10 +8,18 @@ import { QuerySupplierDetailInfo } from '../../../../services/pmsServices';
 const { TabPane } = Tabs;
 
 export default function TableTabs(props) {
-  const { data = [], getData, total = 0, loading = false, role, routes = [] } = props;
+  const {
+    data = [],
+    getData,
+    total = 0,
+    loading = false,
+    role,
+    routes = [],
+    curTab,
+    setCurTab,
+  } = props;
   const [curPage, setCurPage] = useState(0); //当前页码
   const [curPageSize, setCurPageSize] = useState(20); //数据长度
-  const [curTab, setCurTab] = useState('MX_ALL'); //当前tab
   const location = useLocation();
 
   useEffect(() => {
@@ -281,7 +289,7 @@ export default function TableTabs(props) {
   };
   return (
     <div className="table-tabs-box">
-      <Tabs onChange={handleTabsChange} type="card">
+      <Tabs activeKey={curTab} onChange={handleTabsChange} type="card">
         <TabPane tab={`全部项目`} key="MX_ALL">
           {getTableContent({
             columns: tableClm,

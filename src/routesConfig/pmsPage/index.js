@@ -145,6 +145,26 @@ exports.routes = [
   },
   {
     // 统计分析-概览部门
+    path: `${prefix}/DepartmentOverview/:params`,
+    component: './pmsPage/DepartmentOverview',
+  },
+  {
+    // 统计分析-项目建设
+    path: `${prefix}/ProjectBuilding/:params`,
+    component: './pmsPage/ProjectBuilding',
+  },
+  {
+    // 统计分析-预算执行
+    path: `${prefix}/BudgetExcute/:params`,
+    component: './pmsPage/BudgetExcute',
+  },
+  {
+    // 统计分析-供应商情况
+    path: `${prefix}/SupplierSituation/:params`,
+    component: './pmsPage/SupplierSituation',
+  },
+  {
+    // 统计分析-概览部门
     path: `${prefix}/DepartmentOverview`,
     component: './pmsPage/DepartmentOverview',
   },

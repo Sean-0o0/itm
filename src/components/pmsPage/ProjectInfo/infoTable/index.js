@@ -79,18 +79,28 @@ export default function InfoTable(props) {
 
   //表格操作后更新数据
   const handleTableChange = (pagination, filters, sorter, extra) => {
-
     // console.log('    yaer,    yaer,', year)
-
     const { current = 1, pageSize = 20 } = pagination;
     if (sorter.order !== undefined) {
       if (sorter.order === 'ascend') {
-        handleSearch(current, pageSize, prjMnger, queryType, 'YSJE ASC,XH DESC,ID DESC');
+        handleSearch({
+          current,
+          pageSize,
+          prjMnger,
+          queryType,
+          sort: 'YSJE ASC,XH DESC,ID DESC',
+        });
       } else {
-        handleSearch(current, pageSize, prjMnger, queryType, 'YSJE DESC,XH DESC,ID DESC');
+        handleSearch({
+          current,
+          pageSize,
+          prjMnger,
+          queryType,
+          sort: 'YSJE DESC,XH DESC,ID DESC',
+        });
       }
     } else {
-      handleSearch(current, pageSize, prjMnger, queryType);
+      handleSearch({ current, pageSize, prjMnger, queryType });
     }
     return;
   };
@@ -116,9 +126,7 @@ export default function InfoTable(props) {
       width: '5%',
       key: 'year',
       ellipsis: true,
-      render: text => (
-        <span style={{ cursor: 'default' }}>{text}</span>
-      ),
+      render: text => <span style={{ cursor: 'default' }}>{text}</span>,
     },
     {
       title: '项目名称',
@@ -391,7 +399,7 @@ export default function InfoTable(props) {
             showTotal: t => `共 ${total} 条数据`,
             total: total,
           }}
-        // bordered
+          // bordered
         />
       </div>
     </div>

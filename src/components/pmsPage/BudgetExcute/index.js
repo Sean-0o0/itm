@@ -23,6 +23,12 @@ class BudgetExcute extends Component {
     },
   };
 
+  componentDidUpdate(prevProps, prevState, snapshot) {
+    if (this.props.defaultYear !== prevProps.defaultYear) {
+      this.fetchRole();
+    }
+  }
+
   componentDidMount() {
     this.fetchRole();
   }
@@ -67,6 +73,7 @@ class BudgetExcute extends Component {
       org: orgid,
       queryType: queryType,
       role: role,
+      year: this.props.defaultYear,
     }).then(res => {
       const { code = 0, note, ysglxx, ysqs } = res;
       if (code > 0) {
@@ -94,7 +101,9 @@ class BudgetExcute extends Component {
       org: orgid,
       queryType: queryType,
       role: role,
+      year: this.props.defaultYear,
       ...param,
+      total: -1,
     })
       .then(res => {
         const { code = 0, note = '', total, zbysxm, fzbysxm, kyysxm } = res;
@@ -295,6 +304,7 @@ class BudgetExcute extends Component {
             fetchData={this.queryBudgetOverviewInfo}
             ysglxx={ysglxx}
             YSLB={this.props.dictionary?.YSLB}
+            defaultYear={this.props.defaultYear}
           />
         </div>
       </Spin>

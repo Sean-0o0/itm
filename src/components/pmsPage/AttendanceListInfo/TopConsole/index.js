@@ -1,16 +1,21 @@
-import React, {useEffect, useState, forwardRef, useImperativeHandle} from 'react';
-import {Select, Button, Input, TreeSelect, Row, Col, DatePicker, message, Breadcrumb} from 'antd';
+import React, { useEffect, useState, forwardRef, useImperativeHandle } from 'react';
+import { Select, Button, Input, TreeSelect, Row, Col, DatePicker, message, Breadcrumb } from 'antd';
 import {
   QueryProjectListPara,
   QueryProjectListInfo,
-  QuerySupplierList, QueryUserRole, QueryRequirementListPara, QueryOutsourceMemberList, QueryOutsourceMemberAttendance,
+  QuerySupplierList,
+  QueryUserRole,
+  QueryRequirementListPara,
+  QueryOutsourceMemberList,
+  QueryOutsourceMemberAttendance,
 } from '../../../../services/pmsServices';
 import moment from 'moment';
-import {Link} from "react-router-dom";
+import { Link } from 'react-router-dom';
+import * as XLSX from 'xlsx';
 
 const InputGroup = Input.Group;
-const {Option} = Select;
-const {Item} = Breadcrumb;
+const { Option } = Select;
+const { Item } = Breadcrumb;
 
 export default forwardRef(function TopConsole(props, ref) {
   //下拉框数据
@@ -35,12 +40,11 @@ export default forwardRef(function TopConsole(props, ref) {
     lxid,
     routes,
   } = props;
-  const {KQLX} = dictionary;
+  const { KQLX } = dictionary;
 
   useEffect(() => {
     getFilterData();
-    return () => {
-    };
+    return () => {};
   }, [xmid, ryid, lxid]);
 
   useImperativeHandle(
@@ -54,56 +58,55 @@ export default forwardRef(function TopConsole(props, ref) {
     [rymc, prjName, kqlx],
   );
 
-
   //顶部下拉框查询数据
   const getFilterData = () => {
     LOGIN_USER_INFO.id !== undefined &&
-    QueryUserRole({
-      userId: String(LOGIN_USER_INFO.id),
-    })
-      .then(res => {
-        if (res?.code === 1) {
-          const {role = '', zyrole = ''} = res;
-          QueryRequirementListPara({
-            current: 1,
-            pageSize: 10,
-            paging: -1,
-            sort: '',
-            total: -1,
-            cxlx: 'KQLB',
-            js: zyrole === "暂无" ? role : zyrole,
-          })
-            .then(res => {
-              if (res?.success) {
-                setPrjNameData([...JSON.parse(res.xmxx)]);
-                console.log("params.cccc", Number(xmid))
-                if (String(xmid) !== "" || xmid !== "undefined") {
-                  setPrjName(xmid)
-                }
-                console.log("params.cccc", Number(ryid))
-                if (String(ryid) !== "" || ryid !== "undefined") {
-                  setRymc(ryid)
-                }
-                console.log("params.cccc", Number(lxid))
-                if (String(lxid) !== "" || lxid !== "undefined") {
-                  setKqlx(lxid)
-                }
-                setRymcData([...JSON.parse(res.wbryxx)]);
-              }
-            })
-            .catch(e => {
-              console.error('QueryRequirementListPara', e);
-            });
-        }
+      QueryUserRole({
+        userId: String(LOGIN_USER_INFO.id),
       })
-      .catch(e => {
-        console.error('HomePage-QueryUserRole', e);
-        message.error('用户角色信息查询失败', 1);
-      });
+        .then(res => {
+          if (res?.code === 1) {
+            const { role = '', zyrole = '' } = res;
+            QueryRequirementListPara({
+              current: 1,
+              pageSize: 10,
+              paging: -1,
+              sort: '',
+              total: -1,
+              cxlx: 'KQLB',
+              js: zyrole === '暂无' ? role : zyrole,
+            })
+              .then(res => {
+                if (res?.success) {
+                  setPrjNameData([...JSON.parse(res.xmxx)]);
+                  console.log('params.cccc', Number(xmid));
+                  if (String(xmid) !== '' || xmid !== 'undefined') {
+                    setPrjName(xmid);
+                  }
+                  console.log('params.cccc', Number(ryid));
+                  if (String(ryid) !== '' || ryid !== 'undefined') {
+                    setRymc(ryid);
+                  }
+                  console.log('params.cccc', Number(lxid));
+                  if (String(lxid) !== '' || lxid !== 'undefined') {
+                    setKqlx(lxid);
+                  }
+                  setRymcData([...JSON.parse(res.wbryxx)]);
+                }
+              })
+              .catch(e => {
+                console.error('QueryRequirementListPara', e);
+              });
+          }
+        })
+        .catch(e => {
+          console.error('HomePage-QueryUserRole', e);
+          message.error('用户角色信息查询失败', 1);
+        });
   };
 
   //查询按钮
-  const handleSearch = (current = 1, pageSize = 20, sort = 'ID ASC') => {
+  const handleSearch = (current = 1, pageSize = 20, sort = 'ID ASC', isExport = false) => {
     setTableLoading(true);
     //获取用户角色
     QueryUserRole({
@@ -111,14 +114,14 @@ export default forwardRef(function TopConsole(props, ref) {
     })
       .then(res => {
         if (res?.code === 1) {
-          const {role = '', zyrole = ''} = res;
+          const { role = '', zyrole = '' } = res;
           setCurPage(current);
           setCurPageSize(pageSize);
           let params = {
             current,
             pageSize,
-            paging: 1,
-            sort: "",
+            paging: isExport !== false ? -1 : 1,
+            sort: '',
             total: -1,
             // js: zyrole === "暂无" ? role : zyrole,
             // zzjg: String(LOGIN_USER_INFO.org)
@@ -135,12 +138,15 @@ export default forwardRef(function TopConsole(props, ref) {
           console.log('🚀 ~ file: index.js:119 ~ handleSearch ~ params:', params);
           QueryOutsourceMemberAttendance(params)
             .then(res => {
-              const {code, result, totalrows} = res
+              const { code, result, totalrows } = res;
               if (code > 0) {
                 setTableData(p => [...JSON.parse(result)]);
                 setTotal(totalrows);
                 // console.log('🚀 ~ file: index.js:52 ~ getTableData ~ tableArr:', tableArr);
                 setTableLoading(false);
+                if (isExport !== false) {
+                  handleExport([...JSON.parse(result)], isExport);
+                }
               }
             })
             .catch(e => {
@@ -160,7 +166,53 @@ export default forwardRef(function TopConsole(props, ref) {
   const handleReset = () => {
     setRymc(undefined);
     setPrjName(undefined);
-    setKqlx(undefined)
+    setKqlx(undefined);
+  };
+
+  const handleExport = (exportData = [], columns) => {
+    console.log('exportData', exportData);
+    console.log('data.columns', columns);
+    let dataIndexArr = columns.map(item => item.dataIndex);
+    let finalArr = [];
+    exportData.forEach(obj => {
+      let temp = {};
+      dataIndexArr.forEach(dataIndex => {
+        let title = columns.find(item => item.dataIndex === dataIndex)?.title;
+        if (
+          //金额类型
+          ['SBSJ', 'XBSJ'].includes(dataIndex)
+        ) {
+          temp[title] =
+            (obj[dataIndex] && moment(obj[dataIndex]).format('YYYY-MM-DD HH:mm:ss')) || '';
+        } else if (dataIndex === 'CZRQ') {
+          temp[title] =
+            (obj[dataIndex] && moment(String(obj[dataIndex])).format('YYYY-MM-DD')) || '';
+        } else {
+          temp[title] = obj[dataIndex];
+        }
+        delete obj[dataIndex];
+      });
+      finalArr.push(temp);
+    });
+    exportExcelFile(finalArr, 'Sheet1', '考勤列表（' + moment().format('YYYYMMDD') + '）.xlsx');
+  };
+
+  /**
+   * 导出 excel 文件
+   * @param array JSON 数组
+   * @param sheetName 第一张表名
+   * @param fileName 文件名
+   */
+  const exportExcelFile = (array = [], sheetName = 'Sheet1', fileName = 'example.xlsx') => {
+    console.log('要导出的数据', array);
+    const jsonWorkSheet = XLSX.utils.json_to_sheet(array);
+    const workBook = {
+      SheetNames: [sheetName],
+      Sheets: {
+        [sheetName]: jsonWorkSheet,
+      },
+    };
+    return XLSX.writeFile(workBook, fileName);
   };
 
   // onChange-start
@@ -168,7 +220,7 @@ export default forwardRef(function TopConsole(props, ref) {
   const handleRymcChange = v => {
     console.log('handleRymcChange', v);
     setRymc(v);
-  }
+  };
   //项目名称
   const handlePrjNameChange = v => {
     console.log('handlePrjNameChange', v);
@@ -181,7 +233,7 @@ export default forwardRef(function TopConsole(props, ref) {
   };
   // onChange-end
 
-  console.log("routes-ccccc", routes)
+  console.log('routes-ccccc', routes);
 
   return (
     <div className="top-console">
@@ -264,11 +316,7 @@ export default forwardRef(function TopConsole(props, ref) {
             ))}
           </Select>
         </div>
-        <Button
-          className="btn-search"
-          type="primary"
-          onClick={() => handleSearch(curPage, curPageSize)}
-        >
+        <Button className="btn-search" type="primary" onClick={() => handleSearch(1, curPageSize)}>
           查询
         </Button>
         <Button className="btn-reset" onClick={handleReset}>

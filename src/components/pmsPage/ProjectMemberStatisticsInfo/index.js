@@ -10,6 +10,7 @@ import {
 import {message} from 'antd';
 import YjbmAllTable from "./infoTable/yjbmAllTable";
 import EjbmAllTable from "./infoTable/ejbmAllTable";
+import moment from 'moment';
 
 export default function ProjectMemberStatisticsInfo(props) {
   const [activeKey, setActiveKey] = useState('YJBM_ALL');
@@ -23,13 +24,13 @@ export default function ProjectMemberStatisticsInfo(props) {
   const [totalBM, setTotalBM] = useState(0); //
   const [loading, setLoading] = useState(true); //表格数据-项目列表
   const [bmid, setBMID] = useState('-1');
-  const {handleRadioChange, isRouter = false} = props;
+  const {handleRadioChange, isRouter = false, defaultYear = moment().year()} = props;
 
   useEffect(() => {
-    getTableData(activeKey);
+    getTableData(activeKey, defaultYear);
     return () => {
     };
-  }, []);
+  }, [defaultYear]);
 
   const tabsKeyCallback = (key) => {
     setActiveKeyFlag(true)
@@ -45,7 +46,7 @@ export default function ProjectMemberStatisticsInfo(props) {
     }
   }
 
-  const getTableData = (queryType) => {
+  const getTableData = (queryType, year) => {
     setLoading(true);
     // YJBM_ALL|全部一级部门（部门id和人员id都不用传）;
     // YJBM_LD|查询对应一级部门下的部门领导数据（传一级部门的id）;
@@ -61,7 +62,8 @@ export default function ProjectMemberStatisticsInfo(props) {
       "paging": 1,
       "queryType": queryType,
       "sort": '',
-      "total": -1
+      "total": -1,
+      year: year??defaultYear,
     }
     QueryProjectStatistics({
       ...payload
@@ -88,7 +90,7 @@ export default function ProjectMemberStatisticsInfo(props) {
     })
   }
 
-  const getTableDataBM = (queryType, id = '-1') => {
+  const getTableDataBM = (queryType, id = '-1', year) => {
     setLoading(true);
     // YJBM_ALL|全部一级部门（部门id和人员id都不用传）;
     // YJBM_LD|查询对应一级部门下的部门领导数据（传一级部门的id）;
@@ -106,7 +108,8 @@ export default function ProjectMemberStatisticsInfo(props) {
       "paging": 1,
       "queryType": queryType,
       "sort": '',
-      "total": -1
+      "total": -1,
+      year: year??defaultYear,
     }
     QueryProjectStatistics({
       ...payload
@@ -151,6 +154,7 @@ export default function ProjectMemberStatisticsInfo(props) {
             total={total}
             tabsKeyCallback={tabsKeyCallback}
             getTableData={getTableData}
+            defaultYear={defaultYear}
           /> : <EjbmAllTable
             // 二级部门
             setActiveKeyFlag={setActiveKeyFlag}
@@ -162,6 +166,7 @@ export default function ProjectMemberStatisticsInfo(props) {
             tableDataBM={tableDataBM}
             totalBM={totalBM}
             getTableDataBM={getTableDataBM}
+            defaultYear={defaultYear}
           />
       }
     </div>

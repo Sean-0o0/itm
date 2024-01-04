@@ -36,13 +36,14 @@ class Overview extends Component {
         QueryProjectGeneralInfo({
             current: 1,
             pageSize: 10,
-            paging: 0,
+            paging: 0, //这边要不要改1
             sort: "",
             total: -1,
             xmlxbq: xmlxbq,
             org: orgid,
             queryType: queryType,
             role: role,
+            year: this.props.defaultYear,
         }).then(res => {
             const { code = 0, note, xmxx } = res
             if (code > 0) {

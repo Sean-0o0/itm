@@ -57,12 +57,13 @@ export default forwardRef(function TopConsole(props, ref) {
     setPrjType,
     tabsKey,
     orgID,
+    defaultYear,
   } = props;
 
   useEffect(() => {
-    getFilterData();
+    getFilterData(defaultYear);
     return () => {};
-  }, []);
+  }, [defaultYear]);
 
   useImperativeHandle(
     ref,
@@ -84,6 +85,7 @@ export default forwardRef(function TopConsole(props, ref) {
       ltAmount,
       minAmount,
       maxAmount,
+      defaultYear
     ],
   );
 
@@ -191,7 +193,7 @@ export default forwardRef(function TopConsole(props, ref) {
   };
 
   //顶部下拉框查询数据
-  const getFilterData = () => {
+  const getFilterData = (year) => {
     QueryProjectListPara({
       current: 1,
       czr: 0,
@@ -200,6 +202,7 @@ export default forwardRef(function TopConsole(props, ref) {
       sort: '',
       total: -1,
       cxlx: 'XMLB',
+      year: year ?? defaultYear
     })
       .then(res => {
         if (res?.success) {
@@ -244,7 +247,7 @@ export default forwardRef(function TopConsole(props, ref) {
   };
 
   //查询按钮
-  const handleSearch = (current = 1, pageSize = 20, queryType = 'BM', sort = '', tabsKey = '0') => {
+  const handleSearch = (current = 1, pageSize = 20, queryType = 'BM', sort = '', tabsKey = '0', year) => {
     setTableLoading(true);
     setCurPage(current);
     setCurPageSize(pageSize);
@@ -257,6 +260,7 @@ export default forwardRef(function TopConsole(props, ref) {
       total: -1,
       queryType,
       orgID,
+      year: year??defaultYear
     };
     if (prjName !== undefined && prjName !== '') {
       params.projectID = Number(prjName);

@@ -25,6 +25,12 @@ class DepartmentOverview extends Component {
     radioKey: '项目列表',
   };
 
+  componentDidUpdate(prevProps, prevState, snapshot) {
+    if (this.props.defaultYear !== prevProps.defaultYear) {
+      this.fetchRole();
+    }
+  }
+
   componentDidMount() {
     this.fetchRole();
   }
@@ -73,7 +79,7 @@ class DepartmentOverview extends Component {
       orgStation: gwbm,
       queryType: queryType,
       role: role,
-      // ...param
+      year: this.props.defaultYear,
     })
       .then(res => {
         const { code = 0, bmry, wbry, gwfb, bgxx, note, total } = res;
@@ -158,9 +164,10 @@ class DepartmentOverview extends Component {
             fetchData={this.queryMemberOverviewInfo}
             bmry={bmry}
             wbry={wbry}
+            defaultYear={this.props.defaultYear}
           />
         ) : (
-          <ProjectMemberStatisticsInfo handleRadioChange={this.handleRadioChange} />
+          <ProjectMemberStatisticsInfo handleRadioChange={this.handleRadioChange} defaultYear={this.props.defaultYear} />
         )}
       </div>
     );
