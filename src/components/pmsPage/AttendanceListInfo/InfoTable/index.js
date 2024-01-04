@@ -102,7 +102,7 @@ export default function InfoTable(props) {
       // align: 'right',
       // sorter: true,
       // sortDirections: ['descend', 'ascend'],
-      render: text => <span style={{ marginRight: 20 }}>{text || '-'}</span>,
+      render: text => <span style={{ marginRight: 20 }}>{text ?? '-'}</span>,
     },
     {
       title: '状态',
