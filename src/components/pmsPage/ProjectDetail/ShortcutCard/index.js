@@ -28,7 +28,7 @@ export default function ShortcutCard(props) {
     showKQXX = false,
     isGLY = {},
     grayTest = {},
-    is_XMJL_FXMJL = false, // 是否是项目经理或者副项目经理
+    is_XMJL_FXMJL = false, // 项目详情页的是否是项目经理或者副项目经理，非账号登录人的
   } = dataProps;
 
   const { prjBasic = {}, member = [], contrastArr = [] } = prjData;
@@ -46,7 +46,10 @@ export default function ShortcutCard(props) {
     pjztgl: false, //评价状态管理弹窗
   }); //弹窗显隐
 
-  const [isMutualEvaluationIconShow, setIsMutualEvaluationIconShow] = useState(false); //是否显示人员互评图标
+  const [hasEvaluationData, setHasEvaluationData] = useState(false) // 评价列表是否有数据
+  const [isForbiddenLeader, setIsForbiddenLeader] = useState(false)  // 是否是禁止查看人员互评的领导
+  const [isProjectMember, setIsProjectMember] = useState(false) // 是否是项目成员
+
 
   const [IPAHData, setIPAHData] = useState({
     oprType: 'ADD',
@@ -242,15 +245,19 @@ export default function ShortcutCard(props) {
   /** 人员互评选项 */
   const mutualEvaluationMenu = (
     <div className="list">
-      <div
-        className="item"
-        key="RYHP"
-        onClick={() => {
-          switchToEmployeePage('evaluation');
-        }}
-      >
-        人员互评
-      </div>
+      {/*   项目经理/副项目经理的情况下，如果没数据，就隐藏人员评价，只展示评价管理   XMJLID */}
+      {hasEvaluationData === true &&
+        <div
+          className="item"
+          key="RYHP"
+          onClick={() => {
+            switchToEmployeePage('evaluation');
+          }}
+        >
+          人员互评
+        </div>
+      }
+
       <div
         className="item"
         key="PJZTGL"
@@ -302,50 +309,47 @@ export default function ShortcutCard(props) {
 
   /** 判断是否展示人员互评弹窗 */
   const judgeMutualEvaluationShow = async () => {
-    //判断有没有评价列表
-    const hasEvaluationData = async () => {
-      let queryRes = false;
-      const queryListParams = {
-        projectName: prjBasic.XMMC,
-        queryType: 'XMGK',
-        userType: 'XMJL',
-      };
-      const listRes = await QueryEmployeeAppraiseList(queryListParams);
-      if (listRes.code === 1) {
-        const { gkResult } = listRes;
-        const listObj = JSON.parse(gkResult);
-        if (listObj.length !== 0) {
-          queryRes = true;
-        }
-      }
-      return queryRes;
-    };
 
-    //判断是否项目人员
-    const judgeIsMember = () => {
-      let isInclude = false;
-      member.forEach(item => {
-        if (item.RYID === String(LOGIN_USER_INFO.id)) {
-          //项目经理一定是项目成员
-          isInclude = true;
-        }
-      });
-      return isInclude;
-    };
+    //判断是否是禁止查看的领导
     const { id } = LOGIN_USER_INFO;
     const res = await QueryUserRole({ userId: id });
     if (res.code === 1) {
       const { role: loginRole } = res;
       //互评按钮，仅项目人员可看，角色为信息技术事业部领导和一级部门领导的不能看
-      if (
-        loginRole !== '信息技术事业部领导' &&
-        loginRole !== '一级部门领导' &&
-        judgeIsMember() === true
-      ) {
-        //同时还得有数据
-        const hasData = await hasEvaluationData();
-        hasData && setIsMutualEvaluationIconShow(true);
-        !hasData && setIsMutualEvaluationIconShow(false);
+
+      // console.log('登录人角色', loginRole)
+
+      if (loginRole === '信息技术事业部领导' || loginRole === '一级部门领导') {
+        setIsForbiddenLeader(true)
+      } else[
+        setIsForbiddenLeader(false)
+      ]
+    }
+
+    //判断是否项目人员
+    let isMember = false;
+    member.forEach(item => {
+      if (String(item.RYID) === String(LOGIN_USER_INFO.id)) {
+        isMember = true;
+      }
+    });
+    setIsProjectMember(isMember);
+
+    //判断该项目有没有评价列表
+    const queryListParams = {
+      projectName: prjBasic.XMMC,
+      queryType: 'XMGK',
+      userType: 'XMJL',
+    };
+    const listRes = await QueryEmployeeAppraiseList(queryListParams);
+    if (listRes.code === 1) {
+      const { gkResult } = listRes;
+      const listObj = JSON.parse(gkResult);
+      if (listObj.length !== 0) {
+        setHasEvaluationData(true)
+      }
+      else {
+        setHasEvaluationData(false)
       }
     }
   };
@@ -362,6 +366,17 @@ export default function ShortcutCard(props) {
   if (!isMember()) return null;
   return (
     <div className="shortcut-card-box">
+
+
+      {/* <button
+        onClick={() => {
+          console.log('1.是否被禁止查看', isForbiddenLeader, '2有无数据', hasEvaluationData, '3是否项目成员', isProjectMember,
+            '4.是否是集合项目', prjBasic.SFBHZXM, '5是否是经理或副经理', is_XMJL_FXMJL, prjBasic)
+        }}
+      >
+        测试按钮
+      </button>  */}
+
       <div className="top-title">快捷入口</div>
       {/* 考勤登记 */}
       <AttendanceRegister
@@ -476,22 +491,17 @@ export default function ShortcutCard(props) {
           prjBasic.WJZT !== '1' &&
           getShortcutItem('xmwj', '项目完结', () => handlePrjFinish(xmid))}
 
-        {grayTest.DDMK &&
-          isMutualEvaluationIconShow &&
+        {(grayTest.DDMK && Number(prjBasic.SFBHZXM || 0) <= 0 && isForbiddenLeader === false) &&
           (is_XMJL_FXMJL
             ? // 项目经理和副项目经理点击时，出现浮窗，可选人员互评或评价状态管理
-            getShortcutItem(
-              'mutualEvaluation',
-              '人员互评',
-              () => {
-                mutualEvaluationClick(true);
-              },
-              mutualEvaluationMenu,
+            getShortcutItem('mutualEvaluation', '人员互评', () => { mutualEvaluationClick(true); }, mutualEvaluationMenu,)
+            : // 普通人员 直接跳转人员评价页面(同时要判断是不是项目成员有没有数据)
+            (isProjectMember === true && hasEvaluationData === true &&
+              getShortcutItem('mutualEvaluation', '人员互评', () => { mutualEvaluationClick(false); })
             )
-            : // 普通人员 直接跳转人员评价页面
-            getShortcutItem('mutualEvaluation', '人员互评', () => {
-              mutualEvaluationClick(false);
-            }))}
+          )
+        }
+
       </div>
 
       <canvas
