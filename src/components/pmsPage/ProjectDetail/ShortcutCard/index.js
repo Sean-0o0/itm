@@ -367,16 +367,6 @@ export default function ShortcutCard(props) {
   return (
     <div className="shortcut-card-box">
 
-
-      {/* <button
-        onClick={() => {
-          console.log('1.是否被禁止查看', isForbiddenLeader, '2有无数据', hasEvaluationData, '3是否项目成员', isProjectMember,
-            '4.是否是集合项目', prjBasic.SFBHZXM, '5是否是经理或副经理', is_XMJL_FXMJL, prjBasic)
-        }}
-      >
-        测试按钮
-      </button>  */}
-
       <div className="top-title">快捷入口</div>
       {/* 考勤登记 */}
       <AttendanceRegister

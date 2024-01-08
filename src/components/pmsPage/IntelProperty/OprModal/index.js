@@ -441,6 +441,42 @@ export default connect(({ global = {} }) => ({
       );
     };
 
+    //文本域
+    const getTextArea = ({
+      label,
+      dataIndex,
+      initialValue,
+      labelCol,
+      wrapperCol,
+      maxLength,
+      rules,
+      display,
+    }) => {
+      return (
+        <Col span={24} style={{ display }} >
+          <Form.Item
+            style={{ marguinBottom: 6 }}
+            label={label}
+            labelCol={{ span: labelCol }}
+            wrapperCol={{ span: wrapperCol }}
+            className="budget-submit-textarea"
+          >
+            {getFieldDecorator(dataIndex, {
+              initialValue,
+              rules,
+            })(
+              <Input.TextArea
+                placeholder={'请输入软件用途和技术特点'}
+                maxLength={maxLength}
+                autoSize={{ maxRows: 6, minRows: 3 }}
+                allowCear
+              ></Input.TextArea>,
+            )}
+          </Form.Item>
+        </Col>
+      );
+    };
+
     //多附件上传
     const getMultipleUpload = ({
       label,
@@ -886,7 +922,8 @@ export default connect(({ global = {} }) => ({
                 getInputDisabled,
                 getDatePicker,
                 getDownloadBox,
-                getGrayDiv
+                getGrayDiv,
+                getTextArea
               }}
               dataProps={{
                 rowData,

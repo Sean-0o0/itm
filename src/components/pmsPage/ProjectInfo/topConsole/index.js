@@ -11,6 +11,7 @@ import { QueryProjectListPara, QueryProjectListInfo } from '../../../../services
 import TreeUtils from '../../../../utils/treeUtils';
 import moment from 'moment';
 import { setParentSelectableFalse } from '../../../../utils/pmsPublicUtils';
+import * as Lodash from 'lodash'
 
 const { Option } = Select;
 
@@ -45,7 +46,7 @@ export default forwardRef(function TopConsole(props, ref) {
   // const [isYearOpen, setIsYearOpen] = useState(false) // 是否打开年面板
   const [undertakingDepartmentObj, setUndertakingDepartmentObj] = useState({
     // 承接部门
-    data: [],
+    data: undefined,
     isOpen: false,
   });
 
@@ -72,7 +73,7 @@ export default forwardRef(function TopConsole(props, ref) {
 
   useEffect(() => {
     getFilterData();
-    return () => {};
+    return () => { };
   }, [projectManager]);
 
   useImperativeHandle(
@@ -334,8 +335,8 @@ export default forwardRef(function TopConsole(props, ref) {
     if (org.length !== 0) {
       params.orgId = org.map(x => x.value).join(';|;'); //应用部门
     }
-    if (undertakingDepartmentObj.data.length !== 0) {
-      params.undertakingDepartment = Number(undertakingDepartmentObj.data[0].value); //承接部门
+    if (!Lodash.isEmpty(undertakingDepartmentObj.data)) {
+      params.undertakingDepartment = Number(undertakingDepartmentObj.data); //承接部门
     }
     if (label.length !== 0) {
       params.projectLabel = label.join(';|;');
@@ -373,15 +374,8 @@ export default forwardRef(function TopConsole(props, ref) {
     setMaxAmount(undefined); //项目金额，最大
     setLtAmount(undefined); //项目金额，小于
     // setYear(defaultYearRef.current); //默认年
-    setDateRange([
-      moment()
-        .subtract(1, 'year')
-        .startOf('year'),
-      moment()
-        .subtract(1, 'year')
-        .endOf('year'),
-    ]); //默认日期区间
-    setUndertakingDepartmentObj({ data: [], isOpen: false }); // 承接部门
+    setDateRange([moment().subtract(1, 'year'), moment()]); //默认日期区间
+    setUndertakingDepartmentObj({ data: undefined, isOpen: false }); // 承接部门
   };
 
   // onChange-start
@@ -455,20 +449,10 @@ export default forwardRef(function TopConsole(props, ref) {
     // console.log('handleBtAmountChange', v.target.value);
     setMaxAmount(v.target.value);
   };
-  /** 承接部门————值变化 */
-  const undertakingDepartmentObjChangeHandle = newArr => {
-    if (newArr.length === 0) {
-      setUndertakingDepartmentObj({ ...undertakingDepartmentObj, data: [] });
-    }
-    if (newArr.length === 1) {
-      setUndertakingDepartmentObj({ ...undertakingDepartmentObj, data: newArr });
-    }
-    if (newArr.length === 2) {
-      const formatArr = [newArr[1]];
-      setUndertakingDepartmentObj({ ...undertakingDepartmentObj, data: formatArr });
-    }
-  };
   // onChange-end
+
+
+
 
   return (
     <div className="top-console">
@@ -643,27 +627,25 @@ export default forwardRef(function TopConsole(props, ref) {
           <TreeSelect
             allowClear
             showArrow
-            multiple={true}
             className="item-selector"
             showSearch
             treeDefaultExpandedKeys={['1', '8857']}
-            showCheckedStrategy={TreeSelect.SHOW_ALL}
-            treeCheckStrictly
             treeNodeFilterProp="title"
-            dropdownClassName="newproject-treeselect"
-            dropdownStyle={{ maxHeight: 300, overflow: 'auto' }}
+            dropdownMatchSelectWidth={false}
+            dropdownStyle={{ width: 272, maxHeight: 300, overflow: 'auto' }}
             placeholder="请选择"
-            treeCheckable
             treeData={orgData}
             value={undertakingDepartmentObj.data}
-            onChange={(value, label, extra) => {
-              undertakingDepartmentObjChangeHandle(value);
+            treeDefaultExpandAll
+            onChange={(val, label, extra) => {
+              setUndertakingDepartmentObj({ ...undertakingDepartmentObj, data: val })
             }}
             open={undertakingDepartmentObj.isOpen}
             onDropdownVisibleChange={open => {
               setUndertakingDepartmentObj({ ...undertakingDepartmentObj, isOpen: open });
             }}
           />
+
         </div>
 
         {filterFold && (
@@ -673,6 +655,8 @@ export default forwardRef(function TopConsole(props, ref) {
           </div>
         )}
       </div>
+
+
 
       {/* 第三行 */}
       {!filterFold && (
@@ -694,7 +678,7 @@ export default forwardRef(function TopConsole(props, ref) {
               treeCheckStrictly
               treeNodeFilterProp="title"
               dropdownClassName="newproject-treeselect"
-              dropdownStyle={{ maxHeight: 300, overflow: 'auto' }}
+              dropdownStyle={{ width: 272, maxHeight: 300, overflow: 'auto' }}
               treeData={orgData}
               placeholder="请选择"
               onChange={handleOrgChange}
@@ -785,5 +769,5 @@ export default forwardRef(function TopConsole(props, ref) {
         </div>
       )}
     </div>
-  );
+  )
 });

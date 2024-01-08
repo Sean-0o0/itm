@@ -113,14 +113,14 @@ export default connect(({ global }) => ({
         });
         setRoutes(routesArr);
       }
-      return () => {};
+      return () => { };
     }, [params]);
 
     useEffect(() => {
       if (Decimal(getFieldValue('bn_ztz') || 0).gt(50)) {
         getFileTemplateData('可行性研究报告');
       }
-      return () => {};
+      return () => { };
     }, [getFieldValue('bn_ztz')]);
 
     //详情/修改时 回显的数据
@@ -222,7 +222,7 @@ export default connect(({ global }) => ({
       rules,
       max,
       display,
-      onChange = () => {},
+      onChange = () => { },
     }) => {
       return (
         <Col span={8} style={{ display }}>
@@ -240,8 +240,8 @@ export default connect(({ global }) => ({
                 placeholder={'请输入' + label}
                 onChange={onChange}
                 disabled={propsData.operateType === 'XQ'}
-                // formatter={value => `value`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-                // parser={value => value.replace(/$\s?|(,*)/g, '')}
+              // formatter={value => `value`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+              // parser={value => value.replace(/$\s?|(,*)/g, '')}
               />,
             )}
           </Form.Item>
@@ -375,7 +375,7 @@ export default connect(({ global }) => ({
       wrapperCol,
       display,
       open,
-      setOpen = () => {},
+      setOpen = () => { },
     }) => {
       return (
         <Col span={8} style={{ display }}>
@@ -470,7 +470,7 @@ export default connect(({ global }) => ({
           setIsTurnRed(true);
         }
       };
-      const onBeforeUpload = () => {};
+      const onBeforeUpload = () => { };
       return (
         <Col span={8} style={{ display }}>
           <Form.Item
@@ -994,23 +994,23 @@ export default connect(({ global }) => ({
           <Row gutter={24}>
             {Decimal(getFieldValue('bn_ztz') || 0).gt(50)
               ? getMultipleUpload({
-                  label: '可行性研究报告',
-                  dataIndex: 'lxbab',
-                  fileList,
-                  setFileList,
-                  isTurnRed,
-                  setIsTurnRed,
-                  display,
-                })
+                label: '可行性研究报告',
+                dataIndex: 'lxbab',
+                fileList,
+                setFileList,
+                isTurnRed,
+                setIsTurnRed,
+                display,
+              })
               : getMultipleUpload({
-                  label: '立项备案表',
-                  dataIndex: 'lxbab',
-                  fileList,
-                  setFileList,
-                  isTurnRed,
-                  setIsTurnRed,
-                  display,
-                })}
+                label: '立项备案表',
+                dataIndex: 'lxbab',
+                fileList,
+                setFileList,
+                isTurnRed,
+                setIsTurnRed,
+                display,
+              })}
             {getFileTemplate({
               label: '附件模板',
               listData: fileTpl,
@@ -1036,13 +1036,13 @@ export default connect(({ global }) => ({
           return new Promise((resolve, reject) => {
             const reader = new FileReader();
 
-            reader.onload = function() {
+            reader.onload = function () {
               const base64 = reader.result.split(',')[1];
               const fileName = file.name;
               resolve({ name: fileName, data: base64, filetype });
             };
 
-            reader.onerror = function(error) {
+            reader.onerror = function (error) {
               reject(error);
             };
 
@@ -1339,11 +1339,11 @@ export default connect(({ global }) => ({
                 <Button className="btn-cancel" onClick={handleCancel}>
                   取消
                 </Button>
-                <Popconfirm title="是否确定暂存？" onConfirm={handleStage}>
-                  <Button className="btn-submit" type="primary">
-                    暂存
-                  </Button>
-                </Popconfirm>
+
+                <Button className="btn-submit" type="primary" onClick={handleStage}>
+                  暂存
+                </Button>
+
                 <Popconfirm title="是否确定保存？" onConfirm={handleSave}>
                   <Button className="btn-submit" type="primary">
                     保存

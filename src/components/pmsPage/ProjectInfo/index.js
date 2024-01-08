@@ -18,10 +18,7 @@ export default function ProjectInfo(props) {
   const [prjMnger, setPrjMnger] = useState(undefined); //项目经理
   const [isComplete, setIsComplete] = useState(false);
 
-  const [dateRange, setDateRange] = useState([ 
-    moment().subtract(1, 'year').startOf('year'),
-    moment().subtract(1, 'year').endOf('year')
-  ]) //日期区间
+  const [dateRange, setDateRange] = useState([moment().subtract(1, 'year'), moment()]) //日期区间
 
   const [isQueryDefaultDateRange, setIsQueryDefaultDateRange] = useState(true) // 是否在计算默认日期区间
   const defaultDateRangeRef = useRef([])
@@ -60,10 +57,10 @@ export default function ProjectInfo(props) {
   // }
 
   // useEffect(() => {
-    // queryDefaultDateRange().catch((err) => {
-    //   message.error(`计算默认日期区间失败${err}`, 2)
-    //   setIsQueryDefaultDateRange(false)
-    // })
+  // queryDefaultDateRange().catch((err) => {
+  //   message.error(`计算默认日期区间失败${err}`, 2)
+  //   setIsQueryDefaultDateRange(false)
+  // })
   // }, [])
 
   // useEffect(() => {
@@ -122,12 +119,10 @@ export default function ProjectInfo(props) {
   useEffect(() => {
     setCurPage(1);
     setCurPageSize(20);
-    setDateRange([
-      moment().subtract(1, 'year').startOf('year'),
-      moment().subtract(1, 'year').endOf('year')
-    ]);
+    setDateRange([moment().subtract(1, 'year'), moment()]);
     return () => { };
   }, [cxlx]);
+  //cxlx查询类型
 
   useEffect(() => {
     // console.log('🚀 ~ file: index.js:20 ~ useEffect ~ prjManager:', prjManager);

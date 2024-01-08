@@ -1,6 +1,7 @@
 import React, { Fragment, useEffect } from 'react';
 import moment from 'moment';
 import { Row } from 'antd';
+import { wrap } from 'module';
 
 export default function RJZZ(props) {
   const { components = {}, dataProps = {}, funcProps = {} } = props;
@@ -24,7 +25,8 @@ export default function RJZZ(props) {
     getInputDisabled,
     getDatePicker,
     getDownloadBox,
-    getGrayDiv
+    getGrayDiv,
+    getTextArea
   } = components;
   const labelCol = 6;
   const wrapperCol = 18;
@@ -33,13 +35,14 @@ export default function RJZZ(props) {
   return (
     <Fragment>
       <Row gutter={rowGutter}>
-        <div className='IntelProperty-newAddPane' style={{ marginLeft: '-3px', marginBottom: '-7px' }}>
+        <div className="IntelProperty-newAddPane" style={{ marginLeft: '-3px', marginBottom: '-7px' }}>
           {getGrayDiv(24, '申报说明', 3, 21, props.dictionary.ZSCQSBSM[0].note, '', '6px')}
 
           {docTemplateList.length !== 0 && getDownloadBox(24, '参考材料', 3, 21, '14px')}
         </div>
+      </Row>
 
-
+      <Row gutter={rowGutter}>
         {fromPrjDetail !== false //便是入口为项目详情，这时值为{xmmc,xmid}
           ? getInputDisabled({
             label: '项目名称',
@@ -63,8 +66,9 @@ export default function RJZZ(props) {
           })}
 
         {getInput('软件名称', 'name', rowData.NAME, labelCol, wrapperCol, 50)}
+      </Row>
 
-
+      <Row gutter={rowGutter}>
         {getInput('版本号', 'bbh', rowData.BBH, labelCol, wrapperCol, 10)}
 
         {getInput(
@@ -76,7 +80,9 @@ export default function RJZZ(props) {
           20,
           String(getFieldValue('dqzt')) !== '1',
         )}
+      </Row>
 
+      <Row gutter={rowGutter}>
         {isGLY &&
           getSingleTreeSelector({
             label: '联系人',
@@ -108,7 +114,33 @@ export default function RJZZ(props) {
           labelCol,
           wrapperCol,
         )}
+      </Row>
 
+      {/* 
+      <Row gutter={rowGutter} >
+        {getTextArea({
+          label:
+            <div style={{ display: 'inline-block', lineHeight: '22px' }}>
+              <span>软件用途和</span>
+              <br />
+              <span>技术特点</span>
+            </div>,
+          dataIndex: 'rjythjstd',
+          initialValue: '',
+          labelCol: 3,
+          wrapperCol: 21,
+          maxLength: 500,
+          rules: [
+            {
+              required: true,
+              message: '软件用途和技术特点不允许为空',
+            },
+          ],
+        })}
+      </Row> */}
+
+
+      <Row gutter={rowGutter}>
         {getMultipleUpload({
           label: '附件',
           labelCol: labelCol,
@@ -120,6 +152,6 @@ export default function RJZZ(props) {
         })}
       </Row>
 
-    </Fragment>
+    </Fragment >
   );
 }
