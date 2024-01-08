@@ -90,11 +90,7 @@ export default connect(({ global = {} }) => ({
       });
     });
     orgArr = orgArr.filter(item => {
-      let parentArr = [];
-      memberArr.forEach(y => {
-        if (y.orgId === item.value) parentArr.push(y);
-      });
-      return parentArr.length > 0;
+      return item.children.length > 0;
     });
     orgArr.forEach(node => setParentSelectableFalse(node));
     return orgArr;
@@ -168,8 +164,7 @@ export default connect(({ global = {} }) => ({
                   staff: JSON.parse(JSON.stringify(memberArr)),
                   org: JSON.parse(JSON.stringify(data)),
                 });
-                const finalData =
-                  handleStaffData(memberArr, orgArr)
+                const finalData = handleStaffData(memberArr, orgArr);
                 setStaffData(finalData);
                 setIsSpinning(false);
               }

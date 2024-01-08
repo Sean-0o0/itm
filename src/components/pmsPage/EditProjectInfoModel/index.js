@@ -651,10 +651,10 @@ class EditProjectInfoModel extends React.Component {
 
   componentWillMount() {
     // 查询关联预算项目信息-需先查出关联预算项目再查项目详情
-    this.fetchQueryBudgetProjects({
-      type: 'NF',
-      year: Number(this.state.budgetInfo.year.format('YYYY')),
-    });
+    // this.fetchQueryBudgetProjects({
+    //   type: 'NF',
+    //   year: Number(this.state.budgetInfo.year.format('YYYY')),
+    // });
   }
 
   componentDidMount = async () => {
@@ -723,6 +723,11 @@ class EditProjectInfoModel extends React.Component {
     if (this.state.basicInfo.projectId && this.state.basicInfo.projectId !== -1) {
       await this.fetchQueryProjectDetails({ projectId: this.state.basicInfo.projectId });
     }
+    // 查询关联预算项目信息
+    await this.fetchQueryBudgetProjects({
+      type: 'NF',
+      year: Number(this.state.budgetInfo.year.format('YYYY')),
+    });
 
     //.分割，取最后一个
     const glddxmIdArr = this.state.glddxmId === '' ? [] : this.state.glddxmId?.split('.') || [];
@@ -875,6 +880,10 @@ class EditProjectInfoModel extends React.Component {
               }
               if (item.jssj === '0') {
                 item.jssj = tomorrowTime;
+              }
+              if (item.lcbmc.includes('付款')) {
+                item.kssj = moment().startOf('year');
+                item.jssj = moment().endOf('year');
               }
               if (
                 item.matterInfos.length === spliceList.filter(i => i.lcbid === item.lcblxid).length
@@ -1158,6 +1167,10 @@ class EditProjectInfoModel extends React.Component {
                 now = item.jssj;
               }
             });
+            console.log(
+              '🚀 ~ file: index.js:1175 ~ EditProjectInfoModel ~ fetchQueryMilepostInfo ~ milePostInfo:',
+              milePostInfo,
+            );
             this.setState({ milePostInfo, mileInfo: { ...this.state.mileInfo, milePostInfo } });
           } else if (params.queryType === 'ONLYZB') {
             if (milePostInfo.filter(item => item.lcbmc === '项目招采').length === 0) {
@@ -2287,7 +2300,11 @@ class EditProjectInfoModel extends React.Component {
         basicInfo.org !== '' &&
         basicInfo.org?.length !== 0
       ) {
-        if (budgetInfo.projectBudget !== '' && budgetInfo.projectBudget !== null) {
+        if (
+          budgetInfo.projectBudget !== '' &&
+          budgetInfo.projectBudget !== null &&
+          budgetInfo.projectBudget !== undefined
+        ) {
           basicflag = true;
         } else {
           basicflag = false;
@@ -2304,9 +2321,11 @@ class EditProjectInfoModel extends React.Component {
       ) {
         if (
           budgetInfo.budgetProjectId !== '' &&
+          budgetInfo.budgetProjectId !== undefined &&
           Number(budgetInfo.budgetProjectId) !== 0 &&
           budgetInfo.projectBudget !== '' &&
-          budgetInfo.projectBudget !== null
+          budgetInfo.projectBudget !== null &&
+          budgetInfo.projectBudget !== undefined
         ) {
           basicflag = true;
         } else if (Number(budgetInfo.budgetProjectId) === 0) {
@@ -4622,7 +4641,7 @@ class EditProjectInfoModel extends React.Component {
       glddxmId = undefined,
     } = this.state;
     // console.log('purchaseInfopurchaseInfo', purchaseInfo);
-    const { getFieldDecorator } = this.props.form;
+    const { getFieldDecorator, setFieldsValue } = this.props.form;
     const tabs = [
       {
         key: 0,
@@ -6159,11 +6178,14 @@ class EditProjectInfoModel extends React.Component {
                                   getCalendarContainer={triggerNode => triggerNode.parentNode}
                                   onChange={v => {
                                     const _this = this;
+                                    setFieldsValue({
+                                      budgetProjectId: undefined,
+                                    });
                                     this.setState(
                                       {
                                         budgetInfo: {
                                           ...this.state.budgetInfo,
-                                          budgetProjectId: '',
+                                          budgetProjectId: undefined,
                                           totalBudget: 0,
                                           relativeBudget: 0,
                                           year: v == null ? moment(new Date()) : v,
@@ -6190,7 +6212,7 @@ class EditProjectInfoModel extends React.Component {
                                       {
                                         budgetInfo: {
                                           ...this.state.budgetInfo,
-                                          budgetProjectId: '',
+                                          budgetProjectId: undefined,
                                           totalBudget: 0,
                                           relativeBudget: 0,
                                           year: v,
@@ -6202,6 +6224,9 @@ class EditProjectInfoModel extends React.Component {
                                         _this.fetchQueryBudgetProjects({
                                           type: 'NF',
                                           year: Number(v.format('YYYY')),
+                                        });
+                                        setFieldsValue({
+                                          budgetProjectId: undefined,
                                         });
                                       },
                                     );
@@ -7256,87 +7281,89 @@ class EditProjectInfoModel extends React.Component {
                                       }
                                     </div>
                                   </div>
-                                  <div style={{ display: 'flex', padding: '6px 0 0 0' }}>
-                                    <div
-                                      style={{
-                                        display: 'grid',
-                                        alignItems: 'center',
-                                        justifyContent: 'end',
-                                        width: '10%',
-                                      }}
-                                    >
-                                      <span
+                                  {!item.lcbmc.includes('项目付款') && (
+                                    <div style={{ display: 'flex', padding: '6px 0 0 0' }}>
+                                      <div
                                         style={{
-                                          paddingLeft: '6px',
-                                          fontSize: '14px',
-                                          lineHeight: '20px',
-                                          fontWeight: 500,
+                                          display: 'grid',
+                                          alignItems: 'center',
+                                          justifyContent: 'end',
+                                          width: '10%',
                                         }}
                                       >
                                         <span
                                           style={{
-                                            fontFamily: 'SimSun, sans-serif',
-                                            color: '#f5222d',
-                                            marginRight: '4px',
-                                            lineHeight: 1,
+                                            paddingLeft: '6px',
+                                            fontSize: '14px',
+                                            lineHeight: '20px',
+                                            fontWeight: 500,
                                           }}
                                         >
-                                          *
+                                          <span
+                                            style={{
+                                              fontFamily: 'SimSun, sans-serif',
+                                              color: '#f5222d',
+                                              marginRight: '4px',
+                                              lineHeight: 1,
+                                            }}
+                                          >
+                                            *
+                                          </span>
+                                          时间
                                         </span>
-                                        时间
-                                      </span>
-                                    </div>
-                                    <div
-                                      style={{
-                                        paddingLeft: '12px',
-                                        position: 'relative',
-                                        display: 'flex',
-                                        flexDirection: 'row',
-                                        width: '270px',
-                                      }}
-                                      id="datePicker"
-                                    >
-                                      <DatePicker
-                                        format="YYYY.MM.DD"
-                                        value={moment(item.kssj, 'YYYY-MM-DD')}
-                                        allowClear={false}
-                                        onChange={(date, str) =>
-                                          this.changeMilePostInfoTime(str, index, 'start')
-                                        }
-                                        onFocus={() =>
-                                          this.setState({
-                                            isEditMile: true,
-                                            isCollapse: false,
-                                          })
-                                        }
-                                      />
+                                      </div>
                                       <div
                                         style={{
-                                          fontSize: '14px',
-                                          fontWeight: 'bold',
-                                          padding: '0 8px',
+                                          paddingLeft: '12px',
+                                          position: 'relative',
                                           display: 'flex',
-                                          alignItems: 'center',
+                                          flexDirection: 'row',
+                                          width: '270px',
                                         }}
+                                        id="datePicker"
                                       >
-                                        ~
+                                        <DatePicker
+                                          format="YYYY.MM.DD"
+                                          value={moment(item.kssj, 'YYYY-MM-DD')}
+                                          allowClear={false}
+                                          onChange={(date, str) =>
+                                            this.changeMilePostInfoTime(str, index, 'start')
+                                          }
+                                          onFocus={() =>
+                                            this.setState({
+                                              isEditMile: true,
+                                              isCollapse: false,
+                                            })
+                                          }
+                                        />
+                                        <div
+                                          style={{
+                                            fontSize: '14px',
+                                            fontWeight: 'bold',
+                                            padding: '0 8px',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                          }}
+                                        >
+                                          ~
+                                        </div>
+                                        <DatePicker
+                                          format="YYYY.MM.DD"
+                                          value={moment(item.jssj, 'YYYY-MM-DD')}
+                                          allowClear={false}
+                                          onChange={(date, str) =>
+                                            this.changeMilePostInfoTime(str, index, 'end')
+                                          }
+                                          onFocus={() =>
+                                            this.setState({
+                                              isEditMile: true,
+                                              isCollapse: false,
+                                            })
+                                          }
+                                        />
                                       </div>
-                                      <DatePicker
-                                        format="YYYY.MM.DD"
-                                        value={moment(item.jssj, 'YYYY-MM-DD')}
-                                        allowClear={false}
-                                        onChange={(date, str) =>
-                                          this.changeMilePostInfoTime(str, index, 'end')
-                                        }
-                                        onFocus={() =>
-                                          this.setState({
-                                            isEditMile: true,
-                                            isCollapse: false,
-                                          })
-                                        }
-                                      />
                                     </div>
-                                  </div>
+                                  )}
                                   {item.matterInfos.length > 0 &&
                                     item.matterInfos.map((e, i) => {
                                       // ////console.log("e.sxlb", e.sxlb)
@@ -7771,96 +7798,98 @@ class EditProjectInfoModel extends React.Component {
                                       </div>
                                     }
                                   </div>
-                                  <div
-                                    style={{
-                                      display:
-                                        subItemFlag && item.lcbmc.includes('项目立项')
-                                          ? 'none'
-                                          : 'flex',
-                                      padding: '6px 0 0 0',
-                                    }}
-                                  >
+                                  {!item.lcbmc.includes('项目付款') && (
                                     <div
                                       style={{
-                                        display: 'grid',
-                                        alignItems: 'center',
-                                        justifyContent: 'end',
-                                        width: '10%',
+                                        display:
+                                          subItemFlag && item.lcbmc.includes('项目立项')
+                                            ? 'none'
+                                            : 'flex',
+                                        padding: '6px 0 0 0',
                                       }}
                                     >
-                                      <span
+                                      <div
                                         style={{
-                                          paddingLeft: '6px',
-                                          fontSize: '14px',
-                                          lineHeight: '20px',
-                                          fontWeight: 500,
+                                          display: 'grid',
+                                          alignItems: 'center',
+                                          justifyContent: 'end',
+                                          width: '10%',
                                         }}
                                       >
                                         <span
                                           style={{
-                                            fontFamily: 'SimSun, sans-serif',
-                                            color: '#f5222d',
-                                            marginRight: '4px',
-                                            lineHeight: 1,
+                                            paddingLeft: '6px',
+                                            fontSize: '14px',
+                                            lineHeight: '20px',
+                                            fontWeight: 500,
                                           }}
                                         >
-                                          *
+                                          <span
+                                            style={{
+                                              fontFamily: 'SimSun, sans-serif',
+                                              color: '#f5222d',
+                                              marginRight: '4px',
+                                              lineHeight: 1,
+                                            }}
+                                          >
+                                            *
+                                          </span>
+                                          时间
                                         </span>
-                                        时间
-                                      </span>
-                                    </div>
-                                    <div
-                                      style={{
-                                        paddingLeft: '12px',
-                                        position: 'relative',
-                                        display: 'flex',
-                                        flexDirection: 'row',
-                                        width: '270px',
-                                      }}
-                                      id="datePicker"
-                                    >
-                                      <DatePicker
-                                        format="YYYY.MM.DD"
-                                        value={moment(item.kssj, 'YYYY-MM-DD')}
-                                        allowClear={false}
-                                        onChange={(date, str) =>
-                                          this.changeMilePostInfoTime(str, index, 'start')
-                                        }
-                                        onFocus={() =>
-                                          this.setState({
-                                            isEditMile: true,
-                                            isCollapse: false,
-                                          })
-                                        }
-                                      />
+                                      </div>
                                       <div
                                         style={{
-                                          fontSize: '14px',
-                                          fontWeight: 'bold',
-                                          padding: '0 8px',
+                                          paddingLeft: '12px',
+                                          position: 'relative',
                                           display: 'flex',
-                                          alignItems: 'center',
+                                          flexDirection: 'row',
+                                          width: '270px',
                                         }}
+                                        id="datePicker"
                                       >
-                                        ~
+                                        <DatePicker
+                                          format="YYYY.MM.DD"
+                                          value={moment(item.kssj, 'YYYY-MM-DD')}
+                                          allowClear={false}
+                                          onChange={(date, str) =>
+                                            this.changeMilePostInfoTime(str, index, 'start')
+                                          }
+                                          onFocus={() =>
+                                            this.setState({
+                                              isEditMile: true,
+                                              isCollapse: false,
+                                            })
+                                          }
+                                        />
+                                        <div
+                                          style={{
+                                            fontSize: '14px',
+                                            fontWeight: 'bold',
+                                            padding: '0 8px',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                          }}
+                                        >
+                                          ~
+                                        </div>
+                                        <DatePicker
+                                          format="YYYY.MM.DD"
+                                          value={moment(item.jssj, 'YYYY-MM-DD')}
+                                          allowClear={false}
+                                          onChange={(date, str) =>
+                                            this.changeMilePostInfoTime(str, index, 'end')
+                                          }
+                                          onFocus={() =>
+                                            this.setState({
+                                              isEditMile: true,
+                                              isCollapse: false,
+                                            })
+                                          }
+                                        />
                                       </div>
-                                      <DatePicker
-                                        format="YYYY.MM.DD"
-                                        value={moment(item.jssj, 'YYYY-MM-DD')}
-                                        allowClear={false}
-                                        onChange={(date, str) =>
-                                          this.changeMilePostInfoTime(str, index, 'end')
-                                        }
-                                        onFocus={() =>
-                                          this.setState({
-                                            isEditMile: true,
-                                            isCollapse: false,
-                                          })
-                                        }
-                                      />
+                                      {/* <RiskOutline/> */}
                                     </div>
-                                    {/* <RiskOutline/> */}
-                                  </div>
+                                  )}
                                   {item.matterInfos.length > 0 &&
                                     item.matterInfos.map((e, i) => {
                                       // ////console.log("e.sxlb", e.sxlb)

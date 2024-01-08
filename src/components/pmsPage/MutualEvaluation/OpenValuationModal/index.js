@@ -94,7 +94,7 @@ export default function OpenValuationModal(props) {
   useEffect(() => {
     visible && getPrjList({ ...filterData, isFirst: true, projectManager, projectName });
     setFilterData(p => ({ ...p, projectName }));
-    return () => { };
+    return () => {};
   }, [visible]);
 
   //获取项目数据
@@ -129,7 +129,6 @@ export default function OpenValuationModal(props) {
       .then(res => {
         if (res?.success) {
           setTableData({ data: JSON.parse(res.result), current, pageSize, total: res.totalrows });
-          setSelectedRowIds([]);
           isFirst ? getXMLX() : setIsSpinning(false);
         }
       })
@@ -201,7 +200,7 @@ export default function OpenValuationModal(props) {
     );
   };
 
-  const getTreeSelect = ({ onChange = () => { }, data = [] }) => {
+  const getTreeSelect = ({ onChange = () => {}, data = [] }) => {
     return (
       <TreeSelect
         allowClear
@@ -224,7 +223,7 @@ export default function OpenValuationModal(props) {
     setVisible(false);
     setSelectedRowIds([]);
     setFilterData({
-      openStatus: 0
+      openStatus: 0,
     });
     setMemberCount({
       type: '1',
@@ -366,16 +365,67 @@ export default function OpenValuationModal(props) {
   const rowSelection = {
     selectedRowKeys: selectedRowIds,
     onChange: (selectedRowKeys, selectedRows) => {
-      // console.log(
-      //   '🚀 ~ rowSelection.selectedRowKeys, selectedRows:',
-      //   selectedRowKeys,
-      //   selectedRows,
-      // );
-      setSelectedRowIds(selectedRowKeys);
       setConditions({
         includesOpened: selectedRows.some(x => x.KQZT === '已开启'),
         includesClosed: selectedRows.some(x => x.KQZT !== '已开启'),
       });
+    },
+    onSelectAll: isSelected => {
+      if (isSelected) {
+        setIsSpinning(true);
+        QueryProjectAppraiseSwitchList({
+          queryType: 'ALL',
+          paging: -1,
+          current: 1,
+          pageSize: 10,
+          sort: '',
+          total: -1,
+          projectManager,
+          ...filterData,
+        })
+          .then(res => {
+            if (res?.success) {
+              const selectedRows = JSON.parse(res.result || '[]');
+              setSelectedRowIds(selectedRows.map(x => x.XMID));
+              console.log(
+                '🚀 ~ file: index.js:395 ~ OpenValuationModal ~ selectedRows.map(x => x.XMID):',
+                selectedRows.map(x => x.XMID),
+              );
+              setConditions({
+                includesOpened: selectedRows.some(x => x.KQZT === '已开启'),
+                includesClosed: selectedRows.some(x => x.KQZT !== '已开启'),
+              });
+              setIsSpinning(false);
+            }
+          })
+          .catch(e => {
+            console.error('🚀项目数据', e);
+            message.error('项目数据获取失败', 1);
+            setIsSpinning(false);
+          });
+      } else {
+        setSelectedRowIds([]);
+        setConditions({
+          includesOpened: false,
+          includesClosed: false,
+        });
+      }
+    },
+    onSelect: (selectedRow, isSelected) => {
+      // console.log(
+      //   '🚀 ~ file: index.js:384 ~ OpenValuationModal ~ selectedRow, isSelected:',
+      //   selectedRow,
+      //   isSelected,
+      // );
+      let selectedRowKeys = [];
+      if (isSelected) {
+        selectedRowKeys = Array.from(new Set([...selectedRowIds, selectedRow.XMID]));
+      } else {
+        selectedRowKeys = selectedRowIds.filter(item => {
+          return item !== selectedRow.XMID;
+        });
+      }
+      setSelectedRowIds(selectedRowKeys);
     },
   };
 
@@ -419,6 +469,7 @@ export default function OpenValuationModal(props) {
                   onChange={e => {
                     e.persist();
                     setFilterData(p => ({ ...p, projectName: e.target.value }));
+                    setSelectedRowIds([]);
                     debounce(e => {
                       getPrjList({
                         ...filterData,
@@ -466,21 +517,22 @@ export default function OpenValuationModal(props) {
                             ? '>' + v
                             : undefined,
                         }));
+                        setSelectedRowIds([]);
                         ![undefined, '', null, ' '].includes(v)
                           ? debounce(v => {
-                            getPrjList({
-                              ...filterData,
-                              memberCount: '>' + v,
-                              projectManager,
-                            });
-                          }, 300)(v)
+                              getPrjList({
+                                ...filterData,
+                                memberCount: '>' + v,
+                                projectManager,
+                              });
+                            }, 300)(v)
                           : debounce(v => {
-                            getPrjList({
-                              ...filterData,
-                              memberCount: undefined,
-                              projectManager,
-                            });
-                          }, 300)(v);
+                              getPrjList({
+                                ...filterData,
+                                memberCount: undefined,
+                                projectManager,
+                              });
+                            }, 300)(v);
                       }}
                       placeholder="请输入"
                     />
@@ -497,21 +549,22 @@ export default function OpenValuationModal(props) {
                             ? '<' + v
                             : undefined,
                         }));
+                        setSelectedRowIds([]);
                         ![undefined, '', null, ' '].includes(v)
                           ? debounce(v => {
-                            getPrjList({
-                              ...filterData,
-                              memberCount: '<' + v,
-                              projectManager,
-                            });
-                          }, 300)(v)
+                              getPrjList({
+                                ...filterData,
+                                memberCount: '<' + v,
+                                projectManager,
+                              });
+                            }, 300)(v)
                           : debounce(v => {
-                            getPrjList({
-                              ...filterData,
-                              memberCount: undefined,
-                              projectManager,
-                            });
-                          }, 300)(v);
+                              getPrjList({
+                                ...filterData,
+                                memberCount: undefined,
+                                projectManager,
+                              });
+                            }, 300)(v);
                       }}
                       placeholder="请输入"
                     />
@@ -525,6 +578,7 @@ export default function OpenValuationModal(props) {
                 {getTreeSelect({
                   onChange: v => {
                     setFilterData(p => ({ ...p, projectType: v }));
+                    setSelectedRowIds([]);
                     getPrjList({
                       ...filterData,
                       projectType: Number(v),
@@ -543,6 +597,7 @@ export default function OpenValuationModal(props) {
                 {getSelector({
                   onChange: v => {
                     setFilterData(p => ({ ...p, projectStage: v }));
+                    setSelectedRowIds([]);
                     getPrjList({
                       ...filterData,
                       projectStage: Number(v),
@@ -567,6 +622,7 @@ export default function OpenValuationModal(props) {
                     projectManager,
                   });
                   setFilterData(p => ({ ...p, openStatus: Number(e.target.value) }));
+                  setSelectedRowIds([]);
                 }}
               >
                 {KQZT.map(x => (
@@ -588,6 +644,7 @@ export default function OpenValuationModal(props) {
                     projectManager,
                   });
                   setFilterData(p => ({ ...p, appraiseState: Number(e.target.value) }));
+                  setSelectedRowIds([]);
                 }}
               >
                 {PJZT.map(x => (
