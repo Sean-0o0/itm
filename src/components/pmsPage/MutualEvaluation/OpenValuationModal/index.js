@@ -52,9 +52,10 @@ export default function OpenValuationModal(props) {
     memberCount: undefined,
     projectType: undefined,
     projectStage: undefined,
-    openStatus: undefined,
+    openStatus: 0,
     appraiseState: undefined,
   });
+
   const [memberCount, setMemberCount] = useState({
     type: '1',
     value: undefined,
@@ -62,6 +63,10 @@ export default function OpenValuationModal(props) {
   const notAllowOpen = selectedRowIds.length === 0 || conditions.includesOpened;
   const notAllowClose = selectedRowIds.length === 0 || conditions.includesClosed;
   const KQZT = [
+    {
+      ibm: 0,
+      note: '全部',
+    },
     {
       ibm: 1,
       note: '已开启',
@@ -89,7 +94,7 @@ export default function OpenValuationModal(props) {
   useEffect(() => {
     visible && getPrjList({ ...filterData, isFirst: true, projectManager, projectName });
     setFilterData(p => ({ ...p, projectName }));
-    return () => {};
+    return () => { };
   }, [visible]);
 
   //获取项目数据
@@ -196,7 +201,7 @@ export default function OpenValuationModal(props) {
     );
   };
 
-  const getTreeSelect = ({ onChange = () => {}, data = [] }) => {
+  const getTreeSelect = ({ onChange = () => { }, data = [] }) => {
     return (
       <TreeSelect
         allowClear
@@ -214,11 +219,13 @@ export default function OpenValuationModal(props) {
     );
   };
 
-  //取消
+  //取消（关闭弹窗）
   const onCancel = () => {
     setVisible(false);
     setSelectedRowIds([]);
-    setFilterData({});
+    setFilterData({
+      openStatus: 0
+    });
     setMemberCount({
       type: '1',
       value: undefined,
@@ -461,19 +468,19 @@ export default function OpenValuationModal(props) {
                         }));
                         ![undefined, '', null, ' '].includes(v)
                           ? debounce(v => {
-                              getPrjList({
-                                ...filterData,
-                                memberCount: '>' + v,
-                                projectManager,
-                              });
-                            }, 300)(v)
+                            getPrjList({
+                              ...filterData,
+                              memberCount: '>' + v,
+                              projectManager,
+                            });
+                          }, 300)(v)
                           : debounce(v => {
-                              getPrjList({
-                                ...filterData,
-                                memberCount: undefined,
-                                projectManager,
-                              });
-                            }, 300)(v);
+                            getPrjList({
+                              ...filterData,
+                              memberCount: undefined,
+                              projectManager,
+                            });
+                          }, 300)(v);
                       }}
                       placeholder="请输入"
                     />
@@ -492,19 +499,19 @@ export default function OpenValuationModal(props) {
                         }));
                         ![undefined, '', null, ' '].includes(v)
                           ? debounce(v => {
-                              getPrjList({
-                                ...filterData,
-                                memberCount: '<' + v,
-                                projectManager,
-                              });
-                            }, 300)(v)
+                            getPrjList({
+                              ...filterData,
+                              memberCount: '<' + v,
+                              projectManager,
+                            });
+                          }, 300)(v)
                           : debounce(v => {
-                              getPrjList({
-                                ...filterData,
-                                memberCount: undefined,
-                                projectManager,
-                              });
-                            }, 300)(v);
+                            getPrjList({
+                              ...filterData,
+                              memberCount: undefined,
+                              projectManager,
+                            });
+                          }, 300)(v);
                       }}
                       placeholder="请输入"
                     />

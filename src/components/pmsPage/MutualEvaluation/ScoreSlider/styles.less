@@ -79,6 +79,7 @@
     from {
       opacity: 0;
     }
+
     to {
       opacity: 1;
     }
@@ -104,14 +105,17 @@
 
 .sliderItemTooltip {
   text-align: center;
-  & > div {
-    & > div {
+
+  &>div {
+    &>div {
       &:first-child {
         background-color: transparent;
+
         &::before {
           background-color: #3361ff;
         }
       }
+
       &:last-child {
         text-align: center;
         background-color: #3361ff;
@@ -131,6 +135,7 @@
   background-color: #3361ff;
   cursor: pointer;
   transition: background-color 0.3s ease-in-out;
+
   &:hover {
     background-color: #819efaaf;
   }
@@ -142,3 +147,6 @@
   background-color: transparent;
   cursor: pointer;
 }
+
+//评价等级
+.gradeScale {}

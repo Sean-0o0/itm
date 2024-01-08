@@ -1,7 +1,6 @@
 import React, { Fragment, useEffect } from 'react';
 import moment from 'moment';
-import { Row } from 'antd';
-import { wrap } from 'module';
+import { Row, Input } from 'antd';
 
 export default function RJZZ(props) {
   const { components = {}, dataProps = {}, funcProps = {} } = props;
@@ -116,31 +115,34 @@ export default function RJZZ(props) {
         )}
       </Row>
 
-      {/* 
+
+      <Row gutter={rowGutter} style={{ marginTop: 6 }}>
+        <div className='RJZZOprModalGetTextArea'>
+          {getTextArea({
+            label:
+              <div style={{ display: 'inline-block', lineHeight: '22px' }}>
+                <span>软件用途和</span>
+                <br />
+                <span>技术特点</span>
+              </div>,
+            placeholder: '请输入软件用途和技术特点',
+            dataIndex: 'useAndFeatures',
+            initialValue: rowData.RJYTHJSTD,
+            labelCol: 3,
+            wrapperCol: 21,
+            maxLength: 500,
+            rules: [
+              {
+                required: true,
+                message: '软件用途和技术特点不允许为空',
+              },
+            ],
+          })}
+        </div>
+      </Row>
+
+
       <Row gutter={rowGutter} >
-        {getTextArea({
-          label:
-            <div style={{ display: 'inline-block', lineHeight: '22px' }}>
-              <span>软件用途和</span>
-              <br />
-              <span>技术特点</span>
-            </div>,
-          dataIndex: 'rjythjstd',
-          initialValue: '',
-          labelCol: 3,
-          wrapperCol: 21,
-          maxLength: 500,
-          rules: [
-            {
-              required: true,
-              message: '软件用途和技术特点不允许为空',
-            },
-          ],
-        })}
-      </Row> */}
-
-
-      <Row gutter={rowGutter}>
         {getMultipleUpload({
           label: '附件',
           labelCol: labelCol,

@@ -444,6 +444,7 @@ export default connect(({ global = {} }) => ({
     //文本域
     const getTextArea = ({
       label,
+      placeholder,
       dataIndex,
       initialValue,
       labelCol,
@@ -466,10 +467,10 @@ export default connect(({ global = {} }) => ({
               rules,
             })(
               <Input.TextArea
-                placeholder={'请输入软件用途和技术特点'}
+                placeholder={placeholder}
                 maxLength={maxLength}
                 autoSize={{ maxRows: 6, minRows: 3 }}
-                allowCear
+                allowClear
               ></Input.TextArea>,
             )}
           </Form.Item>
@@ -690,7 +691,7 @@ export default connect(({ global = {} }) => ({
 
 
 
-    //提交数据
+    //提交数据（弹窗点击确定）
     const onOk = () => {
       validateFields(async (err, values) => {
         if (upldData.length === 0) {
@@ -755,6 +756,7 @@ export default connect(({ global = {} }) => ({
             checkInDate: turnNumber(values.djsj?.format('YYYYMMDD')),
             standardType: turnNumber(values.bzlx),
             operateType: oprType,
+            useAndFeatures: values.useAndFeatures
           };
           EditIPRInfo(params)
             .then(res => {

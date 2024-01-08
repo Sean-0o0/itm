@@ -9,7 +9,7 @@ export default function TableBox(props) {
   const { curPrj = {}, tableData, setTableData, routes = [], handleScoreChange } = props;
 
   useEffect(() => {
-    return () => {};
+    return () => { };
   }, [JSON.stringify(tableData.data)]);
 
   //右侧表配置

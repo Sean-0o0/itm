@@ -67,12 +67,12 @@ export default connect(({ global = {} }) => ({
     } else {
       getPrjList({});
     }
-    return () => {};
+    return () => { };
   }, [params]);
 
   useEffect(() => {
     if (curPrj.id !== -1) getTableData(Number(curPrj.id));
-    return () => {};
+    return () => { };
   }, [curPrj.id]);
 
   //获取用户角色
@@ -193,7 +193,7 @@ export default connect(({ global = {} }) => ({
             setCurPrj({ id, name, done, open });
             setUpdateData([]);
           },
-          onCancel() {},
+          onCancel() { },
         });
       } else {
         setCurPrj({ id, name, done, open });
@@ -273,6 +273,7 @@ export default connect(({ global = {} }) => ({
     }
   }, [JSON.stringify(updateData), JSON.stringify(tableData), JSON.stringify(curPrj)]);
 
+
   return (
     <div className="mutual-evaluation-box">
       <Spin
@@ -309,7 +310,7 @@ export default connect(({ global = {} }) => ({
         <div className="content-box">
           <div className="left-box">
             <div className="btn-row">
-              <Button onClick={handleOpen}>开启评价</Button>
+              <Button onClick={handleOpen}>评价状态管理</Button>
             </div>
             <OpenValuationModal
               visible={modalVisible}
@@ -322,7 +323,7 @@ export default connect(({ global = {} }) => ({
               list={prjList}
               handlePrjItemClick={handlePrjItemClick}
               curPrjID={curPrj.id}
-              // height={showSwitch ? '' : '100%'}
+            // height={showSwitch ? '' : '100%'}
             />
           </div>
           <div className="right-box">

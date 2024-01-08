@@ -9,6 +9,7 @@ import { EditIPRInfo } from '../../../../services/pmsServices';
 
 const { Option } = Select;
 
+
 const TableBox = props => {
   const { dataProps = {}, funcProps = {} } = props;
   const {
@@ -37,6 +38,48 @@ const TableBox = props => {
   }); //操作弹窗
   const location = useLocation();
 
+  /** 列宽，软件著作权有“软件用途和技术特点”，返回不同列宽 */
+  const widthMap = (tabKey) => {
+    if (tabKey === 'RJZZ') {
+      return new Map([
+        ['关联项目', '12%'],
+
+        ['软件名称', '12%'],
+        ['版本号', '7%'],
+        ['软件用途和技术特点', '13%'],
+
+        ['附件', '5%'],
+        ['联系人', '5%'],
+        ['当前状态', '6%'],
+        ['证书号', '7%'],
+        ['登记时间', '8%'],
+        ['修改时间', '8%'],
+        ['操作', '7%'],
+      ])
+    }
+    else {
+      return new Map([
+        ['关联项目', ''],
+
+        ['专利名称', ''],
+        ['专利类型', '10%'],
+
+        ['标准名称', ''],
+        ['参与类型', '8%'],
+        ['标准类型', '8%'],
+
+        ['附件', '7%'],
+        ['联系人', '7%'],
+        ['当前状态', '7%'],
+        ['证书号', '10%'],
+        ['登记时间', '10%'],
+        ['修改时间', '10%'],
+        ['操作', '10%'],
+      ])
+    }
+
+  }
+
   //列配置
   const columns = (key = 'RJZZ') => {
     let header = [];
@@ -44,7 +87,7 @@ const TableBox = props => {
       title: '关联项目',
       dataIndex: 'GLXM',
       key: 'GLXM',
-      // width: '14%',
+      width: widthMap(key).get('关联项目'),
       ellipsis: true,
       render: (txt, row) => (
         <div title={txt}>
@@ -75,6 +118,7 @@ const TableBox = props => {
           title: '软件名称',
           dataIndex: 'RJMC',
           key: 'RJMC',
+          width: widthMap(key).get('软件名称'),
           ellipsis: true,
           render: txt => (
             <Tooltip title={txt} placement="topLeft">
@@ -87,7 +131,7 @@ const TableBox = props => {
           title: '版本号',
           dataIndex: 'BBH',
           key: 'BBH',
-          width: '10%',
+          width: widthMap(key).get('版本号'),
           ellipsis: true,
           render: txt => (
             <Tooltip title={txt} placement="topLeft">
@@ -102,6 +146,7 @@ const TableBox = props => {
           title: '专利名称',
           dataIndex: 'ZLMC',
           key: 'ZLMC',
+          width: widthMap(key).get('专利名称'),
           ellipsis: true,
           render: txt => (
             <Tooltip title={txt} placement="topLeft">
@@ -114,7 +159,7 @@ const TableBox = props => {
           title: '专利类型',
           dataIndex: 'ZLLX',
           key: 'ZLLX',
-          width: '10%',
+          width: widthMap(key).get('专利类型'),
           ellipsis: true,
           render: txt => getNote(ZLLX, txt),
         },
@@ -125,6 +170,7 @@ const TableBox = props => {
           title: '标准名称',
           dataIndex: 'HYBZ',
           key: 'HYBZ',
+          width: widthMap(key).get('标准名称'),
           ellipsis: true,
           render: txt => (
             <Tooltip title={txt} placement="topLeft">
@@ -137,7 +183,7 @@ const TableBox = props => {
           title: '参与类型',
           dataIndex: 'CYLX',
           key: 'CYLX',
-          width: '8%',
+          width: widthMap(key).get('参与类型'),
           ellipsis: true,
           render: txt => (
             <Tooltip title={getNote(CYXZ, txt)} placement="topLeft">
@@ -149,7 +195,7 @@ const TableBox = props => {
           title: '标准类型',
           dataIndex: 'HYBZLX',
           key: 'HYBZLX',
-          width: '8%',
+          width: widthMap(key).get('标准类型'),
           ellipsis: true,
           render: txt => (
             <Tooltip title={getNote(HYBZLX, txt)} placement="topLeft">
@@ -164,6 +210,7 @@ const TableBox = props => {
           title: '标准名称',
           dataIndex: 'QYBZ',
           key: 'QYBZ',
+          width: widthMap(key).get('标准名称'),
           ellipsis: true,
           render: txt => (
             <Tooltip title={txt} placement="topLeft">
@@ -180,7 +227,7 @@ const TableBox = props => {
         title: '附件',
         dataIndex: 'FJ',
         key: 'FJ',
-        width: '7%',
+        width: widthMap(key).get('附件'),
         ellipsis: true,
         render: (txt, row) => (
           <FileDownload
@@ -196,7 +243,7 @@ const TableBox = props => {
       {
         title: '联系人',
         dataIndex: 'LXR',
-        width: '7%',
+        width: widthMap(key).get('联系人'),
         key: 'LXR',
         ellipsis: true,
         render: (txt, row) => {
@@ -224,7 +271,7 @@ const TableBox = props => {
         title: '当前状态',
         dataIndex: 'DQZT',
         key: 'DQZT',
-        width: '7%',
+        width: widthMap(key).get('当前状态'),
         ellipsis: true,
         render: txt => getNote(getDQZT(activeKey), txt),
       },
@@ -232,7 +279,7 @@ const TableBox = props => {
         title: '证书号',
         dataIndex: 'ZSH',
         key: 'ZSH',
-        width: '10%',
+        width: widthMap(key).get('证书号'),
         ellipsis: true,
         render: txt => (
           <Tooltip title={txt} placement="topLeft">
@@ -244,22 +291,37 @@ const TableBox = props => {
         title: '登记时间',
         dataIndex: 'DJSJ',
         key: 'DJSJ',
-        width: '10%',
+        width: widthMap(key).get('登记时间'),
         ellipsis: true,
         render: txt => moment(String(txt)).format('YYYY-MM-DD'),
       },
+      ...(key === 'RJZZ' ?
+        [{
+          title: '软件用途和技术特点',
+          dataIndex: 'RJYTHJSTD',
+          key: 'RJYTHJSTD',
+          width: widthMap(key).get('软件用途和技术特点'),
+          ellipsis: true,
+          render: txt => (
+            <Tooltip title={txt} placement="topLeft">
+              <span style={{ cursor: 'default' }}>{txt}</span>
+            </Tooltip>
+          ),
+        }]
+        : []
+      ),
       {
         title: '修改时间',
         dataIndex: 'XGSJ',
         key: 'XGSJ',
-        width: '10%',
+        width: widthMap(key).get('修改时间'),
         ellipsis: true,
         render: txt => moment(String(txt)).format('YYYY-MM-DD'),
       },
       {
         title: '操作',
         dataIndex: 'OPRT',
-        width: '10%',
+        width: widthMap(key).get('操作'),
         align: 'center',
         key: 'OPRT',
         ellipsis: true,
@@ -478,6 +540,7 @@ const TableBox = props => {
               />
             </div>
           </div>
+
           <div className="console-item">
             <div className="item-label">当前状态</div>
             <Select
@@ -499,6 +562,7 @@ const TableBox = props => {
               ))}
             </Select>
           </div>
+
           <div className="console-item">
             <div className="item-label">联系人</div>
             <div className="item-selector">
@@ -538,6 +602,8 @@ const TableBox = props => {
             新建
           </Button>
         </div>
+
+
         <div className="project-info-table-box">
           <Table
             columns={columns(activeKey)}

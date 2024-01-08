@@ -1,9 +1,10 @@
 import { Divider, message, Tooltip } from 'antd';
 import React, { useCallback, useState, useEffect } from 'react';
 import styles from './styles.less';
+import { connect } from 'dva';
 
 const ScoreSlider = props => {
-  const { score = '0.0', disabled = false, onChange = () => {} } = props;
+  const { score = '0.0', disabled = false, onChange = () => { }, dictionary } = props;
   const [scoreNum, setScoreNum] = useState('0.0');
   const [tooltip, setTooltip] = useState({
     num: null,
@@ -15,7 +16,7 @@ const ScoreSlider = props => {
 
   useEffect(() => {
     setScoreNum(Number.isInteger(Number(score)) ? Number(score) + '.0' : score);
-    return () => {};
+    return () => { };
   }, [score]);
 
   // 鼠标滑动
@@ -131,10 +132,21 @@ const ScoreSlider = props => {
     });
   }, []);
 
+  /** 推断评价等级 */
+  const judgeGradeScale = (score) => {
+    for (let i = 1; i <= 4; i++) {
+      const findItem = dictionary.PJDJ.find(item => item.ibm === String(i))
+      if (parseFloat(score) >= parseFloat(findItem.note)) {
+        return findItem.cbm
+      }
+    }
+  }
+
+
   return (
     <div className={styles.sliderWrapper}>
-      <div className={styles.backToZero} onClick={disabled ? () => {} : handleBackToZero}></div>
-      <div className={styles.sliderBox} onMouseLeave={disabled ? () => {} : handleMouseLeave}>
+      <div className={styles.backToZero} onClick={disabled ? () => { } : handleBackToZero}></div>
+      <div className={styles.sliderBox} onMouseLeave={disabled ? () => { } : handleMouseLeave}>
         {data.map((x, index) => (
           <Tooltip
             visible={tooltip.current === index && tooltip.visible}
@@ -148,31 +160,31 @@ const ScoreSlider = props => {
                 styles.sliderItem +
                 (tooltip.num !== null && Number(tooltip.num) >= Number(index + '.5')
                   ? ` ${styles.sliderItemHalfHovered}` +
-                    (tooltip.num !== null && Number(tooltip.num) >= index + 1
-                      ? ` ${styles.sliderItemHovered}`
-                      : '')
+                  (tooltip.num !== null && Number(tooltip.num) >= index + 1
+                    ? ` ${styles.sliderItemHovered}`
+                    : '')
                   : Number(scoreNum) > 0 && Number(scoreNum) >= index + 1
-                  ? ` ${styles.sliderItemSlted}`
-                  : Number(scoreNum) > 0 && Number(scoreNum) >= Number(index + '.5')
-                  ? ` ${styles.sliderItemHalfSlted}`
-                  : '')
+                    ? ` ${styles.sliderItemSlted}`
+                    : Number(scoreNum) > 0 && Number(scoreNum) >= Number(index + '.5')
+                      ? ` ${styles.sliderItemHalfSlted}`
+                      : '')
               }
-              onMouseMove={disabled ? () => {} : e => handleMouseMove(e, index)}
-              onMouseDown={disabled ? () => {} : handleMouseDown}
-              onMouseUp={disabled ? () => {} : e => handleMouseUp(e, index)}
+              onMouseMove={disabled ? () => { } : e => handleMouseMove(e, index)}
+              onMouseDown={disabled ? () => { } : handleMouseDown}
+              onMouseUp={disabled ? () => { } : e => handleMouseUp(e, index)}
               onClick={
                 disabled
                   ? () => {
-                      message.warn('该人员已评分，不允许修改！', 2);
-                    }
+                    message.warn('该人员已评分，不允许修改！', 2);
+                  }
                   : e => handleClick(e, index)
               }
               style={disabled ? { cursor: 'default' } : {}}
             >
               {x}
               {!disabled &&
-              Number(scoreNum) > 0 &&
-              [index + 1, Number(index + '.5')].includes(Number(scoreNum)) ? (
+                Number(scoreNum) > 0 &&
+                [index + 1, Number(index + '.5')].includes(Number(scoreNum)) ? (
                 <div
                   className={styles.sliderItemBar}
                   style={{ left: Number(scoreNum) === index + 1 ? 24 : 12 + 'px' }}
@@ -187,8 +199,15 @@ const ScoreSlider = props => {
         ))}
       </div>
       <span className={styles.scoreNum}>{scoreNum}</span>
+
+      {/* <div className={styles.gradeScale}>{judgeGradeScale(scoreNum)}</div> */}
+
     </div>
   );
 };
 
-export default ScoreSlider;
+
+export default connect(({ global }) => ({
+  dictionary: global.dictionary,
+}))(ScoreSlider);
+

@@ -28,6 +28,7 @@ import CarryoverModal from './CarryoverModal';
 import { useHistory } from 'react-router';
 import SendBackModal from './SendBackModal';
 const { Option } = Select;
+
 const JZZT = [
   {
     ibm: 1,
@@ -38,6 +39,7 @@ const JZZT = [
     note: '结转',
   },
 ];
+
 const TBZT = [
   {
     ibm: 1,
@@ -56,6 +58,9 @@ const TBZT = [
     note: '草稿',
   },
 ];
+
+
+
 const TableBox = props => {
   const { dataProps = {}, funcProps = {} } = props;
   const {
@@ -70,9 +75,9 @@ const TableBox = props => {
     defaultYear,
   } = dataProps;
   const {
-    setFilterData = () => {},
-    queryTableData = () => {},
-    setSpinningData = () => {},
+    setFilterData = () => { },
+    queryTableData = () => { },
+    setSpinningData = () => { },
   } = funcProps;
   const [drawerData, setDrawerData] = useState({
     data: [],
@@ -96,6 +101,7 @@ const TableBox = props => {
     budgetId: -1, //最外头的预算ID
     tab: 'YSJZ',
   }); //退回弹窗
+
 
   const getSubmitType = (userRole = '', isFzr = false, type) => {
     //type ADD|新增；UPDATE|修改；DELETE|删除；SUBMIT|提交；BACK|退回
@@ -241,14 +247,6 @@ const TableBox = props => {
       ),
     },
     {
-      title: '新增/结转项目',
-      dataIndex: 'JZXZ',
-      width: 120,
-      align: 'right',
-      key: 'JZXZ',
-      ellipsis: true,
-    },
-    {
       title: '结转项目详情',
       dataIndex: 'JZXMXQ',
       width: 120,
@@ -267,230 +265,244 @@ const TableBox = props => {
       ),
     },
     {
-      title: '操作',
-      dataIndex: 'operation',
-      key: 'operation',
-      align: 'center',
-      width: 150,
-      fixed: 'right',
-      render: (_, row) => (
-        <div className="opr-column">
-          {/**状态是负责人填写，负责人和登录用户相同，显示修改和提交*/}
-          {Number(row.TBZTID) === 1 && Number(userBasicInfo.id) === Number(row.FZRID) && (
-            <Fragment>
-              <span
-                onClick={() => {
-                  history.push({
-                    pathname: `/pms/manage/BudgetSubmit/${EncryptBase64(
-                      JSON.stringify({
-                        operateType: 'UPDATE',
-                        submitType: getSubmitType(userRole, true, 'UPDATE'),
-                        budgetId: Number(row.YSID),
-                        routes: [{ name: '预算录入', pathname: location.pathname }],
-                        refreshParams: {
-                          ...filterData,
-                          activeKey,
-                          current: tableData.current,
-                          pageSize: tableData.pageSize,
-                          sort: curSorter,
-                        },
-                      }),
-                    )}`,
-                  });
-                }}
-              >
-                修改
-              </span>
-              {Number(row.CZR) !== 0 && (
-                <Popconfirm
-                  title="是否确定提交？"
-                  onConfirm={() =>
-                    handleSubmit({
-                      operateType: 'SUBMIT',
-                      submitType: getSubmitType(userRole, true, 'SUBMIT'),
-                      budgetId: Number(row.YSID),
-                    })
-                  }
-                >
-                  <span>提交</span>
-                </Popconfirm>
-              )}
-            </Fragment>
-          )}
-          {/**状态为统筹人审批，登录用户是统筹人，该预算的统筹人是当前登录用户的，显示详情、退回和提交*/}
-          {Number(row.TBZTID) === 2 &&
-            userRole.includes('预算统筹人') &&
-            Number(userBasicInfo.id) === Number(row.YSTCR) && (
-              <Fragment>
-                <span
-                  onClick={() => {
-                    history.push({
-                      pathname: `/pms/manage/BudgetSubmit/${EncryptBase64(
-                        JSON.stringify({
-                          operateType: 'XQ',
+      title: '新增/结转项目',
+      dataIndex: 'JZXZ',
+      width: 120,
+      align: 'right',
+      key: 'JZXZ',
+      ellipsis: true,
+    },
+    ...(
+      // !userRole.includes('信息技术事业部领导') && !userRole.includes('一级领导')
+      1 === 1
+        ?
+        [{
+          title: '操作',
+          dataIndex: 'operation',
+          key: 'operation',
+          align: 'center',
+          width: 150,
+          fixed: 'right',
+          render: (_, row) => (
+            <div className="opr-column">
+              {/**状态是负责人填写，负责人和登录用户相同，显示修改和提交*/}
+              {Number(row.TBZTID) === 1 && Number(userBasicInfo.id) === Number(row.FZRID) && (
+                <Fragment>
+                  <span
+                    onClick={() => {
+                      history.push({
+                        pathname: `/pms/manage/BudgetSubmit/${EncryptBase64(
+                          JSON.stringify({
+                            operateType: 'UPDATE',
+                            submitType: getSubmitType(userRole, true, 'UPDATE'),
+                            budgetId: Number(row.YSID),
+                            routes: [{ name: '预算录入', pathname: location.pathname }],
+                            refreshParams: {
+                              ...filterData,
+                              activeKey,
+                              current: tableData.current,
+                              pageSize: tableData.pageSize,
+                              sort: curSorter,
+                            },
+                          }),
+                        )}`,
+                      });
+                    }}
+                  >
+                    修改
+                  </span>
+                  {Number(row.CZR) !== 0 && (
+                    <Popconfirm
+                      title="是否确定提交？"
+                      onConfirm={() =>
+                        handleSubmit({
+                          operateType: 'SUBMIT',
+                          submitType: getSubmitType(userRole, true, 'SUBMIT'),
                           budgetId: Number(row.YSID),
-                          routes: [{ name: '预算录入', pathname: location.pathname }],
-                          refreshParams: {
-                            ...filterData,
-                            activeKey,
-                            current: tableData.current,
-                            pageSize: tableData.pageSize,
-                            sort: curSorter,
-                          },
-                          sendBackParams: {
+                        })
+                      }
+                    >
+                      <span>提交</span>
+                    </Popconfirm>
+                  )}
+                </Fragment>
+              )}
+              {/**状态为统筹人审批，登录用户是统筹人，该预算的统筹人是当前登录用户的，显示详情、退回和提交*/}
+              {Number(row.TBZTID) === 2 &&
+                userRole.includes('预算统筹人') &&
+                Number(userBasicInfo.id) === Number(row.YSTCR) && (
+                  <Fragment>
+                    <span
+                      onClick={() => {
+                        history.push({
+                          pathname: `/pms/manage/BudgetSubmit/${EncryptBase64(
+                            JSON.stringify({
+                              operateType: 'XQ',
+                              budgetId: Number(row.YSID),
+                              routes: [{ name: '预算录入', pathname: location.pathname }],
+                              refreshParams: {
+                                ...filterData,
+                                activeKey,
+                                current: tableData.current,
+                                pageSize: tableData.pageSize,
+                                sort: curSorter,
+                              },
+                              sendBackParams: {
+                                operateType: 'BACK',
+                                submitType: getSubmitType(userRole, true, 'BACK'),
+                                budgetId: Number(row.YSID),
+                              },
+                            }),
+                          )}`,
+                        });
+                      }}
+                    >
+                      详情
+                    </span>
+                    <span
+                      onClick={() =>
+                        setSendBackData({
+                          visible: true,
+                          fromBudget: true, //外边表格的退回，false时是抽屉里的退回
+                          data: {
                             operateType: 'BACK',
                             submitType: getSubmitType(userRole, true, 'BACK'),
                             budgetId: Number(row.YSID),
+                            budgetName: row.YSXMMC,
                           },
-                        }),
-                      )}`,
-                    });
-                  }}
-                >
-                  详情
-                </span>
-                <span
-                  onClick={() =>
-                    setSendBackData({
-                      visible: true,
-                      fromBudget: true, //外边表格的退回，false时是抽屉里的退回
-                      data: {
-                        operateType: 'BACK',
-                        submitType: getSubmitType(userRole, true, 'BACK'),
-                        budgetId: Number(row.YSID),
-                        budgetName: row.YSXMMC,
-                      },
-                    })
-                  }
-                >
-                  退回
-                </span>
-                {Number(row.CZR) !== 0 && (
-                  <Popconfirm
-                    title="是否确定提交？"
-                    onConfirm={() =>
-                      handleSubmit({
-                        operateType: 'SUBMIT',
-                        submitType: getSubmitType(userRole, true, 'SUBMIT'),
-                        budgetId: Number(row.YSID),
-                      })
-                    }
-                  >
-                    <span>提交</span>
-                  </Popconfirm>
+                        })
+                      }
+                    >
+                      退回
+                    </span>
+                    {Number(row.CZR) !== 0 && (
+                      <Popconfirm
+                        title="是否确定提交？"
+                        onConfirm={() =>
+                          handleSubmit({
+                            operateType: 'SUBMIT',
+                            submitType: getSubmitType(userRole, true, 'SUBMIT'),
+                            budgetId: Number(row.YSID),
+                          })
+                        }
+                      >
+                        <span>提交</span>
+                      </Popconfirm>
+                    )}
+                  </Fragment>
                 )}
-              </Fragment>
-            )}
-          {/**状态为管理员审批，登录用户是管理员，显示详情、退回和删除 */}
-          {Number(row.TBZTID) === 3 && userRole.includes('预算管理人') && (
-            <Fragment>
-              <span
-                onClick={() => {
-                  history.push({
-                    pathname: `/pms/manage/BudgetSubmit/${EncryptBase64(
-                      JSON.stringify({
-                        operateType: 'XQ',
-                        budgetId: Number(row.YSID),
-                        routes: [{ name: '预算录入', pathname: location.pathname }],
-                        refreshParams: {
-                          ...filterData,
-                          activeKey,
-                          current: tableData.current,
-                          pageSize: tableData.pageSize,
-                          sort: curSorter,
-                        },
-                        sendBackParams: {
+              {/**状态为管理员审批，登录用户是管理员，显示详情、退回和删除 */}
+              {Number(row.TBZTID) === 3 && userRole.includes('预算管理人') && (
+                <Fragment>
+                  <span
+                    onClick={() => {
+                      history.push({
+                        pathname: `/pms/manage/BudgetSubmit/${EncryptBase64(
+                          JSON.stringify({
+                            operateType: 'XQ',
+                            budgetId: Number(row.YSID),
+                            routes: [{ name: '预算录入', pathname: location.pathname }],
+                            refreshParams: {
+                              ...filterData,
+                              activeKey,
+                              current: tableData.current,
+                              pageSize: tableData.pageSize,
+                              sort: curSorter,
+                            },
+                            sendBackParams: {
+                              operateType: 'BACK',
+                              submitType: getSubmitType(userRole, true, 'BACK'),
+                              budgetId: Number(row.YSID),
+                            },
+                          }),
+                        )}`,
+                      });
+                    }}
+                  >
+                    详情
+                  </span>
+                  <span
+                    onClick={() =>
+                      setSendBackData({
+                        visible: true,
+                        fromBudget: true, //外边表格的退回，false时是抽屉里的退回
+                        data: {
                           operateType: 'BACK',
                           submitType: getSubmitType(userRole, true, 'BACK'),
                           budgetId: Number(row.YSID),
+                          budgetName: row.YSXMMC,
                         },
-                      }),
-                    )}`,
-                  });
-                }}
-              >
-                详情
-              </span>
-              <span
-                onClick={() =>
-                  setSendBackData({
-                    visible: true,
-                    fromBudget: true, //外边表格的退回，false时是抽屉里的退回
-                    data: {
-                      operateType: 'BACK',
-                      submitType: getSubmitType(userRole, true, 'BACK'),
-                      budgetId: Number(row.YSID),
-                      budgetName: row.YSXMMC,
-                    },
-                  })
-                }
-              >
-                退回
-              </span>
-              <Popconfirm
-                title="是否确定删除？"
-                onConfirm={() =>
-                  handleSubmit(
-                    {
-                      operateType: 'DELETE',
-                      budgetId: Number(row.YSID),
-                    },
-                    '删除',
-                  )
-                }
-              >
-                <span>删除</span>
-              </Popconfirm>
-            </Fragment>
-          )}
-          {/**状态为草稿，登录用户是负责人，显示修改和删除 */}
-          {Number(row.TBZTID) === 4 && Number(userBasicInfo.id) === Number(row.FZRID) && (
-            <Fragment>
-              <span
-                onClick={() => {
-                  history.push({
-                    pathname: `/pms/manage/BudgetSubmit/${EncryptBase64(
-                      JSON.stringify({
-                        operateType: 'UPDATE',
-                        submitType: getSubmitType(userRole, true, 'UPDATE'),
-                        routes: [{ name: '预算录入', pathname: location.pathname }],
-                        budgetId: Number(row.YSID),
-                        refreshParams: {
-                          ...filterData,
-                          activeKey,
-                          current: tableData.current,
-                          pageSize: tableData.pageSize,
-                          sort: curSorter,
+                      })
+                    }
+                  >
+                    退回
+                  </span>
+                  <Popconfirm
+                    title="是否确定删除？"
+                    onConfirm={() =>
+                      handleSubmit(
+                        {
+                          operateType: 'DELETE',
+                          budgetId: Number(row.YSID),
                         },
-                      }),
-                    )}`,
-                  });
-                }}
-              >
-                修改
-              </span>
-              <Popconfirm
-                title="是否确定删除？"
-                onConfirm={() =>
-                  handleSubmit(
-                    {
-                      operateType: 'DELETE',
-                      budgetId: Number(row.YSID),
-                    },
-                    '删除',
-                  )
-                }
-              >
-                <span>删除</span>
-              </Popconfirm>
-            </Fragment>
-          )}
-        </div>
-      ),
-    },
+                        '删除',
+                      )
+                    }
+                  >
+                    <span>删除</span>
+                  </Popconfirm>
+                </Fragment>
+              )}
+              {/**状态为草稿，登录用户是负责人，显示修改和删除 */}
+              {Number(row.TBZTID) === 4 && Number(userBasicInfo.id) === Number(row.FZRID) && (
+                <Fragment>
+                  <span
+                    onClick={() => {
+                      history.push({
+                        pathname: `/pms/manage/BudgetSubmit/${EncryptBase64(
+                          JSON.stringify({
+                            operateType: 'UPDATE',
+                            submitType: getSubmitType(userRole, true, 'UPDATE'),
+                            routes: [{ name: '预算录入', pathname: location.pathname }],
+                            budgetId: Number(row.YSID),
+                            refreshParams: {
+                              ...filterData,
+                              activeKey,
+                              current: tableData.current,
+                              pageSize: tableData.pageSize,
+                              sort: curSorter,
+                            },
+                          }),
+                        )}`,
+                      });
+                    }}
+                  >
+                    修改
+                  </span>
+                  <Popconfirm
+                    title="是否确定删除？"
+                    onConfirm={() =>
+                      handleSubmit(
+                        {
+                          operateType: 'DELETE',
+                          budgetId: Number(row.YSID),
+                        },
+                        '删除',
+                      )
+                    }
+                  >
+                    <span>删除</span>
+                  </Popconfirm>
+                </Fragment>
+              )}
+            </div>
+          ),
+        }]
+        : []
+    )
   ];
 
-  //列配置 - 预算结转
+  //列配置 - 预算结转 
   const columns_YSJZ = [
     {
       title: '项目名称',
@@ -662,7 +674,7 @@ const TableBox = props => {
 
   //提交、退回、删除
   const handleSubmit = (params, txt = '提交') => {
-    console.log('🚀 ~ file: index.js:457 ~ handleSubmit ~ params:', params, txt);
+    // console.log('🚀 ~ file: index.js:457 ~ handleSubmit ~ params:', params, txt);
     OperateCapitalBeginYearBudgetInfo({ ...params, fileInfo: '[]' })
       .then(res => {
         if (res.success) {
@@ -1136,9 +1148,9 @@ const TableBox = props => {
           style={
             filterFold
               ? {
-                  height: activeKey === 'ZB' ? 'calc(100% - 113px)' : 'calc(100% - 92px)',
-                  marginBottom: 0,
-                }
+                height: activeKey === 'ZB' ? 'calc(100% - 113px)' : 'calc(100% - 92px)',
+                marginBottom: 0,
+              }
               : { height: 'calc(100% - 164px)', marginBottom: 0 }
           }
         >
