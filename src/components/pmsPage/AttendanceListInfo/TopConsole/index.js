@@ -60,6 +60,7 @@ export default forwardRef(function TopConsole(props, ref) {
 
   //顶部下拉框查询数据
   const getFilterData = () => {
+    const roleArr = ['信息技术事业部领导', '一级部门领导', '外包项目对接人', '二级部门领导'];
     LOGIN_USER_INFO.id !== undefined &&
       QueryUserRole({
         userId: String(LOGIN_USER_INFO.id),
@@ -74,7 +75,7 @@ export default forwardRef(function TopConsole(props, ref) {
               sort: '',
               total: -1,
               cxlx: 'KQLB',
-              js: zyrole === '暂无' ? role : zyrole,
+              js: roleArr.includes(zyrole) ? zyrole : roleArr.includes(role) ? role : '普通人员',
             })
               .then(res => {
                 if (res?.success) {

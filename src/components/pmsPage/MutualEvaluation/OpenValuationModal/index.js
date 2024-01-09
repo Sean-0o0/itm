@@ -39,6 +39,7 @@ export default function OpenValuationModal(props) {
     total: -1,
   }); //右侧表格数据
   const [selectedRowIds, setSelectedRowIds] = useState([]); //选中行id
+  const [selectedRows, setSelectedRows] = useState([]); //选中行
   const [conditions, setConditions] = useState({
     includesOpened: false, //是否存在 已开启评价的
     includesClosed: false, //是否存在 未开启评价的
@@ -364,12 +365,6 @@ export default function OpenValuationModal(props) {
   //行选择
   const rowSelection = {
     selectedRowKeys: selectedRowIds,
-    onChange: (selectedRowKeys, selectedRows) => {
-      setConditions({
-        includesOpened: selectedRows.some(x => x.KQZT === '已开启'),
-        includesClosed: selectedRows.some(x => x.KQZT !== '已开启'),
-      });
-    },
     onSelectAll: isSelected => {
       if (isSelected) {
         setIsSpinning(true);
@@ -385,15 +380,15 @@ export default function OpenValuationModal(props) {
         })
           .then(res => {
             if (res?.success) {
-              const selectedRows = JSON.parse(res.result || '[]');
-              setSelectedRowIds(selectedRows.map(x => x.XMID));
+              const rows = JSON.parse(res.result || '[]');
+              setSelectedRowIds(rows.map(x => x.XMID));
               console.log(
-                '🚀 ~ file: index.js:395 ~ OpenValuationModal ~ selectedRows.map(x => x.XMID):',
-                selectedRows.map(x => x.XMID),
+                '🚀 ~ file: index.js:395 ~ OpenValuationModal ~ rows.map(x => x.XMID):',
+                rows.map(x => x.XMID),
               );
               setConditions({
-                includesOpened: selectedRows.some(x => x.KQZT === '已开启'),
-                includesClosed: selectedRows.some(x => x.KQZT !== '已开启'),
+                includesOpened: rows.some(x => x.KQZT === '已开启'),
+                includesClosed: rows.some(x => x.KQZT !== '已开启'),
               });
               setIsSpinning(false);
             }
@@ -405,6 +400,7 @@ export default function OpenValuationModal(props) {
           });
       } else {
         setSelectedRowIds([]);
+        setSelectedRows();
         setConditions({
           includesOpened: false,
           includesClosed: false,
@@ -418,14 +414,24 @@ export default function OpenValuationModal(props) {
       //   isSelected,
       // );
       let selectedRowKeys = [];
+      let rows = [];
       if (isSelected) {
         selectedRowKeys = Array.from(new Set([...selectedRowIds, selectedRow.XMID]));
+        rows = Array.from(new Set([...selectedRows, selectedRow]));
       } else {
         selectedRowKeys = selectedRowIds.filter(item => {
           return item !== selectedRow.XMID;
         });
+        rows = selectedRows.filter(item => {
+          return item.XMID !== selectedRow.XMID;
+        });
       }
       setSelectedRowIds(selectedRowKeys);
+      setSelectedRows(rows);
+      setConditions({
+        includesOpened: rows.some(x => x.KQZT === '已开启'),
+        includesClosed: rows.some(x => x.KQZT !== '已开启'),
+      });
     },
   };
 

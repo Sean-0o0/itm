@@ -1,31 +1,32 @@
 import React, { useEffect, useState } from 'react';
 import TopRanking from './TopRanking';
 import TableTabs from './TableTabs';
-import {
-  QuerySupplierDetailInfo,
-  QuerySupplierList,
-  QuerySupplierOverviewInfo,
-  QueryUserRole,
-} from '../../../services/pmsServices';
+import { QuerySupplierOverviewInfo, QueryUserRole } from '../../../services/pmsServices';
 import { Spin, Breadcrumb, message } from 'antd';
 import { Link } from 'react-router-dom';
 import moment from 'moment';
+import StatisticYear from './StatisticYear';
 
 export default function SupplierSituation(props) {
-  const { dictionary = [], routes = [], defaultYear = moment().year() } = props;
+  const { routes = [], defaultYear = -1 } = props;
   let LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
-  const { GYSLX, WBRYGW } = dictionary;
   const [isSpinning, setIsSpinning] = useState(false); //加载状态
   const [tableData, setTableData] = useState([]); //表格数据-项目列表
   const [tableLoading, setTableLoading] = useState(false); //表格加载状态
   const [total, setTotal] = useState(0); //数据总数
   const [rankingData, setRankingData] = useState([]); //供应商排名数据
-  const [uesrRole, setUserRole] = useState(''); //用户角色
+  const [userRole, setUserRole] = useState(''); //用户角色
   const [curTab, setCurTab] = useState('MX_ALL'); //当前tab
+  const [statisticYearData, setStatisticYearData] = useState({
+    currentYear: undefined,
+    dropdown: [],
+  }); //统计年份下拉数据
 
   useEffect(() => {
-    getUserRole(defaultYear);
-    setCurTab('MX_ALL');
+    if (defaultYear !== -1) {
+      getUserRole(defaultYear);
+      setCurTab('MX_ALL');
+    }
     return () => {};
   }, [defaultYear]);
 
@@ -39,6 +40,7 @@ export default function SupplierSituation(props) {
         if (res?.code === 1) {
           const { role = '' } = res;
           getRankingData(role, year);
+          setStatisticYearData(p => ({ ...p, currentYear: year }));
           setUserRole(role);
         }
       })
@@ -47,6 +49,7 @@ export default function SupplierSituation(props) {
         console.error('QueryUserRole', e);
       });
   };
+
   //获取供应商排名数据
   const getRankingData = (role, year) => {
     QuerySupplierOverviewInfo({
@@ -75,7 +78,7 @@ export default function SupplierSituation(props) {
   //获取报表格数据
   const getTableData = ({ role, queryType = 'MX_ALL', current = 1, pageSize = 10, year }) => {
     setTableLoading(true);
-    let yearNum = year !== undefined ? year : defaultYear;
+    let yearNum = year !== undefined ? year : statisticYearData.currentYear;
     QuerySupplierOverviewInfo({
       org: Number(LOGIN_USER_INFO.org),
       queryType,
@@ -128,6 +131,17 @@ export default function SupplierSituation(props) {
               );
             })}
           </Breadcrumb>
+          <StatisticYear
+            defaultYear={defaultYear}
+            role={userRole}
+            refresh={year => {
+              setCurTab('MX_ALL');
+              getRankingData(userRole, year);
+            }}
+            setIsSpinning={setIsSpinning}
+            statisticYearData={statisticYearData}
+            setStatisticYearData={setStatisticYearData}
+          />
         </div>
         <TopRanking data={rankingData} />
         <TableTabs
@@ -135,7 +149,7 @@ export default function SupplierSituation(props) {
           getData={getTableData}
           total={total}
           loading={tableLoading}
-          role={uesrRole}
+          role={userRole}
           routes={routes}
           curTab={curTab}
           setCurTab={setCurTab}

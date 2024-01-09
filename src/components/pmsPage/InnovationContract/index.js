@@ -53,9 +53,13 @@ export default connect(({ global }) => ({
     if (params !== '') {
       let obj = JSON.parse(DecryptBase64(params));
       // console.log('🚀 ~ file: index.js:43 ~ useLayoutEffect ~ obj:', obj);
+      // if (obj.htbh !== undefined) {
+      setFilterData(p => ({ ...p, contractCode: obj.htbh }));
+      // }
+      queryTableData({ contractCode: obj.htbh });
+    } else {
+      queryTableData({});
     }
-    console.log('🚀 ~ file: index.js:53 ~ useLayoutEffect ~ params:', params);
-    queryTableData({});
     getUserRole();
     return () => {};
   }, [params]);

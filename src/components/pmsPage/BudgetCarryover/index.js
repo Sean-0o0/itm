@@ -36,6 +36,7 @@ export default function BudgetCarryover(props) {
     sltDisabled: false,
   }); //加载状态
   const [userRole, setUserRole] = useState(''); //用户角色
+  const [role, setRole] = useState(''); //用户角色2 - 包含一级部门领导
   const [defaultYear, setDefaultYear] = useState(moment().year()); //默认年份
 
 
@@ -84,7 +85,8 @@ export default function BudgetCarryover(props) {
           }
           const roleTxt = JSON.parse(testRole).ALLROLE || '';
           setUserRole(roleTxt);
-          queryTableData({ ...params, userType: getUserType(roleTxt) });
+          setRole(loginRole);
+          queryTableData({ ...params, userType: getUserType(roleTxt, loginRole) });
         }
       })
       .catch(e => {
@@ -144,7 +146,7 @@ export default function BudgetCarryover(props) {
     budgetCategory,
     budgetName,
     budgetId,
-    userType = getUserType(userRole),
+    userType = getUserType(userRole, role),
     head,
     headName,
     state,
@@ -237,8 +239,14 @@ export default function BudgetCarryover(props) {
     }
   };
 
-  const getUserType = userRole => {
-    if (userRole.includes('预算管理人')) {
+  const getUserType = (userRole, role) => {
+    if (
+      ['信息技术事业部领导', '一级部门领导'].includes(role) ||
+      userRole.includes('信息技术事业部领导') ||
+      userRole.includes('一级部门领导')
+    ) {
+      return 'YJLD';
+    } else if (userRole.includes('预算管理人')) {
       return 'GLY';
     } else if (userRole.includes('预算统筹人')) {
       return 'TCR';

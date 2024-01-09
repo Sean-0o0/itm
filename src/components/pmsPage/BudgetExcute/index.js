@@ -5,6 +5,7 @@ import BudgetType from './BudgetType';
 import InfoTable from './InfoTable';
 import { message, Progress, Spin } from 'antd';
 import { QueryBudgetOverviewInfo, QueryUserRole } from '../../../services/pmsServices';
+import moment from 'moment';
 
 class BudgetExcute extends Component {
   state = {
@@ -21,19 +22,41 @@ class BudgetExcute extends Component {
       sort: '',
       total: -1,
     },
+    statisticYearData: {
+      currentYear: undefined,
+      dropdown: [],
+    },
   };
 
   componentDidUpdate(prevProps, prevState, snapshot) {
     if (this.props.defaultYear !== prevProps.defaultYear) {
-      this.fetchRole();
+      // console.log(
+      //   '🚀 ~ file: index.js:34 ~ BudgetExcute ~ componentDidUpdate ~ this.props.defaultYear !== prevProps.defaultYear:',
+      //   this.props.defaultYear,
+      //   prevProps.defaultYear,
+      // );
+      this.fetchRole(this.props.defaultYear);
+      this.setState({
+        statisticYearData: {
+          ...this.state.statisticYearData,
+          currentYear: this.props.defaultYear,
+        },
+      });
     }
   }
 
   componentDidMount() {
     this.fetchRole();
+    // console.log('@@@', this.props);
+    this.setState({
+      statisticYearData: {
+        currentYear: this.props.defaultYear,
+        dropdown: [],
+      },
+    });
   }
 
-  fetchRole = () => {
+  fetchRole = (year = moment().year()) => {
     this.setState({
       loading: true,
     });
@@ -52,8 +75,8 @@ class BudgetExcute extends Component {
               },
               () => {
                 const { pageParam = {} } = this.state;
-                this.queryHeaderInfo('MX');
-                this.queryBudgetOverviewInfo('MX_ZB', pageParam);
+                this.queryHeaderInfo('MX', year);
+                this.queryBudgetOverviewInfo('MX_ZB', pageParam, year);
               },
             );
           }
@@ -67,13 +90,13 @@ class BudgetExcute extends Component {
     }
   };
 
-  queryHeaderInfo = queryType => {
+  queryHeaderInfo = (queryType, year) => {
     const { role, orgid } = this.state;
     QueryBudgetOverviewInfo({
       org: orgid,
       queryType: queryType,
       role: role,
-      year: this.props.defaultYear,
+      year,
     }).then(res => {
       const { code = 0, note, ysglxx, ysqs } = res;
       if (code > 0) {
@@ -92,7 +115,7 @@ class BudgetExcute extends Component {
     });
   };
 
-  queryBudgetOverviewInfo = (queryType, param) => {
+  queryBudgetOverviewInfo = (queryType, param, year) => {
     this.setState({
       tableLoading: true,
     });
@@ -101,7 +124,7 @@ class BudgetExcute extends Component {
       org: orgid,
       queryType: queryType,
       role: role,
-      year: this.props.defaultYear,
+      year,
       ...param,
       total: -1,
     })
@@ -154,6 +177,7 @@ class BudgetExcute extends Component {
       tableLoading,
       pageParam,
       loading,
+      statisticYearData = {},
     } = this.state;
 
     const {
@@ -257,7 +281,23 @@ class BudgetExcute extends Component {
     return (
       <Spin spinning={loading} wrapperClassName="spin" tip="正在努力的加载中..." size="large">
         <div className="buget-excute-box cont-box" style={{ height: 'auto' }}>
-          <TopConsole routes={routes} />
+          <TopConsole
+            routes={routes}
+            defaultYear={this.props.defaultYear}
+            userRole={role}
+            fetchRole={this.fetchRole}
+            setIsSpinning={v =>
+              this.setState({
+                loading: v,
+              })
+            }
+            statisticYearData={statisticYearData}
+            setStatisticYearData={v =>
+              this.setState({
+                statisticYearData: v,
+              })
+            }
+          />
           <div className="overview-box">
             {/* <div className='cont-block staff-overview' style={{ width: 'calc(50% - 24px)', marginRight: '24px' }}>
                     <div className='title'>资本性预算</div>
@@ -304,7 +344,7 @@ class BudgetExcute extends Component {
             fetchData={this.queryBudgetOverviewInfo}
             ysglxx={ysglxx}
             YSLB={this.props.dictionary?.YSLB}
-            defaultYear={this.props.defaultYear}
+            defaultYear={statisticYearData.currentYear}
           />
         </div>
       </Spin>

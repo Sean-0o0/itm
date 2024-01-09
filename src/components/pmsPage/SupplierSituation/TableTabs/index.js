@@ -83,7 +83,7 @@ export default function TableTabs(props) {
       width: '5%',
       align: 'center',
       key: 'XH',
-      render: (a, b, i) => i + 1,
+      render: (a, b, i) => (curPage - 1) * curPageSize + i + 1,
     },
     {
       title: '项目名称',

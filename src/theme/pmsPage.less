@@ -10749,6 +10749,7 @@ li.ant-select-tree-treenode-disabled>.ant-select-tree-node-content-wrapper span 
       height: 52px;
       display: flex;
       align-items: center;
+      justify-content: space-between;
     }
 
     .top-ranking-box {
@@ -14446,8 +14447,12 @@ li.ant-select-tree-treenode-disabled>.ant-select-tree-node-content-wrapper span 
 
   //面包屑
   .header-bread {
+    width: 100%;
     margin: 0 !important;
     padding: 0 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 
     .top-tabs-boxs {
       //justify-content: end;
@@ -27498,5 +27503,34 @@ li.ant-select-tree-treenode-disabled>.ant-select-tree-node-content-wrapper span 
 
   .ant-form-item-control {
     line-height: 20px !important;
+  }
+}
+
+//统计年份
+.statistic-year-box {
+  margin-left: 8px;
+  height: 22px;
+  font-size: 14px;
+  font-weight: 400;
+  color: #303133;
+  line-height: 22px;
+  font-family: PingFangSC-regular, PingFang SC;
+
+  span {
+    cursor: pointer;
+
+    .icon-fill-down {
+      font-size: 12px;
+      color: #909399;
+      margin-left: 4px;
+    }
+
+    &:hover {
+      color: #3361ff;
+
+      i {
+        color: #3361ff;
+      }
+    }
   }
 }

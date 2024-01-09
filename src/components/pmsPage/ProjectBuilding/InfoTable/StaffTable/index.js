@@ -58,7 +58,7 @@ class StaffTable extends Component {
           return (
             <div title={value}>
               <Link
-                className="opr-btn"
+                className="table-link-strong"
                 to={{
                   pathname: `/pms/manage/ProjectDetail/${EncryptBase64(
                     JSON.stringify({
@@ -88,7 +88,7 @@ class StaffTable extends Component {
             <div title={value}>
               <Tooltip title={value} placement="topLeft">
                 <Link
-                  className="opr-btn"
+                  className="table-link-strong"
                   to={{
                     pathname: `/pms/manage/staffDetail/${EncryptBase64(
                       JSON.stringify({

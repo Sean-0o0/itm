@@ -327,6 +327,19 @@ export default connect(({ global }) => ({
     }
   };
 
+  //信创合同列表
+  const jumpToInnovationContract = item => {
+    // console.log(JSON.parse(item.kzzd));
+    if (item.kzzd !== '') {
+      window.location.href = `/#/pms/manage/InnovationContract/${EncryptBase64(
+        JSON.stringify({
+          htbh: JSON.parse(item.kzzd).HTBH,
+          // routes: [{ name: '个人工作台', pathname: location.pathname }],
+        }),
+      )}`;
+    }
+  };
+
   //打开跟踪信息编辑弹窗
   const openTrackingEditModal = item => {
     if (item.kzzd && item.kzzd !== '') {
@@ -447,6 +460,8 @@ export default connect(({ global }) => ({
       case '项目预算结转待查看':
       case '结转项目被退回':
         return jumpToBudgetCarryover(item);
+      case '信创合同转办':
+        return jumpToInnovationContract(item);
 
       //暂不处理
       case '外包人员录用信息提交':
@@ -472,7 +487,6 @@ export default connect(({ global }) => ({
     return item.xmmc;
   };
 
-  
   //待办块
   const getToDoItem = data => {
     return (

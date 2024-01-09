@@ -1,20 +1,21 @@
-import React, {Fragment, useState, useEffect, Component} from 'react';
-import {connect} from 'dva';
+import React, { Fragment, useState, useEffect, Component } from 'react';
+import { connect } from 'dva';
 import ProjectStateInfoTab from '../../../components/pmsPage/ProjectBuilding/ProjectDynamics/ProjectStateInfo/index';
-import {DecryptBase64} from '../../../components/Common/Encrypt';
+import { DecryptBase64 } from '../../../components/Common/Encrypt';
 
 const ProjectStateInfo = props => {
   const {
-    location: {state = {}},
+    location: { state = {} },
     match: {
-      params: {params: encryptParams = ''},
+      params: { params: encryptParams = '' },
     },
   } = props;
-  const {routes = []} = state;
+  const { routes = [] } = state;
   // console.log('🚀 ~ file: index.js ~ line 12 ~ ProjecDetail ~ props', props);
   let routes2 = [];
   let obj = [];
   let cxlx = '';
+  let defaultYear;
   if (props.match.params.params !== undefined) {
     obj = JSON.parse(DecryptBase64(encryptParams));
     cxlx = obj.cxlx;
@@ -28,10 +29,10 @@ const ProjectStateInfo = props => {
     });
     if (routes.length === 0) {
       obj.routes &&
-      (routes2 = obj.routes?.concat({
-        name: '阶段项目列表',
-        pathname: props?.pathname,
-      }));
+        (routes2 = obj.routes?.concat({
+          name: '阶段项目列表',
+          pathname: props?.pathname,
+        }));
       // console.log('🚀 ~ file: index.js:29 ~ ProjecDetail ~ routes2:', routes2);
     }
   }
@@ -52,10 +53,15 @@ const ProjectStateInfo = props => {
 
   return (
     <Fragment>
-      <ProjectStateInfoTab dictionary={props.dictionary} routes={newArr} cxlx={cxlx} defaultYear={defaultYear}/>
+      <ProjectStateInfoTab
+        dictionary={props.dictionary}
+        routes={newArr}
+        cxlx={cxlx}
+        defaultYear={defaultYear}
+      />
     </Fragment>
   );
 };
-export default connect(({global}) => ({
+export default connect(({ global }) => ({
   dictionary: global.dictionary,
 }))(ProjectStateInfo);

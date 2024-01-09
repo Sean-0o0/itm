@@ -683,11 +683,13 @@ class StaffTable extends Component {
           width: '11%',
           key: 'ZYS',
           value:
-            queryType === 'MX_FZB'
-              ? getAmountFormat(Number(ysglxx.FZBZYS))
-              : queryType === 'MX_KY'
-              ? getAmountFormat(Number(ysglxx.KYMBZ))
-              : getAmountFormat(Number(ysglxx.ZBYSZYS)),
+            tableData.length > 0
+              ? queryType === 'MX_FZB'
+                ? getAmountFormat(Number(ysglxx.FZBZYS))
+                : queryType === 'MX_KY'
+                ? getAmountFormat(Number(ysglxx.KYMBZ))
+                : getAmountFormat(Number(ysglxx.ZBYSZYS))
+              : '',
           align: 'right',
         },
         {
@@ -695,33 +697,39 @@ class StaffTable extends Component {
           key: 'KZXYS',
           align: 'right',
           value:
-            queryType === 'MX_FZB'
-              ? getAmountFormat(Number(ysglxx.FZBMBZ))
-              : queryType === 'MX_KY'
-              ? getAmountFormat(Number(ysglxx.KYYSKZX))
-              : getAmountFormat(Number(ysglxx.ZBRJMBZ)),
+            tableData.length > 0
+              ? queryType === 'MX_FZB'
+                ? getAmountFormat(Number(ysglxx.FZBMBZ))
+                : queryType === 'MX_KY'
+                ? getAmountFormat(Number(ysglxx.KYYSKZX))
+                : getAmountFormat(Number(ysglxx.ZBRJMBZ))
+              : '',
         },
         {
           width: '14%',
           key: 'YZXYS',
           align: 'right',
           value:
-            queryType === 'MX_FZB'
-              ? getAmountFormat(Number(ysglxx.FZBWCZ))
-              : queryType === 'MX_KY'
-              ? getAmountFormat(Number(ysglxx.KYYSYZX))
-              : getAmountFormat(Number(ysglxx.ZBRJWCZ)),
+            tableData.length > 0
+              ? queryType === 'MX_FZB'
+                ? getAmountFormat(Number(ysglxx.FZBWCZ))
+                : queryType === 'MX_KY'
+                ? getAmountFormat(Number(ysglxx.KYYSYZX))
+                : getAmountFormat(Number(ysglxx.ZBRJWCZ))
+              : '',
         },
         {
           width: '10%',
           key: 'YJZXL',
           align: 'right',
           value:
-            queryType === 'MX_FZB'
-              ? Number(ysglxx.FZBWCL) + '%'
-              : queryType === 'MX_KY'
-              ? Number(ysglxx.KYYSZXL) + '%'
-              : Number(ysglxx.ZBRJWCL) + '%',
+            tableData.length > 0
+              ? queryType === 'MX_FZB'
+                ? Number(ysglxx.FZBWCL) + '%'
+                : queryType === 'MX_KY'
+                ? Number(ysglxx.KYYSZXL) + '%'
+                : Number(ysglxx.ZBRJWCL) + '%'
+              : '',
         },
       ];
       if (queryType === 'MX_QT' && tableData.length > 0)
