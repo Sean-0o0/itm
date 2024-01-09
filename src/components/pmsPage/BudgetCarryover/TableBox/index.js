@@ -73,6 +73,7 @@ const TableBox = props => {
     userBasicInfo = {},
     curSorter = '',
     defaultYear,
+    isForbiddenLeader
   } = dataProps;
   const {
     setFilterData = () => { },
@@ -101,6 +102,8 @@ const TableBox = props => {
     budgetId: -1, //最外头的预算ID
     tab: 'YSJZ',
   }); //退回弹窗
+
+
 
 
   const getSubmitType = (userRole = '', isFzr = false, type) => {
@@ -273,8 +276,7 @@ const TableBox = props => {
       ellipsis: true,
     },
     ...(
-      // !userRole.includes('信息技术事业部领导') && !userRole.includes('一级领导')
-      1 === 1
+      isForbiddenLeader === false
         ?
         [{
           title: '操作',
@@ -640,36 +642,42 @@ const TableBox = props => {
       ellipsis: true,
       render: txt => getNote(XMYSJZZT, txt),
     },
-    {
-      title: '操作',
-      dataIndex: 'operation',
-      key: 'operation',
-      align: 'center',
-      width: 120,
-      fixed: 'right',
-      render: (_, row) => (
-        <div className="opr-column">
-          {Number(userBasicInfo.id) === Number(row.XMJLID) && String(row.JZZT) === '1' ? (
-            //未结转
-            <Fragment>
-              <span onClick={() => setCarryoverData({ visible: true, type: 'JZ', data: row })}>
-                结转
-              </span>
-              <span onClick={() => setCarryoverData({ visible: true, type: 'BJZ', data: row })}>
-                不结转
-              </span>
-            </Fragment>
-          ) : Number(userBasicInfo.id) === Number(row.XMJLID) && String(row.JZZT) === '3' ? (
-            //被退回
-            <span onClick={() => setCarryoverData({ visible: true, type: 'TJ', data: row })}>
-              重新结转
-            </span>
-          ) : (
-            ''
-          )}
-        </div>
-      ),
-    },
+    ...(
+      isForbiddenLeader === false
+        ? [{
+          title: '操作',
+          dataIndex: 'operation',
+          key: 'operation',
+          align: 'center',
+          width: 120,
+          fixed: 'right',
+          render: (_, row) => (
+            <div className="opr-column">
+              {Number(userBasicInfo.id) === Number(row.XMJLID) && String(row.JZZT) === '1' ? (
+                //未结转
+                <Fragment>
+                  <span onClick={() => setCarryoverData({ visible: true, type: 'JZ', data: row })}>
+                    结转
+                  </span>
+                  <span onClick={() => setCarryoverData({ visible: true, type: 'BJZ', data: row })}>
+                    不结转
+                  </span>
+                </Fragment>
+              ) : Number(userBasicInfo.id) === Number(row.XMJLID) && String(row.JZZT) === '3' ? (
+                //被退回
+                <span onClick={() => setCarryoverData({ visible: true, type: 'TJ', data: row })}>
+                  重新结转
+                </span>
+              ) : (
+                ''
+              )}
+            </div>
+          ),
+        },
+
+        ]
+        : []
+    )
   ];
 
   //提交、退回、删除

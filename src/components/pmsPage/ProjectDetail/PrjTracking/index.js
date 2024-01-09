@@ -1,7 +1,9 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Button, Carousel, message, Popover, Progress } from 'antd';
+import { Button, Carousel, message, Popover, Progress, Icon } from 'antd';
 import moment from 'moment';
 import EditPrjTracking from '../../ProjectTracking/editPrjTracking/index.js';
+import AddPrjTracking from '../../ProjectTracking/addPrjTracking/index.js';
+import Lodash from 'lodash'
 
 export default function PrjTracking(props) {
   const { xmid = -2, prjData = {}, getTrackingData } = props;
@@ -21,9 +23,22 @@ export default function PrjTracking(props) {
   let LOGIN_USER_ID = String(JSON.parse(sessionStorage.getItem('user')).id);
   let isXMJL = LOGIN_USER_ID === String(prjData.prjBasic?.XMJLID);
 
+  const [isAddBtnShow, setIsAddBtnShow] = useState(false) // 是否显示新增按钮
+
+  // const latestDateRangeRef = useRef([]) //最新周日期区间
+
+  const [addModal, setAddModal] = useState({
+    visible: false,
+    record: {},
+    cycle: 0,
+  }); //新增按钮——弹窗
+
+
+
   //初始化按钮状态
   useEffect(() => {
     if (trackingData.length !== 0) {
+      judgeIsAddBtnShow()
       const data = [...trackingData];
       let activeIndex = data.length - 1;
       setActiveKey(data[activeIndex]?.XMZQ ?? '');
@@ -60,7 +75,7 @@ export default function PrjTracking(props) {
         setBtnVisible(p => ({ ...p, next: false }));
       }
     }
-    return () => {};
+    return () => { };
   }, [xmid, JSON.stringify(trackingData)]);
 
   //项目跟踪块
@@ -74,22 +89,22 @@ export default function PrjTracking(props) {
       DQZT === '低风险'
         ? '#05BEFE'
         : DQZT === '中风险'
-        ? '#f9a812'
-        : DQZT === '高风险'
-        ? '#FF2F31'
-        : DQZT === '延期'
-        ? '#FF2F31'
-        : '#3361ff';
+          ? '#f9a812'
+          : DQZT === '高风险'
+            ? '#FF2F31'
+            : DQZT === '延期'
+              ? '#FF2F31'
+              : '#3361ff';
     const bgColor =
       DQZT === '低风险'
         ? '#05BEFE1A'
         : DQZT === '中风险'
-        ? '#F9A8121A'
-        : DQZT === '高风险'
-        ? '#FF2F311A'
-        : DQZT === '延期'
-        ? '#FF2F311A'
-        : '#3361FF1A';
+          ? '#F9A8121A'
+          : DQZT === '高风险'
+            ? '#FF2F311A'
+            : DQZT === '延期'
+              ? '#FF2F311A'
+              : '#3361FF1A';
     const getRiskIcon = zt => {
       return (
         <div className="icon-wrapper" style={{ backgroundColor: bgColor }}>
@@ -121,81 +136,6 @@ export default function PrjTracking(props) {
         <div className="date">
           {KSSJ ? moment(String(KSSJ)).format('YYYY.MM.DD') : '-.-.-'} -{' '}
           {JSSJ ? moment(String(JSSJ)).format('YYYY.MM.DD') : '-.-.-'}
-        </div>
-      </div>
-    );
-  };
-
-  //底部信息盒子
-  const getBottomBox = x => {
-    const { DQJD = '0%', DQZT = '--', ZYSXSM = '--', BZGZNR = '--', XZGZAP = '--', XMZQ } = x;
-    const latestWeek = XMZQ === trackingData[trackingData.length - 1].XMZQ;
-    const fontColor = !latestWeek
-      ? '#909399'
-      : DQZT === '低风险'
-      ? '#05BEFE'
-      : DQZT === '中风险'
-      ? '#f9a812'
-      : DQZT === '高风险'
-      ? '#FF2F31'
-      : DQZT === '延期'
-      ? '#FF2F31'
-      : '#3361ff';
-    return (
-      <div className="bottom-box">
-        <div className="title">
-          项目进度概况
-          {isXMJL && (
-            <div
-              className="icon-box"
-              onClick={() => setEditModal({ visible: true, record: x, cycle: XMZQ })}
-            >
-              <i className="iconfont icon-edit" />
-              <span>编辑</span>
-            </div>
-          )}
-        </div>
-        <div className="content">
-          <div className="content-top">
-            <div className="info-item-col">
-              <div className="label">当前进度：</div>
-              <div className="value">
-                <Progress
-                  percent={Number(DQJD?.replace('%', '') ?? 0)}
-                  strokeColor={fontColor}
-                  format={p => (
-                    <span
-                      style={{
-                        color: fontColor,
-                      }}
-                    >
-                      {p}%
-                    </span>
-                  )}
-                  strokeWidth={12}
-                  style={{ width: '75%' }}
-                />
-              </div>
-            </div>
-            <div className="info-item-col">
-              <div className="label">当前状态：</div>
-              <div className="value" style={{ color: fontColor }}>
-                {DQZT}
-              </div>
-            </div>
-          </div>
-          <div className="info-item">
-            <div className="label">重要事项说明：</div>
-            <div className="value">{ZYSXSM}</div>
-          </div>
-          <div className="info-item">
-            <div className="label">本周工作内容：</div>
-            <div className="value">{BZGZNR}</div>
-          </div>
-          <div className="info-item">
-            <div className="label">下周工作计划：</div>
-            <div className="value">{XZGZAP}</div>
-          </div>
         </div>
       </div>
     );
@@ -301,6 +241,7 @@ export default function PrjTracking(props) {
     }
   };
 
+  /** 进度及报告填写 hover列表 */
   const popoverContent = (
     <div className="list">
       <div
@@ -326,10 +267,145 @@ export default function PrjTracking(props) {
       </div>
     </div>
   );
+
+  /** 判断是否显示新增按钮 */
+  const judgeIsAddBtnShow = () => {
+    if (!Lodash.isEmpty(trackingData)) {
+      const latestItem = trackingData[trackingData.length - 1]
+      if (latestItem.KSSJ && latestItem.JSSJ) {
+        const { KSSJ, JSSJ } = latestItem
+        // const startDate = String(KSSJ)
+        const endDate = String(JSSJ)
+        const currentDate = new Date();
+        const formattedEndDate = new Date(endDate.substring(0, 4), endDate.substring(4, 6) - 1, endDate.substring(6, 8));
+        if (currentDate > formattedEndDate) {
+          setIsAddBtnShow(true) // 如果日期不在当前时间内
+        } else {
+          setIsAddBtnShow(false)
+        }
+      }
+    }
+  }
+
+  /** 点击新增按钮 */
+  const addBtnClickHandle = () => {
+    const latestItem = Lodash.cloneDeep(trackingData[trackingData.length - 1])
+
+    const currentDate = new Date(); // 获取当前时间
+    const currentDay = currentDate.getDay(); // 获取当前时间的星期几，0 表示星期日，1 表示星期一
+
+    // 获取当前时间所在的周一的日期
+    const firstDayOfWeek = new Date(currentDate.getTime() - (currentDay - 1) * 24 * 60 * 60 * 1000);
+    const formattedFirstDay = `${firstDayOfWeek.getFullYear()}${(firstDayOfWeek.getMonth() + 1).toString().padStart(2, '0')}${firstDayOfWeek.getDate().toString().padStart(2, '0')}`;
+
+    // 获取当前时间所在的周日的日期
+    const lastDayOfWeek = new Date(currentDate.getTime() + (7 - currentDay) * 24 * 60 * 60 * 1000);
+    const formattedLastDay = `${lastDayOfWeek.getFullYear()}${(lastDayOfWeek.getMonth() + 1).toString().padStart(2, '0')}${lastDayOfWeek.getDate().toString().padStart(2, '0')}`;
+
+    latestItem.KSSJ = formattedFirstDay
+    latestItem.JSSJ = formattedLastDay
+    latestItem.BZGZNR = latestItem.XZGZAP
+    latestItem.XZGZAP = ''
+    latestItem.ZYSXSM = ''
+    latestItem.DQZT = ''
+    latestItem.DQJD = ''
+
+    setAddModal({ visible: true, record: latestItem, cycle: latestItem.XMZQ + 1 })
+  }
+
+  //底部信息盒子
+  const getBottomBox = x => {
+    const { DQJD = '0%', DQZT = '--', ZYSXSM = '--', BZGZNR = '--', XZGZAP = '--', XMZQ } = x;
+    const latestWeek = XMZQ === trackingData[trackingData.length - 1].XMZQ;
+    const fontColor = !latestWeek
+      ? '#909399'
+      : DQZT === '低风险'
+        ? '#05BEFE'
+        : DQZT === '中风险'
+          ? '#f9a812'
+          : DQZT === '高风险'
+            ? '#FF2F31'
+            : DQZT === '延期'
+              ? '#FF2F31'
+              : '#3361ff';
+    return (
+      <div className="bottom-box">
+        <div className="title">
+          项目进度概况
+          {isXMJL && (
+            <div
+              className="icon-box"
+              onClick={() => {
+                setEditModal({ visible: true, record: x, cycle: XMZQ })
+              }}
+            >
+              <i className="iconfont icon-edit" />
+              <span>编辑</span>
+            </div>
+          )}
+        </div>
+        <div className="content">
+          <div className="content-top">
+            <div className="info-item-col">
+              <div className="label">当前进度：</div>
+              <div className="value">
+                <Progress
+                  percent={Number(DQJD?.replace('%', '') ?? 0)}
+                  strokeColor={fontColor}
+                  format={p => (
+                    <span
+                      style={{
+                        color: fontColor,
+                      }}
+                    >
+                      {p}%
+                    </span>
+                  )}
+                  strokeWidth={12}
+                  style={{ width: '75%' }}
+                />
+              </div>
+            </div>
+            <div className="info-item-col">
+              <div className="label">当前状态：</div>
+              <div className="value" style={{ color: fontColor }}>
+                {DQZT}
+              </div>
+            </div>
+          </div>
+          <div className="info-item">
+            <div className="label">重要事项说明：</div>
+            <div className="value">{ZYSXSM}</div>
+          </div>
+          <div className="info-item">
+            <div className="label">本周工作内容：</div>
+            <div className="value">{BZGZNR}</div>
+          </div>
+          <div className="info-item">
+            <div className="label">下周工作计划：</div>
+            <div className="value">{XZGZAP}</div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+
   if (trackingData.length === 0) return null;
   return (
     <div className="prj-tracking-box">
-      {/*编辑项目跟踪信息弹窗*/}
+      {/*新增——项目信息弹窗*/}
+      {addModal.visible && (
+        <AddPrjTracking
+          record={addModal.record}
+          cycle={addModal.cycle}
+          getTableData={getTrackingData}
+          contractSigningVisible={addModal.visible}
+          closeContractModal={() => setAddModal(p => ({ ...p, visible: false }))}
+        />
+      )}
+
+      {/*编辑——项目跟踪信息弹窗*/}
       {editModal.visible && (
         <EditPrjTracking
           record={editModal.record}
@@ -339,6 +415,7 @@ export default function PrjTracking(props) {
           closeContractModal={() => setEditModal(p => ({ ...p, visible: false }))}
         />
       )}
+
       <div className="top-box">
         项目跟踪
         {/* <Popover
@@ -352,7 +429,15 @@ export default function PrjTracking(props) {
             <span>进度及报告填写</span>
           </div>
         </Popover> */}
+
+        {isXMJL && isAddBtnShow &&
+          <div className="icon-box" onClick={addBtnClickHandle}>
+            <Icon type='plus-circle' style={{ fontSize: 14, marginRight: 5, color: '#3361ff' }}></Icon>
+            <span>新增</span>
+          </div>
+        }
       </div>
+
       <div className="middle-box">
         {btnVisible.last && (
           <div className="last-btn" onClick={() => handleSwitch('last')}>

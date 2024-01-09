@@ -11,6 +11,7 @@ import { DecryptBase64 } from '../../Common/Encrypt';
 import moment from 'moment';
 const { TabPane } = Tabs;
 
+
 export default function BudgetCarryover(props) {
   const {
     dictionary = {},
@@ -37,6 +38,13 @@ export default function BudgetCarryover(props) {
   const [userRole, setUserRole] = useState(''); //用户角色
   const [defaultYear, setDefaultYear] = useState(moment().year()); //默认年份
 
+
+  /** 是否是禁止“操作”的 信息技术事业部领导、一级领导
+   * allrole里面只返回系统里配的权限，一级部门领导是单独判断的只在role里面返回，
+   *  只要是信息技术开发部领导或信息技术运保部领导就算是一级部门领导
+   */
+  const [isForbiddenLeader, setIsForbiddenLeader] = useState(false)
+
   useEffect(() => {
     if (params !== '') {
       let obj = JSON.parse(DecryptBase64(params));
@@ -60,7 +68,7 @@ export default function BudgetCarryover(props) {
       //首次刷新
       getDefaultYear({ activeKey: 'ZB' });
     }
-    return () => {};
+    return () => { };
   }, [params]);
 
   //获取用户角色
@@ -70,7 +78,10 @@ export default function BudgetCarryover(props) {
     })
       .then(res => {
         if (res?.code === 1) {
-          const { testRole = '{}' } = res;
+          const { testRole = '{}', role: loginRole } = res;
+          if (loginRole === '信息技术事业部领导' || loginRole === '一级部门领导') {
+            setIsForbiddenLeader(true)
+          }
           const roleTxt = JSON.parse(testRole).ALLROLE || '';
           setUserRole(roleTxt);
           queryTableData({ ...params, userType: getUserType(roleTxt) });
@@ -272,6 +283,7 @@ export default function BudgetCarryover(props) {
             userBasicInfo,
             curSorter,
             defaultYear,
+            isForbiddenLeader
           }}
           funcProps={{ setFilterData, queryTableData, setSpinningData }}
         />

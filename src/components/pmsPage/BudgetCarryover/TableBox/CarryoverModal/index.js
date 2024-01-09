@@ -7,14 +7,14 @@ const { TextArea } = Input;
 
 export default Form.create()(function CarryoverModal(props) {
   const { visible, setVisible, form = {}, type = 'JZ', data = {}, refresh } = props;
-  console.log('🚀 ~ file: index.js:10 ~ CarryoverModal ~  data:', data);
+  // console.log('🚀 ~ file: index.js:10 ~ CarryoverModal ~  data:', data);
   const { getFieldDecorator, getFieldValue, validateFields, resetFields } = form;
   const [isSpinning, setIsSpinning] = useState(false); //加载状态
   const labelCol = 6;
   const wrapperCol = 18;
 
   useEffect(() => {
-    return () => {};
+    return () => { };
   }, []);
 
   //输入框 - 数值型
@@ -32,8 +32,8 @@ export default Form.create()(function CarryoverModal(props) {
             step={0.01}
             precision={2}
             placeholder={'请输入' + label}
-            // formatter={value => `value`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-            // parser={value => value.replace(/$\s?|(,*)/g, '')}
+          // formatter={value => `value`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+          // parser={value => value.replace(/$\s?|(,*)/g, '')}
           />,
         )}
       </Form.Item>

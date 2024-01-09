@@ -1,5 +1,5 @@
 /**
- * 项目跟踪信息编辑弹窗页面
+ * 项目跟踪信息————新建弹窗页面（不知道editPrjTracking被哪些地方复用，改入参麻烦）
  */
 import {
   Row,
@@ -28,7 +28,7 @@ class EditPrjTracking extends React.Component {
 
   componentDidMount() {
     const { record } = this.props
-    // console.log("编辑弹窗入参", record)
+    // console.log("新建弹窗入参", record)
     const { setFieldsValue } = this.props.form;
     setFieldsValue({
       progress: record.DQJD?.replace('%', ''),
@@ -87,7 +87,7 @@ class EditPrjTracking extends React.Component {
             isSpinning: false,
           });
           this.props.closeContractModal();
-          message.success(this.props.isFromToDo ? "填写成功！" : "修改成功！");
+          message.success(this.props.isFromToDo ? "填写成功！" : "新建成功！");
           getTableData({ ...params })
         }
       })
@@ -105,8 +105,8 @@ class EditPrjTracking extends React.Component {
       cycle,
       importantNotes: values.importantNotes,
       nextWeek: values.nextWeek,
-      //TX|填写;XG|修改; 正常情况下都是XG
-      operateType: "XG",
+      //TX|填写;XG|修改;ADD|新增; 正常情况下都是XG
+      operateType: "ADD",
       progress: values.progress,
       projectId: record.XMID,
       status: values.status,
@@ -185,7 +185,7 @@ class EditPrjTracking extends React.Component {
               fontSize: '15px',
             }}
           >
-            <strong>填写本周概况</strong>
+            <strong>新增周概况</strong>
           </div>
           <Spin
             spinning={isSpinning}
@@ -237,6 +237,7 @@ class EditPrjTracking extends React.Component {
                             })(
                               <Select
                                 showSearch
+                                placeholder='请选择当前状态'
                                 filterOption={(input, option) =>
                                   option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
                                 }>
