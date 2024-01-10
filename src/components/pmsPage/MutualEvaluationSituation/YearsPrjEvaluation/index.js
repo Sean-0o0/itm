@@ -1,12 +1,12 @@
 import React, { useEffect, useState, useRef, Fragment, useCallback } from 'react';
 import { Tooltip, message, Popover, Table, Empty } from 'antd';
-import moment from 'moment';
 import TopFilter from '../../MutualEvaluation/TopFilter';
 import LeftPrjList from '../../MutualEvaluation/LeftPrjList';
 import tableInfoImg from '../../../../assets/MutualEvaluation/years-prj-evaluation-table-info.png';
 import { EncryptBase64 } from '../../../Common/Encrypt';
 import { Link } from 'react-router-dom';
 import { QueryEmployeeAppraiseList, QueryUserRole } from '../../../../services/pmsServices';
+import * as Lodash from 'lodash';
 
 export default function YearsPrjEvaluation(props) {
   const { dataProps = {}, funcProps = {} } = props;
@@ -100,6 +100,10 @@ export default function YearsPrjEvaluation(props) {
       width: '20%',
       key: 'FS',
       ellipsis: true,
+      sorter: (a, b, order) => {
+        if (Lodash.isEmpty(a.FS) || Lodash.isEmpty(b.FS)) return 1;
+        return a.FS - b.FS;
+      },
     },
     {
       title: '打分详情',
@@ -177,16 +181,16 @@ export default function YearsPrjEvaluation(props) {
           dataSource={data}
           size="middle"
           pagination={false}
-          // pagination={{
-          //   current,
-          //   pageSize: 5,
-          //   // pageSizeOptions: ['5', '20', '20', '40'],
-          //   showSizeChanger: false,
-          //   hideOnSinglePage: false,
-          //   showQuickJumper: false,
-          //   // showTotal: t => `共 ${data.length} 条数据`,
-          //   // total: data.length,
-          // }}
+        // pagination={{
+        //   current,
+        //   pageSize: 5,
+        //   // pageSizeOptions: ['5', '20', '20', '40'],
+        //   showSizeChanger: false,
+        //   hideOnSinglePage: false,
+        //   showQuickJumper: false,
+        //   // showTotal: t => `共 ${data.length} 条数据`,
+        //   // total: data.length,
+        // }}
         />
       </div>
     );
@@ -194,14 +198,14 @@ export default function YearsPrjEvaluation(props) {
 
   useEffect(() => {
     getPrjList({});
-    return () => {};
+    return () => { };
   }, []);
 
   useEffect(() => {
     if (curPrj.id !== -1) {
       getTableData(Number(curPrj.id));
     }
-    return () => {};
+    return () => { };
   }, [curPrj.id]);
 
   //获取用户角色

@@ -13409,24 +13409,45 @@ li.ant-select-tree-treenode-disabled>.ant-select-tree-node-content-wrapper span 
   }
 }
 
+
 //人员详情
 .staff-detail-box {
-  overflow: hidden;
+  overflow: 'scroll';
   height: 100%;
   display: flex;
   flex-direction: column;
+  margin-bottom: 16px;
+
+  &::-webkit-scrollbar {
+    height: 7px;
+    border-radius: 10px;
+    background-color: #F5F5F5;
+  }
+
+  &::-webkit-scrollbar-track {
+    background-color: #f5f5f5;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: #ccc;
+    border-radius: 5px;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background-color: #aaa;
+  }
 
   &>.top-console,
   &>.info-table {
     padding: 16px 24px;
     background-color: #fff;
     box-shadow: 0 4px 4px 0 rgba(20, 38, 98, 4%);
-    border-radius: 8px;
+    border-radius: 0;
     overflow: hidden;
   }
 
   &>.info-table {
-    margin: 16px 24px 24px 24px;
+    // margin: 16px 24px 24px 24px;
     // height: calc(100vh - 235px);
     flex-grow: 1;
     display: flex;
@@ -27504,6 +27525,61 @@ li.ant-select-tree-treenode-disabled>.ant-select-tree-node-content-wrapper span 
   .ant-form-item-control {
     line-height: 20px !important;
   }
+}
+
+//人员详情tab
+.StaffDetailTabs {
+  margin: 16px 24px 24px 24px;
+
+  .ant-tabs-bar {
+    margin: 0;
+  }
+
+}
+
+//人员详情————评价列表
+.StaffDetail___EvaluationTable {
+  background-color: #fff;
+  border-radius: 8px;
+
+  .ant-table-pagination {
+    margin-top: 11px !important;
+    margin-bottom: 16px !important;
+  }
+
+  .project-info-table-box {
+    overflow: hidden;
+    height: calc(100% - 129px);
+    border-top: none;
+    padding-right: 4px;
+    padding-top: 16px;
+    margin: 0 20px 16px 24px;
+
+    &::-webkit-scrollbar {
+      width: 8px;
+      background-color: #ffffff;
+      border-radius: 4px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background-color: #d8d8d8;
+      border-radius: 4px;
+    }
+
+    .table-link-strong();
+    .antd-table-adaptation();
+
+    .ant-table-placeholder {
+      border: 0;
+      top: 42px;
+    }
+
+    .ant-table-wrapper {
+      border: 0;
+    }
+  }
+
+
 }
 
 //统计年份

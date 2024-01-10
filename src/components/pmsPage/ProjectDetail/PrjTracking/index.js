@@ -25,8 +25,6 @@ export default function PrjTracking(props) {
 
   const [isAddBtnShow, setIsAddBtnShow] = useState(false) // 是否显示新增按钮
 
-  // const latestDateRangeRef = useRef([]) //最新周日期区间
-
   const [addModal, setAddModal] = useState({
     visible: false,
     record: {},

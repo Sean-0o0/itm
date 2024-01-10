@@ -29,7 +29,7 @@ class ToConsole extends Component {
       },
       dataAnonymization,
     } = this.props;
-    console.log('routesroutes-ccc-staf', routes);
+    // console.log('routesroutes-ccc-staf', routes);
     return (
       <div className="top-console">
         <div className="back-img">

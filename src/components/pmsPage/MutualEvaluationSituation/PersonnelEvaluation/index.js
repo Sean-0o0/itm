@@ -7,7 +7,7 @@ import pjImg from '../../../../assets/MutualEvaluation/icon_pj.png';
 import { QueryEmployeeAppraiseList } from '../../../../services/pmsServices';
 import { Link } from 'react-router-dom';
 import { EncryptBase64 } from '../../../Common/Encrypt';
-import { debounce } from 'lodash';
+import * as Lodash from 'lodash';
 
 export default function PersonnelEvaluation(props) {
   const { dataProps = {}, funcProps = {} } = props;
@@ -40,12 +40,12 @@ export default function PersonnelEvaluation(props) {
       setActiveKey(staffData[0].value);
       setTreeData(JSON.parse(JSON.stringify(staffData[0].children || [])));
     }
-    return () => {};
+    return () => { };
   }, [JSON.stringify(staffData)]);
 
   useEffect(() => {
     if (curStaffID !== -1) getTableData(Number(curStaffID));
-    return () => {};
+    return () => { };
   }, [curStaffID]);
 
   //获取右侧表格数据
@@ -191,7 +191,10 @@ export default function PersonnelEvaluation(props) {
       width: '20%',
       key: 'FS',
       ellipsis: true,
-      sorter: true,
+      sorter: (a, b, order) => {
+        if (Lodash.isEmpty(a.FS) || Lodash.isEmpty(b.FS)) return 1;
+        return a.FS - b.FS;
+      },
     },
     {
       title: '打分详情',
@@ -269,20 +272,21 @@ export default function PersonnelEvaluation(props) {
           dataSource={data}
           size="middle"
           pagination={false}
-          // pagination={{
-          //   current,
-          //   pageSize: 5,
-          //   // pageSizeOptions: ['5', '20', '20', '40'],
-          //   showSizeChanger: false,
-          //   hideOnSinglePage: false,
-          //   showQuickJumper: false,
-          //   // showTotal: t => `共 ${data.length} 条数据`,
-          //   // total: data.length,
-          // }}
+        // pagination={{
+        //   current,
+        //   pageSize: 5,
+        //   // pageSizeOptions: ['5', '20', '20', '40'],
+        //   showSizeChanger: false,
+        //   hideOnSinglePage: false,
+        //   showQuickJumper: false,
+        //   // showTotal: t => `共 ${data.length} 条数据`,
+        //   // total: data.length,
+        // }}
         />
       </div>
     );
   };
+
   //获取打分详情数据
   const getDetailData = useCallback(({ memberId, projectId }) => {
     setDetailData(p => ({ ...p, loading: true }));
@@ -496,7 +500,7 @@ export default function PersonnelEvaluation(props) {
                     showTotal: t => `共 ${tableData.total} 条数据`,
                     total: tableData.total,
                   }}
-                  // pagination={false}
+                // pagination={false}
                 />
               </div>
             </Fragment>
