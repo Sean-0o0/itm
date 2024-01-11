@@ -171,7 +171,8 @@ const {
     operateBudgetCarryoverInfo,
     operateCapitalBeginYearBudgetInfo,
     queryProjectBudgetCarryoverInfo,
-    queryCapitalBudgetCarryoverInfo
+    queryCapitalBudgetCarryoverInfo,
+    convertToSelfDevIteProject,
   },
 } = api;
 
@@ -1848,6 +1849,16 @@ export async function QueryProjectBudgetCarryoverInfo(payload) {
 export async function QueryCapitalBudgetCarryoverInfo(payload) {
   const option = {
     url: queryCapitalBudgetCarryoverInfo,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 转换为自研迭代项目
+export async function ConvertToSelfDevIteProject(payload) {
+  const option = {
+    url: convertToSelfDevIteProject,
     method: 'post',
     data: payload,
   };

@@ -1,11 +1,12 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Modal, message, Popover } from 'antd';
+import { Modal, message, Popover, Popconfirm } from 'antd';
 import moment from 'moment';
 import {
   FinishProject,
   QueryIteProjectList,
   QueryUserRole,
   QueryEmployeeAppraiseList,
+  ConvertToSelfDevIteProject,
 } from '../../../../services/pmsServices';
 import AttendanceRegister from './AttendanceRegister';
 import NewProjectModelV2 from '../../../../pages/workPlatForm/singlePage/NewProjectModelV2';
@@ -16,6 +17,7 @@ import { useHistory } from 'react-router-dom';
 import ScatterFlowers from './ScatterFlowers';
 import PrjFinishModal from './PrjFinishModal';
 import OpenValuationModal from '../../MutualEvaluation/OpenValuationModal';
+import IterationPaymentOprtModal from '../IterationPayment/OprtModal';
 
 export default function ShortcutCard(props) {
   const { dataProps = {}, funcProps = {} } = props;
@@ -29,11 +31,18 @@ export default function ShortcutCard(props) {
     isGLY = {},
     grayTest = {},
     is_XMJL_FXMJL = false, // 项目详情页的是否是项目经理或者副项目经理，非账号登录人的
+    allStaffData = [], //用于判断 验收报告 事项是否已完成
   } = dataProps;
 
   const { prjBasic = {}, member = [], contrastArr = [] } = prjData;
 
-  const { getPrjDtlData, setIsSpinning, handlePromiseAll, setShowSCDD } = funcProps;
+  const {
+    getPrjDtlData,
+    setIsSpinning,
+    handlePromiseAll,
+    setShowSCDD,
+    setOpenNewIteContent,
+  } = funcProps;
 
   let LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
 
@@ -46,10 +55,9 @@ export default function ShortcutCard(props) {
     pjztgl: false, //评价状态管理弹窗
   }); //弹窗显隐
 
-  const [hasEvaluationData, setHasEvaluationData] = useState(false) // 评价列表是否有数据
-  const [isForbiddenLeader, setIsForbiddenLeader] = useState(false)  // 是否是禁止查看人员互评的领导
-  const [isProjectMember, setIsProjectMember] = useState(false) // 是否是项目成员
-
+  const [hasEvaluationData, setHasEvaluationData] = useState(false); // 评价列表是否有数据
+  const [isForbiddenLeader, setIsForbiddenLeader] = useState(false); // 是否是禁止查看人员互评的领导
+  const [isProjectMember, setIsProjectMember] = useState(false); // 是否是项目成员
 
   const [IPAHData, setIPAHData] = useState({
     oprType: 'ADD',
@@ -59,6 +67,13 @@ export default function ShortcutCard(props) {
     fromPrjDetail: false, //入口是否在项目详情
     parentRow: undefined, //申报行的父行数据{}
   }); //知识产权、获奖荣誉
+
+  //新增升级内容弹窗
+  //当 自研项目 类型时，且不包含自研迭代项目标签，且其 验收报告事项 已完成 时显示按钮
+  const showZWDD =
+    prjData.prjBasic?.XMLX?.includes('自研项目') &&
+    !prjData.prjBasic?.XMBQ?.includes('自研迭代项目') &&
+    allStaffData.findIndex(x => x.sxmc === '验收报告' && x.zxqk !== ' ') !== -1;
 
   const history = useHistory();
   const flowers = useRef(null);
@@ -104,29 +119,32 @@ export default function ShortcutCard(props) {
    * @param {*} txt  文字标题
    * @param {*} fn 图片点击的回调函数
    * @param {*} content 鼠标hover显示的可选列表
+   * @param {*} popConfirmTxt 二次确认文本，有值时，点击按钮有二次确认
    * @returns
    */
-  const getShortcutItem = (imgTxt, txt, fn, content) => {
+  const getShortcutItem = ({ imgTxt, txt, fn, content = false, popConfirmTxt = false }) => {
     return (
-      <div className="shortcut-item" onClick={fn}>
-        {content ? (
-          <Popover
-            placement="rightTop"
-            title={null}
-            content={content}
-            overlayClassName="btn-more-content-popover"
-          >
+      <Popconfirm title={popConfirmTxt} onConfirm={fn} disabled={popConfirmTxt === false}>
+        <div className="shortcut-item" onClick={popConfirmTxt === false ? fn : () => {}}>
+          {content ? (
+            <Popover
+              placement="rightTop"
+              title={null}
+              content={content}
+              overlayClassName="btn-more-content-popover"
+            >
+              <div className="item-img">
+                <img src={require(`../../../../assets/projectDetail/icon_${imgTxt}.png`)} alt="" />
+              </div>
+            </Popover>
+          ) : (
             <div className="item-img">
               <img src={require(`../../../../assets/projectDetail/icon_${imgTxt}.png`)} alt="" />
             </div>
-          </Popover>
-        ) : (
-          <div className="item-img">
-            <img src={require(`../../../../assets/projectDetail/icon_${imgTxt}.png`)} alt="" />
-          </div>
-        )}
-        <div className="item-txt">{txt}</div>
-      </div>
+          )}
+          <div className="item-txt">{txt}</div>
+        </div>
+      </Popconfirm>
     );
   };
 
@@ -181,17 +199,47 @@ export default function ShortcutCard(props) {
 
   //考勤登记
   const handleAttendanceRegister = () => {
-    setModalVisible(p => ({ ...p, attendanceRegister: true }));
+    setModalVisible(p => ({
+      ...p,
+      attendanceRegister: true,
+    }));
+  };
+
+  //转为自研迭代项目 - 打开新增升级内容弹窗
+  const handleZWDD = () => {
+    setIsSpinning(true);
+    ConvertToSelfDevIteProject({
+      projectId: Number(xmid),
+    })
+      .then(res => {
+        if (res.success) {
+          setIsSpinning(false);
+          getPrjDtlData();
+          //打开新增升级内容弹窗
+          setOpenNewIteContent(true);
+        }
+      })
+      .catch(e => {
+        console.log('🚀 ~ handleZWDD ~ e:', e);
+        message.error('操作失败', 1);
+        setIsSpinning(false);
+      });
   };
 
   //生成迭代
   const createIterationPrj = () => {
-    setModalVisible(p => ({ ...p, createIterationPrj: true }));
+    setModalVisible(p => ({
+      ...p,
+      createIterationPrj: true,
+    }));
   };
 
   //知识产权、获奖荣誉回调
   const handleAddIntelProperty = activeKey => {
-    setModalVisible(p => ({ ...p, intelProperty: true }));
+    setModalVisible(p => ({
+      ...p,
+      intelProperty: true,
+    }));
     setIPAHData(p => ({
       ...p,
       oprType: 'ADD',
@@ -208,7 +256,10 @@ export default function ShortcutCard(props) {
       activeKey,
       isSB: true, //是否申报
       parentRow: undefined, //申报行的父行数据{}
-      fromPrjDetail: { xmmc: prjBasic.XMMC, xmid: String(xmid) }, //入口是否在项目详情
+      fromPrjDetail: {
+        xmmc: prjBasic.XMMC,
+        xmid: String(xmid),
+      }, //入口是否在项目详情
     }));
   };
 
@@ -246,7 +297,7 @@ export default function ShortcutCard(props) {
   const mutualEvaluationMenu = (
     <div className="list">
       {/*   项目经理/副项目经理的情况下，如果没数据，就隐藏人员评价，只展示评价管理   XMJLID */}
-      {hasEvaluationData === true &&
+      {hasEvaluationData === true && (
         <div
           className="item"
           key="RYHP"
@@ -256,7 +307,7 @@ export default function ShortcutCard(props) {
         >
           人员互评
         </div>
-      }
+      )}
 
       <div
         className="item"
@@ -309,7 +360,6 @@ export default function ShortcutCard(props) {
 
   /** 判断是否展示人员互评弹窗 */
   const judgeMutualEvaluationShow = async () => {
-
     //判断是否是禁止查看的领导
     const { id } = LOGIN_USER_INFO;
     const res = await QueryUserRole({ userId: id });
@@ -320,10 +370,8 @@ export default function ShortcutCard(props) {
       // console.log('登录人角色', loginRole)
 
       if (loginRole === '信息技术事业部领导' || loginRole === '一级部门领导') {
-        setIsForbiddenLeader(true)
-      } else[
-        setIsForbiddenLeader(false)
-      ]
+        setIsForbiddenLeader(true);
+      } else [setIsForbiddenLeader(false)];
     }
 
     //判断是否项目人员
@@ -346,10 +394,9 @@ export default function ShortcutCard(props) {
       const { gkResult } = listRes;
       const listObj = JSON.parse(gkResult);
       if (listObj.length !== 0) {
-        setHasEvaluationData(true)
-      }
-      else {
-        setHasEvaluationData(false)
+        setHasEvaluationData(true);
+      } else {
+        setHasEvaluationData(false);
       }
     }
   };
@@ -366,13 +413,17 @@ export default function ShortcutCard(props) {
   if (!isMember()) return null;
   return (
     <div className="shortcut-card-box">
-
       <div className="top-title">快捷入口</div>
       {/* 考勤登记 */}
       <AttendanceRegister
         xmid={xmid}
         visible={modalVisible.attendanceRegister}
-        setVisible={v => setModalVisible(p => ({ ...p, attendanceRegister: v }))}
+        setVisible={v =>
+          setModalVisible(p => ({
+            ...p,
+            attendanceRegister: v,
+          }))
+        }
         ZYXMKQLX={ZYXMKQLX}
         handlePromiseAll={handlePromiseAll}
       />
@@ -381,12 +432,20 @@ export default function ShortcutCard(props) {
       {modalVisible.intelProperty && (
         <OprIPModal
           visible={modalVisible.intelProperty}
-          setVisible={v => setModalVisible(p => ({ ...p, intelProperty: v }))}
+          setVisible={v =>
+            setModalVisible(p => ({
+              ...p,
+              intelProperty: v,
+            }))
+          }
           oprType={IPAHData.oprType}
           type={IPAHData.activeKey}
           rowData={IPAHData.rowData}
           refresh={v => handleModalRefresh('IntelProperty', v)}
-          fromPrjDetail={{ xmmc: prjBasic.XMMC, xmid: String(xmid) }} //入口是否在项目详情
+          fromPrjDetail={{
+            xmmc: prjBasic.XMMC,
+            xmid: String(xmid),
+          }} //入口是否在项目详情
           isGLY={isGLY.zscq}
         />
       )}
@@ -394,9 +453,17 @@ export default function ShortcutCard(props) {
       {/* 获奖荣誉 */}
       {modalVisible.awardHonor && (
         <OprAHModal
-          setVisible={v => setModalVisible(p => ({ ...p, awardHonor: v }))}
+          setVisible={v =>
+            setModalVisible(p => ({
+              ...p,
+              awardHonor: v,
+            }))
+          }
           type={IPAHData.activeKey}
-          data={{ ...IPAHData, visible: modalVisible.awardHonor }}
+          data={{
+            ...IPAHData,
+            visible: modalVisible.awardHonor,
+          }}
           refresh={v => handleModalRefresh('AwardHonor', v)}
           isGLY={isGLY.hjry}
         />
@@ -408,7 +475,9 @@ export default function ShortcutCard(props) {
         width={1000}
         maskClosable={false}
         zIndex={100}
-        maskStyle={{ backgroundColor: 'rgb(0 0 0 / 30%)' }}
+        maskStyle={{
+          backgroundColor: 'rgb(0 0 0 / 30%)',
+        }}
         style={{ top: 10 }}
         visible={modalVisible.createIterationPrj}
         okText="保存"
@@ -416,7 +485,12 @@ export default function ShortcutCard(props) {
         bodyStyle={{
           padding: 0,
         }}
-        onCancel={() => setModalVisible(p => ({ ...p, createIterationPrj: false }))}
+        onCancel={() =>
+          setModalVisible(p => ({
+            ...p,
+            createIterationPrj: false,
+          }))
+        }
         title={
           <div
             style={{
@@ -435,10 +509,18 @@ export default function ShortcutCard(props) {
         footer={null}
       >
         <NewProjectModelV2
-          closeModel={() => setModalVisible(p => ({ ...p, createIterationPrj: false }))}
+          closeModel={() =>
+            setModalVisible(p => ({
+              ...p,
+              createIterationPrj: false,
+            }))
+          }
           successCallBack={() => {
             getGlddxmData();
-            setModalVisible(p => ({ ...p, createIterationPrj: false }));
+            setModalVisible(p => ({
+              ...p,
+              createIterationPrj: false,
+            }));
           }}
           xmid={-1} //新建入-1
           projectType={'1'} //项目类型为软硬件，才有这个按钮
@@ -453,7 +535,12 @@ export default function ShortcutCard(props) {
       <PrjFinishModal
         visible={modalVisible.prjFinish}
         setVisible={v => setModalVisible(p => ({ ...p, prjFinish: v }))}
-        data={{ xmid, xmjd: prjBasic.XMJD, contrastArr, refresh: handlePrjFinishRefresh }}
+        data={{
+          xmid,
+          xmjd: prjBasic.XMJD,
+          contrastArr,
+          refresh: handlePrjFinishRefresh,
+        }}
       />
       <OpenValuationModal
         visible={modalVisible.pjztgl}
@@ -468,37 +555,90 @@ export default function ShortcutCard(props) {
         projectName={prjBasic.XMMC}
       />
       <div className="content">
-        {is_XMJL_FXMJL && getShortcutItem('zscq', '知识产权', () => { }, intelPropertyMenu)}
+        {is_XMJL_FXMJL &&
+          getShortcutItem({
+            imgTxt: 'zscq',
+            txt: '知识产权',
+            fn: () => {},
+            content: intelPropertyMenu,
+          })}
 
-        {is_XMJL_FXMJL && getShortcutItem('hjry', '获奖荣誉', () => { }, awardHonorMenu)}
+        {is_XMJL_FXMJL &&
+          getShortcutItem({
+            imgTxt: 'hjry',
+            txt: '获奖荣誉',
+            fn: () => {},
+            content: awardHonorMenu,
+          })}
 
-        {showKQXX && isMember() && getShortcutItem('kqdj', '考勤登记', handleAttendanceRegister)}
+        {showKQXX &&
+          isMember() &&
+          getShortcutItem({
+            imgTxt: 'kqdj',
+            txt: '考勤登记',
+            fn: handleAttendanceRegister,
+          })}
 
-        {is_XMJL_FXMJL && showSCDD && getShortcutItem('scdd', '生成迭代', createIterationPrj)}
+        {is_XMJL_FXMJL &&
+          showSCDD &&
+          getShortcutItem({
+            imgTxt: 'scdd',
+            txt: '生成迭代',
+            fn: createIterationPrj,
+          })}
 
         {is_XMJL_FXMJL &&
           grayTest.DDMK &&
           prjBasic.WJZT !== '1' &&
-          getShortcutItem('xmwj', '项目完结', () => handlePrjFinish(xmid))}
+          getShortcutItem({
+            imgTxt: 'xmwj',
+            txt: '项目完结',
+            fn: () => handlePrjFinish(xmid),
+          })}
 
-        {(grayTest.DDMK && Number(prjBasic.SFBHZXM || 0) <= 0 && isForbiddenLeader === false) &&
+        {grayTest.DDMK &&
+          Number(prjBasic.SFBHZXM || 0) <= 0 &&
+          isForbiddenLeader === false &&
           (is_XMJL_FXMJL
             ? // 项目经理和副项目经理点击时，出现浮窗，可选人员互评或评价状态管理
-            getShortcutItem('mutualEvaluation', '人员互评', () => { mutualEvaluationClick(true); }, mutualEvaluationMenu,)
+              getShortcutItem({
+                imgTxt: 'mutualEvaluation',
+                txt: '人员互评',
+                fn: () => {
+                  mutualEvaluationClick(true);
+                },
+                content: mutualEvaluationMenu,
+              })
             : // 普通人员 直接跳转人员评价页面(同时要判断是不是项目成员有没有数据)
-            (isProjectMember === true && hasEvaluationData === true &&
-              getShortcutItem('mutualEvaluation', '人员互评', () => { mutualEvaluationClick(false); })
-            )
-          )
-        }
+              isProjectMember === true &&
+              hasEvaluationData === true &&
+              getShortcutItem({
+                imgTxt: 'mutualEvaluation',
+                txt: '人员互评',
+                fn: () => {
+                  mutualEvaluationClick(false);
+                },
+              }))}
 
+        {showZWDD &&
+          getShortcutItem({
+            imgTxt: 'kqdj',
+            txt: '转为迭代',
+            fn: handleZWDD,
+            popConfirmTxt: '确认转为自研迭代项目？',
+          })}
       </div>
 
       <canvas
         ref={flowers}
         height={400}
         width={800}
-        style={{ position: 'absolute', top: 0, right: 310, pointerEvents: 'none' }}
+        style={{
+          position: 'absolute',
+          top: 0,
+          right: 310,
+          pointerEvents: 'none',
+        }}
       ></canvas>
     </div>
   );

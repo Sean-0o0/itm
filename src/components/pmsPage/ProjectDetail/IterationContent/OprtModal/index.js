@@ -7,8 +7,10 @@ const { TextArea } = Input;
 export default Form.create()(function OprtModal(props) {
   const { xmid, modalData, setModalData, getIterationCtn, form } = props;
   const { type = 'ADD', visible, data = {} } = modalData;
+  console.log("🚀 ~ OprtModal ~ visibl:", visible)
   const { getFieldDecorator, getFieldValue, validateFields, resetFields } = form;
   const [isSpinning, setIsSpinning] = useState(false); //加载状态
+  
 
   useEffect(() => {
     return () => {};

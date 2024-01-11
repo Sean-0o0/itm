@@ -72,6 +72,7 @@ export default connect(({ global = {} }) => ({
   const [msgData, setMsgData] = useState([]); //留言信息
   const [currentStep, setCurrentStep] = useState(0); //当前步骤
   const [mileStoneData, setMileStoneData] = useState([]); //里程碑数据-全部数据
+  const [allStaffData, setAllStaffData] = useState([]); //里程碑事项数据-未处理前的
   const [initIndex, setInitIndex] = useState(0); //初始当前里程碑index
   const [lastBtnVisible, setLastBtnVisible] = useState(false); //上一个按钮显示
   const [nextBtnVisible, setNextBtnVisible] = useState(false); //下一个按钮显示
@@ -98,7 +99,9 @@ export default connect(({ global = {} }) => ({
     ZSCQ: false, //知识产权、获奖荣誉
     XCHT: false, //信创合同
   }); //灰度测试
-  let isDDXM = prjData.prjBasic?.XMBQ?.includes('迭代项目'); // 是否迭代项目
+  let isDDXM =
+    prjData.prjBasic?.XMBQ?.includes('迭代项目') ||
+    prjData.prjBasic?.XMBQ?.includes('自研迭代项目'); // 是否迭代项目
   let isDDXMFK =
     prjData.prjBasic?.XMBQ?.includes('迭代项目') && !prjData.prjBasic?.XMLX?.includes('自研项目'); // 是否迭代项目付款 - 标签有迭代项目且类型不为自研项目的展示，其他隐藏
   const [showSCDD, setShowSCDD] = useState(false); //显示生成迭代
@@ -115,6 +118,7 @@ export default connect(({ global = {} }) => ({
     zscq: false,
     rypj: false, //人员评价
   }); //是否管理员
+  const [openNewIteContent, setOpenNewIteContent] = useState(false); //（转为自研迭代项目后）打开新增升级内容弹窗
   // var s = 0;
   // var e = 0;
 
@@ -409,6 +413,7 @@ export default connect(({ global = {} }) => ({
           });
           //里程碑事项数据
           if (msItemData.success) {
+            setAllStaffData(msItemData.record);
             //事项分类到各个里程碑的 itemData中
             allMsArr.forEach(item => {
               let arr = [];
@@ -1024,6 +1029,7 @@ export default connect(({ global = {} }) => ({
 
           //里程碑事项数据
           if (msItemData.success) {
+            setAllStaffData(msItemData.record);
             //事项分类到各个里程碑的 itemData中
             allMsArr.forEach(item => {
               let arr = [];
@@ -1124,7 +1130,7 @@ export default connect(({ global = {} }) => ({
   };
 
   // 获取个人考勤信息 - 右侧信息
-  const getCalendarData = async (memberId, month, projectId, fn = () => { }) => {
+  const getCalendarData = async (memberId, month, projectId, fn = () => {}) => {
     try {
       fn(true);
       const atdCalendarResult = await QueryMemberAttendanceRcd({
@@ -1216,7 +1222,7 @@ export default connect(({ global = {} }) => ({
   };
 
   //获取考勤信息 - 左侧信息
-  const getAttendanceData = async (month, projectId, fn = () => { }) => {
+  const getAttendanceData = async (month, projectId, fn = () => {}) => {
     try {
       fn(true);
       const attendanceRes = await QueryMemberAttendanceRcd({
@@ -1338,6 +1344,7 @@ export default connect(({ global = {} }) => ({
                 xmid={xmid}
                 is_XMJL_FXMJL={is_XMJL_FXMJL}
                 getIterationCtn={getIterationCtn}
+                openNewIteContent={openNewIteContent}
               />
             )}
             {isDDXMFK && (
@@ -1418,8 +1425,15 @@ export default connect(({ global = {} }) => ({
                 isGLY,
                 grayTest,
                 is_XMJL_FXMJL,
+                allStaffData,
               }}
-              funcProps={{ getPrjDtlData, setIsSpinning, handlePromiseAll, setShowSCDD }}
+              funcProps={{
+                getPrjDtlData,
+                setIsSpinning,
+                handlePromiseAll,
+                setShowSCDD,
+                setOpenNewIteContent,
+              }}
             />
             <PrjMember
               routes={routes}

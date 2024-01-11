@@ -5,7 +5,7 @@ import ImgArrowUp from '../../../../assets/projectDetail/icon_arrow_up.png';
 import OprtModal from './OprtModal';
 
 export default function IterationContent(props) {
-  const { prjData = {}, xmid, is_XMJL_FXMJL, getIterationCtn } = props;
+  const { prjData = {}, xmid, is_XMJL_FXMJL, getIterationCtn, openNewIteContent = false } = props;
   const { iterationCtn = [], prjBasic = {} } = prjData;
   const [dataShow, setDataShow] = useState([]); //展示用
   const [isUnfold, setIsUnfold] = useState(false); //是否展开
@@ -18,6 +18,17 @@ export default function IterationContent(props) {
 
   //防抖定时器
   let timer = null;
+
+  //打开弹窗
+  useEffect(() => {
+    if (openNewIteContent) {
+      setModalData({
+        visible: true,
+        type: 'ADD',
+      });
+    }
+    return () => {};
+  }, [openNewIteContent]);
 
   useEffect(() => {
     setDataShow([...iterationCtn.slice(0, getColNum(itemWidth) * 2)]);
