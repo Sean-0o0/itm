@@ -652,24 +652,6 @@ class NewProjectModelV2 extends React.Component {
                   }
                   now = item.jssj;
                 }
-                // if (item.lcbmc.includes('付款')) {
-                //   if (now !== nowTime) {
-                //     item.kssj = now;
-                //     item.jssj = moment(now)
-                //       .add(6, 'months')
-                //       .format('YYYY-MM-DD');
-                //   } else {
-                //     item.kssj = nowTime;
-                //     item.jssj = moment(nowTime)
-                //       .add(6, 'months')
-                //       .format('YYYY-MM-DD');
-                //   }
-                //   now = item.jssj;
-                // }
-                if (item.lcbmc.includes('付款')) {
-                  item.kssj = moment().startOf('year');
-                  item.jssj = moment().endOf('year');
-                }
               });
             }
             arr.forEach(item => {
@@ -6205,97 +6187,91 @@ class NewProjectModelV2 extends React.Component {
                                       }
                                     </div>
                                   </div>
-                                  {!item.lcbmc.includes('项目付款') && (
-                                    <div style={{ display: 'flex', padding: '6px 0 0 0' }}>
-                                      <div
+                                  <div style={{ display: 'flex', padding: '6px 0 0 0' }}>
+                                    <div
+                                      style={{
+                                        display: 'grid',
+                                        alignItems: 'center',
+                                        justifyContent: 'end',
+                                        width: '10%',
+                                      }}
+                                    >
+                                      <span
                                         style={{
-                                          display: 'grid',
-                                          alignItems: 'center',
-                                          justifyContent: 'end',
-                                          width: '10%',
+                                          paddingLeft: '6px',
+                                          fontSize: '14px',
+                                          lineHeight: '20px',
+                                          fontWeight: 500,
                                         }}
                                       >
                                         <span
                                           style={{
-                                            paddingLeft: '6px',
-                                            fontSize: '14px',
-                                            lineHeight: '20px',
-                                            fontWeight: 500,
+                                            fontFamily: 'SimSun, sans-serif',
+                                            color: '#f5222d',
+                                            marginRight: '4px',
+                                            lineHeight: 1,
                                           }}
                                         >
-                                          <span
-                                            style={{
-                                              fontFamily: 'SimSun, sans-serif',
-                                              color: '#f5222d',
-                                              marginRight: '4px',
-                                              lineHeight: 1,
-                                            }}
-                                          >
-                                            *
-                                          </span>
-                                          时间
+                                          *
                                         </span>
-                                      </div>
+                                        时间
+                                      </span>
+                                    </div>
+                                    <div
+                                      style={{
+                                        paddingLeft: '12px',
+                                        position: 'relative',
+                                        display: 'flex',
+                                        flexDirection: 'row',
+                                        width: '270px',
+                                      }}
+                                      id="datePicker"
+                                    >
+                                      <DatePicker
+                                        format="YYYY.MM.DD"
+                                        value={
+                                          item.kssj === '' ? null : moment(item.kssj, 'YYYY-MM-DD')
+                                        }
+                                        allowClear={false}
+                                        onChange={(date, str) =>
+                                          this.changeMilePostInfoTime(str, index, 'start')
+                                        }
+                                        onFocus={() =>
+                                          this.setState({
+                                            isEditMile: true,
+                                            isCollapse: false,
+                                          })
+                                        }
+                                      />
                                       <div
                                         style={{
-                                          paddingLeft: '12px',
-                                          position: 'relative',
+                                          fontSize: '14px',
+                                          fontWeight: 'bold',
+                                          padding: '0 8px',
                                           display: 'flex',
-                                          flexDirection: 'row',
-                                          width: '270px',
+                                          alignItems: 'center',
                                         }}
-                                        id="datePicker"
                                       >
-                                        <DatePicker
-                                          format="YYYY.MM.DD"
-                                          value={
-                                            item.kssj === ''
-                                              ? null
-                                              : moment(item.kssj, 'YYYY-MM-DD')
-                                          }
-                                          allowClear={false}
-                                          onChange={(date, str) =>
-                                            this.changeMilePostInfoTime(str, index, 'start')
-                                          }
-                                          onFocus={() =>
-                                            this.setState({
-                                              isEditMile: true,
-                                              isCollapse: false,
-                                            })
-                                          }
-                                        />
-                                        <div
-                                          style={{
-                                            fontSize: '14px',
-                                            fontWeight: 'bold',
-                                            padding: '0 8px',
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                          }}
-                                        >
-                                          ~
-                                        </div>
-                                        <DatePicker
-                                          format="YYYY.MM.DD"
-                                          value={
-                                            item.jssj === ''
-                                              ? null
-                                              : moment(item.jssj, 'YYYY-MM-DD')
-                                          }
-                                          allowClear={false}
-                                          onChange={(date, str) =>
-                                            this.changeMilePostInfoTime(str, index, 'end')
-                                          }
-                                          onFocus={() =>
-                                            this.setState({
-                                              isEditMile: true,
-                                              isCollapse: false,
-                                            })
-                                          }
-                                        />
+                                        ~
                                       </div>
+                                      <DatePicker
+                                        format="YYYY.MM.DD"
+                                        value={
+                                          item.jssj === '' ? null : moment(item.jssj, 'YYYY-MM-DD')
+                                        }
+                                        allowClear={false}
+                                        onChange={(date, str) =>
+                                          this.changeMilePostInfoTime(str, index, 'end')
+                                        }
+                                        onFocus={() =>
+                                          this.setState({
+                                            isEditMile: true,
+                                            isCollapse: false,
+                                          })
+                                        }
+                                      />
                                     </div>
-                                  )}
+                                  </div>
                                   {item.matterInfos.length > 0 &&
                                     item.matterInfos.map((e, i) => {
                                       // //console.log("e.sxlb", e.sxlb)
@@ -6717,98 +6693,92 @@ class NewProjectModelV2 extends React.Component {
                                       </div>
                                     }
                                   </div>
-                                  {!item.lcbmc.includes('项目付款') && (
-                                    <div style={{ display: 'flex', padding: '6px 0 0 0' }}>
-                                      <div
+                                  <div style={{ display: 'flex', padding: '6px 0 0 0' }}>
+                                    <div
+                                      style={{
+                                        display: 'grid',
+                                        alignItems: 'center',
+                                        justifyContent: 'end',
+                                        width: '10%',
+                                      }}
+                                    >
+                                      <span
                                         style={{
-                                          display: 'grid',
-                                          alignItems: 'center',
-                                          justifyContent: 'end',
-                                          width: '10%',
+                                          paddingLeft: '6px',
+                                          fontSize: '14px',
+                                          lineHeight: '20px',
+                                          fontWeight: 500,
                                         }}
                                       >
                                         <span
                                           style={{
-                                            paddingLeft: '6px',
-                                            fontSize: '14px',
-                                            lineHeight: '20px',
-                                            fontWeight: 500,
+                                            fontFamily: 'SimSun, sans-serif',
+                                            color: '#f5222d',
+                                            marginRight: '4px',
+                                            lineHeight: 1,
                                           }}
                                         >
-                                          <span
-                                            style={{
-                                              fontFamily: 'SimSun, sans-serif',
-                                              color: '#f5222d',
-                                              marginRight: '4px',
-                                              lineHeight: 1,
-                                            }}
-                                          >
-                                            *
-                                          </span>
-                                          时间
+                                          *
                                         </span>
-                                      </div>
+                                        时间
+                                      </span>
+                                    </div>
+                                    <div
+                                      style={{
+                                        paddingLeft: '12px',
+                                        position: 'relative',
+                                        display: 'flex',
+                                        flexDirection: 'row',
+                                        width: '270px',
+                                      }}
+                                      id="datePicker"
+                                    >
+                                      <DatePicker
+                                        format="YYYY.MM.DD"
+                                        value={
+                                          item.kssj === '' ? null : moment(item.kssj, 'YYYY-MM-DD')
+                                        }
+                                        allowClear={false}
+                                        onChange={(date, str) =>
+                                          this.changeMilePostInfoTime(str, index, 'start')
+                                        }
+                                        onFocus={() =>
+                                          this.setState({
+                                            isEditMile: true,
+                                            isCollapse: false,
+                                          })
+                                        }
+                                      />
                                       <div
                                         style={{
-                                          paddingLeft: '12px',
-                                          position: 'relative',
+                                          fontSize: '14px',
+                                          fontWeight: 'bold',
+                                          padding: '0 8px',
                                           display: 'flex',
-                                          flexDirection: 'row',
-                                          width: '270px',
+                                          alignItems: 'center',
                                         }}
-                                        id="datePicker"
                                       >
-                                        <DatePicker
-                                          format="YYYY.MM.DD"
-                                          value={
-                                            item.kssj === ''
-                                              ? null
-                                              : moment(item.kssj, 'YYYY-MM-DD')
-                                          }
-                                          allowClear={false}
-                                          onChange={(date, str) =>
-                                            this.changeMilePostInfoTime(str, index, 'start')
-                                          }
-                                          onFocus={() =>
-                                            this.setState({
-                                              isEditMile: true,
-                                              isCollapse: false,
-                                            })
-                                          }
-                                        />
-                                        <div
-                                          style={{
-                                            fontSize: '14px',
-                                            fontWeight: 'bold',
-                                            padding: '0 8px',
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                          }}
-                                        >
-                                          ~
-                                        </div>
-                                        <DatePicker
-                                          format="YYYY.MM.DD"
-                                          value={
-                                            item.jssj === ''
-                                              ? null
-                                              : moment(item.jssj, 'YYYY-MM-DD')
-                                          }
-                                          allowClear={false}
-                                          onChange={(date, str) =>
-                                            this.changeMilePostInfoTime(str, index, 'end')
-                                          }
-                                          onFocus={() =>
-                                            this.setState({
-                                              isEditMile: true,
-                                              isCollapse: false,
-                                            })
-                                          }
-                                        />
+                                        ~
                                       </div>
-                                      {/* <RiskOutline/> */}
+                                      <DatePicker
+                                        format="YYYY.MM.DD"
+                                        value={
+                                          item.jssj === '' ? null : moment(item.jssj, 'YYYY-MM-DD')
+                                        }
+                                        allowClear={false}
+                                        onChange={(date, str) =>
+                                          this.changeMilePostInfoTime(str, index, 'end')
+                                        }
+                                        onFocus={() =>
+                                          this.setState({
+                                            isEditMile: true,
+                                            isCollapse: false,
+                                          })
+                                        }
+                                      />
                                     </div>
-                                  )}
+                                    {/* <RiskOutline/> */}
+                                  </div>
                                   {item.matterInfos.length > 0 &&
                                     item.matterInfos.map((e, i) => {
                                       // //console.log("e.sxlb", e.sxlb)

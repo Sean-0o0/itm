@@ -42,7 +42,7 @@ export default forwardRef(function TopConsole(props, ref) {
         onChange={handleTab}
         activeKey={activeKey}
         tabBarExtraContent={
-          !isRouter && (
+          !isRouter ? (
             <div className="top-tabs-boxs">
               {getStatisticYear()}
               <Radio.Group
@@ -62,6 +62,10 @@ export default forwardRef(function TopConsole(props, ref) {
                   项目统计
                 </Radio.Button>
               </Radio.Group>
+            </div>
+          ) : (
+            <div className="top-tabs-boxs" style={{ width: 152 }}>
+              {getStatisticYear()}
             </div>
           )
         }

@@ -30,7 +30,7 @@ export default function ProjectMemberStatisticsInfo(props) {
     currentYear: undefined,
     dropdown: [],
   }); //统计年份下拉数据
-  const [defYearForComponent, setDefYearForComponent] = useState(undefined); //给StatisticYear组件的默认年份
+  const [defYearForComponent, setDefYearForComponent] = useState(moment().year()); //给StatisticYear组件的默认年份
 
   useEffect(() => {
     getTableData(activeKey, defaultYear);
@@ -158,7 +158,7 @@ export default function ProjectMemberStatisticsInfo(props) {
         getStatisticYear={() => (
           <StatisticYear
             defaultYear={defYearForComponent}
-            refresh={(year) => {
+            refresh={year => {
               setLoading(true);
               const key = activeKey;
               if (key === 'YJBM_ALL') {
