@@ -60,6 +60,7 @@ class InfoTable extends Component {
       routes,
       bmry = [],
       wbry = [],
+      defaultYear,
     } = this.props;
 
     return (
@@ -88,6 +89,7 @@ class InfoTable extends Component {
                 bgxx={bgxx}
                 tableLoading={tableLoading}
                 pageParam={pageParam}
+                defaultYear={defaultYear}
               />
             </TabPane>
             {gwfb.map(item => {
@@ -105,6 +107,7 @@ class InfoTable extends Component {
                     bgxx={bgxx}
                     tableLoading={tableLoading}
                     pageParam={pageParam}
+                    defaultYear={defaultYear}
                   />
                 </TabPane>
               );

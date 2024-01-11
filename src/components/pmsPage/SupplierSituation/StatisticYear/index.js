@@ -9,7 +9,7 @@ export default connect(({ global }) => ({
 }))(function StatisticYear(props) {
   const {
     role = '', //用户角色
-    defaultYear = moment().year(), //默认年份
+    defaultYear = undefined, //默认年份
     userBasicInfo = {}, //登陆用户数据
     refresh = () => {}, //刷新数据的回调
     setIsSpinning = () => {}, //加载状态
@@ -21,11 +21,18 @@ export default connect(({ global }) => ({
   } = props;
 
   useEffect(() => {
-    if (role !== '') {
-      getStatisticYears(role, defaultYear);
-    } else {
-      getUserRole(defaultYear);
+    if (defaultYear !== undefined) {
+      if (role !== '') {
+        getStatisticYears(role, defaultYear);
+      } else {
+        getUserRole(defaultYear);
+      }
+      setStatisticYearData({
+        dropdown: statisticYearData.dropdown,
+        currentYear: defaultYear,
+      });
     }
+    console.log('🚀 ~ StatisticYear ~ defaultYear:', defaultYear);
     return () => {};
   }, [role, defaultYear]);
 

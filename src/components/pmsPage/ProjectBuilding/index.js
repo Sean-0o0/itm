@@ -103,7 +103,18 @@ class ProjectBuilding extends Component {
 
   componentDidUpdate(prevProps, prevState, snapshot) {
     if (this.props.defaultYear !== prevProps.defaultYear) {
-      this.fetchRole(this.props.defaultYear);
+      this.setState(
+        {
+          pageParam: {
+            current: 1,
+            pageSize: 20,
+            paging: 1,
+            sort: '',
+            total: -1,
+          },
+        },
+        () => this.fetchRole(this.props.defaultYear),
+      );
       this.handleRadioChange({ target: { value: '项目列表' } });
       this.setState({
         statisticYearData: {
@@ -441,7 +452,22 @@ class ProjectBuilding extends Component {
               <StatisticYear
                 userRole={role}
                 defaultYear={defaultYear}
-                refresh={this.fetchRole}
+                refresh={year =>
+                  this.setState(
+                    {
+                      pageParam: {
+                        current: 1,
+                        pageSize: 20,
+                        paging: 1,
+                        sort: '',
+                        total: -1,
+                      },
+                    },
+                    () => {
+                      this.fetchRole(year);
+                    },
+                  )
+                }
                 setIsSpinning={v =>
                   this.setState({
                     loading: v,

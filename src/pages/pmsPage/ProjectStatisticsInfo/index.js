@@ -17,12 +17,14 @@ const ProjectStatisticsInfo = props => {
   let cxlx = '';
   let memberID = '';
   let orgID = '';
+  let defaultYear=undefined;
   if (props.match.params.params !== undefined) {
     obj = JSON.parse(DecryptBase64(encryptParams));
     cxlx = obj.cxlx;
     memberID = obj.memberID;
     orgID = obj.orgID;
-    console.log('🚀 ~ file: index.js ~ line 12 ~ ProjectStatisticsInfo ~ props', obj);
+    defaultYear = obj.defaultYear;
+    // console.log('🚀 ~ file: index.js ~ line 12 ~ ProjectStatisticsInfo ~ props', obj);
     // setParams(JSON.parse(DecryptBase64(encryptParams)));
     // console.log('🚀 ~ file: index.js:20 ~ ProjecDetail ~ obj:', obj);
     // console.log('🚀 ~ file: index.js ~ line 12 ~ ProjecDetail ~ routes', routes);
@@ -54,7 +56,7 @@ const ProjectStatisticsInfo = props => {
   return (
     <Fragment>
       <ProjectStatisticsInfoTab dictionary={props.dictionary} routes={newArr} cxlx={cxlx} memberID={memberID}
-                                orgID={orgID}/>
+                                orgID={orgID} defaultYear={defaultYear} />
     </Fragment>
   );
 };

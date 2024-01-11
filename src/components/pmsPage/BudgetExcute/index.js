@@ -35,7 +35,20 @@ class BudgetExcute extends Component {
       //   this.props.defaultYear,
       //   prevProps.defaultYear,
       // );
-      this.fetchRole(this.props.defaultYear);
+      this.setState(
+        {
+          pageParam: {
+            current: 1,
+            pageSize: 10,
+            paging: 1,
+            sort: '',
+            total: -1,
+          },
+        },
+        () => {
+          this.fetchRole(this.props.defaultYear);
+        },
+      );
       this.setState({
         statisticYearData: {
           ...this.state.statisticYearData,
@@ -91,12 +104,12 @@ class BudgetExcute extends Component {
   };
 
   queryHeaderInfo = (queryType, year) => {
-    const { role, orgid } = this.state;
+    const { role, orgid, statisticYearData = {} } = this.state;
     QueryBudgetOverviewInfo({
       org: orgid,
       queryType: queryType,
       role: role,
-      year,
+      year: year ?? statisticYearData.currentYear ?? this.props.defaultYear,
     }).then(res => {
       const { code = 0, note, ysglxx, ysqs } = res;
       if (code > 0) {
@@ -119,12 +132,12 @@ class BudgetExcute extends Component {
     this.setState({
       tableLoading: true,
     });
-    const { role, orgid, pageParam } = this.state;
+    const { role, orgid, pageParam, statisticYearData = {} } = this.state;
     QueryBudgetOverviewInfo({
       org: orgid,
       queryType: queryType,
       role: role,
-      year,
+      year: year ?? statisticYearData.currentYear ?? this.props.defaultYear,
       ...param,
       total: -1,
     })
@@ -285,7 +298,22 @@ class BudgetExcute extends Component {
             routes={routes}
             defaultYear={this.props.defaultYear}
             userRole={role}
-            fetchRole={this.fetchRole}
+            fetchRole={year => {
+              this.setState(
+                {
+                  pageParam: {
+                    current: 1,
+                    pageSize: 10,
+                    paging: 1,
+                    sort: '',
+                    total: -1,
+                  },
+                },
+                () => {
+                  this.fetchRole(year);
+                },
+              );
+            }}
             setIsSpinning={v =>
               this.setState({
                 loading: v,

@@ -1,16 +1,17 @@
-import React, {useEffect, useState, useRef} from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import InfoTable from './InfoTable';
 import TopConsole from './TopConsole';
 import {
   QueryProjectDynamics,
   QueryProjectListInfo,
   QueryProjectStatistics,
-  QueryProjectStatisticsList
+  QueryProjectStatisticsList,
 } from '../../../services/pmsServices';
-import {message} from 'antd';
-import YjbmAllTable from "./infoTable/yjbmAllTable";
-import EjbmAllTable from "./infoTable/ejbmAllTable";
+import { message } from 'antd';
+import YjbmAllTable from './infoTable/yjbmAllTable';
+import EjbmAllTable from './infoTable/ejbmAllTable';
 import moment from 'moment';
+import StatisticYear from '../SupplierSituation/StatisticYear';
 
 export default function ProjectMemberStatisticsInfo(props) {
   const [activeKey, setActiveKey] = useState('YJBM_ALL');
@@ -24,27 +25,36 @@ export default function ProjectMemberStatisticsInfo(props) {
   const [totalBM, setTotalBM] = useState(0); //
   const [loading, setLoading] = useState(true); //表格数据-项目列表
   const [bmid, setBMID] = useState('-1');
-  const {handleRadioChange, isRouter = false, defaultYear = moment().year()} = props;
+  const { handleRadioChange, isRouter = false, defaultYear } = props;
+  const [statisticYearData, setStatisticYearData] = useState({
+    currentYear: undefined,
+    dropdown: [],
+  }); //统计年份下拉数据
+  const [defYearForComponent, setDefYearForComponent] = useState(undefined); //给StatisticYear组件的默认年份
 
   useEffect(() => {
     getTableData(activeKey, defaultYear);
-    return () => {
-    };
+    setStatisticYearData(p => ({
+      ...p,
+      currentYear: defaultYear,
+    }));
+    setDefYearForComponent(defaultYear);
+    return () => {};
   }, [defaultYear]);
 
-  const tabsKeyCallback = (key) => {
-    setActiveKeyFlag(true)
+  const tabsKeyCallback = key => {
+    setActiveKeyFlag(true);
     setActiveKey(key);
     setLoading(true);
-    console.log("keykeykeykeykey", key)
-    if (key === "YJBM_ALL") {
+    console.log('keykeykeykeykey', key);
+    if (key === 'YJBM_ALL') {
       getTableData(key);
     } else {
-      setBMID(key)
-      getTableDataBM("YJBM_LD", key);
-      getTableDataBM("YJBM_BM", key);
+      setBMID(key);
+      getTableDataBM('YJBM_LD', key);
+      getTableDataBM('YJBM_BM', key);
     }
-  }
+  };
 
   const getTableData = (queryType, year) => {
     setLoading(true);
@@ -55,40 +65,38 @@ export default function ProjectMemberStatisticsInfo(props) {
     // RY|查询对应人员id的数据（传人员的id）;
     // BM|查询对应部门的数据（部门的id）
     const payload = {
-      "current": 1,
+      current: 1,
       // "memberId": 0,
       // "orgID": -1,
-      "pageSize": 10,
-      "paging": 1,
-      "queryType": queryType,
-      "sort": '',
-      "total": -1,
-      year: year??defaultYear,
-    }
+      pageSize: 10,
+      paging: 1,
+      queryType: queryType,
+      sort: '',
+      total: -1,
+      year: year ?? statisticYearData.currentYear ?? defYearForComponent,
+    };
     QueryProjectStatistics({
-      ...payload
-    }).then(res => {
-      const {
-        code = 0,
-        result,
-        totalrows = 0,
-      } = res
-      if (code > 0) {
-        setTableData([...JSON.parse(result)])
-        if (queryType === 'YJBM_ALL') {
-          setTabsData([...JSON.parse(result)])
-        }
-        setTotal(totalrows)
-        setLoading(false);
-      } else {
-        message.error(note)
-        setLoading(false);
-      }
-    }).catch(err => {
-      message.error("查询项目统计失败")
-      setLoading(false);
+      ...payload,
     })
-  }
+      .then(res => {
+        const { code = 0, result, totalrows = 0 } = res;
+        if (code > 0) {
+          setTableData([...JSON.parse(result)]);
+          if (queryType === 'YJBM_ALL') {
+            setTabsData([...JSON.parse(result)]);
+          }
+          setTotal(totalrows);
+          setLoading(false);
+        } else {
+          message.error(note);
+          setLoading(false);
+        }
+      })
+      .catch(err => {
+        message.error('查询项目统计失败');
+        setLoading(false);
+      });
+  };
 
   const getTableDataBM = (queryType, id = '-1', year) => {
     setLoading(true);
@@ -101,74 +109,96 @@ export default function ProjectMemberStatisticsInfo(props) {
     //DRY|查询对应多个人员的数据；格式为英文括号，里面多个id用逗号隔开，(11169,15508) DBM时传
     //DBM|查询对应多个部门的数据 格式为英文括号，格式为英文括号，里面多个id用逗号隔开，(115148,12488) DRY时传
     const payload = {
-      "current": 1,
+      current: 1,
       // "memberId": 0,
-      "orgID": id,
-      "pageSize": 10,
-      "paging": 1,
-      "queryType": queryType,
-      "sort": '',
-      "total": -1,
-      year: year??defaultYear,
-    }
+      orgID: id,
+      pageSize: 10,
+      paging: 1,
+      queryType: queryType,
+      sort: '',
+      total: -1,
+      year: year ?? statisticYearData.currentYear ?? defYearForComponent,
+    };
     QueryProjectStatistics({
-      ...payload
-    }).then(res => {
-      const {
-        code = 0,
-        result,
-        totalrows = 0,
-      } = res
-      if (code > 0) {
-        if (queryType === 'YJBM_LD') {
-          setTableDataLD([...JSON.parse(result)])
-          setTotalLD(totalrows)
-        }
-        if (queryType === 'YJBM_BM') {
-          setTableDataBM([...JSON.parse(result)])
-          setTotalBM(totalrows)
-        }
-        setLoading(false);
-      } else {
-        message.error(note)
-        setLoading(false);
-      }
-    }).catch(err => {
-      message.error("查询项目统计失败")
-      setLoading(false);
+      ...payload,
     })
-  }
+      .then(res => {
+        const { code = 0, result, totalrows = 0 } = res;
+        if (code > 0) {
+          if (queryType === 'YJBM_LD') {
+            setTableDataLD([...JSON.parse(result)]);
+            setTotalLD(totalrows);
+          }
+          if (queryType === 'YJBM_BM') {
+            setTableDataBM([...JSON.parse(result)]);
+            setTotalBM(totalrows);
+          }
+          setLoading(false);
+        } else {
+          message.error(note);
+          setLoading(false);
+        }
+      })
+      .catch(err => {
+        message.error('查询项目统计失败');
+        setLoading(false);
+      });
+  };
 
   return (
     <div className="project-member-statistics-info-box">
-      <TopConsole isRouter={isRouter} tabsData={tabsData} handleRadioChange={handleRadioChange}
-                  tabsKeyCallback={tabsKeyCallback}
-                  activeKey={activeKey}
-                  setActiveKey={setActiveKey}/>
-      {
-        activeKey === 'YJBM_ALL' ?
-          //一级部门
-          <YjbmAllTable
-            loading={loading}
-            tableData={tableData}
-            total={total}
-            tabsKeyCallback={tabsKeyCallback}
-            getTableData={getTableData}
-            defaultYear={defaultYear}
-          /> : <EjbmAllTable
-            // 二级部门
-            setActiveKeyFlag={setActiveKeyFlag}
-            activeKeyFlag={activeKeyFlag}
-            bmid={bmid}
-            loading={loading}
-            tableDataLD={tableDataLD}
-            totalLD={totalLD}
-            tableDataBM={tableDataBM}
-            totalBM={totalBM}
-            getTableDataBM={getTableDataBM}
-            defaultYear={defaultYear}
+      <TopConsole
+        isRouter={isRouter}
+        tabsData={tabsData}
+        handleRadioChange={handleRadioChange}
+        tabsKeyCallback={tabsKeyCallback}
+        activeKey={activeKey}
+        setActiveKey={setActiveKey}
+        statisticYearData={statisticYearData}
+        getStatisticYear={() => (
+          <StatisticYear
+            defaultYear={defYearForComponent}
+            refresh={(year) => {
+              setLoading(true);
+              const key = activeKey;
+              if (key === 'YJBM_ALL') {
+                getTableData(key, year);
+              } else {
+                getTableDataBM('YJBM_LD', key, year);
+                getTableDataBM('YJBM_BM', key, year);
+              }
+            }}
+            setIsSpinning={setLoading}
+            statisticYearData={statisticYearData}
+            setStatisticYearData={setStatisticYearData}
           />
-      }
+        )}
+      />
+      {activeKey === 'YJBM_ALL' ? (
+        //一级部门
+        <YjbmAllTable
+          loading={loading}
+          tableData={tableData}
+          total={total}
+          tabsKeyCallback={tabsKeyCallback}
+          getTableData={getTableData}
+          defaultYear={statisticYearData.currentYear}
+        />
+      ) : (
+        <EjbmAllTable
+          // 二级部门
+          setActiveKeyFlag={setActiveKeyFlag}
+          activeKeyFlag={activeKeyFlag}
+          bmid={bmid}
+          loading={loading}
+          tableDataLD={tableDataLD}
+          totalLD={totalLD}
+          tableDataBM={tableDataBM}
+          totalBM={totalBM}
+          getTableDataBM={getTableDataBM}
+          defaultYear={statisticYearData.currentYear}
+        />
+      )}
     </div>
   );
 }

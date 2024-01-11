@@ -17,6 +17,7 @@ export default function TableTabs(props) {
     routes = [],
     curTab,
     setCurTab,
+    defaultYear,
   } = props;
   const [curPage, setCurPage] = useState(0); //当前页码
   const [curPageSize, setCurPageSize] = useState(20); //数据长度
@@ -26,7 +27,7 @@ export default function TableTabs(props) {
     setCurPage(1);
     setCurPageSize(10);
     return () => {};
-  }, []);
+  }, [defaultYear]);
 
   const handleTabsChange = key => {
     setCurPage(1);

@@ -153,6 +153,7 @@ export default function SupplierSituation(props) {
           routes={routes}
           curTab={curTab}
           setCurTab={setCurTab}
+          defaultYear={defaultYear}
         />
       </Spin>
     </div>

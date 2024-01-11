@@ -5,6 +5,7 @@ import InfoTable from './InfoTable';
 import { message } from 'antd';
 import { QueryMemberOverviewInfo, QueryUserRole } from '../../../services/pmsServices';
 import ProjectMemberStatisticsInfo from '../ProjectMemberStatisticsInfo';
+import StatisticYear from '../SupplierSituation/StatisticYear';
 
 class DepartmentOverview extends Component {
   state = {
@@ -23,26 +24,67 @@ class DepartmentOverview extends Component {
       total: -1,
     },
     radioKey: '项目列表',
+    statisticYearData: {
+      currentYear: undefined,
+      dropdown: [],
+    },
+    defYearForComponent: undefined,
   };
 
   componentDidUpdate(prevProps, prevState, snapshot) {
     if (this.props.defaultYear !== prevProps.defaultYear) {
-      this.fetchRole();
+      this.setState(
+        {
+          pageParam: {
+            current: 1,
+            pageSize: 20,
+            paging: 1,
+            sort: '',
+            total: -1,
+          },
+        },
+        () => {
+          this.fetchRole(this.props.defaultYear);
+        },
+      );
+      this.setState({
+        statisticYearData: {
+          ...this.state.statisticYearData,
+          currentYear: this.props.defaultYear,
+        },
+        defYearForComponent: this.props.defaultYear,
+      });
     }
   }
 
   componentDidMount() {
     this.fetchRole();
+    this.setState({
+      statisticYearData: {
+        ...this.state.statisticYearData,
+        currentYear: this.props.defaultYear,
+      },
+      defYearForComponent: this.props.defaultYear,
+    });
+    console.log('🚀 ~ ProjectMemberStatisticsInfo ~ defaultYear:', this.props.defaultYear);
   }
 
-  handleRadioChange = e => {
-    console.log('keykey', e.target.value);
+  handleRadioChange = (e, curDefYear) => {
+    console.log('keykey', e.target.value, curDefYear);
     this.setState({
       radioKey: e.target.value,
+      statisticYearData: {
+        ...this.state.statisticYearData,
+        currentYear: curDefYear,
+      },
+      defYearForComponent: curDefYear,
     });
+    if (e.target.value === '项目列表') {
+      this.queryMemberOverviewInfo('MX_ALL_ONE', '', this.state.pageParam, curDefYear);
+    }
   };
 
-  fetchRole = () => {
+  fetchRole = year => {
     const LOGIN_USERID = JSON.parse(sessionStorage.getItem('user'))?.id;
     if (LOGIN_USERID !== undefined) {
       QueryUserRole({
@@ -58,7 +100,7 @@ class DepartmentOverview extends Component {
               },
               () => {
                 const { pageParam = {} } = this.state;
-                this.queryMemberOverviewInfo('MX_ALL_ONE', '', pageParam);
+                this.queryMemberOverviewInfo('MX_ALL_ONE', '', pageParam, year);
               },
             );
           }
@@ -69,8 +111,8 @@ class DepartmentOverview extends Component {
     }
   };
 
-  queryMemberOverviewInfo = (queryType, gwbm, param) => {
-    const { role, orgid, pageParam } = this.state;
+  queryMemberOverviewInfo = (queryType, gwbm, param, year) => {
+    const { role, orgid, pageParam, statisticYearData = {}, defYearForComponent } = this.state;
     this.setState({
       tableLoading: true,
     });
@@ -79,7 +121,7 @@ class DepartmentOverview extends Component {
       orgStation: gwbm,
       queryType: queryType,
       role: role,
-      year: this.props.defaultYear,
+      year: year ?? statisticYearData.currentYear ?? defYearForComponent,
     })
       .then(res => {
         const { code = 0, bmry, wbry, gwfb, bgxx, note, total } = res;
@@ -124,7 +166,7 @@ class DepartmentOverview extends Component {
   };
 
   render() {
-    const { routes } = this.props;
+    const { routes, defaultYear } = this.props;
     const {
       role = '',
       bmry = [],
@@ -134,6 +176,8 @@ class DepartmentOverview extends Component {
       tableLoading,
       pageParam,
       radioKey,
+      statisticYearData = {},
+      defYearForComponent,
     } = this.state;
 
     console.log('radioKeyradioKey', this.state);
@@ -141,7 +185,44 @@ class DepartmentOverview extends Component {
     return (
       <div className="department-staff-box cont-box">
         {radioKey === '项目列表' ? (
-          <TopConsole routes={routes} handleRadioChange={this.handleRadioChange} />
+          <TopConsole
+            routes={routes}
+            handleRadioChange={this.handleRadioChange}
+            statisticYearData={statisticYearData}
+            getStatisticYear={() => (
+              <StatisticYear
+                userRole={role}
+                defaultYear={defYearForComponent}
+                refresh={year =>
+                  this.setState(
+                    {
+                      pageParam: {
+                        current: 1,
+                        pageSize: 20,
+                        paging: 1,
+                        sort: '',
+                        total: -1,
+                      },
+                    },
+                    () => {
+                      this.fetchRole(year);
+                    },
+                  )
+                }
+                setIsSpinning={v =>
+                  this.setState({
+                    loading: v,
+                  })
+                }
+                statisticYearData={statisticYearData}
+                setStatisticYearData={v =>
+                  this.setState({
+                    statisticYearData: v,
+                  })
+                }
+              />
+            )}
+          />
         ) : (
           ''
         )}
@@ -164,10 +245,13 @@ class DepartmentOverview extends Component {
             fetchData={this.queryMemberOverviewInfo}
             bmry={bmry}
             wbry={wbry}
-            defaultYear={this.props.defaultYear}
+            defaultYear={statisticYearData.currentYear}
           />
         ) : (
-          <ProjectMemberStatisticsInfo handleRadioChange={this.handleRadioChange} defaultYear={this.props.defaultYear} />
+          <ProjectMemberStatisticsInfo
+            handleRadioChange={this.handleRadioChange}
+            defaultYear={statisticYearData.currentYear}
+          />
         )}
       </div>
     );

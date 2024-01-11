@@ -10,6 +10,15 @@ class StaffTable extends Component {
     pageSize: 10,
   };
 
+  componentDidUpdate(prevProps, prevState, snapshot) {
+    if (this.props.defaultYear !== prevProps.defaultYear) {
+      this.setState({
+        current: 1,
+        pageSize: 10,
+      });
+    }
+  }
+
   handleChange = pagination => {
     // const { fetchData, queryType, gwbm, pageParam } = this.props;
     const { current, pageSize } = pagination;

@@ -1,12 +1,12 @@
-import React, {useEffect, useState, useRef} from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import InfoTable from './InfoTable';
 import TopConsole from './TopConsole';
-import {QueryProjectListInfo, QueryProjectStatisticsList} from '../../../services/pmsServices';
-import {Breadcrumb, message} from 'antd';
-import {Link} from "react-router-dom";
+import { QueryProjectListInfo, QueryProjectStatisticsList } from '../../../services/pmsServices';
+import { Breadcrumb, message } from 'antd';
+import { Link } from 'react-router-dom';
 import moment from 'moment';
 
-const {Item} = Breadcrumb;
+const { Item } = Breadcrumb;
 
 export default function ProjectStatisticsInfo(props) {
   const [tableData, setTableData] = useState([]); //表格数据-项目列表
@@ -14,7 +14,7 @@ export default function ProjectStatisticsInfo(props) {
   const [total, setTotal] = useState(0); //数据总数
   const [curPage, setCurPage] = useState(1); //当前页码
   const [curPageSize, setCurPageSize] = useState(20); //每页数量
-  const {cxlx, memberID, orgID, routes = [], defaultYear = moment().year()} = props;
+  const { cxlx, memberID, orgID, routes = [], defaultYear = moment().year() } = props;
   const topConsoleRef = useRef(null);
   const [queryType, setQueryType] = useState('BM'); //
   const [prjMnger, setPrjMnger] = useState(undefined); //项目经理
@@ -30,34 +30,33 @@ export default function ProjectStatisticsInfo(props) {
   // }, []);
 
   useEffect(() => {
-    console.log('🚀 ~ file: index.js:20 ~ useEffect ~ cxlx:', cxlx, orgID, memberID);
+    console.log('🚀 ~ProjectStatisticsInfo defaultYear:', defaultYear);
     if (cxlx !== '') {
       if (cxlx === 'BM' && orgID !== '') {
-        getTableData({cxlx, memberID, orgID, defaultYear});
-        setTabsKey('0')
+        getTableData({ cxlx, memberID, orgID, year: defaultYear });
+        setTabsKey('0');
         setQueryType(cxlx);
       }
       if (cxlx === 'RY' && memberID !== '') {
-        getTableData({cxlx, memberID, orgID, defaultYear});
-        setTabsKey('0')
+        getTableData({ cxlx, memberID, orgID, year: defaultYear });
+        setTabsKey('0');
         setQueryType(cxlx);
       }
     }
-    return () => {
-    };
-  }, [props]);
+    return () => {};
+  }, [props, defaultYear]);
 
   //获取表格数据
   const getTableData = async ({
-                                current = 1,
-                                pageSize = 20,
-                                cxlx = 'BM',
-                                sort = '',
-                                tabsKey = '0',
-                                memberID,
-                                orgID,
-                                year
-                              }) => {
+    current = 1,
+    pageSize = 20,
+    cxlx = 'BM',
+    sort = '',
+    tabsKey = '0',
+    memberID,
+    orgID,
+    year,
+  }) => {
     setTableLoading(true);
     try {
       const payload = {
@@ -66,21 +65,21 @@ export default function ProjectStatisticsInfo(props) {
         paging: 1,
         sort,
         total: -1,
-        year: year ?? defaultYear
-      }
+        year: year ?? defaultYear,
+      };
       if (cxlx !== '') {
         payload.queryType = cxlx;
         if (cxlx === 'BM') {
-          payload.orgID = orgID
+          payload.orgID = orgID;
         }
         if (cxlx === 'RY') {
-          payload.memberID = memberID
+          payload.memberID = memberID;
         }
       }
       if (tabsKey !== '0') {
         payload.tab = tabsKey;
       }
-      const res = await QueryProjectStatisticsList({...payload});
+      const res = await QueryProjectStatisticsList({ ...payload });
       if (res?.success) {
         setTableData(p => [...JSON.parse(res.result)]);
         console.log(res.totalrows);
@@ -94,7 +93,7 @@ export default function ProjectStatisticsInfo(props) {
     }
   };
 
-  const tabsKeyCallBack = (activeKey) => {
+  const tabsKeyCallBack = activeKey => {
     //重置顶部查询条件
     setPrjName(undefined); //项目名称
     setPrjMnger(undefined); //项目经理
@@ -109,20 +108,20 @@ export default function ProjectStatisticsInfo(props) {
       sort: '',
       tabsKey: activeKey,
     });
-  }
+  };
 
   return (
     <div className="project-statistics-info-box">
-      <Breadcrumb separator=">" style={{margin: '16px 24px 0 24px'}}>
+      <Breadcrumb separator=">" style={{ margin: '16px 24px 0 24px' }}>
         {routes?.map((item, index) => {
-          const {name = item, pathname = ''} = item;
+          const { name = item, pathname = '' } = item;
           const historyRoutes = routes.slice(0, index + 1);
           return (
             <Item key={index}>
               {index === routes.length - 1 ? (
                 <>{name}</>
               ) : (
-                <Link to={{pathname: pathname, state: {routes: historyRoutes}}}>{name}</Link>
+                <Link to={{ pathname: pathname, state: { routes: historyRoutes } }}>{name}</Link>
               )}
             </Item>
           );
