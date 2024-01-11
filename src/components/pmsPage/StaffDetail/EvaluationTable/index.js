@@ -190,7 +190,7 @@ const EvaluationTable = (props) => {
     {
       title: '年份',
       dataIndex: 'XMNF',
-      width: '10%',
+      width: '5%',
       key: 'XMNF',
       ellipsis: true,
       sorter: true,
@@ -198,7 +198,7 @@ const EvaluationTable = (props) => {
     {
       title: '项目名称',
       dataIndex: 'XMMC',
-      width: '20%',
+      width: '30%',
       key: 'XMMC',
       ellipsis: true,
       render: (txt, row) => (
@@ -235,7 +235,7 @@ const EvaluationTable = (props) => {
     {
       title: '分数',
       dataIndex: 'FS',
-      width: '20%',
+      width: '15%',
       key: 'FS',
       ellipsis: true,
       sorter: (a, b, order) => {
@@ -246,7 +246,7 @@ const EvaluationTable = (props) => {
     {
       title: '打分详情',
       dataIndex: 'DFXQ',
-      width: '20%',
+      width: '15%',
       key: 'DFXQ',
       ellipsis: true,
       render: (txt, row) => (

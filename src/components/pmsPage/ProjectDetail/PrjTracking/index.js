@@ -6,7 +6,7 @@ import AddPrjTracking from '../../ProjectTracking/addPrjTracking/index.js';
 import Lodash from 'lodash'
 
 export default function PrjTracking(props) {
-  const { xmid = -2, prjData = {}, getTrackingData } = props;
+  const { xmid = -2, prjData = {}, getTrackingData, dictionary } = props;
   const { trackingData = [] } = prjData;
   const [activeKey, setActiveKey] = useState('');
   const [btnVisible, setBtnVisible] = useState({
@@ -23,14 +23,13 @@ export default function PrjTracking(props) {
   let LOGIN_USER_ID = String(JSON.parse(sessionStorage.getItem('user')).id);
   let isXMJL = LOGIN_USER_ID === String(prjData.prjBasic?.XMJLID);
 
-  const [isAddBtnShow, setIsAddBtnShow] = useState(false) // 是否显示新增按钮
+  const [isTrackingDataAndOvertime, setIsTrackingDataAndOvertime] = useState(false) // trackingData是否有数据且时间>endTime 
 
   const [addModal, setAddModal] = useState({
     visible: false,
     record: {},
     cycle: 0,
   }); //新增按钮——弹窗
-
 
 
   //初始化按钮状态
@@ -270,45 +269,61 @@ export default function PrjTracking(props) {
   const judgeIsAddBtnShow = () => {
     if (!Lodash.isEmpty(trackingData)) {
       const latestItem = trackingData[trackingData.length - 1]
-      if (latestItem.KSSJ && latestItem.JSSJ) {
-        const { KSSJ, JSSJ } = latestItem
-        // const startDate = String(KSSJ)
-        const endDate = String(JSSJ)
-        const currentDate = new Date();
-        const formattedEndDate = new Date(endDate.substring(0, 4), endDate.substring(4, 6) - 1, endDate.substring(6, 8));
-        if (currentDate > formattedEndDate) {
-          setIsAddBtnShow(true) // 如果日期不在当前时间内
-        } else {
-          setIsAddBtnShow(false)
-        }
+      const { JSSJ } = latestItem
+      const endDate = String(JSSJ)
+      const currentDate = new Date();
+      const formattedEndDate = new Date(endDate.substring(0, 4), endDate.substring(4, 6) - 1, endDate.substring(6, 8));
+      if (currentDate > formattedEndDate) {// 如果日期不在当前时间内
+        setIsTrackingDataAndOvertime(true)
+      } else {
+        setIsTrackingDataAndOvertime(false)
       }
+
     }
   }
 
   /** 点击新增按钮 */
   const addBtnClickHandle = () => {
-    const latestItem = Lodash.cloneDeep(trackingData[trackingData.length - 1])
-
     const currentDate = new Date(); // 获取当前时间
     const currentDay = currentDate.getDay(); // 获取当前时间的星期几，0 表示星期日，1 表示星期一
-
     // 获取当前时间所在的周一的日期
     const firstDayOfWeek = new Date(currentDate.getTime() - (currentDay - 1) * 24 * 60 * 60 * 1000);
     const formattedFirstDay = `${firstDayOfWeek.getFullYear()}${(firstDayOfWeek.getMonth() + 1).toString().padStart(2, '0')}${firstDayOfWeek.getDate().toString().padStart(2, '0')}`;
-
     // 获取当前时间所在的周日的日期
     const lastDayOfWeek = new Date(currentDate.getTime() + (7 - currentDay) * 24 * 60 * 60 * 1000);
     const formattedLastDay = `${lastDayOfWeek.getFullYear()}${(lastDayOfWeek.getMonth() + 1).toString().padStart(2, '0')}${lastDayOfWeek.getDate().toString().padStart(2, '0')}`;
 
-    latestItem.KSSJ = formattedFirstDay
-    latestItem.JSSJ = formattedLastDay
-    latestItem.BZGZNR = latestItem.XZGZAP
-    latestItem.XZGZAP = ''
-    latestItem.ZYSXSM = ''
-    latestItem.DQZT = ''
-    latestItem.DQJD = ''
+    if (trackingData.length !== 0) {
+      const latestItem = Lodash.cloneDeep(trackingData[trackingData.length - 1])
+      latestItem.KSSJ = formattedFirstDay
+      latestItem.JSSJ = formattedLastDay
+      latestItem.BZGZNR = latestItem.XZGZAP
+      latestItem.XZGZAP = ''
+      latestItem.ZYSXSM = ''
+      latestItem.DQZT = ''
+      latestItem.DQJD = ''
+      setAddModal({ visible: true, record: latestItem, cycle: latestItem.XMZQ + 1 })
+    } else {
+      const { prjBasic } = prjData
+      const firstItem = {
+        XMMC: prjBasic.XMMC,
+        XMID: xmid,
+        XMZQ: 1, //第一周
+        XMJL: prjBasic.XMJL,
+        XMJLID: prjBasic.XMJLID,
+        DQLCB: prjBasic.DQLCB,
+        KSSJ: formattedFirstDay,
+        JSSJ: formattedLastDay,
+        KXZT: JSON.stringify(dictionary.XMJDZT),
+        DQJD: '',
+        DQZT: '',
+        ZYSXSM: '',
+        BZGZNR: '',
+        XZGZAP: ''
+      }
+      setAddModal({ visible: true, record: firstItem, cycle: '1' })
+    }
 
-    setAddModal({ visible: true, record: latestItem, cycle: latestItem.XMZQ + 1 })
   }
 
   //底部信息盒子
@@ -388,8 +403,31 @@ export default function PrjTracking(props) {
     );
   };
 
+  if (trackingData.length === 0) return (
+    <div className="prj-tracking-box">
+      {/*新增——项目信息弹窗*/}
+      {addModal.visible && (
+        <AddPrjTracking
+          record={addModal.record}
+          cycle={addModal.cycle}
+          getTableData={getTrackingData}
+          contractSigningVisible={addModal.visible}
+          closeContractModal={() => setAddModal(p => ({ ...p, visible: false }))}
+        />
+      )}
 
-  if (trackingData.length === 0) return null;
+      <div className="top-box">
+        项目跟踪
+        {isXMJL &&
+          <div className="icon-box" onClick={addBtnClickHandle}>
+            <Icon type='plus-circle' style={{ fontSize: 14, marginRight: 5, color: '#3361ff' }}></Icon>
+            <span>新增</span>
+          </div>
+        }
+      </div>
+    </div>
+  );
+
   return (
     <div className="prj-tracking-box">
       {/*新增——项目信息弹窗*/}
@@ -428,7 +466,7 @@ export default function PrjTracking(props) {
           </div>
         </Popover> */}
 
-        {isXMJL && isAddBtnShow &&
+        {isXMJL && isTrackingDataAndOvertime &&
           <div className="icon-box" onClick={addBtnClickHandle}>
             <Icon type='plus-circle' style={{ fontSize: 14, marginRight: 5, color: '#3361ff' }}></Icon>
             <span>新增</span>

@@ -212,12 +212,12 @@ class InfoTable extends Component {
             dataSource={tableData}
             onChange={this.handleTableChange}
             pagination={false}
-            // pagination={{
-            //     pageSizeOptions: ['10', '20', '30', '40'],
-            //     showSizeChanger: true,
-            //     showQuickJumper: true,
-            //     showTotal: total => `共 ${tableData.length} 条数据`,
-            // }}
+          // pagination={{
+          //     pageSizeOptions: ['10', '20', '30', '40'],
+          //     showSizeChanger: true,
+          //     showQuickJumper: true,
+          //     showTotal: total => `共 ${tableData.length} 条数据`,
+          // }}
           />
         </div>
         {pageParams.total !== -1 && pageParams.total !== 0 && (

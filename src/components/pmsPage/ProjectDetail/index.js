@@ -1124,7 +1124,7 @@ export default connect(({ global = {} }) => ({
   };
 
   // 获取个人考勤信息 - 右侧信息
-  const getCalendarData = async (memberId, month, projectId, fn = () => {}) => {
+  const getCalendarData = async (memberId, month, projectId, fn = () => { }) => {
     try {
       fn(true);
       const atdCalendarResult = await QueryMemberAttendanceRcd({
@@ -1216,7 +1216,7 @@ export default connect(({ global = {} }) => ({
   };
 
   //获取考勤信息 - 左侧信息
-  const getAttendanceData = async (month, projectId, fn = () => {}) => {
+  const getAttendanceData = async (month, projectId, fn = () => { }) => {
     try {
       fn(true);
       const attendanceRes = await QueryMemberAttendanceRcd({
@@ -1386,6 +1386,7 @@ export default connect(({ global = {} }) => ({
               prjData={prjData}
               getTrackingData={getTrackingData}
               isLeader={isLeader}
+              dictionary={dictionary}
             />
             <InfoDisplay
               isHwSltPrj={isHwSltPrj}

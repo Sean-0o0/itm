@@ -112,7 +112,7 @@ class EditPrjTracking extends React.Component {
       status: values.status,
       thisWeek: values.thisWeek
     };
-    console.log("paramsparams", params)
+    // console.log("paramsparams", params)
     return params;
   };
 
