@@ -443,4 +443,14 @@ exports.routes = [
     path: `${prefix}/BudgetSubmit`,
     component: './pmsPage/BudgetSubmit',
   },
+  {
+    // 统计分析 - 预算录入
+    path: `${prefix}/BudgetInput/:params`,
+    component: './pmsPage/BudgetInput',
+  },
+  {
+    // 统计分析 - 预算录入
+    path: `${prefix}/BudgetInput`,
+    component: './pmsPage/BudgetInput',
+  },
 ];

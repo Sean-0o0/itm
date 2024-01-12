@@ -113,14 +113,14 @@ export default connect(({ global }) => ({
         });
         setRoutes(routesArr);
       }
-      return () => { };
+      return () => {};
     }, [params]);
 
     useEffect(() => {
       if (Decimal(getFieldValue('bn_ztz') || 0).gt(50)) {
         getFileTemplateData('可行性研究报告');
       }
-      return () => { };
+      return () => {};
     }, [getFieldValue('bn_ztz')]);
 
     //详情/修改时 回显的数据
@@ -166,7 +166,7 @@ export default connect(({ global }) => ({
           if (res?.success) {
             const data = JSON.parse(res.result);
             if (data.length > 0) {
-              console.log('🚀 ~ QueryDocTemplate ~ res', data[0].FJ);
+              // console.log('🚀 ~ QueryDocTemplate ~ res', data[0].FJ);
               if (data[0].FJ && data[0].FJ.length > 0) {
                 setFileTpl(data[0].FJ);
               }
@@ -222,7 +222,7 @@ export default connect(({ global }) => ({
       rules,
       max,
       display,
-      onChange = () => { },
+      onChange = () => {},
     }) => {
       return (
         <Col span={8} style={{ display }}>
@@ -240,8 +240,8 @@ export default connect(({ global }) => ({
                 placeholder={'请输入' + label}
                 onChange={onChange}
                 disabled={propsData.operateType === 'XQ'}
-              // formatter={value => `value`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-              // parser={value => value.replace(/$\s?|(,*)/g, '')}
+                // formatter={value => `value`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                // parser={value => value.replace(/$\s?|(,*)/g, '')}
               />,
             )}
           </Form.Item>
@@ -375,7 +375,7 @@ export default connect(({ global }) => ({
       wrapperCol,
       display,
       open,
-      setOpen = () => { },
+      setOpen = () => {},
     }) => {
       return (
         <Col span={8} style={{ display }}>
@@ -470,7 +470,7 @@ export default connect(({ global }) => ({
           setIsTurnRed(true);
         }
       };
-      const onBeforeUpload = () => { };
+      const onBeforeUpload = () => {};
       return (
         <Col span={8} style={{ display }}>
           <Form.Item
@@ -780,6 +780,19 @@ export default connect(({ global }) => ({
               display,
             })}
             {getInputNumber({
+              label: '其中基础硬件入围金额',
+              dataIndex: 'qzjcyjrwje',
+              initialValue: updateData.JCYJRWJE,
+              rules: [
+                {
+                  required: true,
+                  message: '其中基础硬件入围金额不允许为空',
+                },
+              ],
+              max: 999999999,
+              display,
+            })}
+            {getInputNumber({
               label: '总投资（万元）',
               dataIndex: 'ztz',
               initialValue: updateData.ZTZ,
@@ -939,6 +952,19 @@ export default connect(({ global }) => ({
               display,
             })}
             {getInputNumber({
+              label: '其中基础硬件入围金额',
+              dataIndex: 'bn_qzjcyjrwje',
+              initialValue: updateData.KZXJCYJRWJE,
+              rules: [
+                {
+                  required: true,
+                  message: '其中基础硬件入围金额不允许为空',
+                },
+              ],
+              max: 999999999,
+              display,
+            })}
+            {getInputNumber({
               label: '总投资（万元）',
               dataIndex: 'bn_ztz',
               initialValue: updateData.BNJHZTZ,
@@ -994,23 +1020,23 @@ export default connect(({ global }) => ({
           <Row gutter={24}>
             {Decimal(getFieldValue('bn_ztz') || 0).gt(50)
               ? getMultipleUpload({
-                label: '可行性研究报告',
-                dataIndex: 'lxbab',
-                fileList,
-                setFileList,
-                isTurnRed,
-                setIsTurnRed,
-                display,
-              })
+                  label: '可行性研究报告',
+                  dataIndex: 'lxbab',
+                  fileList,
+                  setFileList,
+                  isTurnRed,
+                  setIsTurnRed,
+                  display,
+                })
               : getMultipleUpload({
-                label: '立项备案表',
-                dataIndex: 'lxbab',
-                fileList,
-                setFileList,
-                isTurnRed,
-                setIsTurnRed,
-                display,
-              })}
+                  label: '立项备案表',
+                  dataIndex: 'lxbab',
+                  fileList,
+                  setFileList,
+                  isTurnRed,
+                  setIsTurnRed,
+                  display,
+                })}
             {getFileTemplate({
               label: '附件模板',
               listData: fileTpl,
@@ -1036,13 +1062,13 @@ export default connect(({ global }) => ({
           return new Promise((resolve, reject) => {
             const reader = new FileReader();
 
-            reader.onload = function () {
+            reader.onload = function() {
               const base64 = reader.result.split(',')[1];
               const fileName = file.name;
               resolve({ name: fileName, data: base64, filetype });
             };
 
-            reader.onerror = function (error) {
+            reader.onerror = function(error) {
               reject(error);
             };
 
@@ -1109,6 +1135,7 @@ export default connect(({ global }) => ({
               hwOther: String(values.yjqt),
               hwBudget: String(values.yjtzzje),
               xcHWBudget: String(values.qzxcyjtz),
+              hwBase: String(values.qzjcyjrwje),
               totalBudget: String(values.ztz),
               cloudResources: String(values.yjyzypz),
               hwStorageConfig: String(values.yjccpz),
@@ -1119,6 +1146,7 @@ export default connect(({ global }) => ({
               tyHWOther: String(values.bn_yjqt),
               tyHWBudget: String(values.bn_yjtzzje),
               tyXCHWBudget: String(values.bn_qzxcyjtz),
+              tyHWBase: String(values.bn_qzjcyjrwje),
               tyTotalBudget: String(values.bn_ztz),
               tyCloudResources: String(values.bn_yjyzypz),
               tyHwStorageConfig: String(values.bn_yjccpz),
@@ -1199,6 +1227,7 @@ export default connect(({ global }) => ({
             hwOther: getValue(getFieldValue('yjqt')),
             hwBudget: getValue(getFieldValue('yjtzzje')),
             xcHWBudget: getValue(getFieldValue('qzxcyjtz')),
+            hwBase: String(getFieldValue('qzjcyjrwje')),
             totalBudget: getValue(getFieldValue('ztz')),
             cloudResources: getValue(getFieldValue('yjyzypz')),
             hwStorageConfig: getValue(getFieldValue('yjccpz')),
@@ -1209,6 +1238,7 @@ export default connect(({ global }) => ({
             tyHWOther: getValue(getFieldValue('bn_yjqt')),
             tyHWBudget: getValue(getFieldValue('bn_yjtzzje')),
             tyXCHWBudget: getValue(getFieldValue('bn_qzxcyjtz')),
+            tyHWBase: String(getFieldValue('bn_qzjcyjrwje')),
             tyTotalBudget: getValue(getFieldValue('bn_ztz')),
             tyCloudResources: getValue(getFieldValue('bn_yjyzypz')),
             tyHwStorageConfig: getValue(getFieldValue('bn_yjccpz')),

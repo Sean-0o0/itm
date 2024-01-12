@@ -982,6 +982,12 @@ export default [
   },
   {
     code: '',
+    key: 'queryCapitalBudgetCarryoverInfo',
+    url: '/projectManage/queryCapitalBudgetCarryoverInfo',
+    dis: '查询资本性年初预算结转信息',
+  },
+  {
+    code: '',
     key: 'convertToSelfDevIteProject',
     url: '/projectManage/convertToSelfDevIteProject',
     dis: '转换为自研迭代项目',

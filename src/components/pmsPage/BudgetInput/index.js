@@ -1,17 +1,15 @@
 import React, { useState, useEffect, useLayoutEffect } from 'react';
-import { message, Spin, Tabs } from 'antd';
-import TableBox from './TableBox';
+import { message, Spin } from 'antd';
+import TableBox from '../BudgetCarryover/TableBox';
 import {
   QueryCapitalBudgetCarryoverInfo,
-  QueryProjectBudgetCarryoverInfo,
   QueryUserRole,
   QueryWeekday,
 } from '../../../services/pmsServices';
 import { DecryptBase64 } from '../../Common/Encrypt';
 import moment from 'moment';
-const { TabPane } = Tabs;
 
-export default function BudgetCarryover(props) {
+export default function BudgetInput(props) {
   const {
     dictionary = {},
     userBasicInfo = {},
@@ -27,7 +25,7 @@ export default function BudgetCarryover(props) {
     total: 0,
   });
   const [filterData, setFilterData] = useState({}); //筛选栏数据
-  const activeKey = 'YSJZ';
+  const activeKey = 'ZB';
   const [curSorter, setCurSorter] = useState(''); //排序
   const [spinningData, setSpinningData] = useState({
     spinning: false,
@@ -50,7 +48,7 @@ export default function BudgetCarryover(props) {
       // console.log('🚀 ~ file: index.js:55 ~ useLayoutEffect ~ obj:', obj);
       if (obj.fromHome === true) {
         //首页待办跳转
-        let field = 'projectName';
+        let field = 'budgetName';
         setFilterData(p => ({ ...p, [field]: obj.xmmc }));
         getDefaultYear({ [field]: obj.xmmc });
       } else {
@@ -59,7 +57,7 @@ export default function BudgetCarryover(props) {
       }
     } else {
       //首次刷新
-      getDefaultYear({});
+      getDefaultYear({ });
     }
     return () => {};
   }, [params]);
@@ -133,16 +131,32 @@ export default function BudgetCarryover(props) {
     sort = curSorter,
     budgetProject,
     projectName,
+    year,
+    budgetCategory,
+    budgetName,
+    budgetId,
+    userType = getUserType(userRole, role),
+    head,
+    headName,
+    state,
+    newOrCarryover,
   }) => {
     setSpinningData(p => ({
       tip: '加载中',
       spinning: true,
     }));
-    // //预算统计信息
-    QueryProjectBudgetCarryoverInfo({
-      queryType: 'ALL',
-      budgetProject,
-      projectName,
+
+    QueryCapitalBudgetCarryoverInfo({
+      queryType: 'YS',
+      year: year?.year(),
+      budgetCategory,
+      budgetName,
+      budgetId,
+      userType,
+      head,
+      headName,
+      state,
+      newOrCarryover,
       current,
       pageSize,
       paging: 1,
