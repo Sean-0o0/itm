@@ -338,6 +338,10 @@ function VisitedRoutes(props) {
               },
               {
                 title: '预算录入',
+                urlEnd: 'BudgetInput',
+              },
+              {
+                title: '预算结转',
                 urlEnd: 'BudgetCarryover',
               },
               {

@@ -1174,7 +1174,7 @@ export default connect(({ global }) => ({
                   message.success('保存成功', 1);
                   history.push({
                     pathname:
-                      '/pms/manage/BudgetCarryover/' +
+                      '/pms/manage/BudgetInput/' +
                       EncryptBase64(
                         JSON.stringify({
                           refreshParams: propsData.refreshParams,
@@ -1227,7 +1227,7 @@ export default connect(({ global }) => ({
             hwOther: getValue(getFieldValue('yjqt')),
             hwBudget: getValue(getFieldValue('yjtzzje')),
             xcHWBudget: getValue(getFieldValue('qzxcyjtz')),
-            hwBase: String(getFieldValue('qzjcyjrwje')),
+            hwBase: getValue(getFieldValue('qzjcyjrwje')),
             totalBudget: getValue(getFieldValue('ztz')),
             cloudResources: getValue(getFieldValue('yjyzypz')),
             hwStorageConfig: getValue(getFieldValue('yjccpz')),
@@ -1238,7 +1238,7 @@ export default connect(({ global }) => ({
             tyHWOther: getValue(getFieldValue('bn_yjqt')),
             tyHWBudget: getValue(getFieldValue('bn_yjtzzje')),
             tyXCHWBudget: getValue(getFieldValue('bn_qzxcyjtz')),
-            tyHWBase: String(getFieldValue('bn_qzjcyjrwje')),
+            tyHWBase: getValue(getFieldValue('bn_qzjcyjrwje')),
             tyTotalBudget: getValue(getFieldValue('bn_ztz')),
             tyCloudResources: getValue(getFieldValue('bn_yjyzypz')),
             tyHwStorageConfig: getValue(getFieldValue('bn_yjccpz')),
@@ -1266,7 +1266,7 @@ export default connect(({ global }) => ({
                 message.success('暂存成功', 1);
                 history.push({
                   pathname:
-                    '/pms/manage/BudgetCarryover/' +
+                    '/pms/manage/BudgetInput/' +
                     EncryptBase64(
                       JSON.stringify({
                         refreshParams: propsData.refreshParams,
@@ -1297,7 +1297,7 @@ export default connect(({ global }) => ({
             setIsSpinning(false);
             history.push({
               pathname:
-                '/pms/manage/BudgetCarryover/' +
+                '/pms/manage/BudgetInput/' +
                 EncryptBase64(
                   JSON.stringify({
                     refreshParams: propsData.refreshParams,
@@ -1331,7 +1331,7 @@ export default connect(({ global }) => ({
         submitType: 1, //在外边判断好
       });
       history.push({
-        pathname: '/pms/manage/BudgetCarryover',
+        pathname: '/pms/manage/BudgetInput',
       });
     };
 
