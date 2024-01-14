@@ -4,7 +4,7 @@ import styles from './styles.less'
 import { connect } from 'dva';
 
 const ScoreSlider = props => {
-  const { score = '0.0', disabled = false, onChange = () => { }, dictionary } = props;
+  const { score = '0.0', disabled = false, onChange = () => { }, dictionary = {} } = props;
   const [scoreNum, setScoreNum] = useState('0.0');
   const [tooltip, setTooltip] = useState({
     num: null,
@@ -137,7 +137,7 @@ const ScoreSlider = props => {
   /** 推断评价等级 */
   const judgeGradeScale = (score) => {
     for (let i = 1; i <= 4; i++) {
-      const findItem = dictionary.PJDJ.find(item => item.ibm === String(i))
+      const findItem = dictionary.PJDJ?.find(item => item.ibm === String(i))
       if (parseFloat(score) >= parseFloat(findItem.note)) {
         const { cbm } = findItem
         gradeRef.current = cbm
