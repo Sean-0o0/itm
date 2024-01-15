@@ -202,7 +202,7 @@ export default connect(({ global }) => ({
             })(
               <Input
                 placeholder={'请输入' + label}
-                allowCear
+                allowClear
                 style={{ width: '100%' }}
                 disabled={propsData.operateType === 'XQ'}
               />,
@@ -223,10 +223,21 @@ export default connect(({ global }) => ({
       max,
       display,
       onChange = () => {},
+      colSpan = 8,
+      redTipTxt = '',
     }) => {
       return (
-        <Col span={8} style={{ display }}>
-          <Form.Item label={label} labelCol={{ span: labelCol }} wrapperCol={{ span: wrapperCol }}>
+        <Col span={colSpan} style={{ display }}>
+          <Form.Item
+            label={
+              <span>
+                {label}
+                <span style={{ color: '#f5222d', marginLeft: -8 }}>{redTipTxt}</span>
+              </span>
+            }
+            labelCol={{ span: labelCol }}
+            wrapperCol={{ span: wrapperCol }}
+          >
             {getFieldDecorator(dataIndex, {
               initialValue,
               rules,
@@ -240,8 +251,6 @@ export default connect(({ global }) => ({
                 placeholder={'请输入' + label}
                 onChange={onChange}
                 disabled={propsData.operateType === 'XQ'}
-                // formatter={value => `value`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-                // parser={value => value.replace(/$\s?|(,*)/g, '')}
               />,
             )}
           </Form.Item>
@@ -347,7 +356,7 @@ export default connect(({ global }) => ({
             label={label}
             labelCol={{ span: labelCol }}
             wrapperCol={{ span: wrapperCol }}
-            className="budget-submit-textarea"
+            className={'budget-submit-textarea textarea-margin-bottom-style'}
           >
             {getFieldDecorator(dataIndex, {
               initialValue,
@@ -357,8 +366,8 @@ export default connect(({ global }) => ({
                 placeholder={'请输入' + label}
                 maxLength={maxLength}
                 autoSize={{ maxRows: 6, minRows: 3 }}
-                allowCear
                 disabled={propsData.operateType === 'XQ'}
+                allowClear
               ></TextArea>,
             )}
           </Form.Item>
@@ -705,6 +714,8 @@ export default connect(({ global }) => ({
               max: 999999999,
               display,
             })}
+          </Row>
+          <Row gutter={24}>
             {getInputNumber({
               label: '硬件服务器（万元）',
               dataIndex: 'yjfwq',
@@ -718,8 +729,6 @@ export default connect(({ global }) => ({
               max: 999999999,
               display,
             })}
-          </Row>
-          <Row gutter={24}>
             {getInputNumber({
               label: '硬件网络设备（万元）',
               dataIndex: 'yjwlsb',
@@ -746,6 +755,8 @@ export default connect(({ global }) => ({
               max: 999999999,
               display,
             })}
+          </Row>
+          <Row gutter={24}>
             {getInputNumber({
               label: '硬件投资总金额（万元）',
               dataIndex: 'yjtzzje',
@@ -764,8 +775,6 @@ export default connect(({ global }) => ({
                 });
               },
             })}
-          </Row>
-          <Row gutter={24}>
             {getInputNumber({
               label: '其中信创-硬件投资（万元）',
               dataIndex: 'qzxcyjtz',
@@ -792,6 +801,8 @@ export default connect(({ global }) => ({
               max: 999999999,
               display,
             })}
+          </Row>
+          <Row gutter={24}>
             {getInputNumber({
               label: '总投资（万元）',
               dataIndex: 'ztz',
@@ -804,21 +815,25 @@ export default connect(({ global }) => ({
               ],
               max: 999999999,
               display,
+              colSpan: 24,
+              redTipTxt: '（总投资金额=去年预算关联项目的总合同金额+待签合同金额）',
             })}
           </Row>
-          {getTextArea({
-            label: '硬件云资源配置',
-            dataIndex: 'yjyzypz',
-            initialValue: updateData.YJYZYPZ,
-            rules: [
-              {
-                required: true,
-                message: '硬件云资源配置不允许为空',
-              },
-            ],
-            maxLength: 500,
-            display,
-          })}
+          <Row gutter={24}>
+            {getTextArea({
+              label: '硬件云资源配置',
+              dataIndex: 'yjyzypz',
+              initialValue: updateData.YJYZYPZ,
+              rules: [
+                {
+                  required: true,
+                  message: '硬件云资源配置不允许为空',
+                },
+              ],
+              maxLength: 500,
+              display,
+            })}
+          </Row>
           {getTextArea({
             label: '硬件存储配置',
             dataIndex: 'yjccpz',
@@ -877,6 +892,8 @@ export default connect(({ global }) => ({
               max: 999999999,
               display,
             })}
+          </Row>
+          <Row gutter={24}>
             {getInputNumber({
               label: '硬件服务器（万元）',
               dataIndex: 'bn_yjfwq',
@@ -890,8 +907,6 @@ export default connect(({ global }) => ({
               max: 999999999,
               display,
             })}
-          </Row>
-          <Row gutter={24}>
             {getInputNumber({
               label: '硬件网络设备（万元）',
               dataIndex: 'bn_yjwlsb',
@@ -918,6 +933,8 @@ export default connect(({ global }) => ({
               max: 999999999,
               display,
             })}
+          </Row>
+          <Row gutter={24}>
             {getInputNumber({
               label: '硬件投资总金额（万元）',
               dataIndex: 'bn_yjtzzje',
@@ -936,8 +953,6 @@ export default connect(({ global }) => ({
                 });
               },
             })}
-          </Row>
-          <Row gutter={24}>
             {getInputNumber({
               label: '其中信创-硬件投资（万元）',
               dataIndex: 'bn_qzxcyjtz',
@@ -964,6 +979,8 @@ export default connect(({ global }) => ({
               max: 999999999,
               display,
             })}
+          </Row>
+          <Row gutter={24}>
             {getInputNumber({
               label: '总投资（万元）',
               dataIndex: 'bn_ztz',
@@ -976,6 +993,7 @@ export default connect(({ global }) => ({
               ],
               max: 999999999,
               display,
+              colSpan: 24,
             })}
           </Row>
           {getTextArea({

@@ -28,10 +28,10 @@ class InfoTable extends Component {
       },
       () => {
         this.props.fetchData(queryType, {
+          ...(this.props.pageParam || {}),
           current: 1,
           pageSize: 10,
           paging: 1,
-          sort: '',
           total: -1,
         });
       },

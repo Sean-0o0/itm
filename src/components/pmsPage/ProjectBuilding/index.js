@@ -464,7 +464,8 @@ class ProjectBuilding extends Component {
                       },
                     },
                     () => {
-                      this.fetchRole(year);
+                      radioKeys === '项目列表' && this.fetchRole(year);
+                      radioKeys === '项目动态' && this.queryProjectDynamics(year);
                     },
                   )
                 }

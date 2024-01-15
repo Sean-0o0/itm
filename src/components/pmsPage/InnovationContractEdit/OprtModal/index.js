@@ -114,7 +114,7 @@ export default Form.create()(function OprtModal(props) {
           })(
             <Input
               placeholder={'请输入' + label}
-              allowCear
+              allowClear
               style={{ width: '100%' }}
               maxLength={maxLength}
             />,
@@ -128,7 +128,12 @@ export default Form.create()(function OprtModal(props) {
   const getTextArea = ({ label, dataIndex, initialValue, labelCol, wrapperCol, maxLength }) => {
     return (
       <Col span={24}>
-        <Form.Item label={label} labelCol={{ span: labelCol }} wrapperCol={{ span: wrapperCol }}>
+        <Form.Item
+          label={label}
+          labelCol={{ span: labelCol }}
+          wrapperCol={{ span: wrapperCol }}
+          className="textarea-margin-bottom-style"
+        >
           {getFieldDecorator(dataIndex, {
             initialValue,
             rules: [
@@ -142,7 +147,7 @@ export default Form.create()(function OprtModal(props) {
               placeholder={'请输入' + label}
               maxLength={maxLength}
               autoSize={{ maxRows: 6, minRows: 3 }}
-              allowCear
+              allowClear
             ></TextArea>,
           )}
         </Form.Item>

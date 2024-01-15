@@ -51,7 +51,12 @@ export default Form.create()(function CarryoverModal(props) {
     rules = [],
   }) => {
     return (
-      <Form.Item label={label} labelCol={{ span: labelCol }} wrapperCol={{ span: wrapperCol }}>
+      <Form.Item
+        label={label}
+        labelCol={{ span: labelCol }}
+        wrapperCol={{ span: wrapperCol }}
+        className="textarea-margin-bottom-style"
+      >
         {getFieldDecorator(dataIndex, {
           initialValue,
           rules,
@@ -60,7 +65,7 @@ export default Form.create()(function CarryoverModal(props) {
             placeholder={'请输入' + label}
             maxLength={maxLength}
             autoSize={{ maxRows: 6, minRows: 3 }}
-            allowCear
+            allowClear
           ></TextArea>,
         )}
       </Form.Item>
