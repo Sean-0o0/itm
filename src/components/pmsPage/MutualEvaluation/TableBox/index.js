@@ -71,7 +71,7 @@ export default function TableBox(props) {
     {
       title: '项目角色',
       dataIndex: 'GW',
-      width: '38%',
+      width: '33%',
       key: 'GW',
       ellipsis: true,
       render: txt => (
@@ -83,7 +83,7 @@ export default function TableBox(props) {
     {
       title: '分数',
       dataIndex: 'PF',
-      width: '50%',
+      width: '55%',
       key: 'PF',
       ellipsis: true,
       render: (txt, x) => (
