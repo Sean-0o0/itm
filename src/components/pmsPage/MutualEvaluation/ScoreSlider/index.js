@@ -4,7 +4,7 @@ import styles from './styles.less'
 import { connect } from 'dva';
 
 const ScoreSlider = props => {
-  const { score = '0.0', disabled = false, onChange = () => { }, dictionary = {} } = props;
+  const { score = '0.0', disabled = false, onChange = () => { }, dictionary = {}, initialScore } = props;
   const [scoreNum, setScoreNum] = useState('0.0');
   const [tooltip, setTooltip] = useState({
     num: null,
@@ -15,6 +15,15 @@ const ScoreSlider = props => {
   const data = Array.from({ length: 10 }, (_, index) => index + 1);
 
   const gradeRef = useRef('不及格')
+
+  /** 当评分状态为未打分时，默认不展示评分等级，拖动进度条后才展示 */
+  const [isGradeShow, setIsGradeShow] = useState(false)
+
+  useEffect(() => {
+    if (initialScore !== undefined) {
+      setIsGradeShow(true)
+    }
+  }, [])
 
   useEffect(() => {
     setScoreNum(Number.isInteger(Number(score)) ? Number(score) + '.0' : score);
@@ -122,6 +131,7 @@ const ScoreSlider = props => {
 
   //点击选中
   const handleClick = useCallback((e, index) => {
+    setIsGradeShow(true)
     const boundingBox = e.target.getBoundingClientRect();
     const clickX = e.clientX - boundingBox.left;
     const isLeft = clickX / boundingBox.width < 0.6;
@@ -173,11 +183,14 @@ const ScoreSlider = props => {
   }
 
 
+
+
   return (
     <div className={styles.sliderWrapper}>
       <div className={styles.backToZero} onClick={disabled ? () => { } : handleBackToZero}></div>
       <div className={styles.sliderBox} onMouseLeave={disabled ? () => { } : handleMouseLeave}>
         {data.map((x, index) => (
+
           <Tooltip
             visible={tooltip.current === index && tooltip.visible}
             title={tooltip.num}
@@ -230,14 +243,16 @@ const ScoreSlider = props => {
       </div>
       <span className={styles[judgeScoreStyle(scoreNum)]}>{scoreNum}</span>
 
-      <div className={styles[judgeGradeStyle(scoreNum)]} style={{ marginLeft: scoreNum === '10.0' ? '10px' : '' }}>
-        {gradeRef.current === '优秀' && <img src={require('../../../../assets/MutualEvaluation/grade_blue.png')}></img>}
-        {gradeRef.current === '良好' && <img src={require('../../../../assets/MutualEvaluation/grade_skyblue.png')}></img>}
-        {gradeRef.current === '及格' && <img src={require('../../../../assets/MutualEvaluation/grade_yellow.png')}></img>}
-        {gradeRef.current === '不及格' && <img src={require('../../../../assets/MutualEvaluation/grade_red.png')}></img>}
+      {isGradeShow &&
+        <div className={styles[judgeGradeStyle(scoreNum)]} style={{ marginLeft: scoreNum === '10.0' ? '10px' : '' }}>
+          {gradeRef.current === '优秀' && <img src={require('../../../../assets/MutualEvaluation/grade_blue.png')}></img>}
+          {gradeRef.current === '良好' && <img src={require('../../../../assets/MutualEvaluation/grade_skyblue.png')}></img>}
+          {gradeRef.current === '及格' && <img src={require('../../../../assets/MutualEvaluation/grade_yellow.png')}></img>}
+          {gradeRef.current === '不及格' && <img src={require('../../../../assets/MutualEvaluation/grade_red.png')}></img>}
 
-        <span>{judgeGradeScale(scoreNum)}</span>
-      </div>
+          <span>{judgeGradeScale(scoreNum)}</span>
+        </div>
+      }
 
     </div>
   );

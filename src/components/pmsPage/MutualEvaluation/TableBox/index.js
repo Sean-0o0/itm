@@ -86,12 +86,13 @@ export default function TableBox(props) {
       width: '55%',
       key: 'PF',
       ellipsis: true,
-      render: (txt, x) => (
+      render: (txt, x, extra) => (
         <ScoreSlider
           score={txt}
           onChange={v => handleScoreChange(v, x)}
           disabled={curPrj.done || !curPrj.open || txt !== undefined}
           key={`${x.RYMCID}-${txt}`}
+          initialScore={txt}
         />
       ),
     },
