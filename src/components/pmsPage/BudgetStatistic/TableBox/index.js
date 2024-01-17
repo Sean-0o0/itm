@@ -32,9 +32,9 @@ const TableBox = props => {
     orgData = [],
   } = dataProps;
   const {
-    setFilterData = () => {},
-    queryTableData = () => {},
-    setSpinningData = () => {},
+    setFilterData = () => { },
+    queryTableData = () => { },
+    setSpinningData = () => { },
   } = funcProps;
   const [drawerData, setDrawerData] = useState({
     data: [],
@@ -66,11 +66,27 @@ const TableBox = props => {
       key: 'YSXM',
       width: '18%',
       ellipsis: true,
-      render: txt => (
-        <Tooltip title={txt} placement="topLeft">
-          <span style={{ cursor: 'default' }}>{txt}</span>
+      render: (text, record, extra) => {
+        return <Tooltip title={text} placement="topLeft">
+          <Link
+            style={{ color: '#3361ff' }}
+            to={{
+              pathname: `/pms/manage/BudgetDetail/${EncryptBase64(
+                JSON.stringify({
+                  fromKey: activeKey,
+                  budgetID: record.YSID
+                }),
+              )}`,
+              state: {
+                routes: [{ name: '项目列表', pathname: location.pathname }],
+              },
+            }}
+            className="table-link-strong"
+          >
+            {text}
+          </Link>
         </Tooltip>
-      ),
+      }
     },
     {
       title: '负责人',
@@ -192,11 +208,27 @@ const TableBox = props => {
       key: 'YSXM',
       width: '12%',
       ellipsis: true,
-      render: txt => (
-        <Tooltip title={txt} placement="topLeft">
-          <span style={{ cursor: 'default' }}>{txt}</span>
+      render: (text, record, extra) => {
+        return <Tooltip title={text} placement="topLeft">
+          <Link
+            style={{ color: '#3361ff' }}
+            to={{
+              pathname: `/pms/manage/BudgetDetail/${EncryptBase64(
+                JSON.stringify({
+                  fromKey: activeKey,
+                  budgetID: record.YSID
+                }),
+              )}`,
+              state: {
+                routes: [{ name: '项目列表', pathname: location.pathname }],
+              },
+            }}
+            className="table-link-strong"
+          >
+            {text}
+          </Link>
         </Tooltip>
-      ),
+      }
     },
     {
       title: '负责人',
@@ -794,8 +826,8 @@ const TableBox = props => {
                 ? { height: 'calc(100% - 109px)' }
                 : { height: 'calc(100% - 174px)' }
               : filterFold
-              ? { height: 'calc(100% - 129px)' }
-              : { height: 'calc(100% - 194px)' }
+                ? { height: 'calc(100% - 129px)' }
+                : { height: 'calc(100% - 194px)' }
           }
         >
           <Table

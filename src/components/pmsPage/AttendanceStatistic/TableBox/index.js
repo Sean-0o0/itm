@@ -34,7 +34,7 @@ const TableBox = props => {
   const { dataProps = {}, funcProps = {} } = props;
   const { tableData = [], filterData = {}, activeKey, summaryData = {} } = dataProps;
   console.log('🚀 ~ file: index.js:36 ~ TableBox ~ tableData:', tableData);
-  const { setFilterData = () => {}, queryTableData = () => {} } = funcProps;
+  const { setFilterData = () => { }, queryTableData = () => { } } = funcProps;
   const [columns, setColumns] = useState([]); //列配置
   const [exportModalVisible, setExportModalVisible] = useState(false); //导出弹窗显隐
   const location = useLocation();
@@ -285,7 +285,7 @@ const TableBox = props => {
         ]);
       }
     }
-    return () => {};
+    return () => { };
   }, [activeKey, JSON.stringify(filterData), JSON.stringify(tableData)]);
 
   const getDate = (year, month) => {
@@ -628,7 +628,7 @@ const TableBox = props => {
                 placeholder="请选择月份"
                 allowClear={false}
                 onChange={handleMonthChange}
-                // onPanelChange={handleYearChange}
+              // onPanelChange={handleYearChange}
               />
             </div>
           )}

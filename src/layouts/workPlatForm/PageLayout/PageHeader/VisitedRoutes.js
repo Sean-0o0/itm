@@ -348,6 +348,10 @@ function VisitedRoutes(props) {
                 title: '预算填报',
                 urlEnd: 'BudgetSubmit',
               },
+              {
+                title: '预算详情',
+                urlEnd: 'BudgetDetail',
+              },
             ];
             urlEndArr.forEach(x => {
               if (item.includes('/pms/manage/' + x.urlEnd)) {

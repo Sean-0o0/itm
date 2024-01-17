@@ -1867,16 +1867,6 @@ export async function ConvertToSelfDevIteProject(payload) {
   return request(option);
 }
 
-/** 查预算详情 */
-export async function QueryBudgetProjectDetail(payload) {
-  const option = {
-    url: queryBudgetProjectDetail,
-    method: 'post',
-    data: payload,
-  };
-  return request(option);
-}
-
 // 根据部门查询人员评价
 export async function QueryMemberRevaluationByORG(payload) {
   const option = {

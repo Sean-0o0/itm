@@ -453,4 +453,9 @@ exports.routes = [
     path: `${prefix}/BudgetInput`,
     component: './pmsPage/BudgetInput',
   },
+  {
+    // 预算详情
+    path: `${prefix}/BudgetDetail/:params`,
+    component: './pmsPage/BudgetDetail',
+  },
 ];

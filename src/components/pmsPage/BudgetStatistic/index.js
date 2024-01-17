@@ -60,7 +60,7 @@ export default function BudgetStatistic(props) {
       getUserRole();
       getOrgData();
     }
-    return () => {};
+    return () => { };
   }, [tab]);
 
   //获取用户角色

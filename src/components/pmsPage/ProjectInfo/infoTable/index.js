@@ -399,7 +399,7 @@ export default function InfoTable(props) {
             showTotal: t => `共 ${total} 条数据`,
             total: total,
           }}
-          // bordered
+        // bordered
         />
       </div>
     </div>
