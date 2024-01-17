@@ -10,9 +10,10 @@ import SiderRptList from './SiderRptList';
 import RightRptContent from './RightRptContent';
 import { Link, useHistory } from 'react-router-dom';
 import { isEqual } from 'lodash';
+import CustomRptInfo from '../CustomRptInfo';
 
 export default function CustomRptManagement(props) {
-  const { routes = [] } = props;
+  const { routes = [], propsData = {}, isNew = false } = props;
   const [basicData, setBasicData] = useState({
     conditionFilter: [],
     conditionGroup: [],
@@ -44,129 +45,153 @@ export default function CustomRptManagement(props) {
   const [dragKey, setDragKey] = useState(null); //拖动id
   const [rptName, setRptName] = useState('未命名报表'); //报表名称
   const [isSpinning, setIsSpinning] = useState(false); //加载状态
-  const [status, setStatus] = useState('normal'); //editing、adding、normal
-  const [editingId, setEditingId] = useState(-1); //正在编辑的报表id
+  const [status, setStatus] = useState('unSlt'); //editing 修改中、adding 新建中、unSlt 还未选中具体报表、slted 已选中具体报表
+  const [activeBbData, setActiveBbData] = useState({
+    bbid: -1,
+    bbmc: '未命名报表',
+    cjrid: -1,
+  }); //已选中的报表数据，不动旧代码新加的
+  const [isFold, setIsFold] = useState(false); //是否收起侧边列表
   const history = useHistory();
+  var s = 0;
+  var e = 0;
 
   useEffect(() => {
-    getRptList();
+    if (isNew) {
+      getRptList(undefined, 1, true);
+      //新建
+      if (basicData.conditionFilter?.length === 0 || selectedOrigin.conditionFilter?.length === 0) {
+        //需要获取基础数据
+        getBasicData(true);
+      } else {
+        hangleDataRestore();
+      }
+      setStatus('adding');
+      setSelectedData({
+        ...selectedOrigin,
+      });
+      setSelectingData({
+        conditionFilter: [],
+        conditionGroup: [],
+        columnFields: [],
+      });
+      setRptName('未命名报表');
+      setRptNameOrigin('未命名报表');
+      setActiveBbData({ bbid: -1, bbmc: '未命名报表', cjrid: -1 });
+    }
     return () => {};
-  }, []);
+  }, [isNew]);
 
   useEffect(() => {
-    console.log('🚀 ~ selectedData:', selectedData);
+    if (JSON.stringify(propsData) !== '{}') {
+      getRptList(undefined, 1, true); //等到加载到最后再结束loading
+      // console.log('🚀 ~ useEffect ~ propsData:', propsData);
+      setActiveBbData(propsData);
+      setStatus('slted');
+    }
     return () => {};
-  }, [JSON.stringify(selectedData)]);
+  }, [JSON.stringify(propsData)]);
 
   // 获取条件基础数据
-  const getBasicData = (isAdding = true) => {
-    setIsSpinning(true);
-    QueryCustomQueryCriteria({
-      queryType: 'SXTJ',
-    })
-      .then(res => {
-        if (res?.success) {
-          let data = JSON.parse(res.result);
-          QueryCustomQueryCriteria({
-            queryType: 'ZHTJ',
-          })
-            .then(res => {
-              if (res?.success) {
-                let data2 = JSON.parse(res.result);
-                QueryCustomQueryCriteria({
-                  queryType: 'ZSZD',
-                })
-                  .then(res => {
-                    if (res?.success) {
-                      let columnFieldsArr = JSON.parse(res.result);
-                      columnFieldsArr.forEach(x => {
-                        if (x.ID === 8) {
-                          x.disabled = true; //项目名称不可操作, ID为8
-                        }
-                      });
-                      const data3 = buildTree(columnFieldsArr, 'title', 'key');
-                      // console.log(
-                      //   'conditionFilter: ',
-                      //   data,
-                      //   'conditionGroup: ',
-                      //   data2,
-                      //   'columnFields: ',
-                      //   data3,
-                      // );
-                      setBasicData({
-                        conditionFilter: data,
-                        conditionGroup: data2,
-                        columnFields: data3,
-                      });
-                      //新增时 - 筛选条件和展示字段默认项目名称, ID为8
-                      if (isAdding) {
-                        // console.log('新建数据初始化');
-                        let conditionFilterXmmc = data.filter(x => x.ID === 8)[0];
-                        let columnFieldsXmmc = JSON.parse(res.result).filter(x => x.ID === 8)[0];
-                        columnFieldsXmmc.title = columnFieldsXmmc.NAME;
-                        columnFieldsXmmc.key = columnFieldsXmmc.ID;
-                        if (conditionFilterXmmc.TJBCXLX) {
-                          QueryCustomQueryCriteria({
-                            queryType: conditionFilterXmmc.TJBCXLX,
-                          })
-                            .then(res => {
-                              if (res?.success) {
-                                conditionFilterXmmc.SELECTORVALUE = undefined;
-                                conditionFilterXmmc.SELECTORDATA = JSON.parse(res.result);
-                                setSelectedData(p => ({
-                                  ...p,
-                                  conditionFilter: [conditionFilterXmmc],
-                                  columnFields: [columnFieldsXmmc],
-                                }));
-                                setSelectedOrigin(p => ({
-                                  ...p,
-                                  conditionFilter: [
-                                    {
-                                      ...JSON.parse(JSON.stringify(conditionFilterXmmc)),
-                                      SELECTORVALUE: undefined,
-                                    },
-                                  ],
-                                  columnFields: [JSON.parse(JSON.stringify(columnFieldsXmmc))],
-                                }));
-                                setIsSpinning(false);
-                              }
-                            })
-                            .catch(e => {
-                              console.error('🚀', e);
-                              message.error(conditionFilterXmmc.TJBCXLX + '信息获取失败', 1);
-                              setIsSpinning(false);
-                            });
-                        }
-                      } else {
-                        setIsSpinning(false);
-                      }
-                    }
-                  })
-                  .catch(e => {
-                    console.error('🚀', e);
-                    message.error('表格字段信息获取失败', 1);
-                    setIsSpinning(false);
-                  });
+  const getBasicData = async (isAdding = true) => {
+    s = performance.now();
+    try {
+      setIsSpinning(true);
+      const promiseArr = [
+        QueryCustomQueryCriteria({
+          queryType: 'SXTJ',
+        }),
+        QueryCustomQueryCriteria({
+          queryType: 'ZSZD',
+        }),
+      ];
+      const [conditionFilterRes, columnFieldsRes] = await Promise.all(promiseArr);
+      if (conditionFilterRes?.success && columnFieldsRes?.success) {
+        let conditionFilterData = JSON.parse(conditionFilterRes.result);
+        let columnFieldsArr = JSON.parse(columnFieldsRes.result);
+        columnFieldsArr.forEach(x => {
+          if (x.ID === 8) {
+            x.disabled = true; //项目名称不可操作, ID为8
+          }
+        });
+        const columnFieldsData = buildTree(columnFieldsArr, 'title', 'key');
+        setBasicData({
+          conditionFilter: conditionFilterData,
+          conditionGroup: [],
+          columnFields: columnFieldsData,
+        });
+        //新增时 - 筛选条件和展示字段默认项目名称, ID为8
+        if (isAdding) {
+          let conditionFilterDefault = conditionFilterData.filter(x =>
+            [8, 10, 102, 18, 21].includes(Number(x.ID)),
+          );
+          let columnFieldsDefault = JSON.parse(columnFieldsRes.result)
+            .filter(x => [8, 10, 102].includes(Number(x.ID)))
+            ?.map(x => ({ ...x, key: x.ID, title: x.NAME }));
+          const promiseArr = conditionFilterDefault.map(x =>
+            QueryCustomQueryCriteria({
+              queryType: x.TJBCXLX,
+            }),
+          );
+          const resArr = await Promise.all(promiseArr);
+          resArr.forEach((res, index) => {
+            if (res?.success) {
+              if (conditionFilterDefault[index].TJBCXLX === 'YSXM') {
+                conditionFilterDefault[index].sltOpen = false; //树下拉框展开收起
+                function uniqueFunc(arr, uniId) {
+                  const res = new Map();
+                  return arr.filter(item => !res.has(item[uniId]) && res.set(item[uniId], 1));
+                }
+                let type = uniqueFunc(JSON.parse(res.result), 'YSLXID');
+                let origin = JSON.parse(res.result);
+                conditionFilterDefault[index].SELECTORDATA = {
+                  type,
+                  origin,
+                };
+                //默认赋值
+                if (type.length > 0) {
+                  conditionFilterDefault[index].SELECTORVALUE = {
+                    type: type[0]?.YSLXID,
+                    typeObj: type[0],
+                    value: [],
+                  };
+                }
+              } else if (conditionFilterDefault[index].ZJLX === 'TREE-MULTIPLE') {
+                conditionFilterDefault[index].SELECTORDATA = buildTree(JSON.parse(res.result));
+              } else if (!conditionFilterDefault[index].TJBCXLX) {
+                conditionFilterDefault[index].SELECTORDATA = undefined;
+                conditionFilterDefault[index].SELECTORVALUE = undefined;
+              } else {
+                conditionFilterDefault[index].SELECTORDATA = JSON.parse(res.result);
               }
-            })
-            .catch(e => {
-              console.error('🚀', e);
-              message.error('组合条件获取失败', 1);
-              setIsSpinning(false);
-            });
+            }
+          });
+          setSelectedData(p => ({
+            ...p,
+            conditionFilter: conditionFilterDefault,
+            columnFields: columnFieldsDefault,
+          }));
+          setSelectedOrigin(p => ({
+            ...p,
+            conditionFilter: [...JSON.parse(JSON.stringify(conditionFilterDefault))],
+            columnFields: JSON.parse(JSON.stringify(columnFieldsDefault)),
+          }));
+          setIsSpinning(false);
         }
-      })
-      .catch(e => {
-        console.error('🚀', e);
-        message.error('筛选条件信息获取失败', 1);
-        setIsSpinning(false);
-      });
+      }
+    } catch (e) {
+      console.error('🚀', e);
+      message.error('筛选条件信息获取失败', 1);
+      setIsSpinning(false);
+    }
+    e = performance.now();
+    console.log(`基础数据Request time: ${e - s} milliseconds`, s, e);
   };
 
   //获取编辑基础数据
   const getEditData = bbid => {
     setIsSpinning(true);
-    setEditingId(bbid);
+    setActiveBbData(p => ({ ...p, bbid }));
     //报表信息
     QueryCustomReport({
       bbid,
@@ -177,104 +202,53 @@ export default function CustomRptManagement(props) {
       sort: 'XMID DESC',
       total: -1,
     })
-      .then(res => {
+      .then(async res => {
         if (res?.success) {
+          s = performance.now();
           const obj = JSON.parse(res.mbxx)[0];
-          let filterData = JSON.parse(obj.QDZSSXZD||'[]');
-          if (filterData.length > 0) {
-            filterData.forEach((x, index) => {
-              if (x.TJBCXLX) {
-                QueryCustomQueryCriteria({
-                  queryType: x.TJBCXLX,
-                })
-                  .then(res => {
-                    if (res?.success) {
-                      if (x.TJBCXLX === 'YSXM') {
-                        function uniqueFunc(arr, uniId) {
-                          const res = new Map();
-                          return arr.filter(
-                            item => !res.has(item[uniId]) && res.set(item[uniId], 1),
-                          );
-                        }
-                        let type = uniqueFunc(JSON.parse(res.result), 'YSLXID');
-                        let origin = JSON.parse(res.result);
-                        x.SELECTORDATA = {
-                          type,
-                          origin,
-                        };
-                      } else if (x.ZJLX === 'TREE-MULTIPLE') {
-                        x.SELECTORDATA = buildTree(JSON.parse(res.result));
-                      } else {
-                        x.SELECTORDATA = JSON.parse(res.result);
-                      }
-                    }
-                  })
-                  .then(() => {
-                    setSelectedData({
-                      conditionFilter: filterData,
-                      conditionGroup: JSON.parse(obj.QDZSZHZD),
-                      columnFields: JSON.parse(obj.QDZSBTZD),
-                    });
-                    setSelectedEditOrigin({
-                      conditionFilter: JSON.parse(JSON.stringify(filterData)),
-                      conditionGroup: JSON.parse(obj.QDZSZHZD),
-                      columnFields: JSON.parse(obj.QDZSBTZD),
-                    });
-                    setRptName(obj.BBMC);
-                    setRptNameOrigin(obj.BBMC);
-                    setStatus('editing');
-                    index ===
-                      filterData.reduceRight((acc, obj, index) => {
-                        if (obj.TJBCXLX !== undefined && acc === -1) {
-                          return index;
-                        }
-                        return acc;
-                      }, -1) && setIsSpinning(false);
-                  })
-                  .catch(e => {
-                    console.error('🚀', e);
-                    message.error(x.TJBCXLX + '信息获取失败', 1);
-                    setIsSpinning(false);
-                  });
+          let filterData = JSON.parse(obj.QDZSSXZD || '[]');
+          const promiseArr = filterData.map(x =>
+            QueryCustomQueryCriteria({
+              queryType: x.TJBCXLX,
+            }),
+          );
+          const resArr = (await Promise.all(promiseArr)) || [];
+          resArr.forEach((res, index) => {
+            if (res?.success) {
+              if (filterData[index].TJBCXLX === 'YSXM') {
+                function uniqueFunc(arr, uniId) {
+                  const res = new Map();
+                  return arr.filter(item => !res.has(item[uniId]) && res.set(item[uniId], 1));
+                }
+                let type = uniqueFunc(JSON.parse(res.result), 'YSLXID');
+                let origin = JSON.parse(res.result);
+                filterData[index].SELECTORDATA = {
+                  type,
+                  origin,
+                };
+              } else if (filterData[index].ZJLX === 'TREE-MULTIPLE') {
+                filterData[index].SELECTORDATA = buildTree(JSON.parse(res.result));
               } else {
-                setSelectedData({
-                  conditionFilter: filterData,
-                  conditionGroup: JSON.parse(obj.QDZSZHZD),
-                  columnFields: JSON.parse(obj.QDZSBTZD),
-                });
-                setSelectedEditOrigin({
-                  conditionFilter: JSON.parse(JSON.stringify(filterData)),
-                  conditionGroup: JSON.parse(obj.QDZSZHZD),
-                  columnFields: JSON.parse(obj.QDZSBTZD),
-                });
-                setRptName(obj.BBMC);
-                setRptNameOrigin(obj.BBMC);
-                setStatus('editing');
-                index ===
-                  filterData.reduceRight((acc, obj, index) => {
-                    if (obj.TJBCXLX !== undefined && acc === -1) {
-                      return index;
-                    }
-                    return acc;
-                  }, -1) && setIsSpinning(false);
+                filterData[index].SELECTORDATA = JSON.parse(res.result);
               }
-            });
-          } else {
-            setSelectedData({
-              conditionFilter: filterData,
-              conditionGroup: JSON.parse(obj.QDZSZHZD),
-              columnFields: JSON.parse(obj.QDZSBTZD),
-            });
-            setSelectedEditOrigin({
-              conditionFilter: JSON.parse(JSON.stringify(filterData)),
-              conditionGroup: JSON.parse(obj.QDZSZHZD),
-              columnFields: JSON.parse(obj.QDZSBTZD),
-            });
-            setRptName(obj.BBMC);
-            setRptNameOrigin(obj.BBMC);
-            setStatus('editing');
-            setIsSpinning(false);
-          }
+            }
+          });
+          setSelectedData({
+            conditionFilter: filterData,
+            conditionGroup: JSON.parse(obj.QDZSZHZD),
+            columnFields: JSON.parse(obj.QDZSBTZD),
+          });
+          setSelectedEditOrigin({
+            conditionFilter: JSON.parse(JSON.stringify(filterData)),
+            conditionGroup: JSON.parse(obj.QDZSZHZD),
+            columnFields: JSON.parse(obj.QDZSBTZD),
+          });
+          setRptName(obj.BBMC);
+          setRptNameOrigin(obj.BBMC);
+          setStatus('editing');
+          setIsSpinning(false);
+          e = performance.now();
+          console.log(`下拉框数据Request time: ${e - s} milliseconds`, s, e);
         }
       })
       .catch(e => {
@@ -285,7 +259,7 @@ export default function CustomRptManagement(props) {
   };
 
   //获取我的报表列表数据
-  const getRptList = (bbmc = undefined, current = 1) => {
+  const getRptList = (bbmc = undefined, current = 1, notStopSpinning = false) => {
     setIsSpinning(true);
     let params = {
       current,
@@ -314,7 +288,7 @@ export default function CustomRptManagement(props) {
           // }
           setRptList([...rec]);
           setRptOrigin([...rec]);
-          setIsSpinning(false);
+          !notStopSpinning && setIsSpinning(false); //新建时不调用这个
         }
       })
       .catch(e => {
@@ -370,7 +344,6 @@ export default function CustomRptManagement(props) {
   const hangleDataRestore = () => {
     setSelectedData({
       ...selectedOrigin,
-      conditionFilter: [{ ...selectedOrigin.conditionFilter[0], SELECTORVALUE: undefined }],
     });
 
     setSelectingData({
@@ -381,12 +354,12 @@ export default function CustomRptManagement(props) {
     setRptName('未命名报表');
     setRptNameOrigin('未命名报表');
     setDragKey(null);
-    setStatus('normal');
-    setEditingId(-1);
+    setStatus('unSlt');
+    setActiveBbData({ bbid: -1, bbmc: '未命名报表', cjrid: -1 });
   };
 
   //是否保存
-  const getIsSaved = (status = 'normal') => {
+  const getIsSaved = (status = 'unSlt') => {
     console.log(
       '🚀 ~ getIsSaved',
       rptName,
@@ -400,6 +373,20 @@ export default function CustomRptManagement(props) {
     else if (status === 'editing')
       return isEqual(selectedData, selectedEditOrigin) && isEqual(rptName, rptNameOrigin);
     else return true;
+  };
+
+  //点击编辑
+  const handleEdit = bbid => {
+    //需要获取基础数据
+    getBasicData(false);
+    setStatus('editing');
+    getEditData(bbid);
+  };
+
+  //选中左侧报表报错情况处理
+  const handleError = () => {
+    setStatus('unSlt');
+    setActiveBbData({ bbid: -1, bbmc: '未命名报表', cjrid: -1 });
   };
 
   return (
@@ -419,71 +406,99 @@ export default function CustomRptManagement(props) {
                 {index === routes.length - 1 ? (
                   <>{name}</>
                 ) : (
-                  <Link to={{ pathname: pathname, state: { routes: historyRoutes } }}>{name}</Link>
+                  <Link
+                    to={{
+                      pathname: pathname,
+                      state: {
+                        routes: historyRoutes,
+                      },
+                    }}
+                  >
+                    {name}
+                  </Link>
                 )}
               </Breadcrumb.Item>
             );
           })}
         </Breadcrumb>
-      </Spin>
-      <div className="bottom-wrapper">
-        <SiderRptList
-          dataProps={{
-            status,
-            rptList,
-            rptOrigin,
-            editingId,
-            basicData,
-            selectedOrigin,
-          }}
-          funcProps={{
-            hangleDataRestore,
-            getEditData,
-            setRptList,
-            getBasicData,
-            setStatus,
-            getIsSaved,
-            setRptName,
-            setRptNameOrigin,
-            setSelectingData,
-            setSelectedData,
-          }}
-        />
-        {status === 'normal' ? (
-          <div className="rpt-right-empty">
-            <>
-              <img src={emptyImg} alt="" />
-              <div className="empty-txt">欢迎使用自定义查询</div>
-            </>
-          </div>
-        ) : (
-          <RightRptContent
+        <div className="bottom-wrapper">
+          <SiderRptList
             dataProps={{
               status,
-              dragKey,
-              rptName,
+              rptList,
+              rptOrigin,
               basicData,
-              selectingData,
-              selectedData,
-              editingId,
               selectedOrigin,
+              activeBbData,
+              isFold,
             }}
             funcProps={{
+              hangleDataRestore,
+              getEditData,
+              setRptList,
+              getBasicData,
               setStatus,
-              setDragKey,
+              getIsSaved,
               setRptName,
-              setIsSpinning,
-              buildTree,
+              setRptNameOrigin,
               setSelectingData,
               setSelectedData,
-              hangleDataRestore,
-              getRptList,
-              getEditData,
-              setRptNameOrigin,
+              setActiveBbData,
+              setIsFold,
             }}
           />
-        )}
-      </div>
+          {status === 'unSlt' && (
+            <div className="rpt-right-empty">
+              <>
+                <img src={emptyImg} alt="" />
+                <div className="empty-txt">欢迎使用自定义查询</div>
+              </>
+            </div>
+          )}
+          {['editing', 'adding'].includes(status) && (
+            <div className="rpt-right" style={isFold ? { borderRadius: '8px' } : {}}>
+              <RightRptContent
+                dataProps={{
+                  status,
+                  dragKey,
+                  rptName,
+                  basicData,
+                  selectingData,
+                  selectedData,
+                  selectedOrigin,
+                  activeBbData,
+                }}
+                funcProps={{
+                  setStatus,
+                  setDragKey,
+                  setRptName,
+                  setIsSpinning,
+                  buildTree,
+                  setSelectingData,
+                  setSelectedData,
+                  hangleDataRestore,
+                  getRptList,
+                  setActiveBbData,
+                  getIsSaved,
+                }}
+              />
+            </div>
+          )}
+          {status === 'slted' && (
+            <div className="rpt-right">
+              <CustomRptInfo
+                {...activeBbData}
+                handleEdit={handleEdit}
+                setIsSpinning={setIsSpinning}
+                handleError={handleError}
+                isFold={isFold}
+                isSpinning={isSpinning}
+                emptyImg={emptyImg}
+              />
+            </div>
+          )}
+        </div>
+      </Spin>
     </div>
   );
 }

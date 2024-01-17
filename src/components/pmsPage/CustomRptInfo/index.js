@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, Fragment } from 'react';
 import { Breadcrumb, Button, message, Spin, Tooltip } from 'antd';
 import moment from 'moment';
 import {
@@ -13,7 +13,18 @@ import { Link } from 'react-router-dom';
 import * as XLSX from 'xlsx';
 
 export default function CustomRptInfo(props) {
-  const { bbid, bbmc, routes, cjrid } = props;
+  const {
+    bbid,
+    bbmc,
+    routes = [],
+    cjrid,
+    handleEdit = () => {},
+    setIsSpinning = () => {},
+    handleError = () => {},
+    isFold = false,
+    isSpinning = false,
+    emptyImg = '',
+  } = props;
   const [data, setData] = useState({}); //通过报表id查询到的报表数据
   const [isUnfold, setIsUnfold] = useState(false); //是否展开
   const [tableData, setTableData] = useState({
@@ -21,15 +32,19 @@ export default function CustomRptInfo(props) {
     curPage: 1,
     curPageSize: 20,
     total: 0,
+    sort: 'XMID DESC',
   }); //表格数据
-  const [isSpinning, setIsSpinning] = useState(false); //加载状态
   const [curSQL, setCurSQL] = useState(''); //当前sql
+  const [firstLoading, setFirstLoading] = useState(true); //第一次加载后设为false
   // const [exportData, setExportData] = useState([]); //导出的数据 - 不分页
+  var s = 0;
+  var e = 0;
 
   useEffect(() => {
     if (bbid !== -1) {
       getData();
-      setIsUnfold(false)
+      setIsUnfold(false);
+      setFirstLoading(true);
     }
     return () => {};
   }, [bbid, bbmc]);
@@ -78,6 +93,7 @@ export default function CustomRptInfo(props) {
 
   //获取数据
   const getData = () => {
+    s = performance.now();
     setIsSpinning(true);
     //报表信息
     QueryCustomReport({
@@ -102,8 +118,9 @@ export default function CustomRptInfo(props) {
       })
       .catch(e => {
         console.error('🚀报表信息', e);
-        message.error('报表信息获取失败', 1);
+        message.error('报表信息获取失败', 2);
         setIsSpinning(false);
+        handleError();
       });
   };
 
@@ -140,12 +157,6 @@ export default function CustomRptInfo(props) {
                 type,
                 origin,
               };
-              // if (type.length > 0)
-              //   x.SELECTORVALUE = {
-              //     type: type[0]?.YSLXID,
-              //     typeObj: type[0],
-              //     value: [],
-              //   };
             } else if (x.ZJLX === 'TREE-MULTIPLE') {
               x.SELECTORDATA = buildTree(JSON.parse(res.result));
             } else if (x.ZJLX === 'RADIO') {
@@ -156,11 +167,6 @@ export default function CustomRptInfo(props) {
               x.SELECTORDATA = JSON.parse(res.result);
             }
           }
-          // })
-          // .catch(e => {
-          //   console.error('🚀', e);
-          //   message.error(x.TJBCXLX + '信息获取失败', 1);
-          // });
         } catch (error) {
           console.error('🚀', error);
           message.error(x.TJBCXLX + '信息获取失败', 1);
@@ -172,14 +178,17 @@ export default function CustomRptInfo(props) {
       authIds: obj.KJR?.split(';'),
       columns,
       filterData,
-      groupData: JSON.parse(obj.QDZSZHZD),
+      groupData: [], //不要了
       origin: {
         columns: JSON.parse(obj.QDZSBTZD),
         filterData: JSON.parse(obj.QDZSSXZD),
-        groupData: JSON.parse(obj.QDZSZHZD),
+        groupData: [], //不要了
       },
     };
     setData(finalObj);
+    e = performance.now();
+    console.log(`下拉框数据Request time: ${e - s} milliseconds`, s, e, filterData);
+    s = performance.now();
     getSQL({}, finalObj);
   };
 
@@ -221,6 +230,9 @@ export default function CustomRptInfo(props) {
               Number(moment(x.SELECTORVALUE[1]).format('YYYYMMDD')),
             ];
           }
+          bmArr.push(x.BM);
+        } else if (x.ZJLX === 'TREE-MULTIPLE' && x.TJBCXLX !== 'YSXM') {
+          SXSJ = x.SELECTORVALUE?.map(x => x.value ?? x);
           bmArr.push(x.BM);
         } else if (x.ZJLX === 'RANGE') {
           SXSJ = [x.SELECTORVALUE.min ?? 0, x.SELECTORVALUE.max ?? 9999999999];
@@ -338,8 +350,12 @@ export default function CustomRptInfo(props) {
             total: res.totalrows,
             curPage: current,
             curPageSize: pageSize,
+            sort,
           });
           setIsSpinning(false);
+          setFirstLoading(false);
+          e = performance.now();
+          console.log(`表格数据Request time: ${e - s} milliseconds`, s, e);
         }
       })
       .catch(e => {
@@ -431,35 +447,19 @@ export default function CustomRptInfo(props) {
   };
 
   return (
-    <div className="custom-rpt-info-box">
-      <Spin
-        spinning={isSpinning}
-        tip="加载中"
-        size="large"
-        wrapperClassName="diy-style-spin-custom-rpt-management"
-      >
-        <Breadcrumb separator=">">
-          {routes?.map((item, index) => {
-            const { name = item, pathname = '' } = item;
-            const historyRoutes = routes.slice(0, index + 1);
-            return (
-              <Breadcrumb.Item key={index}>
-                {index === routes.length - 1 ? (
-                  <>{name}</>
-                ) : (
-                  <Link to={{ pathname: pathname, state: { routes: historyRoutes } }}>{name}</Link>
-                )}
-              </Breadcrumb.Item>
-            );
-          })}
-        </Breadcrumb>
-        <div className="header">
-          <Tooltip title={data.rptName} placement="topLeft">
-            {data.rptName}
-          </Tooltip>
+    <div
+      className="custom-rpt-info-box"
+      style={isFold ? { paddingLeft: 0, borderRadius: '8px' } : {}}
+    >
+      {isSpinning && firstLoading && (
+        <div className="rpt-right-empty">
+          <>
+            <img src={emptyImg} alt="" />
+            <div className="empty-txt">欢迎使用自定义查询</div>
+          </>
         </div>
-      </Spin>
-      <div className="content" style={isUnfold ? {} : { height: 'calc(100vh - 138px)' }}>
+      )}
+      <Fragment>
         <TopConsole
           data={data}
           setData={setData}
@@ -478,8 +478,9 @@ export default function CustomRptInfo(props) {
           bbid={bbid}
           setIsSpinning={setIsSpinning}
           cjrid={cjrid}
+          handleEdit={handleEdit}
         />
-      </div>
+      </Fragment>
     </div>
   );
 }

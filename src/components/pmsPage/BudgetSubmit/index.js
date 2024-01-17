@@ -16,6 +16,7 @@ import {
   Upload,
   Icon,
   Breadcrumb,
+  TreeSelect,
 } from 'antd';
 import moment from 'moment';
 import { connect } from 'dva';
@@ -30,6 +31,7 @@ import {
 import { useHistory } from 'react-router';
 import { DecryptBase64, EncryptBase64 } from '../../Common/Encrypt';
 import Decimal from 'decimal.js';
+import { FetchQueryBudgetProjects } from '../../../services/projectManage';
 const { TextArea } = Input;
 
 export default connect(({ global }) => ({
@@ -45,7 +47,8 @@ export default connect(({ global }) => ({
       userBasicInfo = {},
       form = {},
     } = props;
-    const { YSFL = [], YSLB = [] } = dictionary;
+    const { YSFL = [], YSLB = [], ZDTSNRPZ = [] } = dictionary;
+    // console.log('🚀 ~ BudgetSubmit ~ ZDTSNRPZ:', ZDTSNRPZ);
     const radioArr = [
       { note: '是', ibm: 1 },
       { note: '否', ibm: 2 },
@@ -60,14 +63,7 @@ export default connect(({ global }) => ({
         note: '结转',
       },
     ];
-    const {
-      getFieldDecorator,
-      getFieldValue,
-      validateFields,
-      resetFields,
-      setFieldsValue,
-      validateFieldsAndScroll,
-    } = form;
+    const { getFieldDecorator, getFieldValue, validateFields, resetFields, setFieldsValue } = form;
     const [isSpinning, setIsSpinning] = useState(false); //加载状态
     const history = useHistory();
     const [rowTitle, setRowTitle] = useState({
@@ -77,10 +73,6 @@ export default connect(({ global }) => ({
       attachment: true,
     }); //标题展开收起
     const [yearOpen, setYearOpen] = useState(false); //年份下拉框展开收起
-    // const [upldData, setUpldData] = useState({
-    //   fileList: [], //附件
-    //   isTurnRed: false, //报红
-    // }); //上传数据
     const [fileList, setFileList] = useState([]); //附件
     const [isTurnRed, setIsTurnRed] = useState(false); //附件报红
     const [fileTpl, setFileTpl] = useState([]); //文件模板
@@ -91,13 +83,13 @@ export default connect(({ global }) => ({
       submitType: 1, //在外边判断好
     }); //
     const [routes, setRoutes] = useState([]); //路由
+    const [lastBudgetPrj, setLastBudgetPrj] = useState([]); //去年同类预算下拉框数据
 
     useEffect(() => {
       if (params !== '') {
         let obj = JSON.parse(DecryptBase64(params));
-        // console.log('🚀 ~ file: index.js:100 ~ useEffect ~ obj:', obj);
         setPropsData(obj);
-        getUpdateData(obj.budgetId);
+        getUpdateData(obj.budgetId, obj.defaultYear);
         getFileTemplateData();
         if (obj.defaultYear !== undefined) {
           setFieldsValue({
@@ -107,7 +99,10 @@ export default connect(({ global }) => ({
         //名称路由去重
         const routesArr = [
           ...(obj.routes || []),
-          { name: '预算填报', pathname: location.pathname },
+          {
+            name: '预算填报',
+            pathname: location.pathname,
+          },
         ]?.filter((obj, index, arr) => {
           return !arr.slice(index + 1).some(item => item.name === obj.name);
         });
@@ -124,7 +119,7 @@ export default connect(({ global }) => ({
     }, [getFieldValue('bn_ztz')]);
 
     //详情/修改时 回显的数据
-    const getUpdateData = budgetId => {
+    const getUpdateData = (budgetId, year) => {
       setIsSpinning(true);
       QueryCapitalBudgetCarryoverInfo({
         queryType: 'YSXQ',
@@ -135,6 +130,7 @@ export default connect(({ global }) => ({
             const data = JSON.parse(res.result);
             if (data.length > 0) {
               setUpdateData(data[0]);
+              getLastYearBudgetPrj(Number(data[0].NF) - 1);
               const fileList = JSON.parse(data[0].LXBAB || '[]').map((x, index) => ({
                 uid: Date.now() + '-' + index,
                 name: x.fileName,
@@ -144,7 +140,8 @@ export default connect(({ global }) => ({
                 url: x.url,
               }));
               setFileList(fileList);
-              // console.log('🚀 ~ QueryBudgetStatistics ~ res', data[0]);
+            } else {
+              getLastYearBudgetPrj(Number(year) - 1);
             }
             setIsSpinning(false);
           }
@@ -166,7 +163,6 @@ export default connect(({ global }) => ({
           if (res?.success) {
             const data = JSON.parse(res.result);
             if (data.length > 0) {
-              // console.log('🚀 ~ QueryDocTemplate ~ res', data[0].FJ);
               if (data[0].FJ && data[0].FJ.length > 0) {
                 setFileTpl(data[0].FJ);
               }
@@ -181,13 +177,148 @@ export default connect(({ global }) => ({
         });
     };
 
+    //获取去年同类预算下拉数据
+    const getLastYearBudgetPrj = year => {
+      FetchQueryBudgetProjects({
+        type: 'ZBX',
+        year,
+      })
+        .then(res => {
+          if (res?.success) {
+            let data = toTreeData(res.record);
+            setLastBudgetPrj(data.length > 0 ? data[0]?.children : []);
+            setIsSpinning(false);
+          }
+        })
+        .catch(e => {
+          console.error('🚀获取去年同类预算下拉数据', e);
+          message.error('去年同类预算下拉数据获取失败', 1);
+          setIsSpinning(false);
+        });
+    };
+
+    //转为树结构-关联项目
+    const toTreeData = list => {
+      let a = list.reduce((pre, current, index) => {
+        pre[current.ysLX] = pre[current.ysLX] || [];
+        pre[current.ysLX].push({
+          key: current.ysLX,
+          title: current.ysLX,
+          value: current.ysLX,
+          ysID: current.ysID,
+          ysKGL: Number(current.ysKGL),
+          ysLB: current.ysLB,
+          ysName: current.ysName,
+          ysZJE: Number(current.ysZJE),
+          zdbm: current.zdbm,
+          ysLX: current.ysLX,
+          ysLXID: current.ysLXID,
+          ysKZX: Number(current.ysKZX),
+        });
+        return pre;
+      }, []);
+      const treeData = [];
+      for (const key in a) {
+        const indexData = [];
+        const childrenData = [];
+        const childrenDatamini = [];
+        if (a.hasOwnProperty(key)) {
+          if (a[key] !== null) {
+            // ////console.log("item",a[key]);
+            let b = a[key].reduce((pre, current, index) => {
+              pre[current.zdbm] = pre[current.zdbm] || [];
+              pre[current.zdbm].push({
+                key: current.ysID,
+                title: current.ysName,
+                value: current.ysID,
+                ysID: current.ysID,
+                ysKGL: Number(current.ysKGL),
+                ysLB: current.ysLB,
+                ysName: current.ysName,
+                ysZJE: Number(current.ysZJE),
+                zdbm: current.zdbm,
+                ysLX: current.ysLX,
+                ysLXID: current.ysLXID,
+                ysKZX: Number(current.ysKZX),
+              });
+              return pre;
+            }, []);
+            a[key].map(item => {
+              if (indexData.indexOf(item.zdbm) === -1) {
+                indexData.push(item.zdbm);
+                if (b[item.zdbm]) {
+                  let treeDatamini = { children: [] };
+                  if (item.zdbm === '6') {
+                    b[item.zdbm].map(i => {
+                      let treeDataby = {};
+                      treeDataby.key = i.ysID;
+                      treeDataby.value = i.ysID;
+                      treeDataby.title = i.ysName;
+                      treeDataby.ysID = i.ysID;
+                      treeDataby.ysKGL = Number(i.ysKGL);
+                      treeDataby.ysLB = i.ysLB;
+                      treeDataby.ysName = i.ysName;
+                      treeDataby.ysZJE = Number(i.ysZJE);
+                      treeDataby.ysKZX = Number(i.ysKZX);
+                      treeDataby.zdbm = i.zdbm;
+                      childrenDatamini.push(treeDataby);
+                    });
+                  } else {
+                    treeDatamini.key = item.zdbm;
+                    treeDatamini.value = item.zdbm;
+                    treeDatamini.title = item.ysLB;
+                    treeDatamini.ysID = item.ysID;
+                    treeDatamini.ysKGL = Number(item.ysKGL);
+                    treeDatamini.ysLB = item.ysLB;
+                    treeDatamini.ysName = item.ysName;
+                    treeDatamini.ysLX = item.ysLX;
+                    treeDatamini.ysLXID = item.ysLXID;
+                    treeDatamini.ysZJE = Number(item.ysZJE);
+                    treeDatamini.ysKZX = Number(item.ysKZX);
+                    treeDatamini.zdbm = item.zdbm;
+                    treeDatamini.dropdownStyle = { color: '#666' };
+                    treeDatamini.selectable = false;
+                    treeDatamini.children = b[item.zdbm];
+                    childrenDatamini.push(treeDatamini);
+                  }
+                }
+                childrenData.key = key;
+                childrenData.value = key;
+                childrenData.title = item.ysLX;
+                childrenData.dropdownStyle = { color: '#666' };
+                childrenData.selectable = false;
+                childrenData.children = childrenDatamini;
+              }
+            });
+            treeData.push(childrenData);
+          }
+        }
+      }
+      // ////console.log("treeData",treeData)
+      return treeData;
+    };
+
+    //获取问号提示
+    const getQesTip = (txt = '') => {
+      return ZDTSNRPZ.find(x => x.cbm === txt)?.note ?? '';
+    };
+
     //输入框
-    const getInput = ({ label, dataIndex, initialValue, labelCol, wrapperCol, display }) => {
+    const getInput = ({
+      label,
+      dataIndex,
+      initialValue,
+      labelCol,
+      wrapperCol,
+      display,
+      addonBefore = '',
+      labelNode = false,
+    }) => {
       return (
         <Col span={8} style={{ display }}>
           <Form.Item
             disabled
-            label={label}
+            label={labelNode === false ? label : labelNode}
             labelCol={{ span: labelCol }}
             wrapperCol={{ span: wrapperCol }}
           >
@@ -205,6 +336,7 @@ export default connect(({ global }) => ({
                 allowClear
                 style={{ width: '100%' }}
                 disabled={propsData.operateType === 'XQ'}
+                addonBefore={addonBefore}
               />,
             )}
           </Form.Item>
@@ -232,7 +364,14 @@ export default connect(({ global }) => ({
             label={
               <span>
                 {label}
-                <span style={{ color: '#f5222d', marginLeft: -8 }}>{redTipTxt}</span>
+                <span
+                  style={{
+                    color: '#f5222d',
+                    marginLeft: -8,
+                  }}
+                >
+                  {redTipTxt}
+                </span>
               </span>
             }
             labelCol={{ span: labelCol }}
@@ -385,6 +524,7 @@ export default connect(({ global }) => ({
       display,
       open,
       setOpen = () => {},
+      onChange = () => {},
     }) => {
       return (
         <Col span={8} style={{ display }}>
@@ -411,10 +551,53 @@ export default connect(({ global }) => ({
                 }}
                 onPanelChange={v => {
                   setFieldsValue({ [dataIndex]: v });
+                  onChange(v.year() - 1);
                   setOpen(false);
                 }}
                 onOpenChange={v => setOpen(v)}
                 style={{ width: '100%' }}
+              />,
+            )}
+          </Form.Item>
+        </Col>
+      );
+    };
+
+    const getTreeSelect = ({
+      label,
+      labelNode = false,
+      dataIndex,
+      initialValue,
+      labelCol,
+      wrapperCol,
+      treeData = [],
+      display,
+    }) => {
+      return (
+        <Col span={8} style={{ display }}>
+          <Form.Item
+            label={labelNode === false ? label : labelNode}
+            labelCol={{ span: labelCol }}
+            wrapperCol={{ span: wrapperCol }}
+          >
+            {getFieldDecorator(dataIndex, {
+              initialValue,
+              rules: [
+                {
+                  required: true,
+                  message: label + '不允许空值',
+                },
+              ],
+            })(
+              <TreeSelect
+                disabled={propsData.operateType === 'XQ' && !propsData.isGLY} //管理员允许编辑 “关联去年同类预算”
+                allowClear
+                showSearch
+                treeNodeFilterProp="title"
+                dropdownClassName="newproject-treeselect"
+                dropdownStyle={{ maxHeight: 300, overflow: 'auto' }}
+                treeData={treeData}
+                placeholder="请选择"
               />,
             )}
           </Form.Item>
@@ -546,13 +729,14 @@ export default connect(({ global }) => ({
       );
     };
 
-    const getRowTitle = ({ open, setOpen, title = '--' }) => (
+    const getRowTitle = ({ open, setOpen, title = '--', redTipTxt = '' }) => (
       <Col span={24} className="row-title" key={title} onClick={setOpen}>
         <Icon
           type={'caret-right'}
           className={'row-title-icon' + (open ? ' row-title-icon-rotate' : '')}
         />
         <span>{title}</span>
+        <span className="row-title-red-tip-txt">{redTipTxt}</span>
       </Col>
     );
 
@@ -563,7 +747,11 @@ export default connect(({ global }) => ({
           {getRowTitle({
             title: '基本信息',
             open: rowTitle.basic,
-            setOpen: () => setRowTitle(p => ({ ...p, basic: !p.basic })),
+            setOpen: () =>
+              setRowTitle(p => ({
+                ...p,
+                basic: !p.basic,
+              })),
           })}
           <Row gutter={24}>
             {getDatePicker({
@@ -574,12 +762,25 @@ export default connect(({ global }) => ({
               display,
               open: yearOpen,
               setOpen: setYearOpen,
+              onChange: v => getLastYearBudgetPrj(v),
             })}
             {getInput({
               label: '预算项目名称',
+              labelNode: (
+                <span>
+                  预算项目名称
+                  <Tooltip title={getQesTip('预算项目名称问号内容')}>
+                    <Icon type="question-circle-o" style={{ marginLeft: 4, marginRight: 2 }} />
+                  </Tooltip>
+                </span>
+              ),
               dataIndex: 'ysxmmc',
-              initialValue: updateData.YSXMMC,
+              initialValue:
+                updateData.YSXMMC?.slice(0, 4) === updateData.NF + ''
+                  ? updateData.YSXMMC?.slice(4)
+                  : updateData.YSXMMC,
               display,
+              addonBefore: getFieldValue('nf')?.year(),
             })}
             {getRadio({
               label: '属于新增/结转项目',
@@ -610,6 +811,23 @@ export default connect(({ global }) => ({
               titleField: 'note',
               display,
             })}
+            {getTreeSelect({
+              label: '关联去年同类预算',
+              labelNode: (
+                <span>
+                  关联去年同类预算
+                  <Tooltip title={getQesTip('关联去年同类预算问号内容')}>
+                    <Icon type="question-circle-o" style={{ marginLeft: 4, marginRight: 2 }} />
+                  </Tooltip>
+                </span>
+              ),
+              dataIndex: 'glqntlys',
+              initialValue: updateData.GLJZYS !== undefined ? String(updateData.GLJZYS) : undefined,
+              treeData: lastBudgetPrj,
+              display,
+            })}
+          </Row>
+          <Row gutter={24}>
             {getRadio({
               label: '是否涉及软件开发或系统对接',
               dataIndex: 'sfsjrjkfhxtdj',
@@ -619,8 +837,6 @@ export default connect(({ global }) => ({
               titleField: 'note',
               display,
             })}
-          </Row>
-          <Row gutter={24}>
             {getInput({
               label: '系统名称',
               dataIndex: 'xtmc',
@@ -636,6 +852,8 @@ export default connect(({ global }) => ({
               titleFeild: 'note',
               display,
             })}
+          </Row>
+          <Row gutter={24}>
             {getInput({
               label: '项目分类说明',
               dataIndex: 'xmflsm',
@@ -680,7 +898,11 @@ export default connect(({ global }) => ({
           {getRowTitle({
             title: '预算信息',
             open: rowTitle.budget,
-            setOpen: () => setRowTitle(p => ({ ...p, budget: !p.budget })),
+            setOpen: () =>
+              setRowTitle(p => ({
+                ...p,
+                budget: !p.budget,
+              })),
           })}
           <Row gutter={24}>
             {getInputNumber({
@@ -816,7 +1038,10 @@ export default connect(({ global }) => ({
               max: 999999999,
               display,
               colSpan: 24,
-              redTipTxt: '（总投资金额=去年预算关联项目的总合同金额+待签合同金额）',
+              redTipTxt:
+                getFieldValue('syxzjzxm') === 2 //结转项目时显示提示文本
+                  ? '（总投资金额=去年预算关联项目的总合同金额+待签合同金额）'
+                  : '',
             })}
           </Row>
           <Row gutter={24}>
@@ -858,7 +1083,11 @@ export default connect(({ global }) => ({
           {getRowTitle({
             title: '本年计划支付预算信息',
             open: rowTitle.yearPlan,
-            setOpen: () => setRowTitle(p => ({ ...p, yearPlan: !p.yearPlan })),
+            setOpen: () =>
+              setRowTitle(p => ({
+                ...p,
+                yearPlan: !p.yearPlan,
+              })),
           })}
           <Row gutter={24}>
             {getInputNumber({
@@ -994,6 +1223,10 @@ export default connect(({ global }) => ({
               max: 999999999,
               display,
               colSpan: 24,
+              redTipTxt:
+                getFieldValue('syxzjzxm') === 2 //结转项目时显示提示文本
+                  ? '（总投资金额=去年预算关联项目的总合同金额+待签合同金额）'
+                  : '',
             })}
           </Row>
           {getTextArea({
@@ -1033,7 +1266,11 @@ export default connect(({ global }) => ({
           {getRowTitle({
             title: '附件信息',
             open: rowTitle.attachment,
-            setOpen: () => setRowTitle(p => ({ ...p, attachment: !p.attachment })),
+            setOpen: () =>
+              setRowTitle(p => ({
+                ...p,
+                attachment: !p.attachment,
+              })),
           })}
           <Row gutter={24}>
             {Decimal(getFieldValue('bn_ztz') || 0).gt(50)
@@ -1083,7 +1320,11 @@ export default connect(({ global }) => ({
             reader.onload = function() {
               const base64 = reader.result.split(',')[1];
               const fileName = file.name;
-              resolve({ name: fileName, data: base64, filetype });
+              resolve({
+                name: fileName,
+                data: base64,
+                filetype,
+              });
             };
 
             reader.onerror = function(error) {
@@ -1136,10 +1377,11 @@ export default connect(({ global }) => ({
               submitType: Number(propsData.submitType),
               budgetId: Number(propsData.budgetId),
               year: values.nf.year(),
-              budgetName: values.ysxmmc,
+              budgetName: values.nf.year() + values.ysxmmc,
               newOrCarryover: Number(values.syxzjzxm),
               budgetClassify: Number(values.yslb),
               isFirst: Number(values.sfsclx),
+              lastYearBudget: Number(values.glqntlys),
               isSoftDevOrSysDock: Number(values.sfsjrjkfhxtdj),
               sysName: values.xtmc,
               budgetCategory: Number(values.xmfl),
@@ -1170,7 +1412,6 @@ export default connect(({ global }) => ({
               tyHwStorageConfig: String(values.bn_yjccpz),
               fileInfo: JSON.stringify(fileInfo),
             };
-            // console.log('🚀 ~ file: index.js:935 ~ validateFields ~ params:', params);
             OperateCapitalBeginYearBudgetInfo(params)
               .then(res => {
                 if (res.success) {
@@ -1228,10 +1469,11 @@ export default connect(({ global }) => ({
             submitType: 4,
             budgetId: Number(propsData.budgetId),
             year: getFieldValue('nf')?.year(),
-            budgetName: getFieldValue('ysxmmc'),
+            budgetName: +getFieldValue('nf')?.year() + getFieldValue('ysxmmc'),
             newOrCarryover: getValue(getFieldValue('syxzjzxm'), 'number'),
             budgetClassify: getValue(getFieldValue('yslb'), 'number'),
             isFirst: getValue(getFieldValue('sfsclx'), 'number'),
+            lastYearBudget: getValue(getFieldValue('glqntlys'), 'number'),
             isSoftDevOrSysDock: getValue(getFieldValue('sfsjrjkfhxtdj'), 'number'),
             sysName: getFieldValue('xtmc'),
             budgetCategory: getValue(getFieldValue('xmfl'), 'number'),
@@ -1262,7 +1504,6 @@ export default connect(({ global }) => ({
             tyHwStorageConfig: getValue(getFieldValue('bn_yjccpz')),
             fileInfo: JSON.stringify(fileInfo),
           };
-          console.log('🚀 ~ file: index.js:935 ~ validateFields ~ params:', params);
           OperateCapitalBeginYearBudgetInfo(params)
             .then(res => {
               if (res.success) {
@@ -1308,7 +1549,10 @@ export default connect(({ global }) => ({
     //退回
     const handleSendBack = () => {
       setIsSpinning(true);
-      OperateCapitalBeginYearBudgetInfo({ ...propsData.sendBackParams, fileInfo: '[]' })
+      OperateCapitalBeginYearBudgetInfo({
+        ...propsData.sendBackParams,
+        fileInfo: '[]',
+      })
         .then(res => {
           if (res.success) {
             message.success('退回成功', 1);
@@ -1366,7 +1610,14 @@ export default connect(({ global }) => ({
                     {index === routes.length - 1 ? (
                       <>{name}</>
                     ) : (
-                      <Link to={{ pathname: pathname, state: { routes: historyRoutes } }}>
+                      <Link
+                        to={{
+                          pathname: pathname,
+                          state: {
+                            routes: historyRoutes,
+                          },
+                        }}
+                      >
                         {name}
                       </Link>
                     )}
@@ -1408,6 +1659,13 @@ export default connect(({ global }) => ({
                     退回
                   </Button>
                 </Popconfirm>
+                {propsData.isGLY && (
+                  <Popconfirm title="是否确定保存？" onConfirm={handleSave}>
+                    <Button className="btn-submit" type="primary">
+                      保存
+                    </Button>
+                  </Popconfirm>
+                )}
               </Fragment>
             )}
           </div>

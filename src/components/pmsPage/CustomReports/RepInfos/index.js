@@ -1,12 +1,12 @@
-import React, {useEffect, useState, useRef} from 'react';
-import {Button, Empty, Icon, message, Popconfirm, Rate, Select, Tabs, Tooltip} from 'antd';
-import styles from "../../../Common/TagSelect/index.less";
-import {FetchQueryCustomReportList, ProjectCollect} from "../../../../services/pmsServices";
-import {useLocation} from "react-router";
-import {EncryptBase64} from "../../../Common/Encrypt";
-import {Link} from "react-router-dom";
+import React, { useEffect, useState, useRef } from 'react';
+import { Button, Empty, Icon, message, Popconfirm, Rate, Select, Tabs, Tooltip } from 'antd';
+import styles from '../../../Common/TagSelect/index.less';
+import { FetchQueryCustomReportList, ProjectCollect } from '../../../../services/pmsServices';
+import { useLocation } from 'react-router';
+import { EncryptBase64 } from '../../../Common/Encrypt';
+import { Link } from 'react-router-dom';
 
-const {TabPane} = Tabs;
+const { TabPane } = Tabs;
 
 export default function RepInfos(props) {
   const [showExtendsSC, setShowExtendsSC] = useState(false);
@@ -34,61 +34,60 @@ export default function RepInfos(props) {
 
   useEffect(() => {
     if (tabsKey === 1 && !showExtendsSC) {
-      getCusRepData("SC", 12);
+      getCusRepData('SC', 12);
     }
     if (tabsKey === 1 && !showExtendsCJ) {
-      getCusRepData("CJ", 12);
+      getCusRepData('CJ', 12);
     }
     if (tabsKey === 1 && showExtendsSC) {
-      getCusRepData("SC", 99999);
+      getCusRepData('SC', 99999);
     }
     if (tabsKey === 1 && showExtendsCJ) {
-      getCusRepData("CJ", 99999);
+      getCusRepData('CJ', 99999);
     }
     // if (tabsKey === 2 && !showExtendsGX) {
     //   getCusRepData("GX", 28);
     // }
     if (tabsKey === 2) {
-      getCusRepData("GX", 99999);
+      getCusRepData('GX', 99999);
     }
-    return () => {
-    };
+    return () => {};
   }, [tabsKey]);
 
-  const handleBbmcChange = (key) => {
+  const handleBbmcChange = key => {
     setBbmc(key);
-    paramsCallback({...params, bbmc: key})
-  }
+    paramsCallback({ ...params, bbmc: key });
+  };
 
-  const handleCjrChange = (key) => {
+  const handleCjrChange = key => {
     setCjr(key);
-    paramsCallback({...params, cjr: key})
-  }
+    paramsCallback({ ...params, cjr: key });
+  };
 
   //重置按钮
   const handleReset = () => {
     setBbmc(undefined);
     setCjr(undefined);
-    paramsCallback({bbmc: '', cjr: ''})
+    paramsCallback({ bbmc: '', cjr: '' });
   };
 
-  const handleExtendsSC = (flag) => {
+  const handleExtendsSC = flag => {
     if (!flag) {
-      getCusRepData("SC", 99999);
+      getCusRepData('SC', 99999);
     } else {
-      getCusRepData("SC", 12);
+      getCusRepData('SC', 12);
     }
-    setShowExtendsSC(!flag)
-  }
+    setShowExtendsSC(!flag);
+  };
 
-  const handleExtendsCJ = (flag) => {
+  const handleExtendsCJ = flag => {
     if (!flag) {
-      getCusRepData("CJ", 99999);
+      getCusRepData('CJ', 99999);
     } else {
-      getCusRepData("CJ", 12);
+      getCusRepData('CJ', 12);
     }
-    setShowExtendsCJ(!flag)
-  }
+    setShowExtendsCJ(!flag);
+  };
 
   // const handleExtendsGX = (flag) => {
   //   if (!flag) {
@@ -100,165 +99,188 @@ export default function RepInfos(props) {
   // }
 
   const handleProjectCollect = (e, flag, id) => {
-    e.stopPropagation();// 阻止事件冒泡
-    let payload = {}
+    e.stopPropagation(); // 阻止事件冒泡
+    let payload = {};
     if (flag) {
-      payload.operateType = 'SCBB'
+      payload.operateType = 'SCBB';
     } else {
-      payload.operateType = 'QXBB'
+      payload.operateType = 'QXBB';
     }
     payload.projectId = id;
-    ProjectCollect({...payload})
+    ProjectCollect({ ...payload })
       .then(res => {
         if (res?.success) {
-          getCusRepData("GX", 99999);
+          getCusRepData('GX', 99999);
           if (showExtendsCJ) {
-            getCusRepData("CJ", 99999);
+            getCusRepData('CJ', 99999);
           } else {
-            getCusRepData("CJ", 12);
+            getCusRepData('CJ', 12);
           }
           if (showExtendsSC) {
-            getCusRepData("SC", 99999);
+            getCusRepData('SC', 99999);
           } else {
-            getCusRepData("SC", 12);
+            getCusRepData('SC', 12);
           }
         }
       })
       .catch(e => {
         message.error(flag ? '收藏报表失败!' : '取消收藏报表失败!', 1);
       });
-  }
+  };
 
-  const toDetail = (i) => {
+  const toDetail = i => {
     setShowExtendsSC(false);
     setShowExtendsCJ(false);
     // setShowExtendsGX(false);
-    console.log("bbid", i)
-    window.location.href = `/#/pms/manage/CustomRptInfo/${EncryptBase64(
+    // console.log("bbid", i)9
+    window.location.href = `/#/pms/manage/CustomRptManagement/${EncryptBase64(
       JSON.stringify({
-        routes: [{name: '自定义报表', pathname: location.pathname}],
+        routes: [{ name: '自定义报表', pathname: location.pathname }],
         bbid: i.BBID,
         bbmc: i.BBMC,
         cjrid: i.CJRID,
       }),
-    )}`
-  }
-
-  const linkTo = {
-    pathname: `/pms/manage/CustomRptManagement`,
-    state: {
-      routes: [{name: '自定义报表', pathname: location.pathname}],
-    },
+    )}`;
   };
 
   return (
     <div className="rep-infos-box">
-      {
-        tabsKey === 1 && <div className="rep-infos">
-          <div className="rep-infos-title">
-            我收藏的
-          </div>
+      {tabsKey === 1 && (
+        <div className="rep-infos">
+          <div className="rep-infos-title">我收藏的</div>
           <div className="rep-infos-box">
-            {
-              cusRepDataSC.length > 0 ? cusRepDataSC.map(i => {
-                return <div className="rep-infos-content" onClick={() => toDetail(i)}>
-                  <div className="rep-infos-content-box">
-                    <div className="rep-infos-name">
-                      <i className="rep-infos-icon iconfont icon-report2"/>
-                      <Tooltip title={i.BBMC}><div className="rep-infos-bbmc">{i.BBMC}</div></Tooltip>
-                      <Popconfirm
-                        title={i.SFSC === 0 ? "确定收藏？" : "确定取消收藏？"}
-                        onConfirm={(e) => handleProjectCollect(e, i.SFSC === 0, i.BBID)}
-                        onCancel={(e) => {
-                          e.stopPropagation()
-                        }}
-                        okText="确认"
-                        cancelText="取消"
-                      >
-                        <i onClick={(e) => {
-                          e.stopPropagation()
-                        }}
-                           className={i.SFSC === 0 ? "rep-infos-icon2 iconfont icon-star" : "rep-infos-icon2 iconfont icon-fill-star"}/>
-                      </Popconfirm>
-                    </div>
-                    <div className="rep-infos-time">
-                      {i.CJR}&nbsp;&nbsp;{i.CJSJ}创建
+            {cusRepDataSC.length > 0 ? (
+              cusRepDataSC.map(i => {
+                return (
+                  <div className="rep-infos-content" onClick={() => toDetail(i)}>
+                    <div className="rep-infos-content-box">
+                      <div className="rep-infos-name">
+                        <i className="rep-infos-icon iconfont icon-report2" />
+                        <Tooltip title={i.BBMC}>
+                          <div className="rep-infos-bbmc">{i.BBMC}</div>
+                        </Tooltip>
+                        <Popconfirm
+                          title={i.SFSC === 0 ? '确定收藏？' : '确定取消收藏？'}
+                          onConfirm={e => handleProjectCollect(e, i.SFSC === 0, i.BBID)}
+                          onCancel={e => {
+                            e.stopPropagation();
+                          }}
+                          okText="确认"
+                          cancelText="取消"
+                        >
+                          <i
+                            onClick={e => {
+                              e.stopPropagation();
+                            }}
+                            className={
+                              i.SFSC === 0
+                                ? 'rep-infos-icon2 iconfont icon-star'
+                                : 'rep-infos-icon2 iconfont icon-fill-star'
+                            }
+                          />
+                        </Popconfirm>
+                      </div>
+                      <div className="rep-infos-time">
+                        {i.CJR}&nbsp;&nbsp;{i.CJSJ}创建
+                      </div>
                     </div>
                   </div>
-                </div>
-              }) : <Empty
+                );
+              })
+            ) : (
+              <Empty
                 description="暂无数据"
                 image={Empty.PRESENTED_IMAGE_SIMPLE}
-                style={{width: '100%'}}
+                style={{ width: '100%' }}
               />
-            }
-            {
-              totalSC > 12 && (
-                <div className='rep-infos-foot' onClick={() => handleExtendsSC(showExtendsSC)}>
-                  {showExtendsSC ? '收起' : '展开'} <Icon type={showExtendsSC ? 'up' : 'down'}/>
-                </div>
-              )
-            }
+            )}
+            {totalSC > 12 && (
+              <div className="rep-infos-foot" onClick={() => handleExtendsSC(showExtendsSC)}>
+                {showExtendsSC ? '收起' : '展开'} <Icon type={showExtendsSC ? 'up' : 'down'} />
+              </div>
+            )}
           </div>
         </div>
-      }
-      {
-        tabsKey === 1 && <div className="rep-infos">
+      )}
+      {tabsKey === 1 && (
+        <div className="rep-infos">
           <div className="rep-infos-title-oper">
             <div className="oper-title">我创建的</div>
-            <Link to={linkTo} className="oper-link" onClick={() => {
-              setShowExtendsSC(false);
-              setShowExtendsCJ(false);
-            }}>
-              <div className="oper-link-to"><i className="oper-icon iconfont icon-system"/>报表管理</div>
-            </Link>
+            <a
+              className="oper-link"
+              onClick={() => {
+                setShowExtendsSC(false);
+                setShowExtendsCJ(false);
+                window.location.href = `/#/pms/manage/CustomRptManagement/${EncryptBase64(
+                  JSON.stringify({
+                    routes: [{ name: '自定义报表', pathname: location.pathname }],
+                    isNew: true, //新建报表
+                  }),
+                )}`;
+              }}
+            >
+              <div className="oper-link-to">
+                <i className="oper-icon iconfont circle-add" />
+                新建报表
+              </div>
+            </a>
           </div>
           <div className="rep-infos-box">
-            {
-              cusRepDataCJ.length > 0 ? cusRepDataCJ.map(i => {
-                return <div className="rep-infos-content" onClick={() => toDetail(i)}>
-                  <div className="rep-infos-content-box">
-                    <div className="rep-infos-name">
-                      <i className="rep-infos-icon iconfont icon-report2"/>
-                      <Tooltip title={i.BBMC}><div className="rep-infos-bbmc">{i.BBMC}</div></Tooltip>
-                      <Popconfirm
-                        title={i.SFSC === 0 ? "确定收藏？" : "确定取消收藏？"}
-                        onConfirm={(e) => handleProjectCollect(e, i.SFSC === 0, i.BBID)}
-                        onCancel={(e) => {
-                          e.stopPropagation()
-                        }}
-                        okText="确认"
-                        cancelText="取消"
-                      >
-                        <i onClick={(e) => {
-                          e.stopPropagation()
-                        }}
-                           className={i.SFSC === 0 ? "rep-infos-icon2 iconfont icon-star" : "rep-infos-icon2 iconfont icon-fill-star"}/>
-                      </Popconfirm>
-                    </div>
-                    <div className="rep-infos-time">
-                      {i.CJR}&nbsp;&nbsp;{i.CJSJ}创建
+            {cusRepDataCJ.length > 0 ? (
+              cusRepDataCJ.map(i => {
+                return (
+                  <div className="rep-infos-content" onClick={() => toDetail(i)}>
+                    <div className="rep-infos-content-box">
+                      <div className="rep-infos-name">
+                        <i className="rep-infos-icon iconfont icon-report2" />
+                        <Tooltip title={i.BBMC}>
+                          <div className="rep-infos-bbmc">{i.BBMC}</div>
+                        </Tooltip>
+                        <Popconfirm
+                          title={i.SFSC === 0 ? '确定收藏？' : '确定取消收藏？'}
+                          onConfirm={e => handleProjectCollect(e, i.SFSC === 0, i.BBID)}
+                          onCancel={e => {
+                            e.stopPropagation();
+                          }}
+                          okText="确认"
+                          cancelText="取消"
+                        >
+                          <i
+                            onClick={e => {
+                              e.stopPropagation();
+                            }}
+                            className={
+                              i.SFSC === 0
+                                ? 'rep-infos-icon2 iconfont icon-star'
+                                : 'rep-infos-icon2 iconfont icon-fill-star'
+                            }
+                          />
+                        </Popconfirm>
+                      </div>
+                      <div className="rep-infos-time">
+                        {i.CJR}&nbsp;&nbsp;{i.CJSJ}创建
+                      </div>
                     </div>
                   </div>
-                </div>
-              }) : <Empty
+                );
+              })
+            ) : (
+              <Empty
                 description="暂无数据"
                 image={Empty.PRESENTED_IMAGE_SIMPLE}
-                style={{width: '100%'}}
+                style={{ width: '100%' }}
               />
-            }
-            {
-              totalCJ > 12 && (
-                <div className='rep-infos-foot' onClick={() => handleExtendsCJ(showExtendsCJ)}>
-                  {showExtendsCJ ? '收起' : '展开'} <Icon type={showExtendsCJ ? 'up' : 'down'}/>
-                </div>
-              )
-            }
+            )}
+            {totalCJ > 12 && (
+              <div className="rep-infos-foot" onClick={() => handleExtendsCJ(showExtendsCJ)}>
+                {showExtendsCJ ? '收起' : '展开'} <Icon type={showExtendsCJ ? 'up' : 'down'} />
+              </div>
+            )}
           </div>
         </div>
-      }
-      {
-        tabsKey === 2 && <div className="rep-infos-GX">
+      )}
+      {tabsKey === 2 && (
+        <div className="rep-infos-GX">
           <div className="top-console">
             <div className="item-box">
               <div className="console-item">
@@ -307,13 +329,11 @@ export default function RepInfos(props) {
                 <Button
                   className="btn-search"
                   type="primary"
-                  onClick={() => getCusRepData("GX", 99999)}
+                  onClick={() => getCusRepData('GX', 99999)}
                 >
                   查询
                 </Button>
-                <Button className="btn-reset"
-                        onClick={handleReset}
-                >
+                <Button className="btn-reset" onClick={handleReset}>
                   重置
                 </Button>
               </div>
@@ -322,39 +342,51 @@ export default function RepInfos(props) {
           {
             <div className="rep-infos">
               <div className="rep-infos-box">
-                {
-                  cusRepDataGX.length > 0 ? cusRepDataGX.map(i => {
-                    return <div className="rep-infos-content" onClick={() => toDetail(i)}>
-                      <div className="rep-infos-content-box">
-                        <div className="rep-infos-name">
-                          <i className="rep-infos-icon iconfont icon-report2"/>
-                         <Tooltip title={i.BBMC}><div className="rep-infos-bbmc">{i.BBMC}</div></Tooltip>
-                          <Popconfirm
-                            title={i.SFSC === 0 ? "确定收藏？" : "确定取消收藏？"}
-                            onConfirm={(e) => handleProjectCollect(e, i.SFSC === 0, i.BBID)}
-                            onCancel={(e) => {
-                              e.stopPropagation()
-                            }}
-                            okText="确认"
-                            cancelText="取消"
-                          >
-                            <i onClick={(e) => {
-                              e.stopPropagation()
-                            }}
-                               className={i.SFSC === 0 ? "rep-infos-icon2 iconfont icon-star" : "rep-infos-icon2 iconfont icon-fill-star"}/>
-                          </Popconfirm>
-                        </div>
-                        <div className="rep-infos-time">
-                          {i.CJR}&nbsp;&nbsp;{i.CJSJ}创建
+                {cusRepDataGX.length > 0 ? (
+                  cusRepDataGX.map(i => {
+                    return (
+                      <div className="rep-infos-content" onClick={() => toDetail(i)}>
+                        <div className="rep-infos-content-box">
+                          <div className="rep-infos-name">
+                            <i className="rep-infos-icon iconfont icon-report2" />
+                            <Tooltip title={i.BBMC}>
+                              <div className="rep-infos-bbmc">{i.BBMC}</div>
+                            </Tooltip>
+                            <Popconfirm
+                              title={i.SFSC === 0 ? '确定收藏？' : '确定取消收藏？'}
+                              onConfirm={e => handleProjectCollect(e, i.SFSC === 0, i.BBID)}
+                              onCancel={e => {
+                                e.stopPropagation();
+                              }}
+                              okText="确认"
+                              cancelText="取消"
+                            >
+                              <i
+                                onClick={e => {
+                                  e.stopPropagation();
+                                }}
+                                className={
+                                  i.SFSC === 0
+                                    ? 'rep-infos-icon2 iconfont icon-star'
+                                    : 'rep-infos-icon2 iconfont icon-fill-star'
+                                }
+                              />
+                            </Popconfirm>
+                          </div>
+                          <div className="rep-infos-time">
+                            {i.CJR}&nbsp;&nbsp;{i.CJSJ}创建
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  }) : <Empty
+                    );
+                  })
+                ) : (
+                  <Empty
                     description="暂无数据"
                     image={Empty.PRESENTED_IMAGE_SIMPLE}
-                    style={{width: '100%'}}
+                    style={{ width: '100%' }}
                   />
-                }
+                )}
                 {/*{*/}
                 {/*  totalGX > 28 && (*/}
                 {/*    <div className='rep-infos-foot' onClick={() => handleExtendsGX(showExtendsGX)}>*/}
@@ -366,7 +398,7 @@ export default function RepInfos(props) {
             </div>
           }
         </div>
-      }
+      )}
     </div>
   );
 }

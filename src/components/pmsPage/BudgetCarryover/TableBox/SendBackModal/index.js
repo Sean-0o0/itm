@@ -76,6 +76,8 @@ export default Form.create()(function SendBackModal(props) {
                 recordId: Number(data.JLID),
                 budgetProject: budgetId,
                 amount: String(data.JZJE),
+                contractAmount: String(data.HTJE ?? 0),
+                toBeSignedContractAmount: String(data.DQHTJE ?? 0),
                 carryoverDes: data.JZSM,
                 backDes: values.thsm,
               })

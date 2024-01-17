@@ -402,6 +402,8 @@ export default connect(({ global }) => ({
       case '信委会议案流程待审批':
       case '信委会流程待处理':
       case '外包人员流程待处理':
+      case '预算审批流程待处理':
+      case '预算审批流程被退回':
         return jumpToLBPage('WORKFLOW_TOTASKS');
       case '信委会议案待上会前审批':
         return jumpToLBPage('V_XWHYALC_LDSP');

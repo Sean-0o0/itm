@@ -163,7 +163,6 @@ export default function ConditionFilter(props) {
         }
         return acc;
       }, []);
-
       component = (
         <Select
           className="item-component"
@@ -279,6 +278,7 @@ export default function ConditionFilter(props) {
                   return `+${extraArr.length + maxTagCount}`;
                 }}
                 showCheckedStrategy={TreeSelect.SHOW_ALL}
+                treeCheckStrictly
                 treeNodeFilterProp="title"
                 dropdownClassName="newproject-treeselect"
                 dropdownStyle={{ maxHeight: 300, overflow: 'auto' }}
@@ -348,7 +348,7 @@ export default function ConditionFilter(props) {
             </Radio.Group>
           );
           break;
-          
+
         case 'RADIO-XMZT':
           component = (
             <Radio.Group

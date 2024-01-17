@@ -24,21 +24,21 @@ import {
 import ConditionFilter from '../ConditionFilter';
 import emptyImg from '../../../../assets/homePage/img_no data@2x.png';
 import { FetchQueryOrganizationInfo } from '../../../../services/projectManage';
-import TreeUtils from '../../../../utils/treeUtils';
+import { connect } from 'dva';
 
-const { TreeNode } = TreeSelect;
-
-export default function RightRptContent(props) {
-  const { dataProps = {}, funcProps = {} } = props;
+export default connect(({ global }) => ({
+  dictionary: global.dictionary,
+  userBasicInfo: global.userBasicInfo,
+}))(function RightRptContent(props) {
+  const { dataProps = {}, funcProps = {}, userBasicInfo = {} } = props;
   const {
     basicData = { conditionFilter: [], conditionGroup: [], columnFields: [] },
     selectingData = { conditionFilter: [], conditionGroup: [], columnFields: [] },
     selectedData = { conditionFilter: [], conditionGroup: [], columnFields: [] },
-    status = 'normal',
+    status = 'unSlt',
     dragKey,
     rptName,
-    editingId = -1,
-    selectedOrigin,
+    activeBbData = {},
   } = dataProps;
   const {
     setIsSpinning,
@@ -50,8 +50,8 @@ export default function RightRptContent(props) {
     hangleDataRestore,
     getRptList,
     setStatus,
-    getEditData,
-    setRptNameOrigin,
+    setActiveBbData,
+    getIsSaved,
   } = funcProps;
   const [popoverVisible, setPopoverVisible] = useState({
     setting: false, //字段设置
@@ -72,11 +72,11 @@ export default function RightRptContent(props) {
   }, []);
 
   useEffect(() => {
-    if (editingId !== -1) {
-      getHistoryData(editingId);
+    if (activeBbData.bbid !== -1) {
+      // getHistoryData(activeBbData.bbid);
     }
     return () => {};
-  }, [editingId]);
+  }, [activeBbData.bbid]);
 
   //字段浮窗显隐时数据回显
   useEffect(() => {
@@ -145,7 +145,7 @@ export default function RightRptContent(props) {
             return treeData;
           }
           let data = toTreeData(res.record)[0].children[0].children;
-          console.log('🚀 ~ file: index.js:106 ~ getShareRyData ~ data:', data);
+          // console.log('🚀 ~ file: index.js:106 ~ getShareRyData ~ data:', data);
           QueryMemberInfo({
             type: 'XXJS',
           })
@@ -207,7 +207,7 @@ export default function RightRptContent(props) {
                   });
                   return parentArr.length > 0;
                 });
-                console.log('🚀 ~ file: index.js:155 ~ getStaffData ~ finalData:', finalData);
+                // console.log('🚀 ~ file: index.js:155 ~ getStaffData ~ finalData:', finalData);
                 setShareRyData({ selector: [...finalData], value: [] });
               }
             })
@@ -379,7 +379,7 @@ export default function RightRptContent(props) {
           okText: '确定',
           cancelText: '取消',
           onOk: () => {
-            if (editingId !== -1) {
+            if (activeBbData.bbid !== -1) {
               SaveCustomReportSetting({
                 cxzd: [],
                 cxb: [],
@@ -387,13 +387,13 @@ export default function RightRptContent(props) {
                 qdzssxzd: [],
                 qdzszhzd: [],
                 qdzsbtzd: [],
-                bbid: editingId,
+                bbid: activeBbData.bbid,
                 bbmc: shareRyData.value.join(';'),
                 czlx: 'SHARE',
               })
                 .then(res => {
                   if (res?.success) {
-                    getHistoryData(editingId);
+                    // getHistoryData(activeBbData.bbid);
                     getRptList();
                     message.success('分享成功', 1);
                     setIsSpinning(false);
@@ -612,29 +612,29 @@ export default function RightRptContent(props) {
         width: x.title?.length * 20,
       };
     }),
-    {
-      title: (
-        <Popover
-          placement="left"
-          content={columnFieldsSetting()}
-          overlayClassName="custom-rpt-management-popover"
-          title={null}
-          trigger="click"
-          visible={popoverVisible.setting}
-          onVisibleChange={v => setPopoverVisible(p => ({ ...p, setting: v }))}
-          arrowPointAtCenter
-          // autoAdjustOverflow={false}
-          // getPopupContainer = {() => document.body}
-        >
-          <i className="iconfont icon-set" />
-        </Popover>
-      ),
-      dataIndex: 'setting',
-      key: 'setting',
-      align: 'left',
-      width: '58px',
-      // fixed: 'left',
-    },
+    // {
+    //   title: (
+    //     <Popover
+    //       placement="left"
+    //       content={columnFieldsSetting()}
+    //       overlayClassName="custom-rpt-management-popover"
+    //       title={null}
+    //       trigger="click"
+    //       visible={popoverVisible.setting}
+    //       onVisibleChange={v => setPopoverVisible(p => ({ ...p, setting: v }))}
+    //       arrowPointAtCenter
+    //       // autoAdjustOverflow={false}
+    //       // getPopupContainer = {() => document.body}
+    //     >
+    //       <i className="iconfont icon-set" />
+    //     </Popover>
+    //   ),
+    //   dataIndex: 'setting',
+    //   key: 'setting',
+    //   align: 'left',
+    //   width: '58px',
+    //   // fixed: 'left',
+    // },
   ];
 
   //报表名称
@@ -652,8 +652,8 @@ export default function RightRptContent(props) {
       cancelText: '取消',
       onOk: () => {
         hangleDataRestore();
-        if (editingId !== -1) {
-          SaveCustomReportSetting({ bbid: editingId, czlx: 'DELETE' })
+        if (activeBbData.bbid !== -1) {
+          SaveCustomReportSetting({ bbid: activeBbData.bbid, czlx: 'DELETE' })
             .then(res => {
               if (res?.success) {
                 message.success('删除成功', 1);
@@ -707,6 +707,9 @@ export default function RightRptContent(props) {
                   Number(moment(x.SELECTORVALUE[1]).format('YYYYMMDD')),
                 ];
               }
+              bmArr.push(x.BM);
+            } else if (x.ZJLX === 'TREE-MULTIPLE' && x.TJBCXLX !== 'YSXM') {
+              SXSJ = x.SELECTORVALUE?.map(x => x.value ?? x);
               bmArr.push(x.BM);
             } else if (x.ZJLX === 'RANGE') {
               SXSJ = [x.SELECTORVALUE.min ?? 0, x.SELECTORVALUE.max ?? 9999999999];
@@ -795,7 +798,7 @@ export default function RightRptContent(props) {
           qdzszhzd: conditionGroupArr,
           qdzsbtzd: columnFieldsArr,
           czlx: status === 'adding' ? 'ADD' : 'UPDATE',
-          bbid: status === 'adding' ? -1 : editingId,
+          bbid: status === 'adding' ? -1 : activeBbData.bbid,
           bbmc: rptName,
         };
         console.log('🚀 ~ file: index.js:439 ~ handleSave ~ params:', params);
@@ -805,9 +808,16 @@ export default function RightRptContent(props) {
             if (res?.success) {
               message.success('保存成功', 1);
               getRptList(); //刷新数据
-              getHistoryData(editingId);
-              getEditData(status === 'adding' ? res.bbid : editingId);
-              // setIsSpinning(false);
+              // getHistoryData(activeBbData.bbid);
+              // getEditData(status === 'adding' ? res.bbid : activeBbData.bbid);
+              setStatus('slted');
+              status === 'adding' &&
+                setActiveBbData({
+                  bbid: res.bbid,
+                  bbmc: rptName,
+                  cjrid: Number(userBasicInfo.id),
+                });
+              setIsSpinning(false);
             }
           })
           .catch(e => {
@@ -818,9 +828,25 @@ export default function RightRptContent(props) {
       }
     }
   };
+  //取消
+  const handleCancel = () => {
+    if (!getIsSaved(status)) {
+      Modal.confirm({
+        title: '提示：',
+        content: `报表未保存，是否确定取消修改？`,
+        okText: '确定',
+        cancelText: '取消',
+        onOk: () => {
+          setStatus('slted');
+        },
+      });
+    } else {
+      setStatus('slted');
+    }
+  };
 
   return (
-    <div className="rpt-right">
+    <Fragment>
       <div className="rpt-header">
         <Form.Item
           className="rpt-title"
@@ -835,6 +861,11 @@ export default function RightRptContent(props) {
             allowClear
           />
         </Form.Item>
+        {status === 'editing' && (
+          <Button className="btn-save" onClick={handleCancel}>
+            取消
+          </Button>
+        )}
         {status !== 'adding' && (
           <Button className="btn-delete" onClick={handleDelete}>
             删除
@@ -846,7 +877,7 @@ export default function RightRptContent(props) {
         </Button>
         {status === 'editing' ? (
           <Fragment>
-            <Popover
+            {/* <Popover
               placement="bottomRight"
               content={historyContent()}
               overlayClassName="custom-rpt-management-popover"
@@ -857,7 +888,7 @@ export default function RightRptContent(props) {
               arrowPointAtCenter
             >
               <Button className="btn-history">操作记录</Button>
-            </Popover>
+            </Popover> */}
             <Popover
               placement="bottomRight"
               content={shareContent()}
@@ -880,16 +911,19 @@ export default function RightRptContent(props) {
       </div>
       <div className="rpt-content">
         <div className="top">
-          <ConditionFilter
-            options={getConditionFilterTreeData()}
-            data={selectedData.conditionFilter}
-            onChange={handleConditionFilterChange}
-            onDelete={onConditionFilterDelete}
-            setData={v => {
-              setSelectedData(p => ({ ...p, conditionFilter: v }));
-            }}
-          />
-          <div className="group-condition">
+          <div className="title-row">筛选条件</div>
+          <div className="top-content">
+            <ConditionFilter
+              options={getConditionFilterTreeData()}
+              data={selectedData.conditionFilter}
+              onChange={handleConditionFilterChange}
+              onDelete={onConditionFilterDelete}
+              setData={v => {
+                setSelectedData(p => ({ ...p, conditionFilter: v }));
+              }}
+            />
+          </div>
+          {/* <div className="group-condition">
             <span className="label">组合条件</span>
             {selectedData.conditionGroup.map(x => (
               <div className="condition-group-item" key={x[x.length - 1].ID}>
@@ -910,9 +944,26 @@ export default function RightRptContent(props) {
                 添加组合条件
               </Button>
             </Cascader>
-          </div>
+          </div> */}
         </div>
         <div className="bottom">
+          <div className="title-row">
+            <span className="title-txt">报表结果</span>
+            <Popover
+              placement="left"
+              content={columnFieldsSetting()}
+              overlayClassName="custom-rpt-management-popover"
+              title={null}
+              trigger="click"
+              visible={popoverVisible.setting}
+              onVisibleChange={v => setPopoverVisible(p => ({ ...p, setting: v }))}
+              arrowPointAtCenter
+            >
+              <Button type="primary" className="btn-edit">
+                编辑
+              </Button>
+            </Popover>
+          </div>
           <div className="table-box">
             <div className="table-header">
               {columns.map(x => (
@@ -928,6 +979,6 @@ export default function RightRptContent(props) {
           </div>
         </div>
       </div>
-    </div>
+    </Fragment>
   );
-}
+});

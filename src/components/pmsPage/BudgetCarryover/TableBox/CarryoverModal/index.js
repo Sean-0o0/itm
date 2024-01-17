@@ -3,6 +3,7 @@ import { Button, Form, Input, InputNumber, message, Modal, Spin } from 'antd';
 import moment from 'moment';
 import { getIn } from 'immutable';
 import { OperateBudgetCarryoverInfo } from '../../../../../services/pmsServices';
+import Decimal from 'decimal.js';
 const { TextArea } = Input;
 
 export default Form.create()(function CarryoverModal(props) {
@@ -10,15 +11,24 @@ export default Form.create()(function CarryoverModal(props) {
   // console.log('🚀 ~ file: index.js:10 ~ CarryoverModal ~  data:', data);
   const { getFieldDecorator, getFieldValue, validateFields, resetFields } = form;
   const [isSpinning, setIsSpinning] = useState(false); //加载状态
-  const labelCol = 6;
-  const wrapperCol = 18;
+  const labelCol = 7;
+  const wrapperCol = 17;
 
   useEffect(() => {
-    return () => { };
+    return () => {};
   }, []);
 
   //输入框 - 数值型
-  const getInputNumber = ({ label, labelCol, wrapperCol, dataIndex, initialValue, rules, max }) => {
+  const getInputNumber = ({
+    label,
+    labelCol,
+    wrapperCol,
+    dataIndex,
+    initialValue,
+    rules,
+    max,
+    disabled = false,
+  }) => {
     return (
       <Form.Item label={label} labelCol={{ span: labelCol }} wrapperCol={{ span: wrapperCol }}>
         {getFieldDecorator(dataIndex, {
@@ -26,14 +36,15 @@ export default Form.create()(function CarryoverModal(props) {
           rules,
         })(
           <InputNumber
+            disabled={disabled}
             style={{ width: '100%' }}
             max={max}
             min={0}
             step={0.01}
             precision={2}
             placeholder={'请输入' + label}
-          // formatter={value => `value`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-          // parser={value => value.replace(/$\s?|(,*)/g, '')}
+            // formatter={value => `value`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+            // parser={value => value.replace(/$\s?|(,*)/g, '')}
           />,
         )}
       </Form.Item>
@@ -89,6 +100,8 @@ export default Form.create()(function CarryoverModal(props) {
               budgetProject: Number(data.YSID),
               amount: String(values.jzje),
               originalAmount: type === 'TJ' ? String(data.JZJE) : undefined,
+              contractAmount: type === 'BJZ' ? undefined : String(values.htje),
+              toBeSignedContractAmount: type === 'BJZ' ? undefined : String(values.dqhtje),
               carryoverDes: type === 'BJZ' ? values.bjzsm : values.jzsm,
             };
             // console.log('🚀 ~ file: index.js:62 ~ validateFields ~ values:', values, data, params);
@@ -156,6 +169,39 @@ export default Form.create()(function CarryoverModal(props) {
             })
           ) : (
             <Fragment>
+              {getInputNumber({
+                label: '合同金额(万元)',
+                dataIndex: 'htje',
+                labelCol,
+                wrapperCol,
+                initialValue: parseFloat(
+                  Decimal(data.HTJE ?? 0)
+                    .div(10000)
+                    .toFixed(2),
+                ),
+                rules: [
+                  {
+                    required: true,
+                    message: '合同金额不允许为空',
+                  },
+                ],
+                max: 999999999,
+                disabled: true,
+              })}
+              {getInputNumber({
+                label: '待签合同金额(万元)',
+                dataIndex: 'dqhtje',
+                labelCol,
+                wrapperCol,
+                initialValue: data.DQHTJE !== undefined ? Number(data.DQHTJE) : undefined,
+                rules: [
+                  {
+                    required: true,
+                    message: '待签合同金额不允许为空',
+                  },
+                ],
+                max: 999999999,
+              })}
               {getInputNumber({
                 label: '结转金额(万元)',
                 dataIndex: 'jzje',

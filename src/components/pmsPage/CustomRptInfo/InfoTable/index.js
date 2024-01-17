@@ -18,6 +18,7 @@ export default function InfoTable(props) {
     bbid,
     setIsSpinning,
     cjrid,
+    handleEdit = () => {},
   } = props; //表格数据
   const location = useLocation();
   const [tableColumns, setTableColumns] = useState([]); //处理过的列配置信息
@@ -242,7 +243,7 @@ export default function InfoTable(props) {
               }
             });
             setTableColumns(arr);
-            console.log("🚀 ~ file: index.js:246 ~ useEffect ~ arr:", arr)
+            console.log('🚀 ~ file: index.js:246 ~ useEffect ~ arr:', arr);
           }
         })
         .catch(e => {});
@@ -290,6 +291,7 @@ export default function InfoTable(props) {
 
   //表格操作后更新数据
   const handleTableChange = (pagination, filters, sorter, extra) => {
+    console.log('🚀 ~ handleTableChange ~ sorter:', sorter);
     if (sorter.order !== undefined) {
       if (sorter.order === 'ascend') {
         getSQL(
@@ -346,7 +348,15 @@ export default function InfoTable(props) {
   return (
     <div className="info-table">
       <div className="btn-export-box">
-        {LOGIN_USERID !== cjrid && (
+        <Button
+          type="primary"
+          className="btn-export"
+          style={{ marginRight: 8 }}
+          onClick={() => handleEdit(bbid)}
+        >
+          编辑
+        </Button>
+        {Number(LOGIN_USERID) !== Number(cjrid) && (
           <Button
             type="primary"
             className="btn-export"
@@ -398,10 +408,10 @@ export default function InfoTable(props) {
             total: tableData.total,
           }}
           onChange={(p, ps) => {
-            getSQL({ current: p, pageSize: ps }, data);
+            getSQL({ current: p, pageSize: ps, sort: tableData.sort }, data);
           }}
           onShowSizeChange={(cur, size) => {
-            getSQL({ current: cur, pageSize: size }, data);
+            getSQL({ current: cur, pageSize: size, sort: tableData.sort }, data);
           }}
         />
       )}

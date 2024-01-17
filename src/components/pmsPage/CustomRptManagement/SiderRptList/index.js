@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, useCallback } from 'react';
+import React, { useEffect, useState, useRef, useCallback, Fragment } from 'react';
 import { Button, message, Input, Spin, Empty, Modal, Tooltip } from 'antd';
 import moment from 'moment';
 import { FetchQueryCustomReportList } from '../../../../services/pmsServices';
@@ -6,12 +6,13 @@ import { FetchQueryCustomReportList } from '../../../../services/pmsServices';
 export default function SiderRptList(props) {
   const { dataProps = {}, funcProps = {} } = props;
   const {
-    status = 'normal',
+    status = 'unSlt',
     rptList,
     rptOrigin,
-    editingId = -1,
+    activeBbData = {},
     basicData = {},
     selectedOrigin = {},
+    isFold,
   } = dataProps;
   const {
     getEditData,
@@ -24,6 +25,8 @@ export default function SiderRptList(props) {
     setRptNameOrigin,
     setSelectingData,
     setSelectedData,
+    setActiveBbData,
+    setIsFold,
   } = funcProps;
   // const [bbmc, setBbmc] = useState(''); //报表名称
   // const [isSpinning, setIsSpinning] = useState(false); //加载状态
@@ -85,9 +88,8 @@ export default function SiderRptList(props) {
 
   //报表块
   const getRptItem = ({ BBID, BBMC = '--', CJR = '--', CJRID, FXR = '', SFSC = '0' }) => {
-    const handleEdit = id => {
-      console.log('status', status, getIsSaved(status));
-      if (id !== editingId) {
+    const handleSlt = (bbid, bbmc, cjrid) => {
+      if (bbid !== activeBbData.bbid) {
         if (!getIsSaved(status)) {
           Modal.confirm({
             title: '提示：',
@@ -95,25 +97,13 @@ export default function SiderRptList(props) {
             okText: '确定',
             cancelText: '取消',
             onOk: () => {
-              if (basicData.conditionFilter?.length === 0) {
-                //需要获取基础数据
-                getBasicData(false);
-              } else {
-                hangleDataRestore();
-              }
-              setStatus('editing');
-              getEditData(id);
+              setStatus('slted');
+              setActiveBbData({ bbid, bbmc, cjrid });
             },
           });
         } else {
-          if (basicData.conditionFilter?.length === 0) {
-            //需要获取基础数据
-            getBasicData(false);
-          } else {
-            hangleDataRestore();
-          }
-          setStatus('editing');
-          getEditData(id);
+          setStatus('slted');
+          setActiveBbData({ bbid, bbmc, cjrid });
         }
       }
     };
@@ -121,8 +111,8 @@ export default function SiderRptList(props) {
       <div
         className="rpt-item"
         key={BBID}
-        onClick={() => handleEdit(BBID)}
-        style={editingId === BBID ? { backgroundColor: '#3361ff1a' } : {}} //选中样式
+        onClick={() => handleSlt(BBID, BBMC, CJRID)}
+        style={activeBbData.bbid === BBID ? { backgroundColor: '#3361ff1a' } : {}} //选中样式
       >
         <div className="top">
           <Tooltip title={BBMC} placement="topLeft">
@@ -182,7 +172,6 @@ export default function SiderRptList(props) {
     }
     setSelectedData({
       ...selectedOrigin,
-      conditionFilter: [{ ...selectedOrigin.conditionFilter[0], SELECTORVALUE: undefined }],
     });
     setSelectingData({
       conditionFilter: [],
@@ -191,36 +180,47 @@ export default function SiderRptList(props) {
     });
     setRptName('未命名报表');
     setRptNameOrigin('未命名报表');
+    setActiveBbData({ bbid: -1, bbmc: '未命名报表', cjrid: -1 });
   };
 
   return (
-    <div className="rpt-sider">
-      <div className="title-row">
-        我的报表
-        <span onClick={handleAddRpt}>
-          <i className="iconfont circle-add" />
-          新建
-        </span>
-      </div>
-      <Input
-        allowClear
-        onChange={handleInputChange}
-        placeholder="请输入报表名称"
-        suffix={<i className="iconfont icon-search-name" />}
-      />
+    <div className="rpt-sider" style={isFold ? { width: 0 } : {}}>
       <div
-        className="rpt-list"
-        // ref={listRef}
+        className="unfold-icon"
+        style={!isFold ? { width: 0, overflow: 'hidden' } : {}}
+        onClick={() => setIsFold(false)}
       >
-        {rptList.map(x => getRptItem(x))}
-        {rptList.length === 0 && (
-          <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="暂无数据" />
-        )}
-        {/* {rptList.length !== 0 && isNoMoreData.current && (
-          <div className="no-more-data">无更多数据</div>
-        )} */}
-        {/* <Spin spinning={isSpinning} /> */}
+        <i className="iconfont icon-right" />
       </div>
+      {!isFold && (
+        <Fragment>
+          <div className="fold-icon" onClick={() => setIsFold(true)}>
+            <i className="iconfont icon-left" />
+          </div>
+          <div className="title-row">
+            我的报表
+            <span
+              onClick={status === 'adding' ? () => {} : handleAddRpt}
+              style={status === 'adding' ? { cursor: 'not-allowed' } : {}}
+            >
+              <i className="iconfont circle-add" />
+              新建
+            </span>
+          </div>
+          <Input
+            allowClear
+            onChange={handleInputChange}
+            placeholder="请输入报表名称"
+            suffix={<i className="iconfont icon-search-name" />}
+          />
+          <div className="rpt-list">
+            {rptList.map(x => getRptItem(x))}
+            {rptList.length === 0 && (
+              <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="暂无数据" />
+            )}
+          </div>
+        </Fragment>
+      )}
     </div>
   );
 }

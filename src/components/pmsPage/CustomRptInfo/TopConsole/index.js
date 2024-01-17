@@ -31,7 +31,10 @@ export default function TopConsole(props) {
     // console.log('kkkk');
     let arr = JSON.parse(JSON.stringify(data.filterData));
     arr.forEach(y => {
-      if (y.ZJLX === 'MULTIPLE' || y.ZJLX === 'TREE-MULTIPLE') {
+      if (y.TJBCXLX === 'YSXM') {
+        console.log('🚀 ~ handleReset ~ y:', y);
+        y.SELECTORVALUE = { ...y.SELECTORVALUE, value: [] };
+      } else if (y.ZJLX === 'MULTIPLE' || y.ZJLX === 'TREE-MULTIPLE') {
         y.SELECTORVALUE = [];
       } else if (y.ZJLX === 'RANGE') {
         y.SELECTORVALUE = { max: undefined, min: undefined };
@@ -274,6 +277,7 @@ export default function TopConsole(props) {
                   return `+${extraArr.length + maxTagCount}`;
                 }}
                 showCheckedStrategy={TreeSelect.SHOW_ALL}
+                treeCheckStrictly
                 treeNodeFilterProp="title"
                 dropdownClassName="newproject-treeselect"
                 dropdownStyle={{ maxHeight: 300, overflow: 'auto' }}
@@ -382,8 +386,8 @@ export default function TopConsole(props) {
   };
 
   return (
-    <div className="top-console">
-      {getFilterLength(data.filterData) !== 0 && (
+    getFilterLength(data.filterData) !== 0 && (
+      <div className="top-console">
         <div
           className="filter-condition"
           style={getFilterLength(data.filterData) > 6 ? (isUnfold ? {} : { height: 112 }) : {}}
@@ -426,40 +430,7 @@ export default function TopConsole(props) {
             )}
           </div>
         </div>
-      )}
-      {data.groupData?.length !== 0 && (
-        <div
-          className="group-condition"
-          style={
-            // getFilterLength(data.filterData) > 6
-            //   ? isUnfold
-            //     ? {}
-            //     : { height: 56, overflow: 'hidden' }
-            //   :
-            getFilterLength(data.filterData) === 0 ? { borderTop: 0 } : {}
-          }
-        >
-          <span className="label">组合条件</span>
-          {data.groupData?.map(x => (
-            <div className="condition-group-item">
-              {x.length - 2 >= 0 && x[x.length - 2].NAME + ' - '}
-              {x[x.length - 1].NAME}
-            </div>
-          ))}
-        </div>
-      )}
-      {/* {getFilterLength(data.filterData) > 6 &&
-        (isUnfold ? (
-          <div className="more-item" onClick={() => setIsUnfold(false)}>
-            收起
-            <i className="iconfont icon-up" />
-          </div>
-        ) : (
-          <div className="more-item-unfold" onClick={() => setIsUnfold(true)}>
-            更多
-            <i className="iconfont icon-down" />
-          </div>
-        ))} */}
-    </div>
+      </div>
+    )
   );
 }

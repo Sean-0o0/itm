@@ -10,22 +10,24 @@ const CustomRptManagement = props => {
     dictionary,
     cacheLifecycles,
   } = props;
-  const { routes = [] } = props?.location?.state || {};
-  let routes2 = [];
 
-  routes2 = [...routes].concat({
-    name: '报表管理',
-    pathname: props?.pathname,
-  });
-  // if (props.match.params.params !== undefined) {
-  //   let obj = JSON.parse(DecryptBase64(encryptParams));
-  //   routes.length === 0 &&
-  //     obj.routes &&
-  //     (routes2 = obj.routes?.concat({
-  //       name: '报表管理',
-  //       pathname: props?.location?.pathname,
-  //     }));
-  // }
+  let data = {};
+  let routes2 = [];
+  let isNew = false;
+  if (props.match.params.params !== undefined) {
+    let obj = JSON.parse(DecryptBase64(encryptParams));
+    data = {
+      bbid: obj.bbid,
+      bbmc: obj.bbmc,
+      cjrid: obj.cjrid,
+    };
+    isNew = obj.isNew ?? false;
+    obj.routes &&
+      (routes2 = obj.routes?.concat({
+        name: '报表管理',
+        pathname: props?.location?.pathname,
+      }));
+  }
 
   //去重
   const newArr = [];
@@ -46,6 +48,8 @@ const CustomRptManagement = props => {
         dictionary={dictionary}
         routes={newArr}
         cacheLifecycles={cacheLifecycles}
+        propsData={data} //选中的报表数据
+        isNew={isNew} //是否是新建
       />
     </Fragment>
   );

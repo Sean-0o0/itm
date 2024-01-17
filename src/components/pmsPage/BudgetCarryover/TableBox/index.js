@@ -221,28 +221,15 @@ const TableBox = props => {
       render: txt => <span style={{ marginRight: 20 }}>{getAmountFormat(txt)}</span>,
     },
     {
-      title: '软件投资',
-      dataIndex: 'RJTZ',
-      width: 100,
+      title: '计划支付金额',
+      dataIndex: 'JHZFJE',
+      width: 130,
       align: 'right',
-      key: 'RJTZ',
+      key: 'JHZFJE',
       ellipsis: true,
       sorter: true,
       sortDirections: ['descend', 'ascend'],
       render: txt => <span style={{ marginRight: 20 }}>{getAmountFormat(txt)}</span>,
-    },
-    {
-      title: '硬件投资总金额',
-      dataIndex: 'YJTZ',
-      width: 150,
-      align: 'right',
-      key: 'YJTZ',
-      ellipsis: true,
-      sorter: true,
-      sortDirections: ['descend', 'ascend'],
-      render: txt => (
-        <span style={{ marginRight: 20 }}>{txt === '-1' ? '***' : getAmountFormat(txt)}</span>
-      ),
     },
     {
       title: '结转项目详情',
@@ -396,6 +383,7 @@ const TableBox = props => {
                           pathname: `/pms/manage/BudgetSubmit/${EncryptBase64(
                             JSON.stringify({
                               operateType: 'XQ',
+                              isGLY: true, //管理员允许编辑 “关联去年同类预算”
                               budgetId: Number(row.YSID),
                               routes: [{ name: '预算录入', pathname: location.pathname }],
                               refreshParams: {
@@ -604,9 +592,9 @@ const TableBox = props => {
       ),
     },
     {
-      title: '结转金(万元)',
+      title: '结转金额(万元)',
       dataIndex: 'JZJE',
-      width: 120,
+      width: 140,
       align: 'right',
       key: 'JZJE',
       ellipsis: true,
@@ -818,9 +806,31 @@ const TableBox = props => {
       },
     },
     {
+      title: '合同金额(万元)',
+      dataIndex: 'HTJE',
+      width: '15%',
+      align: 'right',
+      key: 'HTJE',
+      ellipsis: true,
+      sorter: true,
+      sortDirections: ['descend', 'ascend'],
+      render: txt => <span style={{ marginRight: 20 }}>{getAmountFormat(txt)}</span>,
+    },
+    {
+      title: '待签合同金额(万元)',
+      dataIndex: 'DQHTJE',
+      width: '18%',
+      align: 'right',
+      key: 'DQHTJE',
+      ellipsis: true,
+      sorter: true,
+      sortDirections: ['descend', 'ascend'],
+      render: txt => <span style={{ marginRight: 20 }}>{getAmountFormat(txt)}</span>,
+    },
+    {
       title: '结转金额(万元)',
       dataIndex: 'JZJE',
-      width: '20%',
+      width: '15%',
       align: 'right',
       key: 'JZJE',
       ellipsis: true,
@@ -833,7 +843,7 @@ const TableBox = props => {
     {
       title: '结转说明',
       dataIndex: 'JZSM',
-      width: '30%',
+      width: '15%',
       key: 'JZSM',
       ellipsis: true,
       render: txt => (
@@ -845,7 +855,7 @@ const TableBox = props => {
     {
       title: '结转状态',
       dataIndex: 'JZZT',
-      width: '15%',
+      width: '11%',
       key: 'JZZT',
       ellipsis: true,
       render: txt => (
@@ -859,7 +869,7 @@ const TableBox = props => {
       dataIndex: 'operation',
       key: 'operation',
       align: 'center',
-      width: drawerData.isFZR ? '12%' : 0,
+      width: drawerData.isFZR ? '8%' : 0,
       render: (_, row) =>
         drawerData.isFZR ? (
           <div className="opr-column">
@@ -1177,7 +1187,7 @@ const TableBox = props => {
               total: tableData.total,
             }}
             scroll={{
-              x: activeKey === 'YSJZ' ? 1320 : 1350,
+              x: activeKey === 'YSJZ' ? 1340 : 1230,
               y: filterFold
                 ? activeKey === 'ZB'
                   ? 'calc(100vh - 302px)'

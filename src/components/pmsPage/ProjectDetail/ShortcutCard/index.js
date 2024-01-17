@@ -588,7 +588,6 @@ export default function ShortcutCard(props) {
           })}
 
         {is_XMJL_FXMJL &&
-          grayTest.DDMK &&
           prjBasic.WJZT !== '1' &&
           getShortcutItem({
             imgTxt: 'xmwj',
