@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import TopConsole from './TopConsole'
 import InfoTable from './InfoTable'
 import { message, Tabs } from 'antd'
-import { QueryMemberDetailInfo } from '../../../services/pmsServices'
+import { QueryMemberDetailInfo, QueryUserRole } from '../../../services/pmsServices'
 import EvaluationTable from './EvaluationTable'
 import { connect } from 'dva';
 
@@ -30,7 +30,8 @@ class StaffDetailComponent extends Component {
       total: -1,
       sort: '',
     },
-    curTab: 'projectSituation'
+    curTab: 'projectSituation',
+    role: '',
   }
 
   componentDidMount() {
@@ -83,7 +84,7 @@ class StaffDetailComponent extends Component {
       }
     }
     QueryMemberDetailInfo(param)
-      .then((res = {}) => {
+      .then(async (res = {}) => {
         const { code = 0,
           xmxx, //项目列表
           bm,//部门
@@ -99,26 +100,33 @@ class StaffDetailComponent extends Component {
           totalrows = 0
         } = res;
         if (code > 0) {
-          this.setState({
-            attachList: [...JSON.parse(xmxx)],
-            xmxx, //项目列表
-            bm,//部门
-            cyxm,//参与项目
-            dh,//电话
-            fqxm,//发起项目
-            gw,//岗位
-            jrts,//加入天数
-            ktxm,//课题项目
-            rymc,//人员名称
-            xb,//性别
-            zbxm,//专班项目
-            tableLoading: false,
-            pageParams: {
-              ...pageParams,
-              ...params,
-              total: totalrows,
-            }
-          })
+          const roleRes = await QueryUserRole({
+            userId: Number(this.props.userBasicInfo.id),
+          });
+          if(roleRes.success){
+            // console.log("🚀 ~ StaffDetailComponent ~ .then ~ roleRes:", roleRes)
+            this.setState({
+              attachList: [...JSON.parse(xmxx)],
+              xmxx, //项目列表
+              bm, //部门
+              cyxm, //参与项目
+              dh, //电话
+              fqxm, //发起项目
+              gw, //岗位
+              jrts, //加入天数
+              ktxm, //课题项目
+              rymc, //人员名称
+              xb, //性别
+              zbxm, //专班项目
+              tableLoading: false,
+              pageParams: {
+                ...pageParams,
+                ...params,
+                total: totalrows,
+              },
+              role: roleRes.role,
+            });
+          }
         } else {
           this.setState({
             tableLoading: false,
@@ -192,14 +200,16 @@ class StaffDetailComponent extends Component {
             </TabPane>
 
             {/*人员评价列表 */}
-            <TabPane tab="评价情况" key="evaluationSituation">
-              <EvaluationTable
-                userBasicInfo={userBasicInfo}
-                curTab={this.state.curTab}
-                ryid={ryid}
-              >
-              </EvaluationTable>
-            </TabPane>
+           {this.state.role === '一级部门领导' && (
+              <TabPane tab="评价情况" key="evaluationSituation">
+                  <EvaluationTable
+                    userBasicInfo={userBasicInfo}
+                    curTab={this.state.curTab}
+                    ryid={ryid}
+                  >
+                  </EvaluationTable>
+              </TabPane>
+           )}
           </Tabs>
         </div>
 
