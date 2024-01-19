@@ -40,7 +40,17 @@ class InfoTable extends Component {
 
   render() {
     const { activeKey, queryType } = this.state;
-    const { data = [], tableLoading, pageParam, role, routes, orgid, ysglxx } = this.props;
+    const {
+      data = [],
+      tableLoading,
+      pageParam,
+      role,
+      routes,
+      orgid,
+      ysglxx,
+      sortInfo = {},
+      setSorter = () => {},
+    } = this.props;
     return (
       <div className="info-table">
         <Tabs onChange={this.handleTab} type="card" activeKey={activeKey}>
@@ -57,6 +67,8 @@ class InfoTable extends Component {
               pageParam={pageParam}
               ysglxx={ysglxx}
               YSLB={this.props.YSLB}
+              sortInfo={sortInfo}
+              setSorter={setSorter}
             />
           </TabPane>
           <TabPane tab="非资本性预算" key="MX_FZB">
@@ -72,6 +84,8 @@ class InfoTable extends Component {
               pageParam={pageParam}
               ysglxx={ysglxx}
               YSLB={this.props.YSLB}
+              sortInfo={sortInfo}
+              setSorter={setSorter}
             />
           </TabPane>
           <TabPane tab="科研预算" key="MX_KY">
@@ -87,6 +101,8 @@ class InfoTable extends Component {
               pageParam={pageParam}
               ysglxx={ysglxx}
               YSLB={this.props.YSLB}
+              sortInfo={sortInfo}
+              setSorter={setSorter}
             />
           </TabPane>
           {role === '二级部门领导' && (
@@ -102,6 +118,8 @@ class InfoTable extends Component {
                 tableLoading={tableLoading}
                 pageParam={pageParam}
                 ysglxx={ysglxx}
+                sortInfo={sortInfo}
+                setSorter={setSorter}
               />
             </TabPane>
           )}

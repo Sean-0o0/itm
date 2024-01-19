@@ -31,9 +31,10 @@ class StaffTable extends Component {
   };
 
   handleTableChange = (pagination, filters, sorter) => {
-    const { fetchData, queryType, pageParam } = this.props;
+    const { fetchData, queryType, pageParam, setSorter } = this.props;
     console.log('sortersorter', sorter);
     const { order = '', field = '' } = sorter;
+    setSorter(sorter);
     if (fetchData) {
       fetchData(queryType, {
         ...pageParam,
@@ -173,6 +174,7 @@ class StaffTable extends Component {
         ellipsis: true,
         align: 'right',
         sorter: true,
+        sortOrder: this.props.sortInfo?.columnKey === 'ZYS' ? this.props.sortInfo?.order : undefined,
         sortDirections: ['descend', 'ascend'],
       },
       {
@@ -183,6 +185,7 @@ class StaffTable extends Component {
         ellipsis: true,
         align: 'right',
         sorter: true,
+        sortOrder: this.props.sortInfo?.columnKey === 'KZXYS' ? this.props.sortInfo?.order : undefined,
         sortDirections: ['descend', 'ascend'],
         render: (value, row, index) => {
           return value ? getAmountFormat(value) : 0;
@@ -196,6 +199,7 @@ class StaffTable extends Component {
         ellipsis: true,
         align: 'right',
         sorter: true,
+        sortOrder: this.props.sortInfo?.columnKey === 'YZXYS' ? this.props.sortInfo?.order : undefined,
         sortDirections: ['descend', 'ascend'],
         render: (value, row, index) => {
           return value ? getAmountFormat(value) : 0;
@@ -209,6 +213,7 @@ class StaffTable extends Component {
         align: 'right',
         ellipsis: true,
         sorter: true,
+        sortOrder: this.props.sortInfo?.columnKey === 'YJZXL' ? this.props.sortInfo?.order : undefined,
         sortDirections: ['descend', 'ascend'],
         render: (value, row, index) => {
           const { YZXYS, KZXYS } = row;
@@ -358,6 +363,7 @@ class StaffTable extends Component {
               key: 'HTJE',
               ellipsis: true,
               sorter: true,
+              sortOrder: this.props.sortInfo?.columnKey === 'HTJE' ? this.props.sortInfo?.order : undefined,
               sortDirections: ['descend', 'ascend'],
               render: txt => <span>{txt === '-1' ? '***' : getAmountFormat(txt)}</span>,
             },
@@ -369,6 +375,7 @@ class StaffTable extends Component {
               key: 'FKJE',
               ellipsis: true,
               sorter: true,
+              sortOrder: this.props.sortInfo?.columnKey === 'FKJE' ? this.props.sortInfo?.order : undefined,
               sortDirections: ['descend', 'ascend'],
               render: txt => <span>{txt === '-1' ? '***' : getAmountFormat(txt)}</span>,
             },
@@ -507,6 +514,7 @@ class StaffTable extends Component {
               ellipsis: true,
               align: 'right',
               sorter: true,
+              sortOrder: this.props.sortInfo?.columnKey === 'ZYS' ? this.props.sortInfo?.order : undefined,
               sortDirections: ['descend', 'ascend'],
               render: (value, row, index) => {
                 return value ? getAmountFormat(value) : 0;
@@ -520,6 +528,7 @@ class StaffTable extends Component {
               ellipsis: true,
               align: 'right',
               sorter: true,
+              sortOrder: this.props.sortInfo?.columnKey === 'KZXYS' ? this.props.sortInfo?.order : undefined,
               sortDirections: ['descend', 'ascend'],
               render: (value, row, index) => {
                 return value ? getAmountFormat(value) : 0;
@@ -533,6 +542,7 @@ class StaffTable extends Component {
               ellipsis: true,
               align: 'right',
               sorter: true,
+              sortOrder: this.props.sortInfo?.columnKey === 'YZXYS' ? this.props.sortInfo?.order : undefined,
               sortDirections: ['descend', 'ascend'],
               render: (value, row, index) => {
                 return value ? getAmountFormat(value) : 0;
@@ -546,6 +556,7 @@ class StaffTable extends Component {
               align: 'right',
               ellipsis: true,
               sorter: true,
+              sortOrder: this.props.sortInfo?.columnKey === 'YJZXL' ? this.props.sortInfo?.order : undefined,
               sortDirections: ['descend', 'ascend'],
               render: (value, row, index) => {
                 return value ? value + '%' : '';

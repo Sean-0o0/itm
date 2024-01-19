@@ -26,6 +26,10 @@ class BudgetExcute extends Component {
       currentYear: undefined,
       dropdown: [],
     },
+    sortInfo: {
+      sort: undefined,
+      columnKey: '',
+    },
   };
 
   componentDidUpdate(prevProps, prevState, snapshot) {
@@ -191,6 +195,7 @@ class BudgetExcute extends Component {
       pageParam,
       loading,
       statisticYearData = {},
+      sortInfo = {},
     } = this.state;
 
     const {
@@ -308,6 +313,10 @@ class BudgetExcute extends Component {
                     sort: '',
                     total: -1,
                   },
+                  sortInfo: {
+                    sort: undefined,
+                    columnKey: '',
+                  },
                 },
                 () => {
                   this.fetchRole(year);
@@ -373,6 +382,8 @@ class BudgetExcute extends Component {
             ysglxx={ysglxx}
             YSLB={this.props.dictionary?.YSLB}
             defaultYear={statisticYearData.currentYear}
+            sortInfo={sortInfo}
+            setSorter={v => this.setState({ sortInfo: v })}
           />
         </div>
       </Spin>

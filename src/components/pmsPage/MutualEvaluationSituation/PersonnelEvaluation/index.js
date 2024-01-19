@@ -24,6 +24,7 @@ export default function PersonnelEvaluation(props) {
     pageSize: 20,
     total: -1,
     loading: false,
+    sort: '',
   }); //右侧表格数据
   const [activeKey, setActiveKey] = useState(''); //顶部高亮tab
   const [curOrgID, setCurOrgID] = useState(-1); //选中的人员ID //当前选中部门
@@ -176,6 +177,7 @@ export default function PersonnelEvaluation(props) {
             pageSize,
             loading: false,
             total: res.totalrows,
+            sort,
           });
         }
       })
@@ -680,7 +682,9 @@ export default function PersonnelEvaluation(props) {
         </div>
       </Drawer>
       <TopFilter
-        handleSearch={(arg = {}) => getOrgTableData({ orgId: curOrgID, ...arg })}
+        handleSearch={(arg = {}) =>
+          getOrgTableData({ orgId: curOrgID, sort: tableData.sort, ...arg })
+        }
         config={filterConfig}
         filterData={filterData}
         setFilterData={setFilterData}
