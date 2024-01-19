@@ -84,6 +84,7 @@ export default connect(({ global }) => ({
     }); //
     const [routes, setRoutes] = useState([]); //路由
     const [lastBudgetPrj, setLastBudgetPrj] = useState([]); //去年同类预算下拉框数据
+    const [lastBudgetPrjOrigin, setLastBudgetPrjOrigin] = useState([]); //去年同类预算下拉框数据 - 处理前数据
 
     useEffect(() => {
       if (params !== '') {
@@ -187,6 +188,7 @@ export default connect(({ global }) => ({
           if (res?.success) {
             let data = toTreeData(res.record);
             setLastBudgetPrj(data.length > 0 ? data[0]?.children : []);
+            setLastBudgetPrjOrigin(res.record);
             setIsSpinning(false);
           }
         })
@@ -313,6 +315,7 @@ export default connect(({ global }) => ({
       display,
       addonBefore = '',
       labelNode = false,
+      onChange = () => {},
     }) => {
       return (
         <Col span={8} style={{ display }}>
@@ -337,6 +340,7 @@ export default connect(({ global }) => ({
                 style={{ width: '100%' }}
                 disabled={propsData.operateType === 'XQ'}
                 addonBefore={addonBefore}
+                onChange={onChange}
               />,
             )}
           </Form.Item>
@@ -740,6 +744,15 @@ export default connect(({ global }) => ({
       </Col>
     );
 
+    const handleYsmcChange = e => {
+      e.persist();
+      console.log('🚀 ~ handleYsmcChange ~ e:', e.target?.value);
+      let obj = lastBudgetPrjOrigin.find(x => x.ysName === e.target?.value) || {};
+      setFieldsValue({
+        glqntlys: obj.ysID,
+      });
+    };
+
     const getBasic = () => {
       const display = rowTitle.basic ? 'block' : 'none';
       return (
@@ -781,6 +794,7 @@ export default connect(({ global }) => ({
                   : updateData.YSXMMC,
               display,
               addonBefore: getFieldValue('nf')?.year(),
+              onChange: handleYsmcChange,
             })}
             {getRadio({
               label: '属于新增/结转项目',

@@ -79,6 +79,10 @@ export default function OpenValuationModal(props) {
   ];
   const PJZT = [
     {
+      ibm: 0,
+      note: '全部',
+    },
+    {
       ibm: 2,
       note: '未开始',
     },

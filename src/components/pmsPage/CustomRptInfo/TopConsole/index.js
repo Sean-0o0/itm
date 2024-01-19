@@ -23,7 +23,14 @@ const { RangePicker } = DatePicker;
 
 export default function TopConsole(props) {
   //下拉框数据
-  const { data = {}, setData = () => {}, getSQL = () => {}, isUnfold, setIsUnfold } = props;
+  const {
+    data = {},
+    setData = () => {},
+    getSQL = () => {},
+    isUnfold,
+    setIsUnfold,
+    tableData = {},
+  } = props;
 
   //查询的值
 
@@ -406,7 +413,11 @@ export default function TopConsole(props) {
             )}
           </div>
           <div className="right">
-            <Button className="btn-search" type="primary" onClick={() => getSQL({}, data)}>
+            <Button
+              className="btn-search"
+              type="primary"
+              onClick={() => getSQL({ sort: tableData.sort }, data)}
+            >
               查询
             </Button>
             <Button className="btn-reset" onClick={handleReset}>

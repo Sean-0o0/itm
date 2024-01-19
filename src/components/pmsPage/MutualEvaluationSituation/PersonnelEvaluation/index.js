@@ -1,17 +1,21 @@
 import React, { useEffect, useState, useRef, useCallback, Fragment } from 'react';
-import { Button, Divider, Empty, Input, message, Popover, Table, Tabs, Tooltip, Tree } from 'antd';
+import { Drawer, Divider, Empty, Input, message, Popover, Table, Tabs, Tooltip, Tree } from 'antd';
 import moment from 'moment';
 import tableInfoImg from '../../../../assets/MutualEvaluation/staff-evaluation-table-info.png';
 import cyxmsImg from '../../../../assets/MutualEvaluation/icon_cyxms.png';
 import pjImg from '../../../../assets/MutualEvaluation/icon_pj.png';
-import { QueryEmployeeAppraiseList } from '../../../../services/pmsServices';
+import {
+  QueryEmployeeAppraiseList,
+  QueryMemberRevaluationByORG,
+} from '../../../../services/pmsServices';
 import { Link } from 'react-router-dom';
 import { EncryptBase64 } from '../../../Common/Encrypt';
 import * as Lodash from 'lodash';
+import TopFilter from '../../MutualEvaluation/TopFilter';
 
 export default function PersonnelEvaluation(props) {
   const { dataProps = {}, funcProps = {} } = props;
-  const { routes = [], userBasicInfo = {}, staffData = [], originStaffData = {} } = dataProps;
+  const { routes = [], userBasicInfo = {}, staffData = [] } = dataProps;
   const { setIsSpinning, handleStaffData } = funcProps;
   const [treeData, setTreeData] = useState([]); //左侧树型数据
   const [tableData, setTableData] = useState({
@@ -20,41 +24,142 @@ export default function PersonnelEvaluation(props) {
     pageSize: 20,
     total: -1,
     loading: false,
-    info: [],
   }); //右侧表格数据
   const [activeKey, setActiveKey] = useState(''); //顶部高亮tab
-  const [curStaffID, setCurStaffID] = useState(-1); //选中的人员ID
-  const [expandKeys, setExpandKeys] = useState([]); //展开id
+  const [curOrgID, setCurOrgID] = useState(-1); //选中的人员ID //当前选中部门
+  const [expandKeys, setExpandKeys] = useState(['11167', '357', '11168', '15681']); //展开id
   const [searchInput, setSearchInput] = useState(undefined); //
   const [detailData, setDetailData] = useState({
     data: [],
     current: 1,
-    pageSize: 5,
+    pageSize: 20,
     loading: false,
     visible: false,
     curPrjId: -1,
   }); //打分详情浮窗表格数据
+  const [drawerData, setDrawerData] = useState({
+    visible: false,
+    data: [],
+    current: 1,
+    pageSize: 20,
+    total: -1,
+    loading: false,
+    info: {},
+    curStaffID: -1,
+  }); //评价详情抽屉
+  const [sortInfo, setSortInfo] = useState({
+    sort: undefined,
+    columnKey: '',
+  }); //用于重置列排序 - 切换部门后
+  const [filterData, setFilterData] = useState({
+    year: moment(),
+  });
+
+  const filterConfig = [
+    {
+      label: '年份',
+      componentType: 'date-picker-year',
+      valueField: 'year',
+      valueType: 'number',
+      allowClear: false,
+    },
+    { label: '人员名称', componentType: 'input', valueField: 'memberName', valueType: 'string' },
+  ];
 
   useEffect(() => {
     if (staffData.length > 0) {
-      setActiveKey(staffData[0].value);
-      setTreeData(JSON.parse(JSON.stringify(staffData[0].children || [])));
+      setTreeData(JSON.parse(JSON.stringify(staffData)));
+      // console.log('🚀 ~ useEffect ~ staffData:', staffData);
+      setCurOrgID(staffData[0].value);
+      getOrgTableData({ orgId: staffData[0].value, year: moment().year() }); //根据部门查询表格数据
     }
-    return () => { };
+    return () => {};
   }, [JSON.stringify(staffData)]);
 
   useEffect(() => {
-    if (curStaffID !== -1) getTableData(Number(curStaffID));
-    return () => { };
-  }, [curStaffID]);
+    return () => {
+      setSortInfo({
+        sort: undefined,
+        columnKey: '',
+      });
+    };
+  }, [curOrgID]);
 
-  //获取右侧表格数据
-  const getTableData = useCallback((memberId, current = 1, pageSize = 20, sort = '') => {
-    setTableData(p => ({ ...p, loading: true }));
-    QueryEmployeeAppraiseList({
-      queryType: 'RYXQ',
-      userType: 'LD',
-      memberId,
+  //获取评价详情表格数据
+  const getTableData = useCallback(
+    (memberId, current = 1, pageSize = 20, sort = '', year = moment().year()) => {
+      setDrawerData(p => ({
+        ...p,
+        loading: true,
+      }));
+      QueryEmployeeAppraiseList({
+        queryType: 'RYXQ',
+        userType: 'LD',
+        memberId,
+        year,
+        paging: 1,
+        current,
+        pageSize,
+        sort,
+        total: -1,
+      })
+        .then(res => {
+          if (res?.success) {
+            const data = JSON.parse(res.xqmxResult || '[]');
+            const data2 = JSON.parse(res.xqglResult || '[]');
+            const info = data2.length > 0 ? data2[0] : {};
+            const finalData = data.reduce((result, item) => {
+              const existingItem = result.find(i => i.XMID === item.XMID);
+              if (existingItem) {
+                existingItem.GW += `、${item.GW}`;
+              } else {
+                result.push(item);
+              }
+              return result;
+            }, []);
+            console.log('🚀 ~ getTableData', finalData, data2);
+            setDrawerData(p => ({
+              ...p,
+              data: finalData,
+              current,
+              pageSize,
+              loading: false,
+              info,
+              total: res.totalrows,
+              curStaffID: memberId,
+            }));
+          }
+        })
+        .catch(e => {
+          console.error('🚀评价详情数据', e);
+          message.error('评价详情数据', 1);
+          setDrawerData(p => ({
+            ...p,
+            loading: false,
+          }));
+        });
+    },
+    [],
+  );
+
+  //根据部门查询表格数据
+  const getOrgTableData = ({
+    orgId = -1,
+    current = 1,
+    pageSize = 20,
+    sort = '',
+    year = moment().year(),
+    memberName,
+  }) => {
+    setTableData(p => ({
+      ...p,
+      loading: true,
+    }));
+    QueryMemberRevaluationByORG({
+      queryType: 'BMRY',
+      orgId,
+      memberName,
+      year,
       paging: 1,
       current,
       pageSize,
@@ -63,46 +168,26 @@ export default function PersonnelEvaluation(props) {
     })
       .then(res => {
         if (res?.success) {
-          const data = JSON.parse(res.xqmxResult || '[]');
-          const data2 = JSON.parse(res.xqglResult || '[]');
-          const info = data2.length > 0 ? data2[0] : {};
-          const finalData = data.reduce((result, item) => {
-            const existingItem = result.find(i => i.XMID === item.XMID);
-            if (existingItem) {
-              existingItem.GW += `、${item.GW}`;
-            } else {
-              result.push(item);
-            }
-            return result;
-          }, []);
-          console.log('🚀 ~ getTableData', finalData, data2);
+          const data = JSON.parse(res.result || '[]');
+          // console.log('🚀 ~ getOrgTableData ~ data:', data);
           setTableData({
-            data: finalData,
+            data,
             current,
             pageSize,
             loading: false,
-            info,
             total: res.totalrows,
           });
         }
       })
       .catch(e => {
-        console.error('🚀右侧表格数据', e);
-        message.error('右侧表格数据', 1);
-        setTableData(p => ({ ...p, loading: false }));
+        console.error('🚀评价详情数据', e);
+        message.error('评价详情数据', 1);
+        setTableData(p => ({
+          ...p,
+          loading: false,
+        }));
       });
-  }, []);
-
-  const handleTabsChange = useCallback(
-    key => {
-      setActiveKey(key);
-      setTreeData(staffData.find(x => x.value === key)?.children || []);
-      // onSearch(searchInput);
-      setSearchInput(undefined);
-      setExpandKeys([]);
-    },
-    [searchInput, JSON.stringify(staffData)],
-  );
+  };
 
   const renderTreeNodes = useCallback(
     (data = []) =>
@@ -112,7 +197,7 @@ export default function PersonnelEvaluation(props) {
             <Tree.TreeNode
               title={item.title}
               key={item.value}
-              selectable={item.selectable === false ? false : true}
+              // selectable={item.selectable === false ? false : true}
               icon={<i className="iconfont icon-company" style={{ fontSize: 14 }} />}
             >
               {renderTreeNodes(item.children)}
@@ -123,23 +208,106 @@ export default function PersonnelEvaluation(props) {
           <Tree.TreeNode
             key={item.value}
             {...item}
-            selectable={item.selectable === false ? false : true}
-            icon={<i className="iconfont icon-user" style={{ fontSize: 14 }} />}
+            // selectable={item.selectable === false ? false : true}
+            icon={<i className="iconfont icon-company" style={{ fontSize: 14 }} />}
           />
         );
       }),
     [],
   );
 
-  const onTreeSelcet = useCallback((keyArr, e) => {
-    // console.log('🚀 ~ onTreeSelcet ~ keyArr, e:', keyArr, e);
-    if (keyArr.length > 0) {
-      setCurStaffID(keyArr[0]);
-    }
-  }, []);
+  const onTreeSelcet = useCallback(
+    (keyArr, e) => {
+      if (keyArr.length > 0 && e.selected) {
+        setCurOrgID(keyArr[0]);
+        getOrgTableData({ orgId: keyArr[0], ...filterData, year: filterData.year?.year() }); //根据部门查询表格数据
+      }
+    },
+    [JSON.stringify(filterData)],
+  );
 
   //右侧表配置
   const columns = [
+    {
+      title: '人员名称',
+      dataIndex: 'RYMC',
+      width: '10%',
+      key: 'RYMC',
+      ellipsis: true,
+      render: (txt, row) => (
+        <Link
+          style={{ color: '#3361ff' }}
+          to={{
+            pathname: `/pms/manage/staffDetail/${EncryptBase64(
+              JSON.stringify({
+                ryid: row.RYID,
+              }),
+            )}`,
+            state: {
+              routes,
+            },
+          }}
+          className="table-link-strong"
+        >
+          {txt}
+        </Link>
+      ),
+    },
+    {
+      title: '承担角色',
+      dataIndex: 'GW',
+      // width: '20%',
+      key: 'GW',
+      ellipsis: true,
+      render: txt => (
+        <Tooltip title={txt} placement="topLeft">
+          <span style={{ cursor: 'default' }}>{txt}</span>
+        </Tooltip>
+      ),
+    },
+    {
+      title: '参与项目数',
+      dataIndex: 'CYXM',
+      width: '15%',
+      key: 'CYXM',
+      ellipsis: true,
+      sorter: true,
+      sortOrder: sortInfo.columnKey === 'CYXM' ? sortInfo.order : undefined, //排序的受控属性，外界可用此控制列的排序，可设置为 'ascend' 'descend' false
+    },
+    {
+      title: '评价项目数',
+      dataIndex: 'PJXM',
+      width: '15%',
+      key: 'PJXM',
+      ellipsis: true,
+      sorter: true,
+      sortOrder: sortInfo.columnKey === 'PJXM' ? sortInfo.order : undefined, //排序的受控属性，外界可用此控制列的排序，可设置为 'ascend' 'descend' false
+    },
+    {
+      title: '评价平均分',
+      dataIndex: 'PJF',
+      width: '15%',
+      key: 'PJF',
+      ellipsis: true,
+      sorter: true,
+      sortOrder: sortInfo.columnKey === 'PJF' ? sortInfo.order : undefined, //排序的受控属性，外界可用此控制列的排序，可设置为 'ascend' 'descend' false
+    },
+    {
+      title: '评价详情',
+      dataIndex: 'PJXQ',
+      width: '10%',
+      key: 'PJXQ',
+      ellipsis: true,
+      render: (txt, row) => (
+        <a style={{ color: '#3361ff' }} onClick={() => handlePJXQClick(Number(row.RYID))}>
+          查看详情
+        </a>
+      ),
+    },
+  ];
+
+  //抽屉表格Columns
+  const drawerColumns = [
     {
       title: '年份',
       dataIndex: 'XMNF',
@@ -151,7 +319,7 @@ export default function PersonnelEvaluation(props) {
     {
       title: '项目名称',
       dataIndex: 'XMMC',
-      width: '20%',
+      width: '25%',
       key: 'XMMC',
       ellipsis: true,
       render: (txt, row) => (
@@ -167,6 +335,9 @@ export default function PersonnelEvaluation(props) {
               routes,
             },
           }}
+          onClick={() => {
+            setDrawerData(p => ({ ...p, visible: false }));
+          }}
           className="table-link-strong"
         >
           {txt}
@@ -176,7 +347,7 @@ export default function PersonnelEvaluation(props) {
     {
       title: '项目角色',
       dataIndex: 'GW',
-      width: '30%',
+      // width: '30%',
       key: 'GW',
       ellipsis: true,
       render: txt => (
@@ -188,19 +359,17 @@ export default function PersonnelEvaluation(props) {
     {
       title: '分数',
       dataIndex: 'FS',
-      width: '20%',
+      width: '15%',
       key: 'FS',
       ellipsis: true,
-      sorter: (a, b, order) => {
-        if (Lodash.isEmpty(a.FS) || Lodash.isEmpty(b.FS)) return 1;
-        return a.FS - b.FS;
-      },
+      sorter: true,
     },
     {
       title: '打分详情',
       dataIndex: 'DFXQ',
-      width: '20%',
+      width: '15%',
       key: 'DFXQ',
+      align: 'center',
       ellipsis: true,
       render: (txt, row) => (
         <Popover
@@ -210,11 +379,16 @@ export default function PersonnelEvaluation(props) {
           content={getPopoverContent(detailData)}
           overlayClassName="unplanned-demand-content-popover"
           visible={Number(row.XMID) === detailData.curPrjId ? detailData.visible : false}
-          onVisibleChange={v => setDetailData(p => ({ ...p, visible: v }))}
+          onVisibleChange={v =>
+            setDetailData(p => ({
+              ...p,
+              visible: v,
+            }))
+          }
         >
           <a
             style={{ color: '#3361ff' }}
-            onClick={() => handleDFXQClick(Number(curStaffID), Number(row.XMID))}
+            onClick={() => handleDFXQClick(Number(drawerData.curStaffID), Number(row.XMID))}
           >
             查看详情
           </a>
@@ -223,12 +397,27 @@ export default function PersonnelEvaluation(props) {
     },
   ];
 
+  const handlePJXQClick = useCallback(
+    memberId => {
+      setDrawerData(p => ({
+        ...p,
+        visible: true,
+      }));
+      getTableData(memberId, 1, 20, '', filterData.year?.year());
+    },
+    [JSON.stringify(filterData)],
+  );
+
   const handleDFXQClick = useCallback((memberId, projectId) => {
-    setDetailData(p => ({ ...p, visible: true, curPrjId: projectId }));
+    setDetailData(p => ({
+      ...p,
+      visible: true,
+      curPrjId: projectId,
+    }));
     getDetailData({ memberId, projectId });
   }, []);
 
-  const getPopoverContent = ({ data = [], current = 1, pageSize = 5, loading = false }) => {
+  const getPopoverContent = ({ data = [], current = 1, pageSize = 20, loading = false }) => {
     const columns = [
       {
         title: '打分人员',
@@ -248,6 +437,9 @@ export default function PersonnelEvaluation(props) {
               state: {
                 routes,
               },
+            }}
+            onClick={() => {
+              setDrawerData(p => ({ ...p, visible: false }));
             }}
             className="table-link-strong"
           >
@@ -272,16 +464,16 @@ export default function PersonnelEvaluation(props) {
           dataSource={data}
           size="middle"
           pagination={false}
-        // pagination={{
-        //   current,
-        //   pageSize: 5,
-        //   // pageSizeOptions: ['5', '20', '20', '40'],
-        //   showSizeChanger: false,
-        //   hideOnSinglePage: false,
-        //   showQuickJumper: false,
-        //   // showTotal: t => `共 ${data.length} 条数据`,
-        //   // total: data.length,
-        // }}
+          // pagination={{
+          //   current,
+          //   pageSize: 10,
+          //   // pageSizeOptions: ['10', '20', '20', '40'],
+          //   showSizeChanger: false,
+          //   hideOnSinglePage: false,
+          //   showQuickJumper: false,
+          //   // showTotal: t => `共 ${data.length} 条数据`,
+          //   // total: data.length,
+          // }}
         />
       </div>
     );
@@ -289,7 +481,10 @@ export default function PersonnelEvaluation(props) {
 
   //获取打分详情数据
   const getDetailData = useCallback(({ memberId, projectId }) => {
-    setDetailData(p => ({ ...p, loading: true }));
+    setDetailData(p => ({
+      ...p,
+      loading: true,
+    }));
     QueryEmployeeAppraiseList({
       queryType: 'DFXQ',
       userType: 'LD',
@@ -299,13 +494,22 @@ export default function PersonnelEvaluation(props) {
       .then(res => {
         if (res?.success) {
           const data = JSON.parse(res.xqmxResult || '[]') || [];
-          setDetailData(p => ({ ...p, data, current: 1, pageSize: 5, loading: false }));
+          setDetailData(p => ({
+            ...p,
+            data,
+            current: 1,
+            pageSize: 20,
+            loading: false,
+          }));
         }
       })
       .catch(e => {
         console.error('🚀打分详情数据', e);
         message.error('打分详情数据获取失败', 1);
-        setDetailData(p => ({ ...p, loading: false }));
+        setDetailData(p => ({
+          ...p,
+          loading: false,
+        }));
       });
   }, []);
 
@@ -313,180 +517,205 @@ export default function PersonnelEvaluation(props) {
   const handleTableChange = useCallback(
     (pagination = {}, filter, sorter) => {
       const { current = 1, pageSize = 20 } = pagination;
+      setSortInfo(sorter);
       if (sorter.order !== undefined) {
-        getTableData(
-          Number(curStaffID),
+        getOrgTableData({
+          orgId: Number(curOrgID),
           current,
           pageSize,
-          sorter.field + (sorter.order === 'ascend' ? ' ASC' : ' DESC'),
-        );
+          sort: sorter.field + (sorter.order === 'ascend' ? ' ASC' : ' DESC'),
+          ...filterData,
+          year: filterData.year?.year(),
+        });
       } else {
-        getTableData(Number(curStaffID), current, pageSize);
+        getOrgTableData({
+          orgId: Number(curOrgID),
+          current,
+          pageSize,
+          ...filterData,
+          year: filterData.year?.year(),
+        });
       }
 
       return;
     },
-    [curStaffID],
+    [curOrgID, JSON.stringify(filterData)],
   );
 
-  //模糊搜索
-  const onSearch = useCallback(
-    value => {
-      const recursionHandler = (val = [], arr = [], getExp = false) => {
-        let newarr = [];
-        let expandArr = [];
-        arr.forEach(item => {
-          if (item.children && item.children.length) {
-            let children = recursionHandler(val, item.children);
-            let expandArrChildren = recursionHandler(val, item.children, true);
-            // console.log(
-            //   '🚀 ~ file: index.js:273 ~ recursionHandler ~ expandArrChildren:',
-            //   expandArrChildren,
-            // );
-            let obj = {
-              ...item,
-              children,
-            };
-            if (children && children.length) {
-              newarr.push(obj);
-              expandArr.push(obj.value);
-            }
-            if (expandArrChildren && expandArrChildren.length) {
-              expandArr = expandArr.concat(expandArrChildren);
-            }
-          } else {
-            if (item.title.includes(val)) {
-              newarr.push(item);
-            }
-          }
-        });
-        if (getExp) return expandArr;
-        return newarr;
-      };
-      const finalData = recursionHandler(
-        value,
-        staffData.find(x => x.value === activeKey)?.children,
-      );
-      const expandArr = recursionHandler(
-        value,
-        staffData.find(x => x.value === activeKey)?.children,
-        true,
-      );
-      // console.log(
-      //   '🚀 ~ file: index.js:288 ~ PersonnelEvaluation ~ finalData:',
-      //   finalData,
-      //   expandArr,
-      // );
-      setTreeData(finalData);
-      setSearchInput(value);
-      if (value) {
-        setExpandKeys(expandArr);
+  //抽屉表格操作后更新数据
+  const handleDrawerTableChange = useCallback(
+    (pagination = {}, filter, sorter) => {
+      const { current = 1, pageSize = 20 } = pagination;
+      if (sorter.order !== undefined) {
+        getTableData(
+          Number(drawerData.curStaffID),
+          current,
+          pageSize,
+          sorter.field + (sorter.order === 'ascend' ? ' ASC' : ' DESC'),
+          filterData.year?.year(),
+        );
       } else {
-        setExpandKeys([]);
+        getTableData(Number(drawerData.curStaffID), current, pageSize, '', filterData.year?.year());
       }
+      return;
     },
-    [JSON.stringify(staffData), activeKey],
+    [drawerData.curStaffID, JSON.stringify(filterData)],
   );
 
   const onExpand = useCallback(expandedKeys => {
+    // console.log('🚀 ~ onExpand ~ expandedKeys:', expandedKeys);
     setExpandKeys(expandedKeys);
   }, []);
 
   return (
     <div className="personnel-evaluation-box content-box">
-      <Tabs
-        activeKey={activeKey}
-        onChange={handleTabsChange}
-        size={'large'}
-        type="card"
-        tabPosition="left"
+      <Drawer
+        title="评价详情"
+        width={950}
+        onClose={() =>
+          setDrawerData(p => ({
+            visible: false,
+            data: [],
+            info: {},
+            curStaffID: -1,
+          }))
+        }
+        visible={drawerData.visible}
+        className="budget-payment-drawer"
+        maskClosable={true}
+        zIndex={101}
+        destroyOnClose={true}
+        maskStyle={{
+          backgroundColor: 'rgb(0 0 0 / 30%)',
+        }}
       >
-        {staffData.map(x => (
-          <Tabs.TabPane tab={x.title} key={x.value}></Tabs.TabPane>
-        ))}
-      </Tabs>
+        <div className="evaluation-table">
+          <div className="table-info">
+            <img className="table-info-img" src={tableInfoImg} alt="left-img" />
+            <div className="info-middle">
+              <div className="name-row">
+                <Link
+                  style={{
+                    color: '#3361ff',
+                  }}
+                  to={{
+                    pathname: `/pms/manage/StaffDetail/${EncryptBase64(
+                      JSON.stringify({
+                        ryid: drawerData.curStaffID,
+                      }),
+                    )}`,
+                    state: {
+                      routes,
+                    },
+                  }}
+                  onClick={() => {
+                    setDrawerData(p => ({ ...p, visible: false }));
+                  }}
+                  className="staff-name"
+                >
+                  {drawerData.info.RYMC}
+                </Link>
+                <span className="work-days">
+                  已加入浙商证券
+                  {drawerData.info.RZTS || '--'}天
+                </span>
+              </div>
+              <div className="org-row">
+                部门：
+                <span>{drawerData.info.BM || '暂无'}</span>
+              </div>
+              <div className="position-phone-row">
+                <div className="position-row">
+                  岗位：
+                  <span>{drawerData.info.GW || '暂无'}</span>
+                </div>
+                <Divider
+                  type="vertical"
+                  style={{
+                    color: '#909399',
+                    margin: '0px 8px',
+                  }}
+                />
+                <div className="phone-row">
+                  电话：
+                  <span>{drawerData.info.SJ || '暂无'}</span>
+                </div>
+              </div>
+            </div>
+            <div className="info-item" key={'参与项目数量'}>
+              <img className="info-item-img" src={cyxmsImg} alt="img" />
+              <div className="item-right">
+                <div className="label-txt">参与项目数量</div>
+                <div className="value-num">{drawerData.info.CYXMSL || '暂无'}</div>
+              </div>
+            </div>
+            <div className="info-item" key={'评价平均分'}>
+              <img className="info-item-img" src={pjImg} alt="img" />
+              <div className="item-right">
+                <div className="label-txt">评价平均分</div>
+                <div className="value-num">{drawerData.info.PJF || '暂无'}</div>
+              </div>
+            </div>
+          </div>
+          <div className="table-box">
+            <Table
+              columns={drawerColumns}
+              rowKey={row => `${drawerData.curStaffID}-${row.XMID}`}
+              dataSource={drawerData.data}
+              onChange={handleDrawerTableChange}
+              loading={drawerData.loading}
+              pagination={{
+                current: drawerData.current,
+                pageSize: drawerData.pageSize,
+                defaultCurrent: 1,
+                pageSizeOptions: ['20', '40', '50', '100'],
+                showSizeChanger: true,
+                hideOnSinglePage: false,
+                showTotal: t => `共 ${drawerData.total} 条数据`,
+                total: drawerData.total,
+              }}
+              bordered //记得注释
+            />
+          </div>
+        </div>
+      </Drawer>
+      <TopFilter
+        handleSearch={(arg = {}) => getOrgTableData({ orgId: curOrgID, ...arg })}
+        config={filterConfig}
+        filterData={filterData}
+        setFilterData={setFilterData}
+        resetFunc={() => {
+          setFilterData({ year: moment() });
+        }}
+      />
       <div className="content-box">
         <div className="left-box">
-          <Input.Search
-            placeholder="请输入人员名称"
-            // onSearch={value => console.log(value)}
-            value={searchInput}
-            onChange={e => {
-              e.persist();
-              const { value } = e.target || {};
-              onSearch(value);
-            }}
-            style={{ width: 152, marginBottom: 12 }}
-          />
           <div className="tree-box">
-            <Tree showIcon onSelect={onTreeSelcet} expandedKeys={expandKeys} onExpand={onExpand}>
+            <Tree
+              showIcon
+              selectedKeys={[curOrgID]}
+              onSelect={onTreeSelcet}
+              // defaultExpandedKeys={['11167', '357', '11168', '15681']}
+              expandedKeys={[...expandKeys]}
+              onExpand={onExpand}
+            >
               {renderTreeNodes(treeData)}
             </Tree>
           </div>
         </div>
         <div className="right-box">
-          {curStaffID === -1 ? (
+          {curOrgID === -1 ? (
             <Empty
-              description="选择人员后查看数据"
+              description="选择部门后查看数据"
               image={Empty.PRESENTED_IMAGE_SIMPLE}
               style={{ margin: 'auto 0' }}
             />
           ) : (
             <Fragment>
-              <div className="table-info">
-                <img className="table-info-img" src={tableInfoImg} alt="left-img" />
-                <div className="info-middle">
-                  <div className="name-row">
-                    <Link
-                      style={{ color: '#3361ff' }}
-                      to={{
-                        pathname: `/pms/manage/StaffDetail/${EncryptBase64(
-                          JSON.stringify({
-                            ryid: curStaffID,
-                          }),
-                        )}`,
-                        state: {
-                          routes,
-                        },
-                      }}
-                      className="staff-name"
-                    >
-                      {tableData.info.RYMC}
-                    </Link>
-                    <span className="work-days">已加入浙商证券{tableData.info.RZTS || '--'}天</span>
-                  </div>
-                  <div className="org-row">
-                    部门：<span>{tableData.info.BM || '暂无'}</span>
-                  </div>
-                  <div className="position-phone-row">
-                    <div className="position-row">
-                      岗位：<span>{tableData.info.GW || '暂无'}</span>
-                    </div>
-                    <Divider type="vertical" style={{ color: '#909399', margin: '0px 8px' }} />
-                    <div className="phone-row">
-                      电话：<span>{tableData.info.SJ || '暂无'}</span>
-                    </div>
-                  </div>
-                </div>
-                <div className="info-item" key={'参与项目数量'}>
-                  <img className="info-item-img" src={cyxmsImg} alt="img" />
-                  <div className="item-right">
-                    <div className="label-txt">参与项目数量</div>
-                    <div className="value-num">{tableData.info.CYXMSL || '暂无'}</div>
-                  </div>
-                </div>
-                <div className="info-item" key={'评价平均分'}>
-                  <img className="info-item-img" src={pjImg} alt="img" />
-                  <div className="item-right">
-                    <div className="label-txt">评价平均分</div>
-                    <div className="value-num">{tableData.info.PJF || '暂无'}</div>
-                  </div>
-                </div>
-              </div>
               <div className="table-box">
                 <Table
                   loading={tableData.loading}
-                  rowKey={row => `${curStaffID}-${row.XMID}`}
+                  rowKey={row => `${curOrgID}-${row.RYID}`}
                   columns={columns}
                   dataSource={tableData.data}
                   onChange={handleTableChange}
@@ -500,7 +729,7 @@ export default function PersonnelEvaluation(props) {
                     showTotal: t => `共 ${tableData.total} 条数据`,
                     total: tableData.total,
                   }}
-                // pagination={false}
+                  // pagination={false}
                 />
               </div>
             </Fragment>

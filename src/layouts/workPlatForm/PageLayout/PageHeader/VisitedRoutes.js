@@ -333,7 +333,7 @@ function VisitedRoutes(props) {
                 urlEnd: 'MutualEvaluation',
               },
               {
-                title: '人员评价情况',
+                title: '人员评价统计',
                 urlEnd: 'MutualEvaluationSituation',
               },
               {

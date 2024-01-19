@@ -123,10 +123,10 @@ export default function CustomRptManagement(props) {
         //新增时 - 筛选条件和展示字段默认项目名称, ID为8
         if (isAdding) {
           let conditionFilterDefault = conditionFilterData.filter(x =>
-            [8, 10, 102, 18, 21].includes(Number(x.ID)),
+            [8, 10, 102].includes(Number(x.ID)),
           );
           let columnFieldsDefault = JSON.parse(columnFieldsRes.result)
-            .filter(x => [8, 10, 102].includes(Number(x.ID)))
+            .filter(x => [8, 10, 102, 18, 21].includes(Number(x.ID)))
             ?.map(x => ({ ...x, key: x.ID, title: x.NAME }));
           const promiseArr = conditionFilterDefault.map(x =>
             QueryCustomQueryCriteria({
@@ -259,7 +259,7 @@ export default function CustomRptManagement(props) {
   };
 
   //获取我的报表列表数据
-  const getRptList = (bbmc = undefined, current = 1, notStopSpinning = false) => {
+  const getRptList = (bbmc = undefined, current = 1, stopSpinning = false) => {
     setIsSpinning(true);
     let params = {
       current,
@@ -288,7 +288,7 @@ export default function CustomRptManagement(props) {
           // }
           setRptList([...rec]);
           setRptOrigin([...rec]);
-          !notStopSpinning && setIsSpinning(false); //新建时不调用这个
+          !stopSpinning && setIsSpinning(false); //新建时不调用这个
         }
       })
       .catch(e => {
@@ -389,6 +389,12 @@ export default function CustomRptManagement(props) {
     setActiveBbData({ bbid: -1, bbmc: '未命名报表', cjrid: -1 });
   };
 
+  //保存至我的后刷新
+  const refreshAfterSave = (obj = {}) => {
+    getRptList(undefined, 1, true);
+    setActiveBbData(obj);
+  };
+
   return (
     <div className="custom-rpt-management-box">
       <Spin
@@ -448,7 +454,7 @@ export default function CustomRptManagement(props) {
             }}
           />
           {status === 'unSlt' && (
-            <div className="rpt-right-empty">
+            <div className="rpt-right-empty" style={isFold ? { marginLeft: 0 } : {}}>
               <>
                 <img src={emptyImg} alt="" />
                 <div className="empty-txt">欢迎使用自定义查询</div>
@@ -494,6 +500,7 @@ export default function CustomRptManagement(props) {
                 isFold={isFold}
                 isSpinning={isSpinning}
                 emptyImg={emptyImg}
+                refreshAfterSave={refreshAfterSave}
               />
             </div>
           )}

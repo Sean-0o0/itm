@@ -19,6 +19,10 @@ export default function InfoTable(props) {
     setIsSpinning,
     cjrid,
     handleEdit = () => {},
+    refreshAfterSave = () => {},
+    bbmc,
+    sortInfo = {},
+    setSortInfo,
   } = props; //表格数据
   const location = useLocation();
   const [tableColumns, setTableColumns] = useState([]); //处理过的列配置信息
@@ -40,7 +44,7 @@ export default function InfoTable(props) {
                 case 'XMYSJE':
                 case 'YSXMJE':
                 case 'HTJE':
-                case 'LVBZJ':
+                case 'LYBZJ':
                 case 'TBBZJ':
                 case 'YFKFY':
                 case 'WFKFY':
@@ -52,6 +56,7 @@ export default function InfoTable(props) {
                     align: 'right',
                     ellipsis: true,
                     sorter: true,
+                    sortOrder: sortInfo.columnKey === x.dataIndex ? sortInfo.order : undefined, //排序的受控属性，外界可用此控制列的排序，可设置为 'ascend' 'descend' false
                     sortDirections: ['descend', 'ascend'],
                     render: (txt, row) => (
                       <span style={{ marginRight: 30 }}>
@@ -250,7 +255,7 @@ export default function InfoTable(props) {
       // console.log('🚀 ~ file: index.js:21 ~ useEffect ~ columns:', columns);
     }
     return () => {};
-  }, [JSON.stringify(columns)]);
+  }, [JSON.stringify(columns), JSON.stringify(sortInfo)]);
 
   //金额格式化
   const getAmountFormat = value => {
@@ -292,6 +297,7 @@ export default function InfoTable(props) {
   //表格操作后更新数据
   const handleTableChange = (pagination, filters, sorter, extra) => {
     console.log('🚀 ~ handleTableChange ~ sorter:', sorter);
+    setSortInfo(sorter);
     if (sorter.order !== undefined) {
       if (sorter.order === 'ascend') {
         getSQL(
@@ -333,7 +339,7 @@ export default function InfoTable(props) {
           .then(res => {
             if (res?.success) {
               message.success('操作成功', 1);
-              setIsSpinning(false);
+              refreshAfterSave({ bbid: Number(res.bbid), bbmc, cjrid: Number(LOGIN_USERID) });
             }
           })
           .catch(e => {
@@ -348,14 +354,16 @@ export default function InfoTable(props) {
   return (
     <div className="info-table">
       <div className="btn-export-box">
-        <Button
-          type="primary"
-          className="btn-export"
-          style={{ marginRight: 8 }}
-          onClick={() => handleEdit(bbid)}
-        >
-          编辑
-        </Button>
+        {Number(LOGIN_USERID) === Number(cjrid) && (
+          <Button
+            type="primary"
+            className="btn-export"
+            style={{ marginRight: 8 }}
+            onClick={() => handleEdit(bbid)}
+          >
+            编辑
+          </Button>
+        )}
         {Number(LOGIN_USERID) !== Number(cjrid) && (
           <Button
             type="primary"

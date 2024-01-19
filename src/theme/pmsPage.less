@@ -2325,6 +2325,147 @@
     .ant-table .ant-table-placeholder {
       border: 0;
     }
+    & > .evaluation-table {
+      height: 100%;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+
+      & > .table-info {
+        // min-height: 96px;
+        flex-shrink: 0;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        font-family: PingFangSC, PingFang SC;
+
+        .table-info-img {
+          width: 96px;
+          height: 96px;
+          border-radius: 8px;
+          flex-shrink: 0;
+        }
+
+        .info-middle {
+          margin-left: 16px;
+          margin-right: auto;
+          flex-grow: 1;
+          width: calc(100% - 420px);
+
+          .name-row {
+            font-size: 24px;
+            font-family: PingFangSC, PingFang SC;
+            line-height: 34px;
+            font-weight: bold;
+            color: #303133;
+            margin-bottom: 10px;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            white-space: nowrap;
+            margin-bottom: 12px;
+
+            .work-days {
+              margin-left: 8px;
+              font-size: 14px;
+              font-weight: 400;
+              color: #999999;
+              line-height: 22px;
+            }
+
+            .staff-name {
+              &:hover {
+                color: #3361ffaf !important;
+              }
+            }
+          }
+
+          .org-row,
+          .position-row,
+          .phone-row {
+            font-size: 14px;
+            font-weight: 400;
+            color: #909399;
+            line-height: 22px;
+            // text-overflow: ellipsis;
+            // overflow: hidden;
+            white-space: normal;
+
+            span {
+              color: #303133;
+            }
+          }
+
+          .position-phone-row {
+            margin-top: 6px;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            white-space: nowrap;
+
+            .position-row {
+              max-width: 66%;
+            }
+          }
+        }
+
+        .info-item {
+          flex-shrink: 0;
+          display: flex;
+          flex-direction: row;
+          align-items: flex-start;
+          font-size: 14px;
+          font-weight: 400;
+          color: #606266;
+          line-height: 20px;
+          min-width: 130px;
+          margin-left: 24px;
+
+          .info-item-img {
+            width: 32px;
+            height: 32px;
+            margin-right: 8px;
+            flex-shrink: 0;
+          }
+
+          .item-right {
+            flex-grow: 1;
+
+            .value-num {
+              font-size: 32px;
+              font-family: Roboto, Roboto;
+              font-weight: 400;
+              color: #303133;
+              line-height: 40px;
+              margin-top: 8px;
+              min-height: 40px;
+            }
+          }
+        }
+      }
+
+      & > .table-box {
+        // height: calc(100% - 104px);
+        flex-grow: 1;
+        margin: 24px 0 0 0;
+        overflow: hidden;
+        overflow-y: auto;
+
+        .antd-table-adaptation();
+
+        .ant-table td {
+          padding: 11.67px;
+        }
+
+        .ant-pagination-options-size-changer.ant-select {
+          margin-right: 0;
+        }
+        .ant-table-pagination {
+          bottom: -1px;
+        }
+      }
+    }
   }
 }
 
@@ -26570,7 +26711,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
   }
 }
 
-// 人员评价情况
+// 人员评价统计
 .mutual-evaluation-situation-box {
   overflow: hidden;
   height: 100%;
@@ -26639,7 +26780,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
 
       & > .personnel-evaluation-box {
         display: flex;
-        flex-direction: row;
+        flex-direction: column;
         align-items: flex-start;
         padding: 16px 24px;
         flex-grow: 1;
@@ -26688,9 +26829,86 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
           padding-left: 0;
         }
 
+         & > .top-filter {
+          width: 100%;
+          padding: 16px 24px;
+          background-color: #fff;
+          box-shadow: 0 4px 4px 0 rgba(20, 38, 98, 4%);
+          border-radius: 8px;
+          overflow: hidden;
+          flex-shrink: 0;
+          border-radius: 8px;
+          margin-bottom: 16px;
+
+          & > .filter-row {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            font-size: 14px;
+            font-weight: 400;
+            color: #222222;
+            margin-bottom: 16px;
+
+            &:last-child {
+              margin-bottom: 0;
+            }
+
+            & > .btn-search {
+              .antd-btn-primary();
+              margin-left: auto;
+            }
+
+            & > .btn-reset {
+              .antd-btn-default();
+              margin-left: 8px;
+            }
+
+            & > .filter-item {
+              display: flex;
+              flex-direction: row;
+              align-items: center;
+              // justify-content: center;
+              width: 27%;
+              position: relative;
+
+              .label-selector-arrow {
+                position: absolute;
+                top: 50%;
+                right: 37px;
+                margin-top: -6px;
+                color: rgba(0, 0, 0, 0.25);
+                font-size: 12px;
+                line-height: 1;
+                cursor: pointer;
+                transition: all 0.3s;
+                pointer-events: none;
+              }
+
+              .selector-rotate {
+                transform: rotate(180deg);
+              }
+
+              .item-label {
+                flex-shrink: 0;
+                width: 56px;
+                text-align: right;
+              }
+
+              .item-component {
+                margin-left: 8px;
+                margin-right: 24px;
+                // flex: auto;
+                // width: 75%;
+                flex-grow: 1;
+                overflow: hidden;
+              }
+            }
+          }
+        }
+
         & > .content-box {
           box-shadow: 0px 1px 4px 0px rgba(20, 38, 98, 0.04);
-          border-radius: 0 8px 8px 0;
+          border-radius: 8px;
           flex-grow: 1;
           background-color: #fff;
           display: flex;
@@ -26700,7 +26918,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
           overflow: hidden;
 
           & > .left-box {
-            width: 200px;
+            width: 260px;
             flex-shrink: 0;
             height: 100%;
             box-shadow: 1px 0px 0px 0px #ebeef5, -1px 0px 0px 0px #ebeef5;
@@ -26708,7 +26926,8 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
             padding-right: 0px;
 
             .tree-box {
-              height: calc(100% - 42px);
+              // height: calc(100% - 42px);
+              height: 100%;
               padding-right: 24px;
               overflow: hidden;
               overflow-y: auto;
@@ -26758,15 +26977,17 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
             //   left: 0;
             //   bottom: -4px;
             // }
-            .ant-tree-switcher_open::after,
-            .ant-tree-switcher_close::after {
-              content: '';
-              position: absolute;
-              right: -128px;
-              top: -4px;
-              left: 0;
-              bottom: -4px;
-            }
+
+            // 改成部门父级可选了，暂时用不上
+            // .ant-tree-switcher_open::after,
+            // .ant-tree-switcher_close::after {
+            //   content: '';
+            //   position: absolute;
+            //   right: -128px;
+            //   top: -4px;
+            //   left: 0;
+            //   bottom: -4px;
+            // }
           }
 
           & > .right-box {
@@ -26778,124 +26999,10 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
             flex-direction: column;
             justify-content: flex-start;
 
-            & > .table-info {
-              // min-height: 96px;
-              flex-shrink: 0;
-              display: flex;
-              flex-direction: row;
-              align-items: center;
-              font-family: PingFangSC, PingFang SC;
-
-              .table-info-img {
-                width: 96px;
-                height: 96px;
-                border-radius: 8px;
-                flex-shrink: 0;
-              }
-
-              .info-middle {
-                margin-left: 16px;
-                margin-right: auto;
-                flex-grow: 1;
-                width: calc(100% - 420px);
-
-                .name-row {
-                  font-size: 24px;
-                  font-family: PingFangSC, PingFang SC;
-                  line-height: 34px;
-                  font-weight: bold;
-                  color: #303133;
-                  margin-bottom: 10px;
-                  text-overflow: ellipsis;
-                  overflow: hidden;
-                  white-space: nowrap;
-                  margin-bottom: 12px;
-
-                  .work-days {
-                    margin-left: 8px;
-                    font-size: 14px;
-                    font-weight: 400;
-                    color: #999999;
-                    line-height: 22px;
-                  }
-
-                  .staff-name {
-                    &:hover {
-                      color: #3361ffaf !important;
-                    }
-                  }
-                }
-
-                .org-row,
-                .position-row,
-                .phone-row {
-                  font-size: 14px;
-                  font-weight: 400;
-                  color: #909399;
-                  line-height: 22px;
-                  // text-overflow: ellipsis;
-                  // overflow: hidden;
-                  white-space: normal;
-
-                  span {
-                    color: #303133;
-                  }
-                }
-
-                .position-phone-row {
-                  margin-top: 6px;
-                  display: flex;
-                  flex-direction: row;
-                  align-items: center;
-                  text-overflow: ellipsis;
-                  overflow: hidden;
-                  white-space: nowrap;
-
-                  .position-row {
-                    max-width: 66%;
-                  }
-                }
-              }
-
-              .info-item {
-                flex-shrink: 0;
-                display: flex;
-                flex-direction: row;
-                align-items: flex-start;
-                font-size: 14px;
-                font-weight: 400;
-                color: #606266;
-                line-height: 20px;
-                min-width: 130px;
-                margin-left: 24px;
-
-                .info-item-img {
-                  width: 32px;
-                  height: 32px;
-                  margin-right: 8px;
-                  flex-shrink: 0;
-                }
-
-                .item-right {
-                  flex-grow: 1;
-
-                  .value-num {
-                    font-size: 32px;
-                    font-family: Roboto, Roboto;
-                    font-weight: 400;
-                    color: #303133;
-                    line-height: 40px;
-                    margin-top: 8px;
-                    min-height: 40px;
-                  }
-                }
-              }
-            }
-
             & > .table-box {
               // height: calc(100% - 104px);
               flex-grow: 1;
-              margin: 24px 0 16px 0;
+              // margin: 24px 0 16px 0;
               overflow: hidden;
               overflow-y: auto;
 

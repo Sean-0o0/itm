@@ -191,7 +191,10 @@ export default function TopConsole(props) {
   //编辑项目弹窗
   const handleEditPrjInfo = () => {
     setFileAddVisible(true);
+    
     let p = { xmid, type: true, projectStatus: 'SAVE' };
+    //当项目状态为5时，编辑项目弹窗，无法修改预算信息，在关联预算的字段后面加一个文字提示“项目审批中，暂时无法修改预算信息”
+    String(prjBasic.XMZT) === '5' && (p.notAllowEditBudget = false);//有变动，暂时改成false
     prjBasic.FXMMC && (p.subItemFlag = true);
     //项目编辑，管理员可以编辑所有项目，子项目的项目立项里程碑信息，也对管理员开放编辑
     if (isAdmin) {
@@ -595,6 +598,7 @@ export default function TopConsole(props) {
             type={src_fileAdd.type}
             subItemFlag={src_fileAdd.subItemFlag}
             projectStatus={src_fileAdd.projectStatus}
+            notAllowEditBudget={src_fileAdd.notAllowEditBudget}
           />
         </Modal>
       )}

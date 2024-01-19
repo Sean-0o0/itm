@@ -414,12 +414,12 @@ exports.routes = [
     component: './pmsPage/MutualEvaluation',
   },
   {
-    // 人员评价情况
+    // 人员评价统计
     path: `${prefix}/MutualEvaluationSituation/:params`,
     component: './pmsPage/MutualEvaluationSituation',
   },
   {
-    // 人员评价情况
+    // 人员评价统计
     path: `${prefix}/MutualEvaluationSituation`,
     component: './pmsPage/MutualEvaluationSituation',
   },

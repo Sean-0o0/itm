@@ -3,7 +3,7 @@ import { Button, message, Input, Icon, TreeSelect, DatePicker } from 'antd';
 import moment from 'moment';
 
 export default function TopFilter(props) {
-  const { handleSearch, config = [], filterData, setFilterData } = props;
+  const { handleSearch, config = [], filterData, setFilterData, resetFunc = () => {} } = props;
   const [open, setOpen] = useState({
     org: false,
     year: false,
@@ -44,9 +44,9 @@ export default function TopFilter(props) {
         // maxTagPlaceholder={extraArr => {
         //   return `等${extraArr.length + 2}个`;
         // }}
-        showCheckedStrategy={TreeSelect.SHOW_PARENT}
+        showCheckedStrategy={TreeSelect.SHOW_ALL}
         treeNodeFilterProp="title"
-        dropdownClassName="newproject-treeselect"
+        // dropdownClassName="newproject-treeselect"
         dropdownStyle={{ maxHeight: 300, overflow: 'auto' }}
         treeData={treeData}
         placeholder={'请选择' + label}
@@ -60,7 +60,7 @@ export default function TopFilter(props) {
     </Fragment>
   );
 
-  const getYearPicker = ({ label, value, open, setOpen, onChange }) => (
+  const getYearPicker = ({ label, value, open, setOpen, onChange, allowClear = true }) => (
     <DatePicker
       mode="year"
       value={value}
@@ -70,13 +70,14 @@ export default function TopFilter(props) {
       onChange={onChange}
       onOpenChange={v => setOpen(v)}
       onPanelChange={onChange}
-      allowClear
+      allowClear={allowClear}
       style={{ width: '100%' }}
     />
   );
 
   const handleReset = () => {
     setFilterData({});
+    resetFunc();
   };
 
   const getConfigDetail = ({
@@ -85,6 +86,7 @@ export default function TopFilter(props) {
     valueField = 'projectName',
     valueType = 'string',
     treeData = [],
+    allowClear = true,
   }) => {
     const handleType = v =>
       v === undefined ? undefined : valueType === 'string' ? String(v) : Number(v);
@@ -113,6 +115,7 @@ export default function TopFilter(props) {
             setFilterData(p => ({ ...p, [valueField]: v ?? undefined }));
             setOpen(p => ({ ...p, year: false }));
           },
+          allowClear,
         });
         break;
       case 'tree-select':

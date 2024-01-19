@@ -24,6 +24,7 @@ export default function CustomRptInfo(props) {
     isFold = false,
     isSpinning = false,
     emptyImg = '',
+    refreshAfterSave = () => {},
   } = props;
   const [data, setData] = useState({}); //通过报表id查询到的报表数据
   const [isUnfold, setIsUnfold] = useState(false); //是否展开
@@ -36,6 +37,10 @@ export default function CustomRptInfo(props) {
   }); //表格数据
   const [curSQL, setCurSQL] = useState(''); //当前sql
   const [firstLoading, setFirstLoading] = useState(true); //第一次加载后设为false
+  const [sortInfo, setSortInfo] = useState({
+    sort: undefined,
+    columnKey: '',
+  }); //
   // const [exportData, setExportData] = useState([]); //导出的数据 - 不分页
   var s = 0;
   var e = 0;
@@ -46,7 +51,19 @@ export default function CustomRptInfo(props) {
       setIsUnfold(false);
       setFirstLoading(true);
     }
-    return () => {};
+    return () => {
+      setTableData({
+        data: [],
+        curPage: 1,
+        curPageSize: 20,
+        total: 0,
+        sort: 'XMID DESC',
+      });
+      setSortInfo({
+        sort: undefined,
+        columnKey: '',
+      });
+    };
   }, [bbid, bbmc]);
 
   //转树结构
@@ -397,7 +414,7 @@ export default function CustomRptInfo(props) {
                   let title = data.columns.find(item => item.dataIndex === dataIndex)?.title;
                   if (
                     //金额类型
-                    ['XMYSJE', 'YSXMJE', 'HTJE', 'LVBZJ', 'TBBZJ', 'YFKFY', 'WFKFY'].includes(
+                    ['XMYSJE', 'YSXMJE', 'HTJE', 'LYBZJ', 'TBBZJ', 'YFKFY', 'WFKFY'].includes(
                       dataIndex,
                     )
                   ) {
@@ -463,6 +480,7 @@ export default function CustomRptInfo(props) {
         <TopConsole
           data={data}
           setData={setData}
+          tableData={tableData}
           getSQL={getSQL}
           isUnfold={isUnfold}
           setIsUnfold={setIsUnfold}
@@ -478,7 +496,11 @@ export default function CustomRptInfo(props) {
           bbid={bbid}
           setIsSpinning={setIsSpinning}
           cjrid={cjrid}
+          bbmc={bbmc}
           handleEdit={handleEdit}
+          refreshAfterSave={refreshAfterSave}
+          sortInfo={sortInfo}
+          setSortInfo={setSortInfo}
         />
       </Fragment>
     </div>

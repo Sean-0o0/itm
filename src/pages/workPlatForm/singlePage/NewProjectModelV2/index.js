@@ -1588,6 +1588,7 @@ class NewProjectModelV2 extends React.Component {
           ysLX: current.ysLX,
           ysLXID: current.ysLXID,
           ysKZX: Number(current.ysKZX),
+          ysfzr: current.ysfzr,
         });
         return pre;
       }, []);
@@ -1615,6 +1616,7 @@ class NewProjectModelV2 extends React.Component {
                 ysLX: current.ysLX,
                 ysLXID: current.ysLXID,
                 ysKZX: Number(current.ysKZX),
+                ysfzr: current.ysfzr,
               });
               return pre;
             }, []);
@@ -1639,11 +1641,11 @@ class NewProjectModelV2 extends React.Component {
                       treeDatamini.zdbm = i.zdbm;
                       treeDatamini.ysLX = i.ysLX;
                       treeDatamini.ysLXID = i.ysLXID;
-                      childrenDatamini.push(treeDatamini);
+                      (treeDatamini.ysfzr = i.ysfzr), childrenDatamini.push(treeDatamini);
                     });
                   } else {
-                    treeDatamini.key = item.zdbm + item.ysLXID;
-                    treeDatamini.value = item.zdbm + item.ysLXID;
+                    treeDatamini.key = item.ysID + item.ysLXID;
+                    treeDatamini.value = item.ysID + item.ysLXID;
                     treeDatamini.label = item.ysLB;
                     treeDatamini.ysID = item.ysID;
                     treeDatamini.ysKGL = Number(item.ysKGL);
@@ -1656,6 +1658,7 @@ class NewProjectModelV2 extends React.Component {
                     treeDatamini.zdbm = item.zdbm;
                     treeDatamini.dropdownStyle = { color: '#666' };
                     treeDatamini.selectable = false;
+                    treeDatamini.ysfzr = item.ysfzr;
                     treeDatamini.children = b[item.zdbm];
                     childrenDatamini.push(treeDatamini);
                   }
@@ -1690,6 +1693,41 @@ class NewProjectModelV2 extends React.Component {
       .catch(error => {
         message.error(!error.success ? error.message : error.note);
       });
+  }
+
+  //关联预算项目
+  renderGLYSTreeNodes(data = []) {
+    return data.map(item => {
+      if (item.children?.length > 0) {
+        return (
+          <TreeSelect.TreeNode
+            {...item}
+            title={item.label}
+            key={item.value}
+            value={item.value}
+            label={item.label}
+            fzrandtitle={item.label}
+          >
+            {this.renderGLYSTreeNodes(item.children)}
+          </TreeSelect.TreeNode>
+        );
+      }
+      return (
+        <TreeSelect.TreeNode
+          {...item}
+          key={item.value}
+          title={
+            <div>
+              {item.label}
+              <div style={{ fontSize: '12px', color: '#bfbfbf' }}>负责人：{item.ysfzr}</div>
+            </div>
+          }
+          label={item.label}
+          value={item.value}
+          fzrandtitle={item.ysfzr + item.label}
+        />
+      );
+    });
   }
 
   // 查询软件清单
@@ -2704,7 +2742,6 @@ class NewProjectModelV2 extends React.Component {
     OperateCreatProject(params)
       .then(result => {
         const { code = -1, note = '', projectId } = result;
-        this.setState({ loading: false });
         if (code > 0) {
           sessionStorage.setItem('projectId', projectId);
           sessionStorage.setItem('handleType', type);
@@ -2727,6 +2764,7 @@ class NewProjectModelV2 extends React.Component {
                 );
             }
             this.props.successCallBack();
+            this.setState({ loading: false });
             //项目列表那边新建项目的时候，也跳转首页
             console.log('this.state.type', this.state.type);
             if (this.state.type && type === 1) {
@@ -3479,6 +3517,7 @@ class NewProjectModelV2 extends React.Component {
           } else {
             content = '新建项目成功';
           }
+          this.setState({ loading: false });
           this.props.successCallBack();
           message.success(content);
           //从首页进来的还需要跳转到项目信息页面
@@ -5078,11 +5117,11 @@ class NewProjectModelV2 extends React.Component {
                                 })(
                                   <TreeSelect
                                     showSearch
-                                    treeNodeFilterProp="title"
+                                    treeNodeFilterProp="fzrandtitle"
                                     style={{ width: '100%' }}
                                     dropdownClassName="newproject-treeselect"
                                     dropdownStyle={{ maxHeight: 200, overflow: 'auto' }}
-                                    treeData={budgetProjectList}
+                                    // treeData={budgetProjectList}
                                     placeholder="请选择关联预算项目"
                                     getPopupContainer={triggerNode => triggerNode.parentNode}
                                     // treeDefaultExpandAll
@@ -5147,7 +5186,9 @@ class NewProjectModelV2 extends React.Component {
                                         }
                                       });
                                     }}
-                                  />,
+                                  >
+                                    {this.renderGLYSTreeNodes(budgetProjectList)}
+                                  </TreeSelect>,
                                 )}
                               </Form.Item>
                             </Col>
@@ -5964,6 +6005,18 @@ class NewProjectModelV2 extends React.Component {
                                 onChange={e => {
                                   console.log('eeeee', e.target.value);
                                   this.setState({ subItem: String(e.target.value) });
+                                  if (e.target.value) {
+                                    //增加集合项目标签，当选择了包含子项目后，自动选上集合项目的标签
+                                    this.setState({
+                                      basicInfo: {
+                                        ...basicInfo,
+                                        projectLabel: [...this.state.basicInfo.projectLabel, '96'],
+                                        labelTxt: this.state.basicInfo.labelTxt
+                                          ? '96'
+                                          : this.state.basicInfo.labelTxt + ';96',
+                                      },
+                                    });
+                                  }
                                   this.fetchQueryMilepostInfo({
                                     type: this.state.basicInfo.projectType,
                                     isShortListed:

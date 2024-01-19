@@ -203,7 +203,7 @@ export default Form.create()(function CarryoverModal(props) {
                 max: 999999999,
               })}
               {getInputNumber({
-                label: '结转金额(万元)',
+                label: '结转可执行金额(万元)',
                 dataIndex: 'jzje',
                 labelCol,
                 wrapperCol,
@@ -211,7 +211,7 @@ export default Form.create()(function CarryoverModal(props) {
                 rules: [
                   {
                     required: true,
-                    message: '结转金额不允许为空',
+                    message: '结转可执行金额不允许为空',
                   },
                 ],
                 max: 999999999,

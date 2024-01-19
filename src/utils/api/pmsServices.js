@@ -992,4 +992,16 @@ export default [
     url: '/projectManage/convertToSelfDevIteProject',
     dis: '转换为自研迭代项目',
   },
+  {
+    code: '',
+    key: 'queryBudgetProjectDetail',
+    url: '/projectManage/queryBudgetProjectDetail',
+    dis: '查预算详情',
+  },
+  {
+    code: '',
+    key: 'queryMemberRevaluationByORG',
+    url: '/projectManage/queryMemberRevaluationByORG',
+    dis: '根据部门查询人员评价',
+  },
 ];

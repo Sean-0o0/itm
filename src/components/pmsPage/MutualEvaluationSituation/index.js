@@ -24,17 +24,16 @@ export default connect(({ global = {} }) => ({
   const [isSpinning, setIsSpinning] = useState(false); //加载状态
   const [activeKey, setActiveKey] = useState('RYPJ'); //顶部高亮tab
   const location = useLocation();
-  const [routes, setRoutes] = useState([{ name: '人员评价情况', pathname: location.pathname }]); //路由
+  const [routes, setRoutes] = useState([{ name: '人员评价统计', pathname: location.pathname }]); //路由
   const [orgData, setOrgData] = useState([]); //部门
-  const [staffData, setStaffData] = useState([]); //人员评价情况树型数据
-  const [originStaffData, setOriginStaffData] = useState([]); //人员评价情况原数据
+  const [staffData, setStaffData] = useState([]); //人员评价统计树型数据 - 改部门了，但区分上边的，父级可选
   const tabData = [
     {
-      title: '人员评价情况',
+      title: '人员评价统计',
       value: 'RYPJ',
     },
     {
-      title: '历年项目评价情况',
+      title: '项目评价统计',
       value: 'LNXMPJ',
     },
   ];
@@ -145,34 +144,38 @@ export default connect(({ global = {} }) => ({
             return treeData;
           }
           let data = toTreeData(res.record)[0].children[0].children[0].children;
-          data.forEach(node => {
-            setParentSelectableFalse(node);
-          });
+          console.log('🚀 ~ getOrgData ~ data:', toTreeData(res.record)[0].children[0].children);
+          // data.forEach(node => {
+          //   setParentSelectableFalse(node);
+          // });
+          //父级也要可选
           setOrgData(data);
-          QueryMemberInfo({
-            type: 'XXJS',
-          })
-            .then(res => {
-              if (res.success) {
-                let orgArr = JSON.parse(JSON.stringify(data));
-                let memberArr = JSON.parse(res.record).map(x => ({
-                  ...x,
-                  title: x.name,
-                  value: x.id,
-                }));
-                setOriginStaffData({
-                  staff: JSON.parse(JSON.stringify(memberArr)),
-                  org: JSON.parse(JSON.stringify(data)),
-                });
-                const finalData = handleStaffData(memberArr, orgArr);
-                setStaffData(finalData);
-                setIsSpinning(false);
-              }
-            })
-            .catch(e => {
-              message.error('人员评价情况数据查询失败', 1);
-              setIsSpinning(false);
-            });
+          setStaffData(toTreeData(res.record)[0].children[0].children);
+          setIsSpinning(false);
+          // QueryMemberInfo({
+          //   type: 'XXJS',
+          // })
+          //   .then(res => {
+          //     if (res.success) {
+          //       let orgArr = JSON.parse(JSON.stringify(data));
+          //       let memberArr = JSON.parse(res.record).map(x => ({
+          //         ...x,
+          //         title: x.name,
+          //         value: x.id,
+          //       }));
+          //       setOriginStaffData({
+          //         staff: JSON.parse(JSON.stringify(memberArr)),
+          //         org: JSON.parse(JSON.stringify(data)),
+          //       });
+          //       const finalData = handleStaffData(memberArr, orgArr);
+          //       setStaffData(finalData);
+          //       setIsSpinning(false);
+          //     }
+          //   })
+          //   .catch(e => {
+          //     message.error('人员评价统计数据查询失败', 1);
+          //     setIsSpinning(false);
+          //   });
         }
       })
       .catch(e => {
@@ -231,7 +234,7 @@ export default connect(({ global = {} }) => ({
       >
         {activeKey === 'RYPJ' ? (
           <PersonnelEvaluation
-            dataProps={{ routes, userBasicInfo, staffData, originStaffData }}
+            dataProps={{ routes, userBasicInfo, staffData }}
             funcProps={{ setIsSpinning, handleStaffData }}
           />
         ) : (

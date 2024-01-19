@@ -7,6 +7,7 @@ import { EncryptBase64 } from '../../../Common/Encrypt';
 import { Link } from 'react-router-dom';
 import { QueryEmployeeAppraiseList, QueryUserRole } from '../../../../services/pmsServices';
 import * as Lodash from 'lodash';
+import moment from 'moment';
 
 export default function YearsPrjEvaluation(props) {
   const { dataProps = {}, funcProps = {} } = props;
@@ -31,20 +32,22 @@ export default function YearsPrjEvaluation(props) {
     visible: false,
     curMemberId: -1,
   }); //打分详情浮窗表格数据
-  const [filterData, setFilterData] = useState({});
+  const [filterData, setFilterData] = useState({
+    // year: moment(),
+  });
 
   const filterConfig = [
-    {
-      label: '项目名称',
-      componentType: 'input',
-      valueField: 'projectName',
-      valueType: 'string',
-    },
     {
       label: '年份',
       componentType: 'date-picker-year',
       valueField: 'year',
       valueType: 'number',
+    },
+    {
+      label: '项目名称',
+      componentType: 'input',
+      valueField: 'projectName',
+      valueType: 'string',
     },
     {
       label: '部门',
@@ -181,31 +184,31 @@ export default function YearsPrjEvaluation(props) {
           dataSource={data}
           size="middle"
           pagination={false}
-        // pagination={{
-        //   current,
-        //   pageSize: 5,
-        //   // pageSizeOptions: ['5', '20', '20', '40'],
-        //   showSizeChanger: false,
-        //   hideOnSinglePage: false,
-        //   showQuickJumper: false,
-        //   // showTotal: t => `共 ${data.length} 条数据`,
-        //   // total: data.length,
-        // }}
+          // pagination={{
+          //   current,
+          //   pageSize: 5,
+          //   // pageSizeOptions: ['5', '20', '20', '40'],
+          //   showSizeChanger: false,
+          //   hideOnSinglePage: false,
+          //   showQuickJumper: false,
+          //   // showTotal: t => `共 ${data.length} 条数据`,
+          //   // total: data.length,
+          // }}
         />
       </div>
     );
   };
 
   useEffect(() => {
-    getPrjList({});
-    return () => { };
+    getPrjList({ ...filterData, year: filterData.year?.year() });
+    return () => {};
   }, []);
 
   useEffect(() => {
     if (curPrj.id !== -1) {
       getTableData(Number(curPrj.id));
     }
-    return () => { };
+    return () => {};
   }, [curPrj.id]);
 
   //获取用户角色

@@ -258,11 +258,10 @@ class SubItemInfo extends Component {
 
   componentDidUpdate(prevProps, prevState, snapshot) {
     if (
-      this.props.xmid !== prevProps.xmid &&
       this.props.xmid != '-1' &&
-      this.props.budgetProjectList.length > 0
+      this.props.budgetProjectList.length > 0 &&
+      this.props.budgetProjectList.length !== prevProps.budgetProjectList.length
     ) {
-      console.log('xmidxmid', this.props.xmid);
       this.fetchQuerySubProjectsInfo();
     }
   }
@@ -358,9 +357,9 @@ class SubItemInfo extends Component {
             ? '-1'
             : item['SUBCGFS' + item.ID],
         ),
-        GLYS: ['', undefined, null, ' '].includes(item['SUBGLYS' + item.ID])
+        GLYS: ['', undefined, null, ' '].includes(item['SUBGLYS' + 'real' + item.ID])
           ? '-99'
-          : item['SUBGLYS' + item.ID],
+          : item['SUBGLYS' + 'real' + item.ID],
         GLYSLX: ['', undefined, null, ' '].includes(item['GLYSLX' + item.ID])
           ? '无'
           : item['GLYSLX' + item.ID],
@@ -387,7 +386,7 @@ class SubItemInfo extends Component {
       // SUBGLRJ = item['SUBGLRJ' + item.ID];
       itm.YYBM = String(item['SUBYYBM' + item.ID]);
       itm.CGFS = String(item['SUBCGFS' + item.ID]);
-      itm.GLYS = item['SUBGLYS' + item.ID];
+      itm.GLYS = item['SUBGLYS' + 'real' + item.ID];
       itm.GLYSLX = item['GLYSLX' + item.ID];
       itm.XMYS = String(item['SUBYSJE' + item.ID]);
       itm.RJYS = String(item['SUBRJYSJE' + item.ID]);
@@ -423,7 +422,7 @@ class SubItemInfo extends Component {
                 if (Number(data[i]?.GLYSXM) <= 0) {
                   item?.children?.forEach(ite => {
                     if (Number(data[i]?.GLYSXM) <= 0) {
-                      if (String(ite.key) === String(data[i]?.GLYSXM)) {
+                      if (String(ite.ysID) === String(data[i]?.GLYSXM)) {
                         SUBGLYSTXT = ite.title;
                         SUBZYS = 0;
                         SUBKZXYS = ite.ysKZX;
@@ -453,7 +452,8 @@ class SubItemInfo extends Component {
                 // ['SUBGLRJ' + data[i]?.ID]: data[i]?.JXMC,
                 ['SUBYYBM' + data[i]?.ID]: data[i]?.BM !== 'null' ? data[i]?.BM?.split(';') : [],
                 ['SUBCGFS' + data[i]?.ID]: data[i]?.ZBFS ? data[i]?.ZBFS : '',
-                ['SUBGLYS' + data[i]?.ID]: String(data[i]?.GLYSXM),
+                ['SUBGLYS' + data[i]?.ID]: String(data[i]?.GLYSXM) + data[i]?.YSLXID,
+                ['SUBGLYS' + 'real' + data[i]?.ID]: String(data[i]?.GLYSXM),
                 ['SUBGLYSTXT' + data[i]?.ID]: SUBGLYSTXT,
                 ['GLYSLX' + data[i]?.ID]: data[i]?.YSLX,
                 ['SUBYSJE' + data[i]?.ID]: data[i]?.YSJE ? data[i]?.YSJE : 0,
@@ -512,6 +512,10 @@ class SubItemInfo extends Component {
     const { tableData } = this.state;
     const { haveHard, projectBudget, softBudget, frameBudget, singleBudget } = this.props;
     console.log(
+      e,
+      record,
+      index,
+      key,
       'haveHard,projectBudget,softBudget,frameBudget,singleBudget',
       haveHard,
       projectBudget,
@@ -554,12 +558,13 @@ class SubItemInfo extends Component {
       });
       tableData.map(item => {
         if (item.ID === record.ID) {
-          item[key + item.ID] = ysID;
+          item[key + item.ID] = e;
           item['GLYSLX' + item.ID] = ysLX;
           item['SUBGLYSTXT' + item.ID] = ysName;
           item['SUBZYS' + item.ID] = SUBZYS;
           item['SUBKZXYS' + item.ID] = SUBKZXYS;
           item['SUBSYYS' + item.ID] = SUBSYYS;
+          item[key + 'real' + item.ID] = ysID;
         }
       });
     } else {
@@ -933,8 +938,7 @@ class SubItemInfo extends Component {
             <TreeSelect
               allowClear
               showSearch
-              // defaultValue={record['SUBGLYSTXT' + record.ID]}
-              value={record['SUBGLYSTXT' + record.ID]}
+              value={record['SUBGLYS' + record.ID]}
               treeNodeFilterProp="title"
               style={{ width: '100%' }}
               dropdownClassName="newproject-treeselect"
@@ -1320,6 +1324,7 @@ class SubItemInfo extends Component {
                   ['SUBYYBM' + Date.now()]: [],
                   ['SUBCGFS' + Date.now()]: '',
                   ['SUBGLYS' + Date.now()]: '',
+                  ['SUBGLYS' + 'real' + Date.now()]: '',
                   ['GLYSLX' + Date.now()]: '',
                   ['SUBYSJE' + Date.now()]: '0',
                   ['SUBYSJE-TOTAL' + Date.now()]: '0',

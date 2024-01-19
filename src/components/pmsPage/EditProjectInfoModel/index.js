@@ -3297,7 +3297,6 @@ class EditProjectInfoModel extends React.Component {
     OperateCreatProject(params)
       .then(result => {
         const { code = -1, note = '', projectId } = result;
-        this.setState({ loading: false });
         if (code > 0) {
           sessionStorage.setItem('projectId', projectId);
           sessionStorage.setItem('handleType', type);
@@ -3342,6 +3341,7 @@ class EditProjectInfoModel extends React.Component {
               message.success('编辑项目成功！');
             }
             this.props.successCallBack();
+            this.setState({ loading: false });
           }
         } else {
           message.error(note);
@@ -4439,6 +4439,7 @@ class EditProjectInfoModel extends React.Component {
         if (code > 0) {
           this.props.successCallBack();
           message.success('编辑项目成功！');
+          this.setState({ loading: false });
           //从首页进来的还需要跳转到项目信息页面
           // if (this.state.type) {
           //   //新建项目成功后跳转到项目信息页面
@@ -6171,7 +6172,7 @@ class EditProjectInfoModel extends React.Component {
                                 {/*  initialValue: budgetInfo.year*/}
                                 {/*})(*/}
                                 <DatePicker
-                                  disabled={subItemFlag}
+                                  disabled={subItemFlag||this.props.notAllowEditBudget}
                                   value={budgetInfo.year}
                                   allowClear={false}
                                   ref={picker => (this.picker = picker)}
@@ -6238,7 +6239,25 @@ class EditProjectInfoModel extends React.Component {
                               </Form.Item>
                             </Col>
                             <Col span={21} style={{ paddingLeft: '4px' }}>
-                              <Form.Item label=" " colon={false} className="formItem">
+                              <Form.Item
+                                label={
+                                  this.props.notAllowEditBudget ? (
+                                    <span
+                                      style={{
+                                        fontFamily: 'SimSun, sans-serif',
+                                        color: '#f5222d',
+                                        lineHeight: 1,
+                                      }}
+                                    >
+                                      （项目审批中，暂时无法修改预算信息）
+                                    </span>
+                                  ) : (
+                                    ' '
+                                  )
+                                }
+                                colon={false}
+                                className="formItem"
+                              >
                                 {getFieldDecorator('budgetProjectId', {
                                   // rules: [{
                                   //   required: true,
@@ -6250,7 +6269,7 @@ class EditProjectInfoModel extends React.Component {
                                 })(
                                   <TreeSelect
                                     showSearch
-                                    disabled={subItemFlag}
+                                    disabled={subItemFlag || this.props.notAllowEditBudget}
                                     treeNodeFilterProp="title"
                                     style={{ width: '100%' }}
                                     dropdownClassName="newproject-treeselect"
@@ -6417,7 +6436,7 @@ class EditProjectInfoModel extends React.Component {
                                   // }
                                   // )
                                   <InputNumber
-                                    disabled={subItemFlag}
+                                    disabled={subItemFlag || this.props.notAllowEditBudget}
                                     value={Number(this.state.budgetInfo.projectBudget)}
                                     onBlur={e => {
                                       if (projectBudgetChangeFlag) {
@@ -6530,7 +6549,7 @@ class EditProjectInfoModel extends React.Component {
                                   //   initialValue: Number(basicInfo.haveHard)
                                   // })
                                   <Radio.Group
-                                    disabled={subItemFlag}
+                                    disabled={subItemFlag || this.props.notAllowEditBudget}
                                     value={Number(this.state.basicInfo.haveHard)}
                                     onChange={e => {
                                       console.log('eeeee', e);
@@ -6624,7 +6643,7 @@ class EditProjectInfoModel extends React.Component {
                                   //   initialValue: budgetInfo.softBudget
                                   // })
                                   <InputNumber
-                                    disabled={subItemFlag}
+                                    disabled={subItemFlag || this.props.notAllowEditBudget}
                                     value={Number(this.state.budgetInfo.softBudget)}
                                     onBlur={e => {
                                       if (this.state.softBudgetChangeFlag) {
@@ -6803,7 +6822,7 @@ class EditProjectInfoModel extends React.Component {
                                   //   initialValue: budgetInfo.frameBudget
                                   // })
                                   <InputNumber
-                                    disabled={subItemFlag}
+                                    disabled={subItemFlag || this.props.notAllowEditBudget}
                                     value={Number(this.state.budgetInfo.frameBudget)}
                                     onBlur={e => {
                                       if (frameBudgetChangeFlag) {
@@ -6936,7 +6955,7 @@ class EditProjectInfoModel extends React.Component {
                                   //   initialValue: budgetInfo.singleBudget
                                   // })
                                   <InputNumber
-                                    disabled={subItemFlag}
+                                    disabled={subItemFlag || this.props.notAllowEditBudget}
                                     value={Number(this.state.budgetInfo.singleBudget)}
                                     onBlur={e => {
                                       if (singleBudgetChangeFlag) {
@@ -7068,10 +7087,22 @@ class EditProjectInfoModel extends React.Component {
                             })(
                               <Radio.Group
                                 defaultValue={Number(subItem)}
-                                disabled={Number(subIteminit) === 1}
+                                disabled={Number(subIteminit) === 1 || this.props.notAllowEditBudget}
                                 onChange={e => {
                                   console.log('eeeee', e.target.value);
                                   this.setState({ subItem: String(e.target.value) });
+                                  if (e.target.value) {
+                                    //增加集合项目标签，当选择了包含子项目后，自动选上集合项目的标签
+                                    this.setState({
+                                      basicInfo: {
+                                        ...basicInfo,
+                                        projectLabel: [...this.state.basicInfo.projectLabel, '96'],
+                                        labelTxt: this.state.basicInfo.labelTxt
+                                          ? '96'
+                                          : this.state.basicInfo.labelTxt + ';96',
+                                      },
+                                    });
+                                  }
                                   this.fetchQueryMilepostInfo({
                                     type: this.state.basicInfo.projectType,
                                     isShortListed:
