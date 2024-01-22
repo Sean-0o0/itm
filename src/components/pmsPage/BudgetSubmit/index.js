@@ -75,7 +75,10 @@ export default connect(({ global }) => ({
     const [yearOpen, setYearOpen] = useState(false); //年份下拉框展开收起
     const [fileList, setFileList] = useState([]); //附件
     const [isTurnRed, setIsTurnRed] = useState(false); //附件报红
-    const [fileTpl, setFileTpl] = useState([]); //文件模板
+    const [fileTpl, setFileTpl] = useState({
+      kxxyjbg: [], //可行性研究报告
+      lxbab: [], //立项备案表
+    }); //文件模板 - 新增了分别存，有数据就不刷新了
     const [updateData, setUpdateData] = useState({}); //详情/修改时 回显的数据
     const [propsData, setPropsData] = useState({
       operateType: 'ADD', //operateType
@@ -85,6 +88,7 @@ export default connect(({ global }) => ({
     const [routes, setRoutes] = useState([]); //路由
     const [lastBudgetPrj, setLastBudgetPrj] = useState([]); //去年同类预算下拉框数据
     const [lastBudgetPrjOrigin, setLastBudgetPrjOrigin] = useState([]); //去年同类预算下拉框数据 - 处理前数据
+    const [curFileTypeName, setCurFileTypeName] = useState('立项备案表'); //用于判断控制不频繁刷新模板接口
 
     useEffect(() => {
       if (params !== '') {
@@ -113,8 +117,13 @@ export default connect(({ global }) => ({
     }, [params]);
 
     useEffect(() => {
-      if (Decimal(getFieldValue('bn_ztz') || 0).gt(50)) {
+      if (Decimal(getFieldValue('bn_ztz') || 0).gt(50) && curFileTypeName !== '可行性研究报告') {
         getFileTemplateData('可行性研究报告');
+      } else if (
+        Decimal(getFieldValue('bn_ztz') || 0).lte(50) &&
+        curFileTypeName !== '立项备案表'
+      ) {
+        getFileTemplateData('立项备案表');
       }
       return () => {};
     }, [getFieldValue('bn_ztz')]);
@@ -157,25 +166,31 @@ export default connect(({ global }) => ({
     //获取附件模板
     const getFileTemplateData = (fileTypeName = '立项备案表') => {
       setIsSpinning(true);
-      QueryDocTemplate({
-        fileTypeName,
-      })
-        .then(res => {
-          if (res?.success) {
-            const data = JSON.parse(res.result);
-            if (data.length > 0) {
-              if (data[0].FJ && data[0].FJ.length > 0) {
-                setFileTpl(data[0].FJ);
+      setCurFileTypeName(fileTypeName);
+      const refreshField = fileTypeName === '立项备案表' ? 'lxbab' : 'kxxyjbg';
+      console.log('🚀 ~ getFileTemplateData ~ refreshField:', refreshField, fileTpl[refreshField]);
+      const isRefresh = fileTpl[refreshField].length === 0; //是否刷新接口
+      isRefresh
+        ? QueryDocTemplate({
+            fileTypeName,
+          })
+            .then(res => {
+              if (res?.success) {
+                const data = JSON.parse(res.result);
+                if (data.length > 0) {
+                  if (data[0].FJ && data[0].FJ.length > 0) {
+                    setFileTpl(p => ({ ...p, [refreshField]: data[0].FJ }));
+                  }
+                }
+                setIsSpinning(false);
               }
-            }
-            setIsSpinning(false);
-          }
-        })
-        .catch(e => {
-          console.error('🚀附件模板', e);
-          message.error('附件模板获取失败', 1);
-          setIsSpinning(false);
-        });
+            })
+            .catch(e => {
+              console.error('🚀附件模板', e);
+              message.error('附件模板获取失败', 1);
+              setIsSpinning(false);
+            })
+        : setIsSpinning(false);
     };
 
     //获取去年同类预算下拉数据
@@ -1287,28 +1302,18 @@ export default connect(({ global }) => ({
               })),
           })}
           <Row gutter={24}>
-            {Decimal(getFieldValue('bn_ztz') || 0).gt(50)
-              ? getMultipleUpload({
-                  label: '可行性研究报告',
-                  dataIndex: 'lxbab',
-                  fileList,
-                  setFileList,
-                  isTurnRed,
-                  setIsTurnRed,
-                  display,
-                })
-              : getMultipleUpload({
-                  label: '立项备案表',
-                  dataIndex: 'lxbab',
-                  fileList,
-                  setFileList,
-                  isTurnRed,
-                  setIsTurnRed,
-                  display,
-                })}
+            {getMultipleUpload({
+              label: curFileTypeName,
+              dataIndex: 'lxbab',
+              fileList,
+              setFileList,
+              isTurnRed,
+              setIsTurnRed,
+              display,
+            })}
             {getFileTemplate({
               label: '附件模板',
-              listData: fileTpl,
+              listData: fileTpl[curFileTypeName === '立项备案表' ? 'lxbab' : 'kxxyjbg'] ?? [],
               display,
             })}
           </Row>

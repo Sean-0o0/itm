@@ -41,6 +41,10 @@ export default function CustomRptInfo(props) {
     sort: undefined,
     columnKey: '',
   }); //
+  const [yearData, setYearData] = useState({
+    year: moment(), //年份
+    open: false, //下拉框展开收起
+  }); //年份数据特殊处理，另外在保存时入参
   // const [exportData, setExportData] = useState([]); //导出的数据 - 不分页
   var s = 0;
   var e = 0;
@@ -160,6 +164,7 @@ export default function CustomRptInfo(props) {
         try {
           const res = await QueryCustomQueryCriteria({
             queryType: x.TJBCXLX,
+            year: obj.NF !== undefined ? Number(obj.NF) : moment().year(),
           });
           // .then(res => {
           if (res?.success) {
@@ -203,15 +208,19 @@ export default function CustomRptInfo(props) {
       },
     };
     setData(finalObj);
+    setYearData({
+      year: obj.NF !== undefined ? moment(String(obj.NF), 'YYYY') : moment(),
+      open: false,
+    });
     e = performance.now();
     console.log(`下拉框数据Request time: ${e - s} milliseconds`, s, e, filterData);
     s = performance.now();
-    getSQL({}, finalObj);
+    getSQL({}, finalObj, obj.NF !== undefined ? Number(obj.NF) : moment().year());
   };
 
   //表格数据 - 查询按钮
-  const getSQL = (tableParams = {}, data, isExport = false) => {
-    !isExport && setIsSpinning(true);
+  const getSQL = (tableParams = {}, data, year = moment().year()) => {
+    setIsSpinning(true);
     const {
       origin = {
         columns: [],
@@ -335,12 +344,13 @@ export default function CustomRptInfo(props) {
       cxb: bmArr,
       cxzd: zszdArr,
       czlx: 'SEARCH',
+      year,
     };
     SaveCustomReportSetting(params)
       .then(res => {
         if (res?.success) {
           setCurSQL(res.note.replace(/\n/g, ' '));
-          !isExport && getTableData({ sql: res.note.replace(/\n/g, ' '), ...tableParams });
+          getTableData({ sql: res.note.replace(/\n/g, ' '), ...tableParams });
         }
       })
       .catch(e => {
@@ -404,8 +414,6 @@ export default function CustomRptInfo(props) {
               const isLeader = res2.role !== '普通人员';
               const isBudgetMnger = res2.zyrole === '预算管理人'; //是否预算管理人
               let exportData = JSON.parse(res.result);
-              console.log('exportData', exportData);
-              console.log('data.columns', data.columns);
               let dataIndexArr = data.columns.map(item => item.dataIndex);
               let finalArr = [];
               exportData.forEach(obj => {
@@ -463,6 +471,72 @@ export default function CustomRptInfo(props) {
     return XLSX.writeFile(workBook, fileName);
   };
 
+  //年份变化后刷新预算项目、项目名称数据
+  const handleYearChange = async year => {
+    try {
+      setIsSpinning(true);
+      let arr = JSON.parse(JSON.stringify(data.filterData));
+      let filterArr = arr
+        .filter(x => x.TJBCXLX === 'YSXM' || x.TJBCXLX === 'XM')
+        .sort((a, b) => Number(a.ID) - Number(b.ID)); //保证项目名称第一个
+      let promiseArr = filterArr.map(x =>
+        QueryCustomQueryCriteria({
+          queryType: x.TJBCXLX === 'YSXM' ? 'YSXM' : 'XM',
+          year,
+        }),
+      );
+      const resArr = await Promise.all(promiseArr);
+      if (arr.findIndex(x => x.TJBCXLX === 'YSXM') !== -1) {
+        const res = resArr[1] || {};
+        if (res.success) {
+          arr.forEach(x => {
+            if (x.TJBCXLX === 'YSXM') {
+              x.sltOpen = false; //树下拉框展开收起
+              function uniqueFunc(arr, uniId) {
+                const res = new Map();
+                return arr.filter(item => !res.has(item[uniId]) && res.set(item[uniId], 1));
+              }
+              let type = uniqueFunc(JSON.parse(res.result), 'YSLXID');
+              let origin = JSON.parse(res.result);
+              x.SELECTORDATA = {
+                type,
+                origin,
+              };
+              //默认赋值
+              if (type.length > 0) {
+                x.SELECTORVALUE = {
+                  type: type[0]?.YSLXID,
+                  typeObj: type[0],
+                  value: [],
+                };
+              }
+            }
+          });
+        }
+      }
+      if (arr.findIndex(x => x.TJBCXLX === 'XM') !== -1) {
+        const res = resArr[0] || {};
+        if (res.success) {
+          arr.forEach(x => {
+            if (x.TJBCXLX === 'XM') {
+              x.SELECTORDATA = JSON.parse(res.result);
+              x.SELECTORVALUE = [];
+            }
+          });
+        }
+      }
+      setData(p => ({
+        ...p,
+        filterData: arr,
+      }));
+      setIsSpinning(false);
+    } catch (error) {
+      console.error('🚀 ~ handleYearChange ~ error:', error);
+      message.error('数据加载异常', 2);
+      setIsSpinning(false);
+    }
+  };
+
   return (
     <div
       className="custom-rpt-info-box"
@@ -484,6 +558,9 @@ export default function CustomRptInfo(props) {
           getSQL={getSQL}
           isUnfold={isUnfold}
           setIsUnfold={setIsUnfold}
+          yearData={yearData}
+          setYearData={setYearData}
+          handleYearChange={handleYearChange}
         />
         <InfoTable
           data={data}
@@ -501,6 +578,7 @@ export default function CustomRptInfo(props) {
           refreshAfterSave={refreshAfterSave}
           sortInfo={sortInfo}
           setSortInfo={setSortInfo}
+          yearData={yearData}
         />
       </Fragment>
     </div>

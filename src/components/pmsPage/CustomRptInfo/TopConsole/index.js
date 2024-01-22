@@ -30,6 +30,9 @@ export default function TopConsole(props) {
     isUnfold,
     setIsUnfold,
     tableData = {},
+    yearData = { year: null, open: false }, //年份数据特殊处理，另外在保存时入参
+    setYearData = () => {},
+    handleYearChange = () => {},
   } = props;
 
   //查询的值
@@ -54,6 +57,34 @@ export default function TopConsole(props) {
     setData(p => ({ ...p, filterData: arr }));
   };
 
+  //年份组件 - 后期加的，特殊处理
+  const getYearComponent = (yearData, setYearData) => {
+    return (
+      <div className="condition-filter-item" key="年份">
+        <div className="item-label">年份</div>
+        <DatePicker
+          mode="year"
+          open={yearData.open}
+          placeholder="请选择"
+          format="YYYY"
+          allowClear={false}
+          value={yearData.year}
+          onChange={v => {
+            setYearData({ year: v, open: false });
+            handleYearChange(moment().year());
+          }}
+          onPanelChange={v => {
+            setYearData({ year: v, open: false });
+            handleYearChange(v?.year());
+          }}
+          onOpenChange={v => setYearData(p => ({ ...p, open: v }))}
+          style={{ width: '100%' }}
+        />
+      </div>
+    );
+  };
+
+  //获取一般组件
   const getComponent = (x = []) => {
     const {
       ID = -1,
@@ -400,6 +431,7 @@ export default function TopConsole(props) {
           style={getFilterLength(data.filterData) > 6 ? (isUnfold ? {} : { height: 112 }) : {}}
         >
           <div className="left">
+            {getYearComponent(yearData, setYearData)}
             {data.filterData?.map(x => getComponent(x))}
             {getFilterLength(data.filterData) % 3 !== 0 && isUnfold && (
               <div
@@ -416,7 +448,7 @@ export default function TopConsole(props) {
             <Button
               className="btn-search"
               type="primary"
-              onClick={() => getSQL({ sort: tableData.sort }, data)}
+              onClick={() => getSQL({ sort: tableData.sort }, data, yearData?.year?.year())}
             >
               查询
             </Button>

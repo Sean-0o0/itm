@@ -620,44 +620,36 @@ const TableBox = props => {
       ellipsis: true,
       render: txt => getNote(XMYSJZZT, txt),
     },
-    ...(isForbiddenLeader === false
-      ? [
-          {
-            title: '操作',
-            dataIndex: 'operation',
-            key: 'operation',
-            align: 'center',
-            width: 120,
-            fixed: 'right',
-            render: (_, row) => (
-              <div className="opr-column">
-                {Number(userBasicInfo.id) === Number(row.XMJLID) && String(row.JZZT) === '1' ? (
-                  //未结转
-                  <Fragment>
-                    <span
-                      onClick={() => setCarryoverData({ visible: true, type: 'JZ', data: row })}
-                    >
-                      结转
-                    </span>
-                    <span
-                      onClick={() => setCarryoverData({ visible: true, type: 'BJZ', data: row })}
-                    >
-                      不结转
-                    </span>
-                  </Fragment>
-                ) : Number(userBasicInfo.id) === Number(row.XMJLID) && String(row.JZZT) === '3' ? (
-                  //被退回
-                  <span onClick={() => setCarryoverData({ visible: true, type: 'TJ', data: row })}>
-                    重新结转
-                  </span>
-                ) : (
-                  ''
-                )}
-              </div>
-            ),
-          },
-        ]
-      : []),
+    {
+      title: '操作',
+      dataIndex: 'operation',
+      key: 'operation',
+      align: 'center',
+      width: 120,
+      fixed: 'right',
+      render: (_, row) => (
+        <div className="opr-column">
+          {Number(userBasicInfo.id) === Number(row.XMJLID) && String(row.JZZT) === '1' ? (
+            //未结转
+            <Fragment>
+              <span onClick={() => setCarryoverData({ visible: true, type: 'JZ', data: row })}>
+                结转
+              </span>
+              <span onClick={() => setCarryoverData({ visible: true, type: 'BJZ', data: row })}>
+                不结转
+              </span>
+            </Fragment>
+          ) : Number(userBasicInfo.id) === Number(row.XMJLID) && String(row.JZZT) === '3' ? (
+            //被退回
+            <span onClick={() => setCarryoverData({ visible: true, type: 'TJ', data: row })}>
+              重新结转
+            </span>
+          ) : (
+            ''
+          )}
+        </div>
+      ),
+    },
   ];
 
   //提交、退回、删除

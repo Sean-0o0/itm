@@ -257,9 +257,19 @@ export default function PrjTracking(props) {
                               />
                             </Popconfirm>
                           </div>
-                          <div className="prj-tracking-infos-week">Week&nbsp;{i.XMZQ}</div>
+                          {i.XMZQ !== undefined && (
+                            <div className="prj-tracking-infos-week">Week&nbsp;{i.XMZQ}</div>
+                          )}
                         </div>
-                        {
+                        {i.XMZQ === undefined ? (
+                          <div className="prj-tracking-infos-detail">
+                            <Empty
+                              description="暂未立项"
+                              image={Empty.PRESENTED_IMAGE_SIMPLE}
+                              style={{ width: '100%', margin: 0 }}
+                            />
+                          </div>
+                        ) : (
                           <div className="prj-tracking-infos-detail">
                             <div className="prj-tracking-infos-detail-row1">
                               <div className="prj-tracking-infos-detail-row1-name">
@@ -399,7 +409,7 @@ export default function PrjTracking(props) {
                               )}
                             </div>
                           </div>
-                        }
+                        )}
                       </Link>
                     </div>
                   </div>

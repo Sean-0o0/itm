@@ -42,7 +42,7 @@ export default function BudgetCarryover(props) {
    * allrole里面只返回系统里配的权限，一级部门领导是单独判断的只在role里面返回，
    *  只要是信息技术开发部领导或信息技术运保部领导就算是一级部门领导
    */
-  const [isForbiddenLeader, setIsForbiddenLeader] = useState(false);
+  const [isForbiddenLeader, setIsForbiddenLeader] = useState(false); //先都去掉了
 
   useEffect(() => {
     if (params !== '') {

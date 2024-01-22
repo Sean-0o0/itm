@@ -23,6 +23,7 @@ export default function InfoTable(props) {
     bbmc,
     sortInfo = {},
     setSortInfo,
+    yearData = { year: null, open: false }, //年份数据特殊处理，另外在保存时入参
   } = props; //表格数据
   const location = useLocation();
   const [tableColumns, setTableColumns] = useState([]); //处理过的列配置信息
@@ -307,6 +308,7 @@ export default function InfoTable(props) {
             sort: sorter.field + ' DESC',
           },
           data,
+          yearData?.year?.year(),
         );
       } else {
         getSQL(
@@ -316,10 +318,15 @@ export default function InfoTable(props) {
             sort: sorter.field + ' ASC,XMID DESC',
           },
           data,
+          yearData?.year?.year(),
         );
       }
     } else {
-      getSQL({ current: tableData.curPage, pageSize: tableData.curPageSize }, data);
+      getSQL(
+        { current: tableData.curPage, pageSize: tableData.curPageSize },
+        data,
+        yearData?.year?.year(),
+      );
     }
     return;
   };
@@ -416,10 +423,18 @@ export default function InfoTable(props) {
             total: tableData.total,
           }}
           onChange={(p, ps) => {
-            getSQL({ current: p, pageSize: ps, sort: tableData.sort }, data);
+            getSQL(
+              { current: p, pageSize: ps, sort: tableData.sort },
+              data,
+              yearData?.year?.year(),
+            );
           }}
           onShowSizeChange={(cur, size) => {
-            getSQL({ current: cur, pageSize: size, sort: tableData.sort }, data);
+            getSQL(
+              { current: cur, pageSize: size, sort: tableData.sort },
+              data,
+              yearData?.year?.year(),
+            );
           }}
         />
       )}

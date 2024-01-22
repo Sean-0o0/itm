@@ -270,7 +270,7 @@ export default forwardRef(function TopConsole(props, ref) {
     pageSize = 20,
     prjMnger = undefined,
     queryType = 'ALL',
-    sort = 'XMNF DESC,XH DESC,ID DESC',
+    sort = 'XMNF DESC,ID DESC',
   }) => {
     setTableLoading(true);
     setCurPage(current);

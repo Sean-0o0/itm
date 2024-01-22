@@ -88,7 +88,7 @@ export default function InfoTable(props) {
           pageSize,
           prjMnger,
           queryType,
-          sort: 'YSJE ASC,XH DESC,ID DESC',
+          sort: 'YSJE ASC,ID DESC',
         });
       } else {
         handleSearch({
@@ -96,7 +96,7 @@ export default function InfoTable(props) {
           pageSize,
           prjMnger,
           queryType,
-          sort: 'YSJE DESC,XH DESC,ID DESC',
+          sort: 'YSJE DESC,ID DESC',
         });
       }
     } else {

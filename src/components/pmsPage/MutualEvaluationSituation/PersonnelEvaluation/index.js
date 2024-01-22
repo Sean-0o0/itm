@@ -270,25 +270,34 @@ export default function PersonnelEvaluation(props) {
     {
       title: '参与项目数',
       dataIndex: 'CYXM',
-      width: '15%',
+      width: '14%',
       key: 'CYXM',
       ellipsis: true,
       sorter: true,
       sortOrder: sortInfo.columnKey === 'CYXM' ? sortInfo.order : undefined, //排序的受控属性，外界可用此控制列的排序，可设置为 'ascend' 'descend' false
     },
     {
-      title: '评价项目数',
+      title: '已评价项目数',
       dataIndex: 'PJXM',
-      width: '15%',
+      width: '14%',
       key: 'PJXM',
       ellipsis: true,
       sorter: true,
       sortOrder: sortInfo.columnKey === 'PJXM' ? sortInfo.order : undefined, //排序的受控属性，外界可用此控制列的排序，可设置为 'ascend' 'descend' false
     },
     {
+      title: '未评价项目数',
+      dataIndex: 'WPJXM',
+      width: '14%',
+      key: 'WPJXM',
+      ellipsis: true,
+      sorter: true,
+      sortOrder: sortInfo.columnKey === 'WPJXM' ? sortInfo.order : undefined, //排序的受控属性，外界可用此控制列的排序，可设置为 'ascend' 'descend' false
+    },
+    {
       title: '评价平均分',
       dataIndex: 'PJF',
-      width: '15%',
+      width: '13%',
       key: 'PJF',
       ellipsis: true,
       sorter: true,

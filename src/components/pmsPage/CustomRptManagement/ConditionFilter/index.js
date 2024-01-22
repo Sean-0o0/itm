@@ -23,12 +23,43 @@ export default function ConditionFilter(props) {
     setData = () => {},
     onChange = () => {},
     onDelete = () => {},
+    yearData = { year: null, open: false }, //年份数据特殊处理，另外在保存时入参
+    setYearData = () => {},
+    handleYearChange = () => {},
   } = props;
 
   useEffect(() => {
     return () => {};
   }, []);
 
+  //年份组件 - 后期加的，特殊处理
+  const getYearComponent = (yearData, setYearData) => {
+    return (
+      <div className="condition-filter-item" key="年份">
+        <div className="item-label">年份</div>
+        <DatePicker
+          mode="year"
+          open={yearData.open}
+          placeholder="请选择"
+          format="YYYY"
+          allowClear={false}
+          value={yearData.year}
+          onChange={v => {
+            setYearData({ year: v, open: false });
+            handleYearChange(moment().year());
+          }}
+          onPanelChange={v => {
+            setYearData({ year: v, open: false });
+            handleYearChange(v?.year());
+          }}
+          onOpenChange={v => setYearData(p => ({ ...p, open: v }))}
+          style={{ width: '100%' }}
+        />
+      </div>
+    );
+  };
+
+  //获取一般组件
   const getComponent = (x = []) => {
     const {
       ID = -1,
@@ -379,6 +410,7 @@ export default function ConditionFilter(props) {
   };
   return (
     <div className="filter-condition">
+      {getYearComponent(yearData, setYearData)}
       {data.map(x => getComponent(x))}
       <Cascader
         options={options}

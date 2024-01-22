@@ -65,6 +65,10 @@ export default connect(({ global }) => ({
     turnRed: false,
   }); //分享人员下拉数据
   const [historyData, setHistoryData] = useState([]); //报表历史操作记录
+  const [yearData, setYearData] = useState({
+    year: moment(), //年份
+    open: false, //下拉框展开收起
+  }); //年份数据特殊处理，另外在保存时入参
 
   useEffect(() => {
     getShareRyData();
@@ -252,6 +256,7 @@ export default connect(({ global }) => ({
       setIsSpinning(true);
       QueryCustomQueryCriteria({
         queryType: obj.TJBCXLX,
+        year: yearData?.year?.year() ?? moment().year(),
       })
         .then(res => {
           if (res?.success) {
@@ -297,6 +302,72 @@ export default connect(({ global }) => ({
       ...p,
       conditionFilter: [...p.conditionFilter, obj],
     }));
+  };
+
+  //年份变化后刷新预算项目、项目名称数据
+  const handleYearChange = async year => {
+    try {
+      setIsSpinning(true);
+      let arr = JSON.parse(JSON.stringify(selectedData.conditionFilter));
+      let filterArr = arr
+        .filter(x => x.TJBCXLX === 'YSXM' || x.TJBCXLX === 'XM')
+        .sort((a, b) => Number(a.ID) - Number(b.ID)); //保证项目名称第一个
+      let promiseArr = filterArr.map(x =>
+        QueryCustomQueryCriteria({
+          queryType: x.TJBCXLX === 'YSXM' ? 'YSXM' : 'XM',
+          year,
+        }),
+      );
+      const resArr = await Promise.all(promiseArr);
+      if (arr.findIndex(x => x.TJBCXLX === 'YSXM') !== -1) {
+        const res = resArr[1] || {};
+        if (res.success) {
+          arr.forEach(x => {
+            if (x.TJBCXLX === 'YSXM') {
+              x.sltOpen = false; //树下拉框展开收起
+              function uniqueFunc(arr, uniId) {
+                const res = new Map();
+                return arr.filter(item => !res.has(item[uniId]) && res.set(item[uniId], 1));
+              }
+              let type = uniqueFunc(JSON.parse(res.result), 'YSLXID');
+              let origin = JSON.parse(res.result);
+              x.SELECTORDATA = {
+                type,
+                origin,
+              };
+              //默认赋值
+              if (type.length > 0) {
+                x.SELECTORVALUE = {
+                  type: type[0]?.YSLXID,
+                  typeObj: type[0],
+                  value: [],
+                };
+              }
+            }
+          });
+        }
+      }
+      if (arr.findIndex(x => x.TJBCXLX === 'XM') !== -1) {
+        const res = resArr[0] || {};
+        if (res.success) {
+          arr.forEach(x => {
+            if (x.TJBCXLX === 'XM') {
+              x.SELECTORDATA = JSON.parse(res.result);
+              x.SELECTORVALUE = [];
+            }
+          });
+        }
+      }
+      setSelectedData(p => ({
+        ...p,
+        conditionFilter: arr,
+      }));
+      setIsSpinning(false);
+    } catch (error) {
+      console.error('🚀 ~ handleYearChange ~ error:', error);
+      message.error('数据加载异常', 2);
+      setIsSpinning(false);
+    }
   };
 
   //组合、筛选条件删除
@@ -800,6 +871,7 @@ export default connect(({ global }) => ({
           czlx: status === 'adding' ? 'ADD' : 'UPDATE',
           bbid: status === 'adding' ? -1 : activeBbData.bbid,
           bbmc: rptName,
+          year: yearData?.year?.year() ?? moment().year(),
         };
         console.log('🚀 ~ file: index.js:439 ~ handleSave ~ params:', params);
         //保存自定义报表配置
@@ -921,6 +993,9 @@ export default connect(({ global }) => ({
               setData={v => {
                 setSelectedData(p => ({ ...p, conditionFilter: v }));
               }}
+              yearData={yearData}
+              setYearData={setYearData}
+              handleYearChange={handleYearChange}
             />
           </div>
           {/* <div className="group-condition">

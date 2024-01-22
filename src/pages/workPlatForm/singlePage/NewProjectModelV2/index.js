@@ -5120,7 +5120,7 @@ class NewProjectModelV2 extends React.Component {
                                     treeNodeFilterProp="fzrandtitle"
                                     style={{ width: '100%' }}
                                     dropdownClassName="newproject-treeselect"
-                                    dropdownStyle={{ maxHeight: 200, overflow: 'auto' }}
+                                    dropdownStyle={{ maxHeight: 350, overflow: 'auto' }}
                                     // treeData={budgetProjectList}
                                     placeholder="请选择关联预算项目"
                                     getPopupContainer={triggerNode => triggerNode.parentNode}

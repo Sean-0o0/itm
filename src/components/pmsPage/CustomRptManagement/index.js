@@ -11,6 +11,7 @@ import RightRptContent from './RightRptContent';
 import { Link, useHistory } from 'react-router-dom';
 import { isEqual } from 'lodash';
 import CustomRptInfo from '../CustomRptInfo';
+import moment from 'moment';
 
 export default function CustomRptManagement(props) {
   const { routes = [], propsData = {}, isNew = false } = props;
@@ -131,6 +132,7 @@ export default function CustomRptManagement(props) {
           const promiseArr = conditionFilterDefault.map(x =>
             QueryCustomQueryCriteria({
               queryType: x.TJBCXLX,
+              year: moment().year(),
             }),
           );
           const resArr = await Promise.all(promiseArr);
@@ -210,6 +212,7 @@ export default function CustomRptManagement(props) {
           const promiseArr = filterData.map(x =>
             QueryCustomQueryCriteria({
               queryType: x.TJBCXLX,
+              year: obj.NF !== undefined ? Number(obj.NF) : moment().year(),
             }),
           );
           const resArr = (await Promise.all(promiseArr)) || [];

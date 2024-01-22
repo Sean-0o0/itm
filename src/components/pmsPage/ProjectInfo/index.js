@@ -140,7 +140,7 @@ export default function ProjectInfo(props) {
     pageSize = 20,
     projectManager = -1,
     cxlx = 'ALL',
-    sort = 'XMNF DESC,XH DESC,ID DESC',
+    sort = 'XMNF DESC,ID DESC',
   }) => {
     setTableLoading(true);
     try {
