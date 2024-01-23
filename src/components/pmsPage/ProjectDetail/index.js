@@ -119,6 +119,7 @@ export default connect(({ global = {} }) => ({
     rypj: false, //人员评价
   }); //是否管理员
   const [openNewIteContent, setOpenNewIteContent] = useState(false); //（转为自研迭代项目后）打开新增升级内容弹窗
+  const ysspHide = String(prjData.prjBasic?.XMZT) === '5'; //预算审批的情况 隐藏 里程碑、项目跟踪、快捷方式、编辑及更多按钮
   // var s = 0;
   // var e = 0;
 
@@ -1335,6 +1336,7 @@ export default connect(({ global = {} }) => ({
           }
           grayTest={grayTest}
           isAdmin={userBasicInfo.id === '0'} //项目编辑，管理员可以编辑所有项目，子项目的项目立项里程碑信息，也对管理员开放编辑
+          ysspHide={ysspHide}
         />
         <div className="detail-row">
           <div className="col-left">
@@ -1387,6 +1389,7 @@ export default connect(({ global = {} }) => ({
                 endIndex,
                 setEndIndex,
               }}
+              ysspHide={ysspHide}
             />
             <PrjTracking
               xmid={xmid}
@@ -1394,6 +1397,7 @@ export default connect(({ global = {} }) => ({
               getTrackingData={getTrackingData}
               isLeader={isLeader}
               dictionary={dictionary}
+              ysspHide={ysspHide}
             />
             <InfoDisplay
               isHwSltPrj={isHwSltPrj}
@@ -1426,6 +1430,7 @@ export default connect(({ global = {} }) => ({
                 grayTest,
                 is_XMJL_FXMJL,
                 allStaffData,
+                ysspHide,
               }}
               funcProps={{
                 getPrjDtlData,

@@ -7,6 +7,7 @@ import { useLocation } from 'react-router';
 import { Link } from 'react-router-dom';
 import { QueryProjectGeneralInfo } from '../../../../services/pmsServices';
 import NewProjectModelV2 from '../../../../pages/workPlatForm/singlePage/NewProjectModelV2';
+import emptyImg from '../../../../assets/homePage/img_no data@2x.png';
 
 export default function ProjectCard(props) {
   const {
@@ -67,9 +68,9 @@ export default function ProjectCard(props) {
   };
 
   //草稿编辑
-  const handleDraftModify = xmid => {
+  const handleDraftModify = (xmid, isDraft = false) => {
     setFileAddVisible(true);
-    setSrc_fileAdd({ xmid: xmid, type: true, projectStatus: 'SAVE' });
+    setSrc_fileAdd({ xmid, type: true, projectStatus: 'SAVE', isDraft });
   };
 
   //草稿删除
@@ -140,10 +141,27 @@ export default function ProjectCard(props) {
     participantData = [],
     riskData = [],
     isLate = false,
-    isDraft = false,
+    state = '2',
     xmid = -1,
+    YSLCZT,
   }) => {
-    if (isDraft)
+    const isDraft = state === '2'; //草稿
+    const isBack = YSLCZT === '退回'; //被退回
+    const isStop = YSLCZT === '终止'; //被终止
+    const noPass = state === '5' && YSLCZT === undefined; //不通过
+    const isPending = !isBack && !isStop && !noPass && state === '5'; //审批中
+    let fontColor = '#C0C4CCFF';
+    let titleTag = '草稿';
+    if (isBack) {
+      titleTag = '审批被退回';
+    } else if (isPending) {
+      titleTag = '审批中';
+    } else if (isStop) {
+      titleTag = '审批被终止';
+    } else if (noPass) {
+      titleTag = '审批不通过';
+    }
+    if (isDraft || isBack || isStop || isPending || noPass)
       return (
         <div
           className="project-item"
@@ -157,22 +175,24 @@ export default function ProjectCard(props) {
           <div className="item-top" onClick={() => handleDraftModify(xmid)}>
             <span>{title}</span>
             <div className="tag" style={{ backgroundColor: fontColor }}>
-              草稿
+              {titleTag}
             </div>
           </div>
           <div className="item-middle" onClick={() => handleDraftModify(xmid)}>
-            <img src={require('../../../../assets/homePage/img_no data@2x.png')} alt="" />
+            <img src={emptyImg} alt="" />
           </div>
           <div className="item-bottom-operate">
-            <div className="btn-edit" onClick={() => handleDraftModify(xmid)}>
-              <div className="btn-edit-wrapper">
-                <i className="iconfont edit" />
-                编辑
+            {!isPending && (
+              <div className="btn-edit" onClick={() => handleDraftModify(xmid)}>
+                <div className="btn-edit-wrapper">
+                  <i className="iconfont edit" />
+                  编辑
+                </div>
               </div>
-            </div>
-            <div className="divider"></div>
+            )}
+            <div className="divider" style={isDraft ? {} : { visibility: 'hidden' }}></div>
             <Popconfirm title="确定要删除吗？" onConfirm={() => handleDraftDelete(xmid)}>
-              <div className="btn-delete">
+              <div className="btn-delete" style={isDraft ? {} : { visibility: 'hidden' }}>
                 <i className="iconfont delete" />
                 删除
               </div>
@@ -180,266 +200,11 @@ export default function ProjectCard(props) {
           </div>
         </div>
       );
-    let bgImg =
-      'background: linear-gradient(270deg,rgba(51, 97, 255, 0) 0%,rgba(51, 97, 255, 0.1) 100%)';
-    let fontColor = '#3361FF';
-    if (isDraft) {
-      fontColor = '#C0C4CCFF';
-      bgImg = 'linear-gradient(270deg, rgba(144,147,153,0) 0%, rgba(144,147,153,0.1) 100%)';
-    } else if (isLate) {
-      fontColor = '#ff3030';
-      bgImg = 'linear-gradient(270deg, rgba(215,14,25,0) 0%, rgba(215,14,25,0.1) 100%)';
-    }
-    const participantContent = data => {
-      return (
-        <div>
-          <div className="list">
-            {data?.map(x => (
-              <Link
-                to={{
-                  pathname:
-                    '/pms/manage/staffDetail/' +
-                    EncryptBase64(
-                      JSON.stringify({
-                        ryid: x.USERID,
-                      }),
-                    ),
-                  state: {
-                    routes: [{ name: '个人工作台', pathname: location.pathname }],
-                  },
-                }}
-                key={x.USERID}
-                onClick={() => setPlacement(undefined)}
-              >
-                <div className="item">
-                  <div className="img-box">
-                    <img
-                      src={require(`../../../../assets/homePage/img_avatar_${
-                        x.XB === '男' ? 'male' : 'female'
-                      }.png`)}
-                      alt=""
-                    />
-                  </div>
-                  {x.RYMC}
-                </div>
-              </Link>
-            ))}
-          </div>
-        </div>
-      );
-    };
-    const getParticipantName = () => {
-      let arr = [];
-      participantData?.forEach(x => {
-        arr.push(x.RYMC);
-      });
-      if (participantData?.length > 4)
-        return arr.slice(0, 4).join('、') + '等' + participantData?.length + '人参与';
-      return arr.join('、') + participantData?.length + '人参与';
-    };
-    const riskContent = () => {
-      const getItem = (label, content) => {
-        return (
-          <p>
-            <span className="label">{label}内容：</span>
-            <span>{content}</span>
-          </p>
-        );
-      };
-      return (
-        <div className="list">
-          {riskData?.map(x => (
-            <div className="item" key={x.FXID}>
-              <div className="top">
-                <div className="title">{x.BT}</div>
-                {x.ZT === '2' && (
-                  <div className="handled-tag">
-                    <div className="dot"></div>
-                    已处理
-                  </div>
-                )}
-                {x.ZT === '1' && (
-                  <div className="unhandled-tag">
-                    <div className="dot"></div>
-                    未处理
-                  </div>
-                )}
-              </div>
-
-              {getItem('风险', x.NR || '')}
-              {x.ZT !== '1' && getItem('处理', x.CLNR || '')}
-            </div>
-          ))}
-        </div>
-      );
-    };
-    return (
-      <div
-        className="project-item"
-        style={{
-          width: itemWidth,
-          background: isDraft
-            ? '#fbfbfb'
-            : isLate
-            ? 'conic-gradient(from 214.88deg at 75.98% 18.6%, rgba(255, 48, 48, 0.08) 0deg, rgba(255, 48, 48, 0.05) 360deg)'
-            : 'conic-gradient(from 214.88deg at 75.98% 18.6%, #EFF3FF 0deg, #F4F7FF 360deg)',
-        }}
-        key={key}
-      >
-        <Link
-          to={{
-            pathname: `/pms/manage/ProjectDetail/${EncryptBase64(
-              JSON.stringify({
-                xmid,
-              }),
-            )}`,
-            state: {
-              routes: [{ name: '个人工作台', pathname: location.pathname }],
-            },
-          }}
-        >
-          <div className="item-top">
-            <span>{title}</span>
-            {isDraft && (
-              <div className="tag" style={{ backgroundColor: fontColor }}>
-                草稿
-              </div>
-            )}
-            {isLate && (
-              <div className="tag" style={{ backgroundColor: fontColor }}>
-                延期
-              </div>
-            )}
-          </div>
-          {isDraft ? (
-            <div className="item-middle">
-              <img src={require('../../../../assets/homePage/img_no data@2x.png')} alt="" />
-            </div>
-          ) : (
-            <div className="item-middle">
-              <div className="middle-top">
-                <span>
-                  <i className="iconfont icon-fill-flag" style={{ color: fontColor }} />「{content}
-                  」阶段
-                </span>
-                <span className="rate" style={{ color: fontColor }}>
-                  {rate}%
-                </span>
-              </div>
-              <Progress
-                showInfo={false}
-                percent={Number(rate)}
-                strokeColor={{
-                  from: isLate ? 'rgba(255, 85, 95, 0)' : '#9EC4FE',
-                  to: isLate ? '#FF3030' : '#7191FF',
-                }}
-                strokeWidth={10}
-                className={isLate ? 'late-process' : 'normal-process'}
-              />
-              <div className="middle-bottom">
-                <Popover
-                  title={null}
-                  placement="rightTop"
-                  content={riskContent()}
-                  overlayClassName="risk-content-popover"
-                >
-                  {riskData?.length !== 0 && `存在${riskData?.length}个未处理风险！`}
-                </Popover>
-              </div>
-            </div>
-          )}
-        </Link>
-        {isDraft ? (
-          <div className="item-bottom-operate">
-            <div className="btn-edit" onClick={() => handleDraftModify(xmid)}>
-              <div className="btn-edit-wrapper">
-                <i className="iconfont edit" />
-                编辑
-              </div>
-            </div>
-            <div className="divider"></div>
-            <Popconfirm title="确定要删除吗？" onConfirm={() => handleDraftDelete(xmid)}>
-              <div className="btn-delete">
-                <i className="iconfont delete" />
-                删除
-              </div>
-            </Popconfirm>
-          </div>
-        ) : participantData?.length === 0 ? (
-          <div className="item-bottom-person">
-            <div className="avatar-box">
-              {participantData?.slice(0, 4).map(x => (
-                <div className="avatar" key={x.USERID}>
-                  <img
-                    src={require(`../../../../assets/homePage/img_avatar_${
-                      x.XB === '男' ? 'male' : 'female'
-                    }.png`)}
-                    alt=""
-                  />
-                </div>
-              ))}
-            </div>
-            <div className="txt">{getParticipantName()}</div>
-          </div>
-        ) : (
-          <Popover
-            title={null}
-            placement={placement}
-            autoAdjustOverflow={true}
-            content={participantContent(participantData)}
-            overlayClassName="participant-content-popover"
-          >
-            <div className="item-bottom-person">
-              <div className="avatar-box">
-                {participantData?.slice(0, 8).map(x => (
-                  <div className="avatar" key={x.USERID}>
-                    <img
-                      src={require(`../../../../assets/homePage/img_avatar_${
-                        x.XB === '男' ? 'male' : 'female'
-                      }.png`)}
-                      alt=""
-                    />
-                  </div>
-                ))}
-              </div>
-              <div
-                className="txt"
-                style={{
-                  WebkitBoxOrient: 'vertical',
-                  WebkitLineClamp: '2',
-                }}
-              >
-                {getParticipantName()}
-              </div>
-            </div>
-          </Popover>
-        )}
-      </div>
-    );
-  };
-
-  const fileAddModalProps = {
-    isAllWindow: 1,
-    // defaultFullScreen: true,
-    title: '编辑草稿',
-    width: '1000px',
-    height: '780px',
-    style: { top: '10px' },
-    visible: fileAddVisible,
-    footer: null,
+    return '';
   };
   if (total === 0) return null;
   return (
     <div className="project-card-box">
-      {/* 修改项目弹窗 */}
-      {/*{fileAddVisible && (*/}
-      {/*  <BridgeModel*/}
-      {/*    isSpining="customize"*/}
-      {/*    modalProps={fileAddModalProps}*/}
-      {/*    onCancel={closeFileAddModal}*/}
-      {/*    src={src_fileAdd}*/}
-      {/*  />*/}
-      {/*)}*/}
       {fileAddVisible && (
         <Modal
           wrapClassName="editMessage-modify xbjgEditStyle"
@@ -467,7 +232,7 @@ export default function ProjectCard(props) {
                 fontSize: '16px',
               }}
             >
-              <strong>编辑草稿</strong>
+              <strong>编辑{src_fileAdd.isDraft ? '草稿' : '项目'}</strong>
             </div>
           }
           footer={null}
@@ -482,41 +247,16 @@ export default function ProjectCard(props) {
         </Modal>
       )}
       <div className="home-card-title-box">
-        <div className="txt">项目草稿</div>
+        <div className="txt">创建中项目</div>
       </div>
-      {
-        // userRole === '普通人员' ? (
-        //   <div className="home-card-title-box">
-        //     <div className="txt">我的项目</div>
-        //   </div>
-        // ) : (
-        //   <div className="home-card-title-box">
-        //     <div className="txt">
-        //       团队项目
-        //       {/* <i className="iconfont circle-info" /> */}
-        //     </div>
-        //     {userRole !== '普通人员' && (
-        //       <span
-        //         onClick={() =>
-        //           (window.location.href = `/#/pms/manage/ProjectInfo/${EncryptBase64(
-        //             JSON.stringify({}),
-        //           )}`)
-        //         }
-        //       >
-        //         全部
-        //         <i className="iconfont icon-right" />
-        //       </span>
-        //     )}
-        //   </div>
-        // )
-      }
       <div className="project-box">
         {infoList?.map(item => {
           return getProjectItem({
+            ...item,
             title: item.XMMC,
             content: item.DQLCB,
             rate: item.XMJD,
-            isDraft: item.ZT === '2',
+            state: item.ZT,
             key: item.XMID,
             participantData: item.participantData,
             riskData: item.riskData,

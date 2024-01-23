@@ -55,6 +55,10 @@ export default function TopConsole(props) {
       }
     });
     setData(p => ({ ...p, filterData: arr }));
+    setYearData({
+      year: moment(), //年份
+      open: false, //下拉框展开收起
+    });
   };
 
   //年份组件 - 后期加的，特殊处理

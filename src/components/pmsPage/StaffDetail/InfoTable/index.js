@@ -49,7 +49,13 @@ class InfoTable extends Component {
   };
 
   render() {
-    const { tableLoading = false, tableData = [], pageParams = {}, routes = [] } = this.props;
+    const {
+      tableLoading = false,
+      tableData = [],
+      pageParams = {},
+      routes = [],
+      ryid = '',
+    } = this.props;
 
     const columns = [
       {
@@ -73,7 +79,7 @@ class InfoTable extends Component {
             <div>
               <Tooltip title={text} placement="topLeft">
                 <Link
-                  className="opr-btn"
+                  className="table-link-strong"
                   to={{
                     pathname: `/pms/manage/ProjectDetail/${EncryptBase64(
                       JSON.stringify({
@@ -208,16 +214,16 @@ class InfoTable extends Component {
           <Table
             loading={tableLoading}
             columns={columns}
-            rowKey={'xmid'}
+            rowKey={row => row.xmid + ryid}
             dataSource={tableData}
             onChange={this.handleTableChange}
             pagination={false}
-          // pagination={{
-          //     pageSizeOptions: ['10', '20', '30', '40'],
-          //     showSizeChanger: true,
-          //     showQuickJumper: true,
-          //     showTotal: total => `共 ${tableData.length} 条数据`,
-          // }}
+            // pagination={{
+            //     pageSizeOptions: ['10', '20', '30', '40'],
+            //     showSizeChanger: true,
+            //     showQuickJumper: true,
+            //     showTotal: total => `共 ${tableData.length} 条数据`,
+            // }}
           />
         </div>
         {pageParams.total !== -1 && pageParams.total !== 0 && (

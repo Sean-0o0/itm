@@ -27,6 +27,8 @@ export default function BudgetStatistic(props) {
     budgetCategorySlt: [],
     budgetPrj: undefined,
     budgetPrjSlt: [],
+    org: undefined,
+    director: undefined,
   }); //筛选栏数据
   const [activeKey, setActiveKey] = useState('ZB');
   const [curSorter, setCurSorter] = useState(''); //排序

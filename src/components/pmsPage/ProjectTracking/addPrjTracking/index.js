@@ -266,6 +266,7 @@ class EditPrjTracking extends React.Component {
                               <Input
                                 type={"number"}
                                 placeholder="请输入当前里程碑"
+                                min={0}
                               />,
                             )}
                           </Form.Item>

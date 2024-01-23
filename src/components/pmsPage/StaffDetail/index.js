@@ -32,6 +32,10 @@ class StaffDetailComponent extends Component {
     },
     curTab: 'projectSituation',
     role: '',
+    sortInfo: {
+      sort: undefined,
+      columnKey: '',
+    },
   }
 
   componentDidMount() {
@@ -55,13 +59,13 @@ class StaffDetailComponent extends Component {
       xb: '-',//性别
       zbxm: '-',//专班项目
       pageParams: {
+        ...(this.state.pageParams || {}),
         current: 1,
         pageSize: 20,
         paging: 1,
         total: -1,
-        sort: '',
         ryid
-      }
+      },
     }, () => {
       this.handleSearch({}, ryid)
     })
@@ -103,6 +107,8 @@ class StaffDetailComponent extends Component {
           const roleRes = await QueryUserRole({
             userId: Number(this.props.userBasicInfo.id),
           });
+          const { role = '', testRole = '{}' } = roleRes;
+          const roleTxt = role + JSON.parse(testRole).ALLROLE;
           if(roleRes.success){
             // console.log("🚀 ~ StaffDetailComponent ~ .then ~ roleRes:", roleRes)
             this.setState({
@@ -124,7 +130,7 @@ class StaffDetailComponent extends Component {
                 ...params,
                 total: totalrows,
               },
-              role: roleRes.role,
+              role: roleTxt,
             });
           }
         } else {
@@ -200,7 +206,7 @@ class StaffDetailComponent extends Component {
             </TabPane>
 
             {/*人员评价列表 */}
-           {this.state.role === '一级部门领导' && (
+           {this.state.role.includes('人员评价情况查看人员') && (
               <TabPane tab="评价情况" key="evaluationSituation">
                   <EvaluationTable
                     userBasicInfo={userBasicInfo}

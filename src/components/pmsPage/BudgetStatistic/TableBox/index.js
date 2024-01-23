@@ -385,8 +385,8 @@ const TableBox = props => {
       yearOpen: false,
       budgetCategory: undefined,
       budgetPrj: undefined,
-      budgetPrjSlt: undefined,
       org: undefined,
+      director: undefined,
     }));
   };
 

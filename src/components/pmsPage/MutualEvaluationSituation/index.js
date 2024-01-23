@@ -7,7 +7,7 @@ import PersonnelEvaluation from './PersonnelEvaluation';
 import YearsPrjEvaluation from './YearsPrjEvaluation';
 import { FetchQueryOrganizationInfo } from '../../../services/projectManage';
 import { setParentSelectableFalse } from '../../../utils/pmsPublicUtils';
-import { QueryMemberInfo } from '../../../services/pmsServices';
+import { QueryMemberInfo, QueryUserRole } from '../../../services/pmsServices';
 
 export default connect(({ global = {} }) => ({
   userBasicInfo: global.userBasicInfo,
@@ -27,16 +27,8 @@ export default connect(({ global = {} }) => ({
   const [routes, setRoutes] = useState([{ name: '人员评价统计', pathname: location.pathname }]); //路由
   const [orgData, setOrgData] = useState([]); //部门
   const [staffData, setStaffData] = useState([]); //人员评价统计树型数据 - 改部门了，但区分上边的，父级可选
-  const tabData = [
-    {
-      title: '人员评价统计',
-      value: 'RYPJ',
-    },
-    {
-      title: '项目评价统计',
-      value: 'LNXMPJ',
-    },
-  ];
+  const [role, setRole] = useState(''); //角色文本
+  const [tabData, setTabData] = useState([]);
 
   useEffect(() => {
     getOrgData();
@@ -95,6 +87,46 @@ export default connect(({ global = {} }) => ({
     return orgArr;
   };
 
+  const getUserRole = () => {
+    //获取用户角色
+    QueryUserRole({
+      userId: String(userBasicInfo.id),
+    })
+      .then(res => {
+        if (res?.code === 1) {
+          const { role = '', testRole = '{}' } = res;
+          const roleTxt = role + JSON.parse(testRole).ALLROLE;
+          console.log('用户角色', roleTxt);
+          setRole(roleTxt);
+          setTabData(
+            roleTxt.includes('二级部门领导')
+              ? [
+                  {
+                    title: '人员评价统计',
+                    value: 'RYPJ',
+                  },
+                ]
+              : [
+                  {
+                    title: '人员评价统计',
+                    value: 'RYPJ',
+                  },
+                  {
+                    title: '项目评价统计',
+                    value: 'LNXMPJ',
+                  },
+                ],
+          );
+          setIsSpinning(false);
+        }
+      })
+      .catch(e => {
+        message.error('用户角色查询失败', 1);
+        console.error('QueryUserRole', e);
+        setIsSpinning(false);
+      });
+  };
+
   const getOrgData = () => {
     setIsSpinning(true);
     FetchQueryOrganizationInfo({
@@ -151,7 +183,7 @@ export default connect(({ global = {} }) => ({
           //父级也要可选
           setOrgData(data);
           setStaffData(toTreeData(res.record)[0].children[0].children);
-          setIsSpinning(false);
+          getUserRole();
           // QueryMemberInfo({
           //   type: 'XXJS',
           // })
@@ -234,7 +266,7 @@ export default connect(({ global = {} }) => ({
       >
         {activeKey === 'RYPJ' ? (
           <PersonnelEvaluation
-            dataProps={{ routes, userBasicInfo, staffData }}
+            dataProps={{ routes, userBasicInfo, staffData, role }}
             funcProps={{ setIsSpinning, handleStaffData }}
           />
         ) : (

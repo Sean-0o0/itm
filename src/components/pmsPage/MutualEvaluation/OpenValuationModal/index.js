@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState, useMemo } from 'react';
+import React, { useCallback, useEffect, useState, useMemo, Fragment } from 'react';
 import {
   Button,
   Form,
@@ -13,6 +13,7 @@ import {
   Select,
   TreeSelect,
   InputNumber,
+  DatePicker,
 } from 'antd';
 import moment from 'moment';
 import { EncryptBase64 } from '../../../Common/Encrypt';
@@ -54,9 +55,11 @@ export default function OpenValuationModal(props) {
     projectType: undefined,
     projectStage: undefined,
     openStatus: 0,
-    appraiseState: undefined,
+    appraiseState: 0,
+    projectManagerName: undefined,
+    year: moment().subtract(1, 'year'),
   });
-
+  const [yearOpen, setYearOpen] = useState(false); //年份下拉框收起/展开
   const [memberCount, setMemberCount] = useState({
     type: '1',
     value: undefined,
@@ -97,7 +100,14 @@ export default function OpenValuationModal(props) {
   ];
 
   useEffect(() => {
-    visible && getPrjList({ ...filterData, isFirst: true, projectManager, projectName });
+    visible &&
+      getPrjList({
+        ...filterData,
+        isFirst: true,
+        projectManager,
+        projectName,
+        year: moment().year() - 1,
+      });
     setFilterData(p => ({ ...p, projectName }));
     return () => {};
   }, [visible]);
@@ -114,6 +124,8 @@ export default function OpenValuationModal(props) {
     appraiseState,
     isFirst = false,
     projectManager, //判断管理员，其他人为普通人员。普通人员需传项目经理id，管理员不传
+    year,
+    projectManagerName,
   }) => {
     setIsSpinning(true);
     QueryProjectAppraiseSwitchList({
@@ -130,6 +142,8 @@ export default function OpenValuationModal(props) {
       openStatus,
       appraiseState,
       projectManager,
+      year,
+      projectManagerName,
     })
       .then(res => {
         if (res?.success) {
@@ -239,10 +253,17 @@ export default function OpenValuationModal(props) {
   //列配置
   const columns = [
     {
+      title: '年份',
+      dataIndex: 'XMNF',
+      width: '8%',
+      key: 'XMNF',
+      ellipsis: true,
+    },
+    {
       title: '项目名称',
       dataIndex: 'XMMC',
       // width: 200,
-      width: '30%',
+      // width: '30%',
       key: 'XMMC',
       ellipsis: true,
       render: (text, row, index) => (
@@ -345,7 +366,7 @@ export default function OpenValuationModal(props) {
   const handleTableChange = useCallback(
     (pagination = {}) => {
       const { current = 1, pageSize = 20 } = pagination;
-      getPrjList({ current, pageSize, projectManager, ...filterData });
+      getPrjList({ current, pageSize, projectManager, ...filterData, year: filterData.year?.year(), });
       return;
     },
     [JSON.stringify(filterData), projectManager],
@@ -354,7 +375,7 @@ export default function OpenValuationModal(props) {
   //弹窗参数
   const modalProps = {
     wrapClassName: 'open-valuation-modal',
-    width: 1100,
+    width: 1020,
     maskClosable: false,
     style: { top: 10 },
     maskStyle: { backgroundColor: 'rgb(0 0 0 / 30%)' },
@@ -404,7 +425,7 @@ export default function OpenValuationModal(props) {
           });
       } else {
         setSelectedRowIds([]);
-        setSelectedRows();
+        setSelectedRows([]);
         setConditions({
           includesOpened: false,
           includesClosed: false,
@@ -412,16 +433,16 @@ export default function OpenValuationModal(props) {
       }
     },
     onSelect: (selectedRow, isSelected) => {
-      // console.log(
-      //   '🚀 ~ file: index.js:384 ~ OpenValuationModal ~ selectedRow, isSelected:',
-      //   selectedRow,
-      //   isSelected,
-      // );
+      console.log(
+        '🚀 ~ file: index.js:384 ~ OpenValuationModal ~ selectedRow, isSelected:',
+        selectedRow,
+        isSelected,
+      );
       let selectedRowKeys = [];
       let rows = [];
       if (isSelected) {
-        selectedRowKeys = Array.from(new Set([...selectedRowIds, selectedRow.XMID]));
-        rows = Array.from(new Set([...selectedRows, selectedRow]));
+        selectedRowKeys = Array.from(new Set([...(selectedRowIds || []), selectedRow.XMID])) || [];
+        rows = Array.from(new Set([...(selectedRows || []), selectedRow])) || [];
       } else {
         selectedRowKeys = selectedRowIds.filter(item => {
           return item !== selectedRow.XMID;
@@ -449,7 +470,7 @@ export default function OpenValuationModal(props) {
     })
       .then(res => {
         if (res?.success) {
-          getPrjList({ ...filterData, projectManager });
+          getPrjList({ ...filterData, projectManager, year: filterData.year?.year(), });
           refresh();
           message.success('操作成功', 1);
           setIsSpinning(false);
@@ -470,201 +491,243 @@ export default function OpenValuationModal(props) {
       </div>
       <Spin spinning={isSpinning} tip="加载中">
         <div className="content-box">
-          <div className="filter-row" key="row1">
-            <div className="filter-item" key={'项目名称'}>
-              <div className="item-label">项目名称</div>
-              <div className="item-component">
-                <Input
-                  value={filterData.projectName}
-                  onChange={e => {
-                    e.persist();
-                    setFilterData(p => ({ ...p, projectName: e.target.value }));
-                    setSelectedRowIds([]);
-                    debounce(e => {
-                      getPrjList({
-                        ...filterData,
-                        projectName: e?.target?.value,
-                        projectManager,
-                      });
-                    }, 300)(e);
-                  }}
-                  placeholder={'请输入'}
-                  style={{ width: '100%' }}
-                  allowClear
-                />
-              </div>
-            </div>
-            <div className="filter-item" key={'项目人数'}>
-              <div className="item-label">项目人数</div>
-              <div className="item-component">
-                <div className="item-compact">
-                  <Select
-                    defaultValue="1"
-                    className="item-selector"
-                    dropdownClassName="item-selector-dropdown"
-                    onChange={v => {
-                      setMemberCount(p => ({ ...p, type: v }));
-                      memberCount.value !== undefined &&
+          {projectManager === undefined ? (
+            <Fragment>
+              <div className="filter-row" key="row1">
+                <div className="filter-item" key={'年份'}>
+                  <div className="item-label">年份</div>
+                  <div className="item-component">
+                    <DatePicker
+                      mode="year"
+                      open={yearOpen}
+                      placeholder="请选择"
+                      format="YYYY"
+                      allowClear
+                      value={filterData.year}
+                      onChange={v => {
+                        setYearOpen(false);
                         getPrjList({
                           ...filterData,
-                          memberCount: (v === '1' ? '>' : '<') + memberCount.value,
+                          year: undefined,
                           projectManager,
+                          year: filterData.year?.year(),
                         });
-                    }}
-                  >
-                    <Option value="1">大于</Option>
-                    <Option value="2">小于</Option>
-                  </Select>
-                  {memberCount.type === '1' && (
-                    <InputNumber
-                      className="item-input"
-                      value={memberCount.value}
-                      onChange={v => {
-                        setMemberCount({ type: '1', value: v });
-                        setFilterData(p => ({
-                          ...p,
-                          memberCount: ![undefined, '', null, ' '].includes(v)
-                            ? '>' + v
-                            : undefined,
-                        }));
-                        setSelectedRowIds([]);
-                        ![undefined, '', null, ' '].includes(v)
-                          ? debounce(v => {
-                              getPrjList({
-                                ...filterData,
-                                memberCount: '>' + v,
-                                projectManager,
-                              });
-                            }, 300)(v)
-                          : debounce(v => {
-                              getPrjList({
-                                ...filterData,
-                                memberCount: undefined,
-                                projectManager,
-                              });
-                            }, 300)(v);
+                        setFilterData(p => ({ ...p, year: undefined }));
                       }}
-                      placeholder="请输入"
-                    />
-                  )}
-                  {memberCount.type === '2' && (
-                    <InputNumber
-                      className="item-input"
-                      value={memberCount.value}
-                      onChange={v => {
-                        setMemberCount({ type: '2', value: v });
-                        setFilterData(p => ({
-                          ...p,
-                          memberCount: ![undefined, '', null, ' '].includes(v)
-                            ? '<' + v
-                            : undefined,
-                        }));
-                        setSelectedRowIds([]);
-                        ![undefined, '', null, ' '].includes(v)
-                          ? debounce(v => {
-                              getPrjList({
-                                ...filterData,
-                                memberCount: '<' + v,
-                                projectManager,
-                              });
-                            }, 300)(v)
-                          : debounce(v => {
-                              getPrjList({
-                                ...filterData,
-                                memberCount: undefined,
-                                projectManager,
-                              });
-                            }, 300)(v);
+                      onPanelChange={v => {
+                        setYearOpen(false);
+                        getPrjList({
+                          ...filterData,
+                          year: v?.year(),
+                          projectManager,
+                          year: filterData.year?.year(),
+                        });
+                        setFilterData(p => ({ ...p, year: v }));
                       }}
-                      placeholder="请输入"
+                      onOpenChange={v => setYearOpen(v)}
+                      style={{ width: '100%' }}
                     />
-                  )}
+                  </div>
+                </div>
+                <div className="filter-item" key={'项目名称'}>
+                  <div className="item-label">项目名称</div>
+                  <div className="item-component">
+                    <Input
+                      value={filterData.projectName}
+                      onChange={e => {
+                        e.persist();
+                        setFilterData(p => ({ ...p, projectName: e.target.value }));
+                        setSelectedRowIds([]);
+                        debounce(e => {
+                          getPrjList({
+                            ...filterData,
+                            projectName: e?.target?.value,
+                            projectManager,
+                            year: filterData.year?.year(),
+                          });
+                        }, 300)(e);
+                      }}
+                      placeholder={'请输入'}
+                      style={{ width: '100%' }}
+                      allowClear
+                    />
+                  </div>
+                </div>
+                <div className="filter-item" key={'项目经理'}>
+                  <div className="item-label">项目经理</div>
+                  <div className="item-component">
+                    <Input
+                      value={filterData.projectManagerName}
+                      onChange={e => {
+                        e.persist();
+                        setFilterData(p => ({ ...p, projectManagerName: e.target.value }));
+                        setSelectedRowIds([]);
+                        debounce(e => {
+                          getPrjList({
+                            ...filterData,
+                            projectManagerName: e?.target?.value,
+                            projectManager,
+                            year: filterData.year?.year(),
+                          });
+                        }, 300)(e);
+                      }}
+                      placeholder={'请输入'}
+                      style={{ width: '100%' }}
+                      allowClear
+                    />
+                  </div>
                 </div>
               </div>
-            </div>
-            <div className="filter-item" key={'项目类型'}>
-              <div className="item-label">项目类型</div>
-              <div className="item-component">
-                {getTreeSelect({
-                  onChange: v => {
-                    setFilterData(p => ({ ...p, projectType: v }));
-                    setSelectedRowIds([]);
+              <div className="filter-row" key="row2">
+                <div className="filter-item" key={'项目类型'}>
+                  <div className="item-label">项目类型</div>
+                  <div className="item-component">
+                    {getTreeSelect({
+                      onChange: v => {
+                        setFilterData(p => ({ ...p, projectType: v }));
+                        setSelectedRowIds([]);
+                        getPrjList({
+                          ...filterData,
+                          projectType: Number(v),
+                          projectManager,
+                          year: filterData.year?.year(),
+                        });
+                      },
+                      data: sltData.xmlx,
+                    })}
+                  </div>
+                </div>
+                <div className="filter-item" key={'项目阶段'}>
+                  <div className="item-label">项目阶段</div>
+                  <div className="item-component">
+                    {getSelector({
+                      onChange: v => {
+                        setFilterData(p => ({ ...p, projectStage: v }));
+                        setSelectedRowIds([]);
+                        getPrjList({
+                          ...filterData,
+                          projectStage: Number(v),
+                          projectManager,
+                          year: filterData.year?.year(),
+                        });
+                      },
+                      data: sltData.xmjd,
+                      valueField: 'id',
+                      titleField: 'lcbmc',
+                    })}
+                  </div>
+                </div>
+                <div className="filter-item" key={'开启状态'}>
+                  <div className="item-label">开启状态</div>
+                  <Radio.Group
+                    className="item-component"
+                    value={filterData.openStatus}
+                    onChange={e => {
+                      getPrjList({
+                        ...filterData,
+                        openStatus: Number(e.target.value),
+                        projectManager,
+                        year: filterData.year?.year(),
+                      });
+                      setFilterData(p => ({ ...p, openStatus: Number(e.target.value) }));
+                      setSelectedRowIds([]);
+                    }}
+                  >
+                    {KQZT.map(x => (
+                      <Radio key={x.ibm} value={x.ibm}>
+                        {x.note}
+                      </Radio>
+                    ))}
+                  </Radio.Group>
+                </div>
+              </div>
+              <div className="filter-row" key="row3">
+                <div className="filter-item" key={'评价状态'} style={{ width: '100%' }}>
+                  <div className="item-label">评价状态</div>
+                  <Radio.Group
+                    className="item-component"
+                    value={filterData.appraiseState}
+                    onChange={e => {
+                      getPrjList({
+                        ...filterData,
+                        appraiseState: Number(e.target.value),
+                        projectManager,
+                        year: filterData.year?.year(),
+                      });
+                      setFilterData(p => ({ ...p, appraiseState: Number(e.target.value) }));
+                      setSelectedRowIds([]);
+                    }}
+                  >
+                    {PJZT.map(x => (
+                      <Radio key={x.ibm} value={x.ibm}>
+                        {x.note}
+                      </Radio>
+                    ))}
+                  </Radio.Group>
+                </div>
+              </div>
+            </Fragment>
+          ) : (
+            <div className="filter-row" key="row1">
+              <div className="filter-item" key={'年份'}>
+                <div className="item-label">年份</div>
+                <div className="item-component">
+                  <DatePicker
+                    mode="year"
+                    open={yearOpen}
+                    placeholder="请选择"
+                    format="YYYY"
+                    allowClear
+                    value={filterData.year}
+                    onChange={v => {
+                      setYearOpen(false);
+                      getPrjList({
+                        ...filterData,
+                        year: undefined,
+                        projectManager,
+                      });
+                      setFilterData(p => ({ ...p, year: undefined }));
+                    }}
+                    onPanelChange={v => {
+                      setYearOpen(false);
+                      getPrjList({
+                        ...filterData,
+                        year: v?.year(),
+                        projectManager,
+                      });
+                      setFilterData(p => ({ ...p, year: v }));
+                    }}
+                    onOpenChange={v => setYearOpen(v)}
+                    style={{ width: '100%' }}
+                  />
+                </div>
+              </div>
+              <div className="filter-item" key={'开启状态'}>
+                <div className="item-label">开启状态</div>
+                <Radio.Group
+                  className="item-component"
+                  value={filterData.openStatus}
+                  onChange={e => {
                     getPrjList({
                       ...filterData,
-                      projectType: Number(v),
+                      openStatus: Number(e.target.value),
                       projectManager,
+                      year: filterData.year?.year(),
                     });
-                  },
-                  data: sltData.xmlx,
-                })}
-              </div>
-            </div>
-          </div>
-          <div className="filter-row" key="row2">
-            <div className="filter-item" key={'项目阶段'}>
-              <div className="item-label">项目阶段</div>
-              <div className="item-component">
-                {getSelector({
-                  onChange: v => {
-                    setFilterData(p => ({ ...p, projectStage: v }));
+                    setFilterData(p => ({ ...p, openStatus: Number(e.target.value) }));
                     setSelectedRowIds([]);
-                    getPrjList({
-                      ...filterData,
-                      projectStage: Number(v),
-                      projectManager,
-                    });
-                  },
-                  data: sltData.xmjd,
-                  valueField: 'id',
-                  titleField: 'lcbmc',
-                })}
+                  }}
+                >
+                  {KQZT.map(x => (
+                    <Radio key={x.ibm} value={x.ibm}>
+                      {x.note}
+                    </Radio>
+                  ))}
+                </Radio.Group>
               </div>
+              <div className="filter-item" key={'placeholder'}></div>
             </div>
-            <div className="filter-item" key={'开启状态'}>
-              <div className="item-label">开启状态</div>
-              <Radio.Group
-                className="item-component"
-                value={filterData.openStatus}
-                onChange={e => {
-                  getPrjList({
-                    ...filterData,
-                    openStatus: Number(e.target.value),
-                    projectManager,
-                  });
-                  setFilterData(p => ({ ...p, openStatus: Number(e.target.value) }));
-                  setSelectedRowIds([]);
-                }}
-              >
-                {KQZT.map(x => (
-                  <Radio key={x.ibm} value={x.ibm}>
-                    {x.note}
-                  </Radio>
-                ))}
-              </Radio.Group>
-            </div>
-            <div className="filter-item" key={'评价状态'}>
-              <div className="item-label">评价状态</div>
-              <Radio.Group
-                className="item-component"
-                value={filterData.appraiseState}
-                onChange={e => {
-                  getPrjList({
-                    ...filterData,
-                    appraiseState: Number(e.target.value),
-                    projectManager,
-                  });
-                  setFilterData(p => ({ ...p, appraiseState: Number(e.target.value) }));
-                  setSelectedRowIds([]);
-                }}
-              >
-                {PJZT.map(x => (
-                  <Radio key={x.ibm} value={x.ibm}>
-                    {x.note}
-                  </Radio>
-                ))}
-              </Radio.Group>
-            </div>
-          </div>
+          )}
           <div className="table-box">
             <div className="btn-row">
               <Popconfirm

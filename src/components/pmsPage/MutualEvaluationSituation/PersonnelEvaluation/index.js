@@ -15,7 +15,7 @@ import TopFilter from '../../MutualEvaluation/TopFilter';
 
 export default function PersonnelEvaluation(props) {
   const { dataProps = {}, funcProps = {} } = props;
-  const { routes = [], userBasicInfo = {}, staffData = [] } = dataProps;
+  const { routes = [], userBasicInfo = {}, staffData = [], role = '' } = dataProps;
   const { setIsSpinning, handleStaffData } = funcProps;
   const [treeData, setTreeData] = useState([]); //左侧树型数据
   const [tableData, setTableData] = useState({
@@ -53,7 +53,7 @@ export default function PersonnelEvaluation(props) {
     columnKey: '',
   }); //用于重置列排序 - 切换部门后
   const [filterData, setFilterData] = useState({
-    year: moment(),
+    year: moment().subtract(1, 'year'),
   });
 
   const filterConfig = [
@@ -72,7 +72,7 @@ export default function PersonnelEvaluation(props) {
       setTreeData(JSON.parse(JSON.stringify(staffData)));
       // console.log('🚀 ~ useEffect ~ staffData:', staffData);
       setCurOrgID(staffData[0].value);
-      getOrgTableData({ orgId: staffData[0].value, year: moment().year() }); //根据部门查询表格数据
+      getOrgTableData({ orgId: staffData[0].value, year: moment().year()-1 }); //根据部门查询表格数据
     }
     return () => {};
   }, [JSON.stringify(staffData)]);
@@ -286,7 +286,7 @@ export default function PersonnelEvaluation(props) {
       sortOrder: sortInfo.columnKey === 'PJXM' ? sortInfo.order : undefined, //排序的受控属性，外界可用此控制列的排序，可设置为 'ascend' 'descend' false
     },
     {
-      title: '未评价项目数',
+      title: '可评价项目数',
       dataIndex: 'WPJXM',
       width: '14%',
       key: 'WPJXM',
@@ -306,7 +306,7 @@ export default function PersonnelEvaluation(props) {
     {
       title: '评价详情',
       dataIndex: 'PJXQ',
-      width: '10%',
+      width: role.includes('二级部门领导') ? 0 : '10%',
       key: 'PJXQ',
       ellipsis: true,
       render: (txt, row) => (
@@ -325,7 +325,6 @@ export default function PersonnelEvaluation(props) {
       width: '10%',
       key: 'XMNF',
       ellipsis: true,
-      sorter: true,
     },
     {
       title: '项目名称',
