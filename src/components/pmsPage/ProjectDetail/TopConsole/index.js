@@ -36,6 +36,7 @@ export default function TopConsole(props) {
     isDDXM,
     grayTest = {},
     isAdmin = false,
+    ysspHide = false,
   } = props;
   const [fileAddVisible, setFileAddVisible] = useState(false); //项目信息修改弹窗显示
   const [src_fileAdd, setSrc_fileAdd] = useState({}); //项目信息修改弹窗显示
@@ -191,10 +192,10 @@ export default function TopConsole(props) {
   //编辑项目弹窗
   const handleEditPrjInfo = () => {
     setFileAddVisible(true);
-    
+
     let p = { xmid, type: true, projectStatus: 'SAVE' };
     //当项目状态为5时，编辑项目弹窗，无法修改预算信息，在关联预算的字段后面加一个文字提示“项目审批中，暂时无法修改预算信息”
-    String(prjBasic.XMZT) === '5' && (p.notAllowEditBudget = false);//有变动，暂时改成false
+    String(prjBasic.XMZT) === '5' && (p.notAllowEditBudget = false); //有变动，暂时改成false
     prjBasic.FXMMC && (p.subItemFlag = true);
     //项目编辑，管理员可以编辑所有项目，子项目的项目立项里程碑信息，也对管理员开放编辑
     if (isAdmin) {
@@ -348,37 +349,37 @@ export default function TopConsole(props) {
 
   const btnMoreContent = () => {
     // if (String(LOGIN_USER_INFO.id) === '0')
-      return (
-        <Menu>
-          <SubMenu title={<span style={{ marginLeft: 20 }}>流程补录</span>}>
-            <Menu.Item onClick={() => openLbModal('信委会附件', 'xwhfj')}>信委会附件</Menu.Item>
-            <Menu.Item onClick={() => openLbModal('总办会流程', 'zbh')}>总办会流程</Menu.Item>
-            <Menu.Item onClick={() => openLbModal('项目立项申请流程', 'xmlxsq')}>
-              项目立项申请流程
-            </Menu.Item>
-            <Menu.Item onClick={() => openLbModal('软件合同签署流程', 'rjhtqs')}>
-              软件合同签署流程
-            </Menu.Item>
-            <Menu.Item onClick={() => openLbModal('软件费用审批-有合同流程', 'rjfyspyht')}>
-              软件费用审批-有合同流程
-            </Menu.Item>
-            <Menu.Item onClick={() => openLbModal('软件费用审批-无合同流程', 'rjfyspwht')}>
-              软件费用审批-无合同流程
-            </Menu.Item>
-            <Menu.Item onClick={() => openLbModal('设备采购-有合同流程', 'sbcgyht')}>
-              设备采购-有合同流程
-            </Menu.Item>
-            <Menu.Item onClick={() => openLbModal('设备采购-无合同流程', 'sbcgwht')}>
-              设备采购-无合同流程
-            </Menu.Item>
-            <Menu.Item onClick={() => openLbModal('其他流程', 'qt')}>其他流程</Menu.Item>
-          </SubMenu>
-          <Menu.Item onClick={() => setLbModal(p => ({ ...p, fklcbl: true }))}>付款补录</Menu.Item>
-          {!haveSpl && (
-            <Menu.Item onClick={() => openLbModal('供应商', 'blgys')}>供应商补录</Menu.Item>
-          )}
-        </Menu>
-      );
+    return (
+      <Menu>
+        <SubMenu title={<span style={{ marginLeft: 20 }}>流程补录</span>}>
+          <Menu.Item onClick={() => openLbModal('信委会附件', 'xwhfj')}>信委会附件</Menu.Item>
+          <Menu.Item onClick={() => openLbModal('总办会流程', 'zbh')}>总办会流程</Menu.Item>
+          <Menu.Item onClick={() => openLbModal('项目立项申请流程', 'xmlxsq')}>
+            项目立项申请流程
+          </Menu.Item>
+          <Menu.Item onClick={() => openLbModal('软件合同签署流程', 'rjhtqs')}>
+            软件合同签署流程
+          </Menu.Item>
+          <Menu.Item onClick={() => openLbModal('软件费用审批-有合同流程', 'rjfyspyht')}>
+            软件费用审批-有合同流程
+          </Menu.Item>
+          <Menu.Item onClick={() => openLbModal('软件费用审批-无合同流程', 'rjfyspwht')}>
+            软件费用审批-无合同流程
+          </Menu.Item>
+          <Menu.Item onClick={() => openLbModal('设备采购-有合同流程', 'sbcgyht')}>
+            设备采购-有合同流程
+          </Menu.Item>
+          <Menu.Item onClick={() => openLbModal('设备采购-无合同流程', 'sbcgwht')}>
+            设备采购-无合同流程
+          </Menu.Item>
+          <Menu.Item onClick={() => openLbModal('其他流程', 'qt')}>其他流程</Menu.Item>
+        </SubMenu>
+        <Menu.Item onClick={() => setLbModal(p => ({ ...p, fklcbl: true }))}>付款补录</Menu.Item>
+        {!haveSpl && (
+          <Menu.Item onClick={() => openLbModal('供应商', 'blgys')}>供应商补录</Menu.Item>
+        )}
+      </Menu>
+    );
     return (
       <Menu>
         {/* <Menu.Item onClick={() => setLbModal(p => ({ ...p, fklcbl: true }))}>付款补录</Menu.Item> */}
@@ -960,12 +961,12 @@ export default function TopConsole(props) {
           {grayTest.DDMK && prjBasic.WJZT === '1' && (
             <img src={iconCompleted} className="icon-completed" alt="图片：已完结" />
           )}
-          {(allowEdit() || String(LOGIN_USER_INFO.id) === '0') && (
+          {!ysspHide && (allowEdit() || String(LOGIN_USER_INFO.id) === '0') && (
             <Button className="btn-edit" onClick={handleEditPrjInfo}>
               编辑
             </Button>
           )}
-          {(allowEdit() || String(LOGIN_USER_INFO.id) === '0') && (
+          {!ysspHide && (allowEdit() || String(LOGIN_USER_INFO.id) === '0') && (
             <Dropdown overlay={btnMoreContent()} overlayClassName="tc-btn-more-content-dropdown">
               <Button className="btn-more">
                 <i className="iconfont icon-more" />

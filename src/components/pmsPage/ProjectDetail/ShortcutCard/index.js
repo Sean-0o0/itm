@@ -32,6 +32,7 @@ export default function ShortcutCard(props) {
     grayTest = {},
     is_XMJL_FXMJL = false, // 项目详情页的是否是项目经理或者副项目经理，非账号登录人的
     allStaffData = [], //用于判断 验收报告 事项是否已完成
+    ysspHide = false,
   } = dataProps;
 
   const { prjBasic = {}, member = [], contrastArr = [] } = prjData;
@@ -409,8 +410,8 @@ export default function ShortcutCard(props) {
     }
   }, [JSON.stringify(member)]);
 
-  //目前 非项目成员 无快捷入口
-  if (!isMember()) return null;
+  //目前 非项目成员 无快捷入口 或 预算审批 也无
+  if (!isMember() || ysspHide) return null;
   return (
     <div className="shortcut-card-box">
       <div className="top-title">快捷入口</div>

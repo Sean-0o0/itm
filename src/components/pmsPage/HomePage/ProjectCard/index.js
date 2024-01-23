@@ -8,6 +8,7 @@ import { Link } from 'react-router-dom';
 import { QueryProjectGeneralInfo } from '../../../../services/pmsServices';
 import NewProjectModelV2 from '../../../../pages/workPlatForm/singlePage/NewProjectModelV2';
 import emptyImg from '../../../../assets/homePage/img_no data@2x.png';
+import EditProjectInfoModel from '../../EditProjectInfoModel';
 
 export default function ProjectCard(props) {
   const {
@@ -24,7 +25,7 @@ export default function ProjectCard(props) {
   const [isUnfold, setIsUnfold] = useState(false); //是否展开
   const [infoList, setInfoList] = useState([]); //项目信息 - 展示
   const [fileAddVisible, setFileAddVisible] = useState(false); //项目信息修改弹窗显示
-  const [src_fileAdd, setSrc_fileAdd] = useState('#'); //项目信息修改弹窗显示
+  const [src_fileAdd, setSrc_fileAdd] = useState({}); //项目信息修改弹窗显示
   const [allPrj, setAllPrj] = useState([]); //全部项目
   const [isLoading, setIsLoading] = useState(false); //查询全部数据时加载状态
   const location = useLocation();
@@ -69,8 +70,15 @@ export default function ProjectCard(props) {
 
   //草稿编辑
   const handleDraftModify = (xmid, isDraft = false) => {
+    console.log('🚀 ~ handleDraftModify ~  isDraft:', isDraft);
     setFileAddVisible(true);
-    setSrc_fileAdd({ xmid, type: true, projectStatus: 'SAVE', isDraft });
+    setSrc_fileAdd({
+      xmid,
+      type: true,
+      projectStatus: 'SAVE',
+      isDraft,
+      notAllowEditBudget: isDraft ? false : true,
+    });
   };
 
   //草稿删除
@@ -172,18 +180,24 @@ export default function ProjectCard(props) {
           }}
           key={key}
         >
-          <div className="item-top" onClick={() => handleDraftModify(xmid)}>
+          <div
+            className="item-top"
+            onClick={() => (isPending ? {} : handleDraftModify(xmid, isDraft))}
+          >
             <span>{title}</span>
             <div className="tag" style={{ backgroundColor: fontColor }}>
               {titleTag}
             </div>
           </div>
-          <div className="item-middle" onClick={() => handleDraftModify(xmid)}>
+          <div
+            className="item-middle"
+            onClick={() => (isPending ? {} : handleDraftModify(xmid, isDraft))}
+          >
             <img src={emptyImg} alt="" />
           </div>
           <div className="item-bottom-operate">
             {!isPending && (
-              <div className="btn-edit" onClick={() => handleDraftModify(xmid)}>
+              <div className="btn-edit" onClick={() => handleDraftModify(xmid, isDraft)}>
                 <div className="btn-edit-wrapper">
                   <i className="iconfont edit" />
                   编辑
@@ -237,13 +251,26 @@ export default function ProjectCard(props) {
           }
           footer={null}
         >
-          <NewProjectModelV2
-            closeModel={closeFileAddModal}
-            successCallBack={handleFileAddSuccess}
-            xmid={src_fileAdd.xmid}
-            type={src_fileAdd.type}
-            projectStatus={src_fileAdd.projectStatus}
-          />
+          {src_fileAdd.isDraft ? (
+            <NewProjectModelV2
+              closeModel={closeFileAddModal}
+              successCallBack={handleFileAddSuccess}
+              xmid={src_fileAdd.xmid}
+              type={src_fileAdd.type}
+              projectStatus={src_fileAdd.projectStatus}
+              notAllowEditBudget={src_fileAdd.notAllowEditBudget}
+            />
+          ) : (
+            <EditProjectInfoModel
+              closeModel={closeFileAddModal}
+              successCallBack={handleFileAddSuccess}
+              xmid={src_fileAdd.xmid}
+              type={src_fileAdd.type}
+              subItemFlag={false}
+              projectStatus={src_fileAdd.projectStatus}
+              notAllowEditBudget={src_fileAdd.notAllowEditBudget}
+            />
+          )}
         </Modal>
       )}
       <div className="home-card-title-box">

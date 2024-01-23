@@ -645,7 +645,31 @@ export default function InfoDisplay(props) {
               style={{ display: 'flex', height: 'unset' }}
             >
               <div style={{ flexShrink: 0, color: '#909399' }}>关联预算项目：</div>
-              <div style={{ whiteSpace: 'break-spaces' }}>{notNull(prjBasic.YSXMMC)}</div>
+              <div style={{ whiteSpace: 'break-spaces' }}>
+                <Link
+                  style={{ color: '#3361ff' }}
+                  to={{
+                    pathname: `/pms/manage/BudgetDetail/${EncryptBase64(
+                      JSON.stringify({
+                        fromKey:
+                          prjBasic.YSLX === '资本性预算项目'
+                            ? 'ZB'
+                            : prjBasic.YSLX === '非资本性预算项目'
+                            ? 'FZB'
+                            : 'KY',
+                        budgetID: prjBasic.YSXMID,
+                        routes,
+                      }),
+                    )}`,
+                    state: {
+                      routes,
+                    },
+                  }}
+                  className="table-link-strong"
+                >
+                  {notNull(prjBasic.YSXMMC)}
+                </Link>
+              </div>
             </div>
             <div className="info-item" key="关联预算项目已执行预算">
               <span>已执行预算：</span>

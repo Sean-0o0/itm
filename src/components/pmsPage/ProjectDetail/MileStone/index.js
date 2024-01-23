@@ -18,6 +18,7 @@ export default function MileStone(props) {
     isHwSltPrj,
     stateProps = {},
     isDDXM = false,
+    ysspHide = false,
   } = props;
   const {
     currentStep,
@@ -494,6 +495,9 @@ export default function MileStone(props) {
       </div>
     );
   };
+
+  //预算审批隐藏
+  if(ysspHide) return null;
 
   return (
     <div className="mile-stone-box">
