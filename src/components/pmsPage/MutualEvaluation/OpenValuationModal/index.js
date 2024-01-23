@@ -57,7 +57,7 @@ export default function OpenValuationModal(props) {
     openStatus: 0,
     appraiseState: 0,
     projectManagerName: undefined,
-    year: moment().subtract(1, 'year'),
+    year: undefined,
   });
   const [yearOpen, setYearOpen] = useState(false); //年份下拉框收起/展开
   const [memberCount, setMemberCount] = useState({
@@ -106,7 +106,6 @@ export default function OpenValuationModal(props) {
         isFirst: true,
         projectManager,
         projectName,
-        year: moment().year() - 1,
       });
     setFilterData(p => ({ ...p, projectName }));
     return () => {};
@@ -510,7 +509,6 @@ export default function OpenValuationModal(props) {
                           ...filterData,
                           year: undefined,
                           projectManager,
-                          year: filterData.year?.year(),
                         });
                         setFilterData(p => ({ ...p, year: undefined }));
                       }}
@@ -520,7 +518,6 @@ export default function OpenValuationModal(props) {
                           ...filterData,
                           year: v?.year(),
                           projectManager,
-                          year: filterData.year?.year(),
                         });
                         setFilterData(p => ({ ...p, year: v }));
                       }}
