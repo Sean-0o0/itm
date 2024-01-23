@@ -206,7 +206,7 @@ class StaffDetailComponent extends Component {
             </TabPane>
 
             {/*人员评价列表 */}
-           {this.state.role.includes('人员评价情况查看人员') && (
+           {this.state.role.includes('人员评价查看人员') && (
               <TabPane tab="评价情况" key="evaluationSituation">
                   <EvaluationTable
                     userBasicInfo={userBasicInfo}
