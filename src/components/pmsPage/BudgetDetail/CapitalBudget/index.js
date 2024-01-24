@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef, useContext } from 'react';
-import { message, Spin, Tabs } from 'antd';
+import React, { useState, useEffect, useRef, useContext, Fragment } from 'react';
+import { message, Spin, Tabs, Tooltip } from 'antd';
 import { } from '../../../../services/pmsServices';
 import TitleTag from '../_Component/titleTag'
 import NormalItem from '../_Component/normalItem'
@@ -14,8 +14,10 @@ import { dictionarySearchHandle, tagGenerator } from '../budgetUtils'
  */
 const CapitalBudget = (props) => {
 
-  const { projectData, dictionary } = useContext(BudgetDetailContext)
+  const { projectData = {}, dictionary, isLeader, userBasicInfo = {}, } = useContext(BudgetDetailContext)
 
+  //是否显示金额
+  const isShowMoney = (fzrId) =>  isLeader || String(userBasicInfo.id) === String(fzrId)
 
   return (
     <div className="CapitalBudget">
@@ -49,23 +51,26 @@ const CapitalBudget = (props) => {
           </div>
 
         </div>
+        {isShowMoney(projectData.presponsiblePeopleId) && (
+          <Fragment>
+            <div className="TopInfo_MiddleBox">
+              <ExecutionProgress
+                partObj={{ '已执行金额': projectData.executedMoney }}
+                remainingObj={{ '可执行金额': projectData.canExecuteMoney }}
+                totalObj={{ '总金额': projectData.totalMoney }}
+              ></ExecutionProgress>
+            </div>
 
-        <div className="TopInfo_MiddleBox">
-          <ExecutionProgress
-            partObj={{ '已执行金额': projectData.executedMoney }}
-            remainingObj={{ '可执行金额': projectData.canExecuteMoney }}
-            totalObj={{ '总金额': projectData.totalMoney }}
-          ></ExecutionProgress>
-        </div>
-
-        <div className="TopInfo_RightBox">
-          <ExecutionProgress
-            partObj={{ '已立项金额': projectData.approvalMoney }}
-            remainingObj={{ '可立项金额': projectData.canApprovalMoney }}
-            totalObj={{ '总金额': projectData.totalMoney }}
-          >
-          </ExecutionProgress>
-        </div>
+            <div className="TopInfo_RightBox">
+              <ExecutionProgress
+                partObj={{ '已立项金额': projectData.approvalMoney }}
+                remainingObj={{ '可立项金额': projectData.canApprovalMoney }}
+                totalObj={{ '总金额': projectData.totalMoney }}
+              >
+              </ExecutionProgress>
+            </div>
+          </Fragment>
+        )}
       </div>
 
       <div className="MiddleInfo">
@@ -93,11 +98,11 @@ const CapitalBudget = (props) => {
                 </div>
 
                 <div className="content_item">
-                  <NormalItem title='项目分类说明' value={projectData.projectCategoryDescription ?? '--'}></NormalItem>
+                  <NormalItem title='项目分类说明' value={projectData.projectCategoryDescription ?? '--'} tooltip={true}></NormalItem>
                 </div>
 
                 <div className="content_item">
-                  <NormalItem title='项目必要性' value={projectData.projectNecessity ?? '--'}></NormalItem>
+                  <NormalItem title='项目必要性' value={projectData.projectNecessity ?? '--'} tooltip={true}></NormalItem>
                 </div>
 
                 <div className="content_item">

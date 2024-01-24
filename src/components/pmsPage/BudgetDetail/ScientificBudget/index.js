@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useContext } from 'react';
+import React, { useState, useEffect, useRef, useContext, Fragment } from 'react';
 import { message, Spin, Tabs } from 'antd';
 import { } from '../../../../services/pmsServices';
 import TitleTag from '../_Component/titleTag'
@@ -14,7 +14,10 @@ import { approvalTimeFormater, tagGenerator } from '../budgetUtils'
  */
 const ScientificBudget = (props) => {
 
-  const { projectData, dictionary } = useContext(BudgetDetailContext)
+  const { projectData = {}, dictionary, isLeader, userBasicInfo = {}, } = useContext(BudgetDetailContext)
+
+  //是否显示金额
+  const isShowMoney = (fzrId) =>  isLeader || String(userBasicInfo.id) === String(fzrId)
 
   return (
     <div className="ScientificBudget">
@@ -42,22 +45,26 @@ const ScientificBudget = (props) => {
 
         </div>
 
-        <div className="TopInfo_MiddleBox">
-          <ExecutionProgress
-            partObj={{ '已执行金额': projectData.executedMoney }}
-            remainingObj={{ '可执行金额': projectData.canExecuteMoney }}
-            totalObj={{ '总金额': projectData.totalMoney }}
-          ></ExecutionProgress>
-        </div>
+        {isShowMoney(projectData.presponsiblePeopleId) && (
+          <Fragment>
+            <div className="TopInfo_MiddleBox">
+              <ExecutionProgress
+                partObj={{ '已执行金额': projectData.executedMoney }}
+                remainingObj={{ '可执行金额': projectData.canExecuteMoney }}
+                totalObj={{ '总金额': projectData.totalMoney }}
+              ></ExecutionProgress>
+            </div>
 
-        <div className="TopInfo_RightBox">
-          <ExecutionProgress
-            partObj={{ '已立项金额': projectData.approvalMoney }}
-            remainingObj={{ '可立项金额': projectData.canApprovalMoney }}
-            totalObj={{ '总金额': projectData.totalMoney }}
-          >
-          </ExecutionProgress>
-        </div>
+            <div className="TopInfo_RightBox">
+              <ExecutionProgress
+                partObj={{ '已立项金额': projectData.approvalMoney }}
+                remainingObj={{ '可立项金额': projectData.canApprovalMoney }}
+                totalObj={{ '总金额': projectData.totalMoney }}
+              >
+              </ExecutionProgress>
+            </div>
+          </Fragment>
+        )}
       </div>
 
       <div className="MiddleInfo">

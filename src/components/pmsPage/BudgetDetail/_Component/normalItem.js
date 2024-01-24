@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useContext } from 'react';
-import { message, Spin, Tabs } from 'antd';
+import { message, Spin, Tabs, Tooltip } from 'antd';
 
 
 /**
@@ -10,16 +10,18 @@ import { message, Spin, Tabs } from 'antd';
  */
 const NormalItem = (props) => {
 
-  const { title, value, statisticalFont = false } = props
+  const { title, value, statisticalFont = false, tooltip = false } = props
 
   return (
-    <div className="Component_NormalItem">
+    <div className="Component_NormalItem" style={{ WebkitBoxOrient: 'vertical' }}>
       <span className="Component_NormalItem_title">
         {title}：
       </span>
-      <span className={`Component_NormalItem_value ${statisticalFont ? 'statisticalFont' : ''}`}>
-        {value}
-      </span>
+      <Tooltip title={tooltip ? value : ''} overlayClassName='iteration-content-tooltip'>
+        <span className={`Component_NormalItem_value ${statisticalFont ? 'statisticalFont' : ''}`}>
+          {value}
+        </span>
+      </Tooltip>
     </div>
   )
 }

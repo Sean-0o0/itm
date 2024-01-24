@@ -18,6 +18,12 @@
   font-family: THSMoneyfont-Medium !important;
 }
 
+//面包屑
+.budget-detail-breadcrumb-box {
+  background: #fff;
+  margin-left: 1px;
+  padding: 16px 24px 0px 24px;
+}
 
 //————————————————————————————————————————最大层级————————————————————————————————————
 .BudgetDetail {
@@ -29,7 +35,8 @@
   .CapitalBudget {
 
     .TopInfo {
-      width: 100%;
+      // width: 100%;
+      margin-left: 1px;
       min-height: 212px;
       padding: 24px 25px 20px 24px;
       background-color: #fff;
@@ -150,7 +157,8 @@
   .NonCapitalBudget {
 
     .TopInfo {
-      width: 100%;
+      // width: 100%;
+      margin-left: 1px;
       min-height: 212px;
       padding: 24px 25px 20px 24px;
       background-color: #fff;
@@ -209,7 +217,8 @@
   .ScientificBudget {
 
     .TopInfo {
-      width: 100%;
+      // width: 100%;
+      margin-left: 1px;
       min-height: 212px;
       padding: 24px 25px 20px 24px;
       background-color: #fff;
@@ -396,6 +405,11 @@
   //输出格式 （灰色）项目类型： （黑色）前端项目
   .Component_NormalItem {
     margin-top: 8px;
+    padding-right: 8px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
 
     &_title {
       font-size: 14px;
