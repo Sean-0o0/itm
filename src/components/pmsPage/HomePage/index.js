@@ -722,6 +722,7 @@ export default function HomePage(props) {
               total={total.project}
               placement={placement}
               setPlacement={setPlacement}
+              toDoData={toDoData}
             />
             {/*项目跟踪*/}
             <PrjTracking

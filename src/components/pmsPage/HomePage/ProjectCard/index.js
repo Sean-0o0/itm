@@ -20,6 +20,7 @@ export default function ProjectCard(props) {
     total,
     placement,
     setPlacement,
+    toDoData = [],
   } = props;
   let LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
   const [isUnfold, setIsUnfold] = useState(false); //是否展开
@@ -29,6 +30,21 @@ export default function ProjectCard(props) {
   const [allPrj, setAllPrj] = useState([]); //全部项目
   const [isLoading, setIsLoading] = useState(false); //查询全部数据时加载状态
   const location = useLocation();
+  const [lcxqModalData, setLcxqModalData] = useState({
+    url: '#',
+    visible: false,
+  }); //流程详情弹窗数据
+
+  //流程详情弹窗配置
+  const lcxqModalProps = {
+    isAllWindow: 1,
+    width: '1100px',
+    height: '700px',
+    title: '流程详情',
+    style: { top: '10px' },
+    visible: lcxqModalData.visible,
+    footer: null,
+  };
 
   useEffect(() => {
     if (prjInfo.length !== 0) {
@@ -68,9 +84,15 @@ export default function ProjectCard(props) {
     setIsUnfold(bool);
   };
 
-  //草稿编辑
-  const handleDraftModify = (xmid, isDraft = false) => {
-    // console.log('🚀 ~ handleDraftModify ~  isDraft:', isDraft);
+  //编辑
+  const handleModify = (xmid, { isDraft, isBack, isStop, isPending, noPass }) => {
+    if (isPending) return; //审批中不允许编辑
+    if (isBack) {
+      //被退回，打开流程详情
+      openLCXQModal(xmid);
+      return;
+    }
+    //其他的 打开项目编辑
     setFileAddVisible(true);
     setSrc_fileAdd({
       xmid,
@@ -79,6 +101,26 @@ export default function ProjectCard(props) {
       isDraft,
       // notAllowEditBudget: isDraft ? false : true,
     });
+  };
+
+  //打开lb流程详情弹窗
+  const openLCXQModal = xmid => {
+    const item =
+      toDoData.find(
+        x =>
+          String(x.xmid) === String(xmid) &&
+          x.txnr.includes('退回') &&
+          x.kzzd !== '' &&
+          x.kzzd !== undefined,
+      ) || {};
+    if (item.kzzd) {
+      setLcxqModalData({
+        url: `/livebos/ShowWorkflow?wfid=${JSON.parse(item.kzzd).INSTID}&stepId=${
+          JSON.parse(item.kzzd).STEP
+        }&PopupWin=true&HideCancelBtn=true`,
+        visible: true,
+      });
+    }
   };
 
   //草稿删除
@@ -152,6 +194,7 @@ export default function ProjectCard(props) {
     state = '2',
     xmid = -1,
     YSLCZT,
+    kzzd,
   }) => {
     const isDraft = state === '2'; //草稿
     const isBack = YSLCZT === '退回'; //被退回
@@ -182,7 +225,7 @@ export default function ProjectCard(props) {
         >
           <div
             className="item-top"
-            onClick={() => (isPending ? {} : handleDraftModify(xmid, isDraft))}
+            onClick={() => handleModify(xmid, { isDraft, isBack, isStop, isPending, noPass })}
           >
             <span>{title}</span>
             <div className="tag" style={{ backgroundColor: fontColor }}>
@@ -191,13 +234,16 @@ export default function ProjectCard(props) {
           </div>
           <div
             className="item-middle"
-            onClick={() => (isPending ? {} : handleDraftModify(xmid, isDraft))}
+            onClick={() => handleModify(xmid, { isDraft, isBack, isStop, isPending, noPass })}
           >
             <img src={emptyImg} alt="" />
           </div>
           <div className="item-bottom-operate">
             {!isPending && (
-              <div className="btn-edit" onClick={() => handleDraftModify(xmid, isDraft)}>
+              <div
+                className="btn-edit"
+                onClick={() => handleModify(xmid, { isDraft, isBack, isStop, isPending, noPass })}
+              >
                 <div className="btn-edit-wrapper">
                   <i className="iconfont edit" />
                   编辑
@@ -272,6 +318,19 @@ export default function ProjectCard(props) {
             />
           )}
         </Modal>
+      )}
+      {/*流程详情提醒弹窗*/}
+      {lcxqModalData.visible && (
+        <BridgeModel
+          modalProps={lcxqModalProps}
+          onSucess={() => {
+            message.success('操作成功', 1);
+            reflush();
+            setLcxqModalData(p => ({ ...p, visible: false }));
+          }}
+          onCancel={() => setLcxqModalData(p => ({ ...p, visible: false }))}
+          src={lcxqModalData.url}
+        />
       )}
       <div className="home-card-title-box">
         <div className="txt">创建中项目</div>

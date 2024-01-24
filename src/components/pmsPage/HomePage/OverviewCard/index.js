@@ -62,6 +62,12 @@ export default connect(({ global }) => ({
     cycle: 0,
     xxid: -1,
   }); //example
+  const [lcxqModalData, setLcxqModalData] = useState({
+    url: '#',
+    visible: false,
+  }); //流程详情弹窗数据
+  const [lcxqVisible, setLcxqVisible] = useState(false); //
+  const [lcxqUrl, setLcxqUrl] = useState(''); //
 
   //人员新增提醒弹窗配置
   const ryxztxModalProps = {
@@ -71,6 +77,17 @@ export default connect(({ global }) => ({
     title: '人员新增提醒',
     style: { top: '60px' },
     visible: ryxztxModalVisible,
+    footer: null,
+  };
+
+  //流程详情弹窗配置
+  const lcxqModalProps = {
+    isAllWindow: 1,
+    width: '1100px',
+    height: '700px',
+    title: '流程详情',
+    style: { top: '10px' },
+    visible: lcxqModalData.visible,
     footer: null,
   };
 
@@ -381,6 +398,18 @@ export default connect(({ global }) => ({
       });
   };
 
+  //打开lb流程详情弹窗
+  const openLCXQModal = item => {
+    if (item.kzzd !== '') {
+      setLcxqModalData({
+        url: `/livebos/ShowWorkflow?wfid=${JSON.parse(item.kzzd).INSTID}&stepId=${
+          JSON.parse(item.kzzd).STEP
+        }&PopupWin=true&HideCancelBtn=true`,
+        visible: true,
+      });
+    }
+  };
+
   //获取操作按钮文本
   const getBtnTxt = (txt, sxmc) => {
     if (sxmc === '信委会会议结果') return '确认';
@@ -402,8 +431,6 @@ export default connect(({ global }) => ({
       case '信委会议案流程待审批':
       case '信委会流程待处理':
       case '外包人员流程待处理':
-      case '预算审批流程待处理':
-      case '预算审批流程被退回':
         return jumpToLBPage('WORKFLOW_TOTASKS');
       case '信委会议案待上会前审批':
         return jumpToLBPage('V_XWHYALC_LDSP');
@@ -464,7 +491,9 @@ export default connect(({ global }) => ({
         return jumpToBudgetCarryover(item);
       case '信创合同转办':
         return jumpToInnovationContract(item);
-
+      case '预算审批流程待处理':
+      case '预算审批流程被退回':
+        return openLCXQModal(item);
       //暂不处理
       case '外包人员录用信息提交':
         return jumpToLBPage('');
@@ -690,6 +719,19 @@ export default connect(({ global }) => ({
           }}
           onCancel={() => setRyxztxModalVisible(false)}
           src={ryxztxUrl}
+        />
+      )}
+      {/*流程详情提醒弹窗*/}
+      {lcxqModalData.visible && (
+        <BridgeModel
+          modalProps={lcxqModalProps}
+          onSucess={() => {
+            message.success('操作成功', 1);
+            reflush();
+            setLcxqModalData(p => ({ ...p, visible: false }));
+          }}
+          onCancel={() => setLcxqModalData(p => ({ ...p, visible: false }))}
+          src={lcxqModalData.url}
         />
       )}
       <Modal
