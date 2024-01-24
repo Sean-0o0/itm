@@ -70,14 +70,14 @@ export default function ProjectCard(props) {
 
   //草稿编辑
   const handleDraftModify = (xmid, isDraft = false) => {
-    console.log('🚀 ~ handleDraftModify ~  isDraft:', isDraft);
+    // console.log('🚀 ~ handleDraftModify ~  isDraft:', isDraft);
     setFileAddVisible(true);
     setSrc_fileAdd({
       xmid,
       type: true,
       projectStatus: 'SAVE',
       isDraft,
-      notAllowEditBudget: isDraft ? false : true,
+      // notAllowEditBudget: isDraft ? false : true,
     });
   };
 
@@ -258,7 +258,7 @@ export default function ProjectCard(props) {
               xmid={src_fileAdd.xmid}
               type={src_fileAdd.type}
               projectStatus={src_fileAdd.projectStatus}
-              notAllowEditBudget={src_fileAdd.notAllowEditBudget}
+              // notAllowEditBudget={src_fileAdd.notAllowEditBudget}
             />
           ) : (
             <EditProjectInfoModel
@@ -268,7 +268,7 @@ export default function ProjectCard(props) {
               type={src_fileAdd.type}
               subItemFlag={false}
               projectStatus={src_fileAdd.projectStatus}
-              notAllowEditBudget={src_fileAdd.notAllowEditBudget}
+              // notAllowEditBudget={src_fileAdd.notAllowEditBudget}
             />
           )}
         </Modal>
