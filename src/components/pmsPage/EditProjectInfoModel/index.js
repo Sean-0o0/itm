@@ -58,6 +58,7 @@ import BridgeModel from '../../Common/BasicModal/BridgeModel';
 import TableFullScreen from '../LifeCycleManagement/ContractInfoUpdate/TableFullScreen';
 import OthersInfos from './OthersInfos';
 import SubItemInfo from '../../../pages/workPlatForm/singlePage/NewProjectModelV2/SubItemInfo';
+import Decimal from 'decimal.js';
 
 const { Option, OptGroup } = Select;
 const { api } = config;
@@ -1545,7 +1546,6 @@ class EditProjectInfoModel extends React.Component {
           // this.setState({rygwSelectDictionary: newArray, staffJobList: this.sortByKey(newStaffJobList, 'ibm', true)})
           this.setState({ rygwSelectDictionary: newArray, staffJobList: newStaffJobList });
           // ////console.log("arr",arr)
-          // ////console.log("budgetProjectList",this.state.budgetProjectList)
           let totalBudget = 0;
           let relativeBudget = 0;
           let ysKZX = 0;
@@ -1563,17 +1563,24 @@ class EditProjectInfoModel extends React.Component {
             //   });
             // });
           } else {
-            this.state.budgetProjectList.forEach(item => {
-              item.children.forEach(ite => {
-                ite.children?.forEach(i => {
-                  if (i.value === result.budgetProject) {
-                    totalBudget = Number(i.ysZJE);
-                    relativeBudget = Number(i.ysKGL);
-                    ysKZX = Number(i.ysKZX);
-                  }
-                });
-              });
-            });
+            // this.state.budgetProjectList.forEach(item => {
+            //   item.children.forEach(ite => {
+            //     ite.children?.forEach(i => {
+            //       if (i.value === result.budgetProject) {
+            //         totalBudget = Number(i.ysZJE);
+            //         relativeBudget = Number(i.ysKGL);
+            //         ysKZX = Number(i.ysKZX);
+            //       }
+            //     });
+            //   });
+            // });
+            totalBudget = Number(result.budgetCanUse || 0);
+            relativeBudget = Decimal(result.budgetUse || 0)
+              .times(10000)
+              .toNumber();
+            ysKZX = Decimal(result.generalBudget || 0)
+              .times(10000)
+              .toNumber();
           }
           ////console.log("budgetProjectName", budgetProjectName)
           let newOrg = [];
@@ -1833,6 +1840,7 @@ class EditProjectInfoModel extends React.Component {
           ysLX: current.ysLX,
           ysLXID: current.ysLXID,
           ysKZX: Number(current.ysKZX),
+          ysfzr: current.ysfzr,
         });
         return pre;
       }, []);
@@ -1860,6 +1868,7 @@ class EditProjectInfoModel extends React.Component {
                 ysLX: current.ysLX,
                 ysLXID: current.ysLXID,
                 ysKZX: Number(current.ysKZX),
+                ysfzr: current.ysfzr,
               });
               return pre;
             }, []);
@@ -1884,11 +1893,11 @@ class EditProjectInfoModel extends React.Component {
                       treeDatamini.zdbm = i.zdbm;
                       treeDatamini.ysLX = i.ysLX;
                       treeDatamini.ysLXID = i.ysLXID;
-                      childrenDatamini.push(treeDatamini);
+                      (treeDatamini.ysfzr = i.ysfzr), childrenDatamini.push(treeDatamini);
                     });
                   } else {
-                    treeDatamini.key = item.zdbm + item.ysLXID;
-                    treeDatamini.value = item.zdbm + item.ysLXID;
+                    treeDatamini.key = item.ysID + item.ysLXID;
+                    treeDatamini.value = item.ysID + item.ysLXID;
                     treeDatamini.label = item.ysLB;
                     treeDatamini.ysID = item.ysID;
                     treeDatamini.ysKGL = Number(item.ysKGL);
@@ -1901,6 +1910,7 @@ class EditProjectInfoModel extends React.Component {
                     treeDatamini.zdbm = item.zdbm;
                     treeDatamini.dropdownStyle = { color: '#666' };
                     treeDatamini.selectable = false;
+                    treeDatamini.ysfzr = item.ysfzr;
                     treeDatamini.children = b[item.zdbm];
                     childrenDatamini.push(treeDatamini);
                   }
@@ -1924,10 +1934,6 @@ class EditProjectInfoModel extends React.Component {
         const { code = -1, record = [] } = result;
         if (code > 0) {
           this.setState({ budgetProjectList: toItemTree(record) });
-          // console.log(
-          //   '🚀 ~ file: index.js:1901 ~ EditProjectInfoModel ~ fetchQueryBudgetProjects ~ toItemTree(record):',
-          //   toItemTree(record),
-          // );
         }
       })
       .catch(error => {
@@ -4549,6 +4555,41 @@ class EditProjectInfoModel extends React.Component {
     // };
   };
 
+  //关联预算项目
+  renderGLYSTreeNodes(data = []) {
+    return data.map(item => {
+      if (item.children?.length > 0) {
+        return (
+          <TreeSelect.TreeNode
+            {...item}
+            title={item.label}
+            key={item.value}
+            value={item.value}
+            label={item.label}
+            fzrandtitle={item.label}
+          >
+            {this.renderGLYSTreeNodes(item.children)}
+          </TreeSelect.TreeNode>
+        );
+      }
+      return (
+        <TreeSelect.TreeNode
+          {...item}
+          key={item.value}
+          title={
+            <div>
+              {item.label}
+              <div style={{ fontSize: '12px', color: '#bfbfbf' }}>负责人：{item.ysfzr}</div>
+            </div>
+          }
+          label={item.label}
+          value={item.value}
+          fzrandtitle={item.ysfzr + item.label}
+        />
+      );
+    });
+  }
+
   render() {
     let {
       tags,
@@ -6172,7 +6213,7 @@ class EditProjectInfoModel extends React.Component {
                                 {/*  initialValue: budgetInfo.year*/}
                                 {/*})(*/}
                                 <DatePicker
-                                  disabled={subItemFlag||this.props.notAllowEditBudget}
+                                  disabled={subItemFlag || this.props.notAllowEditBudget}
                                   value={budgetInfo.year}
                                   allowClear={false}
                                   ref={picker => (this.picker = picker)}
@@ -6270,42 +6311,49 @@ class EditProjectInfoModel extends React.Component {
                                   <TreeSelect
                                     showSearch
                                     disabled={subItemFlag || this.props.notAllowEditBudget}
-                                    treeNodeFilterProp="title"
+                                    treeNodeFilterProp="fzrandtitle"
                                     style={{ width: '100%' }}
                                     dropdownClassName="newproject-treeselect"
-                                    dropdownStyle={{ maxHeight: 200, overflow: 'auto' }}
-                                    treeData={budgetProjectList}
+                                    dropdownStyle={{ maxHeight: 270, overflow: 'auto' }}
                                     getPopupContainer={triggerNode => triggerNode.parentNode}
                                     placeholder="请选择关联预算项目"
                                     // treeDefaultExpandAll
                                     onChange={(e, _, node) => {
+                                      console.log(
+                                        '🚀 ~ EditProjectInfoModel ~ render ~ e, _, node:',
+                                        e,
+                                        _,
+                                        node,
+                                      );
                                       budgetProjectList.forEach(item => {
                                         if (Number(node?.triggerNode?.props.ysID) <= 0) {
                                           item?.children?.forEach(ite => {
-                                            if (ite.value === e) {
-                                              // ////console.log("iteiteiteite",ite)
-                                              const _this = this;
-                                              this.setState(
-                                                {
-                                                  budgetInfo: {
-                                                    ...this.state.budgetInfo,
-                                                    budgetProjectId: ite.ysID,
-                                                    totalBudget: 0,
-                                                    relativeBudget: 0,
-                                                    // projectBudget: 0,
-                                                    // budgetProjectName: ite.ysName,
-                                                    budgetType: '资本性预算',
+                                            ite?.children?.forEach(i => {
+                                              if (i.value === e) {
+                                                // ////console.log("iteiteiteite",ite)
+                                                const _this = this;
+                                                this.setState(
+                                                  {
+                                                    budgetInfo: {
+                                                      ...this.state.budgetInfo,
+                                                      budgetProjectId: i.ysID,
+                                                      totalBudget: 0,
+                                                      relativeBudget: 0,
+                                                      // projectBudget: 0,
+                                                      // budgetProjectName: i.ysName,
+                                                      budgetType: '资本性预算',
+                                                    },
+                                                    ysKZX: 0,
                                                   },
-                                                  ysKZX: ite.ysKZX,
-                                                },
-                                                function() {
-                                                  _this.props.form.resetFields(['projectBudget']);
-                                                  _this.props.form.validateFields([
-                                                    'projectBudget',
-                                                  ]);
-                                                },
-                                              );
-                                            }
+                                                  function() {
+                                                    _this.props.form.resetFields(['projectBudget']);
+                                                    _this.props.form.validateFields([
+                                                      'projectBudget',
+                                                    ]);
+                                                  },
+                                                );
+                                              }
+                                            });
                                           });
                                         } else {
                                           item?.children?.forEach(ite => {
@@ -6323,7 +6371,7 @@ class EditProjectInfoModel extends React.Component {
                                                       relativeBudget: Number(i.ysKGL),
                                                       budgetType: i.ysLX,
                                                     },
-                                                    ysKZX: i.ysKZX,
+                                                    ysKZX: Number(i.ysKZX),
                                                   },
                                                   function() {
                                                     _this.props.form.resetFields(['projectBudget']);
@@ -6338,7 +6386,9 @@ class EditProjectInfoModel extends React.Component {
                                         }
                                       });
                                     }}
-                                  />,
+                                  >
+                                    {this.renderGLYSTreeNodes(budgetProjectList)}
+                                  </TreeSelect>,
                                 )}
                               </Form.Item>
                             </Col>
@@ -7087,7 +7137,9 @@ class EditProjectInfoModel extends React.Component {
                             })(
                               <Radio.Group
                                 defaultValue={Number(subItem)}
-                                disabled={Number(subIteminit) === 1 || this.props.notAllowEditBudget}
+                                disabled={
+                                  Number(subIteminit) === 1 || this.props.notAllowEditBudget
+                                }
                                 onChange={e => {
                                   console.log('eeeee', e.target.value);
                                   this.setState({ subItem: String(e.target.value) });
