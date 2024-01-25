@@ -319,7 +319,7 @@ export default function ProjectCard(props) {
           )}
         </Modal>
       )}
-      {/*流程详情提醒弹窗*/}
+      {/*流程详醒弹窗*/}
       {lcxqModalData.visible && (
         <BridgeModel
           modalProps={lcxqModalProps}

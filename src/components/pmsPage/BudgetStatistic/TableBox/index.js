@@ -74,11 +74,12 @@ const TableBox = props => {
               pathname: `/pms/manage/BudgetDetail/${EncryptBase64(
                 JSON.stringify({
                   fromKey: activeKey,
-                  budgetID: record.YSID
+                  budgetID: record.YSID,
+                  routes: [{ name: '预算统计', pathname: location.pathname }],
                 }),
               )}`,
               state: {
-                routes: [{ name: '项目列表', pathname: location.pathname }],
+                routes: [{ name: '预算统计', pathname: location.pathname }],
               },
             }}
             className="table-link-strong"
@@ -216,11 +217,12 @@ const TableBox = props => {
               pathname: `/pms/manage/BudgetDetail/${EncryptBase64(
                 JSON.stringify({
                   fromKey: activeKey,
-                  budgetID: record.YSID
+                  budgetID: record.YSID,
+                  routes: [{ name: '预算统计', pathname: location.pathname }],
                 }),
               )}`,
               state: {
-                routes: [{ name: '项目列表', pathname: location.pathname }],
+                routes: [{ name: '预算统计', pathname: location.pathname }],
               },
             }}
             className="table-link-strong"
