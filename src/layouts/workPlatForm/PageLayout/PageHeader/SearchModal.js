@@ -671,6 +671,7 @@ class searchModal extends React.Component {
                                         )}`,
                                         state: { routes: [] },
                                       }}
+                                      onClick={() => this.closeModal()}
                                       className="table-link-strong"
                                     >
                                       &nbsp;&nbsp;{ysxx.YSXM}
