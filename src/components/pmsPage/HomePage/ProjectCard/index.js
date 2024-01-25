@@ -325,7 +325,7 @@ export default function ProjectCard(props) {
           modalProps={lcxqModalProps}
           onSucess={() => {
             message.success('操作成功', 1);
-            reflush();
+            getPrjInfo(userRole); //刷新数据
             setLcxqModalData(p => ({ ...p, visible: false }));
           }}
           onCancel={() => setLcxqModalData(p => ({ ...p, visible: false }))}
