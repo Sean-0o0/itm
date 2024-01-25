@@ -86,6 +86,7 @@ export default function InfoTable(props) {
                 //跳转类型
                 case 'XMMC':
                 case 'GYSMC':
+                case 'YSXM':
                   return {
                     title: x.title,
                     dataIndex: x.dataIndex,
@@ -103,6 +104,15 @@ export default function InfoTable(props) {
                         pathname = `/pms/manage/SupplierDetail/${EncryptBase64(
                           JSON.stringify({
                             splId: row[x.jumpId],
+                          }),
+                        )}`;
+                      }
+                      if(x.dataIndex==='YSXM') {
+                        pathname = `/pms/manage/BudgetDetail/${EncryptBase64(
+                          JSON.stringify({
+                            fromKey: row.YSLX,
+                            budgetID: row.YSXMID,
+                            routes,
                           }),
                         )}`;
                       }

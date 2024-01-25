@@ -149,6 +149,7 @@ export default function CustomRptInfo(props) {
   const getSelectorData = obj => {
     const columns = JSON.parse(obj.QDZSBTZD)?.map(x => {
       return {
+        ...x,
         title: x.title,
         dataIndex: x.QDQZZD,
         key: x.QDQZZD,

@@ -504,6 +504,7 @@ export default function CustomRptManagement(props) {
                 isSpinning={isSpinning}
                 emptyImg={emptyImg}
                 refreshAfterSave={refreshAfterSave}
+                routes={routes}
               />
             </div>
           )}

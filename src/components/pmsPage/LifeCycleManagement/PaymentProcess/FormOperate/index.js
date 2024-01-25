@@ -471,6 +471,9 @@ export default function FormOperate(props) {
                       <Tooltip title={item.BT} placement="topLeft">
                         {item.BT}
                       </Tooltip>
+                      <div style={{ fontSize: '12px', color: '#bfbfbf' }}>
+                        {moment(item.BGRQ, 'YYYYMMDD').format('YYYY-MM-DD')}
+                      </div>
                     </Select.Option>
                   );
                 })}

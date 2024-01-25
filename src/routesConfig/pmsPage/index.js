@@ -458,4 +458,14 @@ exports.routes = [
     path: `${prefix}/BudgetDetail/:params`,
     component: './pmsPage/BudgetDetail',
   },
+  {
+    // 迭代统一流程发起
+    path: `${prefix}/IteProcessInitiate/:params`,
+    component: './pmsPage/IteProcessInitiate',
+  },
+  {
+    // 迭代统一流程发起
+    path: `${prefix}/IteProcessInitiate`,
+    component: './pmsPage/IteProcessInitiate',
+  },
 ];

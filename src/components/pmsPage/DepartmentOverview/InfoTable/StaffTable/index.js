@@ -244,17 +244,17 @@ class StaffTable extends Component {
           return text && text != -1 ? text : '暂无';
         },
       },
-      {
-        title: '评分',
-        dataIndex: 'PJ',
-        width: '5%',
-        key: 'PJ',
-        align: 'center',
-        ellipsis: true,
-        render: (text, row, index) => {
-          return text && text != -1 ? text : '暂无';
-        },
-      },
+      // {
+      //   title: '评分',
+      //   dataIndex: 'PJ',
+      //   width: '5%',
+      //   key: 'PJ',
+      //   align: 'center',
+      //   ellipsis: true,
+      //   render: (text, row, index) => {
+      //     return text && text != -1 ? text : '暂无';
+      //   },
+      // },
     ];
 
     const getHeight = () => {

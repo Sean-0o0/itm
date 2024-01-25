@@ -379,7 +379,7 @@ export default function DataComparisonBM(props) {
       setTotalHJXM(0);
       setTotalZYXM(0);
       setTotalWCXM(0);
-      setTotalArr([0, 0, 0, 0, 0])
+      setTotalArr([0, 0, 0, 0, 0, 0])
       setTotalNameArr(['暂无']);
     }
   };

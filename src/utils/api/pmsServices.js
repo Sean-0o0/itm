@@ -1004,4 +1004,10 @@ export default [
     url: '/projectManage/queryMemberRevaluationByORG',
     dis: '根据部门查询人员评价',
   },
+  {
+    code: '',
+    key: 'queryUnifiedProjectInitProcess',
+    url: '/projectManage/queryUnifiedProjectInitProcess',
+    dis: '查询统一立项流程',
+  },
 ];

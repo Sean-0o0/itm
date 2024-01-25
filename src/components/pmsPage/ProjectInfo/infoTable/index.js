@@ -212,9 +212,27 @@ export default function InfoTable(props) {
       // width: '15%',
       key: 'budgetProject',
       ellipsis: true,
-      render: text => (
+      render: (text, record) => (
         <Tooltip title={text} placement="topLeft">
-          <span style={{ cursor: 'default' }}>{text}</span>
+          {/* <span style={{ cursor: 'default' }}>{text}</span> */}
+          <Link
+            style={{ color: '#3361ff' }}
+            to={{
+              pathname: `/pms/manage/BudgetDetail/${EncryptBase64(
+                JSON.stringify({
+                  fromKey: record.budgetProjectType,
+                  budgetID: record.budgetProjectId,
+                  routes: [{ name: '项目列表', pathname: location.pathname }],
+                }),
+              )}`,
+              state: {
+                routes: [{ name: '项目列表', pathname: location.pathname }],
+              },
+            }}
+            className="table-link-strong"
+          >
+            {text}
+          </Link>
         </Tooltip>
       ),
     },
@@ -399,7 +417,7 @@ export default function InfoTable(props) {
             showTotal: t => `共 ${total} 条数据`,
             total: total,
           }}
-        // bordered
+          // bordered
         />
       </div>
     </div>

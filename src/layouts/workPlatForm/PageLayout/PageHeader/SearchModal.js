@@ -499,9 +499,7 @@ class searchModal extends React.Component {
       closeModal,
       authorities: { TGYS_GYSRYQX, V_GYSRYQX },
     } = this.props;
-    // console.log("ccccc-cc-ccc-c-c",this.props.authorities)
     const { getFieldDecorator } = this.props.form;
-
     return (
       <>
         <Modal
@@ -510,7 +508,7 @@ class searchModal extends React.Component {
           width={'860px'}
           title={null}
           mask={false}
-          zIndex={100}
+          zIndex={9999999}
           bodyStyle={{
             padding: '0',
           }}
@@ -661,7 +659,22 @@ class searchModal extends React.Component {
                                 return (
                                   <div className="content">
                                     <img className="icon" src={ysxxIcon} />
-                                    &nbsp;&nbsp;{ysxx.YSXM}
+                                    <Link
+                                      style={{ color: '#3361ff' }}
+                                      to={{
+                                        pathname: `/pms/manage/BudgetDetail/${EncryptBase64(
+                                          JSON.stringify({
+                                            fromKey: ysxx.YSLX,
+                                            budgetID: ysxx.ID,
+                                            routes: [],
+                                          }),
+                                        )}`,
+                                        state: { routes: [] },
+                                      }}
+                                      className="table-link-strong"
+                                    >
+                                      &nbsp;&nbsp;{ysxx.YSXM}
+                                    </Link>
                                   </div>
                                 );
                               })}

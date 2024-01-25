@@ -72,7 +72,7 @@ export default function PersonnelEvaluation(props) {
       setTreeData(JSON.parse(JSON.stringify(staffData)));
       // console.log('🚀 ~ useEffect ~ staffData:', staffData);
       setCurOrgID(staffData[0].value);
-      getOrgTableData({ orgId: staffData[0].value, year: moment().year()-1 }); //根据部门查询表格数据
+      getOrgTableData({ orgId: staffData[0].value, year: moment().year() - 1 }); //根据部门查询表格数据
     }
     return () => {};
   }, [JSON.stringify(staffData)]);
@@ -533,7 +533,10 @@ export default function PersonnelEvaluation(props) {
           orgId: Number(curOrgID),
           current,
           pageSize,
-          sort: sorter.field + (sorter.order === 'ascend' ? ' ASC' : ' DESC'),
+          sort:
+            sorter.field === 'PJF'
+              ? 'ISNULL(PJF),PJF' + (sorter.order === 'ascend' ? ' ASC' : ' DESC')
+              : sorter.field + (sorter.order === 'ascend' ? ' ASC' : ' DESC'),
           ...filterData,
           year: filterData.year?.year(),
         });
@@ -701,21 +704,23 @@ export default function PersonnelEvaluation(props) {
         }}
       />
       <div className="content-box">
-        <div className="left-box">
-          <div className="tree-box">
-            <Tree
-              showIcon
-              selectedKeys={[curOrgID]}
-              onSelect={onTreeSelcet}
-              // defaultExpandedKeys={['11167', '357', '11168', '15681']}
-              expandedKeys={[...expandKeys]}
-              onExpand={onExpand}
-            >
-              {renderTreeNodes(treeData)}
-            </Tree>
+        {!role.includes('二级部门领导') && (
+          <div className="left-box">
+            <div className="tree-box">
+              <Tree
+                showIcon
+                selectedKeys={[curOrgID]}
+                onSelect={onTreeSelcet}
+                // defaultExpandedKeys={['11167', '357', '11168', '15681']}
+                expandedKeys={[...expandKeys]}
+                onExpand={onExpand}
+              >
+                {renderTreeNodes(treeData)}
+              </Tree>
+            </div>
           </div>
-        </div>
-        <div className="right-box">
+        )}
+        <div className="right-box" style={role.includes('二级部门领导') ? { width: '100%' } : {}}>
           {curOrgID === -1 ? (
             <Empty
               description="选择部门后查看数据"

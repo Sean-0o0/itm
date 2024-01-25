@@ -31,7 +31,7 @@ export default connect(({ global = {} }) => ({
   const [tabData, setTabData] = useState([]);
 
   useEffect(() => {
-    getOrgData();
+    getUserRole();
     return () => {};
   }, []);
 
@@ -117,7 +117,7 @@ export default connect(({ global = {} }) => ({
                   },
                 ],
           );
-          setIsSpinning(false);
+          getOrgData(roleTxt);
         }
       })
       .catch(e => {
@@ -127,7 +127,7 @@ export default connect(({ global = {} }) => ({
       });
   };
 
-  const getOrgData = () => {
+  const getOrgData = (roleTxt = '') => {
     setIsSpinning(true);
     FetchQueryOrganizationInfo({
       type: 'XXJS',
@@ -176,38 +176,22 @@ export default connect(({ global = {} }) => ({
             return treeData;
           }
           let data = toTreeData(res.record)[0].children[0].children[0].children;
-          console.log('🚀 ~ getOrgData ~ data:', toTreeData(res.record)[0].children[0].children);
+          console.log(
+            '🚀 ~ getOrgData ~ data:',
+            toTreeData(res.record)[0].children[0].children,
+            userBasicInfo,
+          );
           // data.forEach(node => {
           //   setParentSelectableFalse(node);
           // });
           //父级也要可选
           setOrgData(data);
-          setStaffData(toTreeData(res.record)[0].children[0].children);
-          getUserRole();
-          // QueryMemberInfo({
-          //   type: 'XXJS',
-          // })
-          //   .then(res => {
-          //     if (res.success) {
-          //       let orgArr = JSON.parse(JSON.stringify(data));
-          //       let memberArr = JSON.parse(res.record).map(x => ({
-          //         ...x,
-          //         title: x.name,
-          //         value: x.id,
-          //       }));
-          //       setOriginStaffData({
-          //         staff: JSON.parse(JSON.stringify(memberArr)),
-          //         org: JSON.parse(JSON.stringify(data)),
-          //       });
-          //       const finalData = handleStaffData(memberArr, orgArr);
-          //       setStaffData(finalData);
-          //       setIsSpinning(false);
-          //     }
-          //   })
-          //   .catch(e => {
-          //     message.error('人员评价统计数据查询失败', 1);
-          //     setIsSpinning(false);
-          //   });
+          if (roleTxt.includes('二级部门领导')) {
+            setStaffData([{ value: String(userBasicInfo.orgid) }]);
+          } else {
+            setStaffData(toTreeData(res.record)[0].children[0].children);
+          }
+          setIsSpinning(false);
         }
       })
       .catch(e => {

@@ -1599,7 +1599,7 @@
       height: 53.2944rem;
       margin: 24px 24px 2.6784rem 24px;
       background-color: white;
-      box-shadow: 0 1px4px 0 rgba(20, 38, 98, 0.04);
+      box-shadow: 0 1px 4px 0 rgba(20, 38, 98, 0.04);
       border-radius: 8px;
       padding: 0 24px;
 
@@ -12605,6 +12605,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
             margin-bottom: 20px;
             box-shadow: 0px 4px 24px -4px rgba(0, 0, 0, 0.06);
             border-radius: 8px;
+            border: 1px solid #ebeef5;
             // border: 1px solid #fafafb;
 
             // transition: width 0.5s;
@@ -26916,6 +26917,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
           flex-direction: row;
           align-items: center;
           height: 100%;
+          width: 100%;
           overflow: hidden;
 
           & > .left-box {
@@ -27008,6 +27010,12 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
               overflow-y: auto;
 
               .antd-table-adaptation();
+
+              .table-link-strong();
+
+              a:hover {
+                color: #3361ffaf !important;
+              }
 
               .ant-table td {
                 padding: 11.67px;
@@ -27209,6 +27217,12 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
               overflow-y: auto;
 
               .antd-table-adaptation();
+
+              .table-link-strong();
+
+              a:hover {
+                color: #3361ffaf !important;
+              }
 
               .ant-table td {
                 padding: 11.67px;
@@ -27863,5 +27877,5 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
   }
 }
 
-// // 预算录入
-// @import '../components/pmsPage/BudgetSubmit/index.less';
+// 迭代项目统一流程发起
+@import '../components/pmsPage/IteProcessInitiate/index.less';

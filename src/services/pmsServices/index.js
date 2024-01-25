@@ -175,6 +175,7 @@ const {
     convertToSelfDevIteProject,
     queryBudgetProjectDetail,
     queryMemberRevaluationByORG,
+    queryUnifiedProjectInitProcess,
   },
 } = api;
 
@@ -1871,6 +1872,16 @@ export async function ConvertToSelfDevIteProject(payload) {
 export async function QueryMemberRevaluationByORG(payload) {
   const option = {
     url: queryMemberRevaluationByORG,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 查询统一立项流程
+export async function QueryUnifiedProjectInitProcess(payload) {
+  const option = {
+    url: queryUnifiedProjectInitProcess,
     method: 'post',
     data: payload,
   };
