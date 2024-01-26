@@ -277,7 +277,7 @@ const TableBox = props => {
                         operateType: 'UPDATE',
                         submitType: getSubmitType(userRole, true, 'UPDATE'),
                         budgetId: Number(row.YSID),
-                        routes: [{ name: '预算录入', pathname: location.pathname }],
+                        routes: [{ name: '预算管理', pathname: location.pathname }],
                         refreshParams: {
                           ...filterData,
                           activeKey,
@@ -320,7 +320,7 @@ const TableBox = props => {
                         JSON.stringify({
                           operateType: 'XQ',
                           budgetId: Number(row.YSID),
-                          routes: [{ name: '预算录入', pathname: location.pathname }],
+                          routes: [{ name: '预算管理', pathname: location.pathname }],
                           refreshParams: {
                             ...filterData,
                             activeKey,
@@ -383,7 +383,7 @@ const TableBox = props => {
                         operateType: 'XQ',
                         isGLY: true, //管理员允许编辑 “关联去年同类预算”
                         budgetId: Number(row.YSID),
-                        routes: [{ name: '预算录入', pathname: location.pathname }],
+                        routes: [{ name: '预算管理', pathname: location.pathname }],
                         refreshParams: {
                           ...filterData,
                           activeKey,
@@ -445,7 +445,7 @@ const TableBox = props => {
                       JSON.stringify({
                         operateType: 'UPDATE',
                         submitType: getSubmitType(userRole, true, 'UPDATE'),
-                        routes: [{ name: '预算录入', pathname: location.pathname }],
+                        routes: [{ name: '预算管理', pathname: location.pathname }],
                         budgetId: Number(row.YSID),
                         refreshParams: {
                           ...filterData,
@@ -1133,7 +1133,7 @@ const TableBox = props => {
                       submitType: 1,
                       budgetId: -1,
                       defaultYear: defaultYear?.format('YYYY'),
-                      routes: [{ name: '预算录入', pathname: location.pathname }],
+                      routes: [{ name: '预算管理', pathname: location.pathname }],
                     }),
                   )}`,
                 })

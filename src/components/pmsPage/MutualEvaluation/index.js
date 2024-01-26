@@ -67,12 +67,12 @@ export default connect(({ global = {} }) => ({
     } else {
       getPrjList({});
     }
-    return () => { };
+    return () => {};
   }, [params]);
 
   useEffect(() => {
     if (curPrj.id !== -1) getTableData(Number(curPrj.id));
-    return () => { };
+    return () => {};
   }, [curPrj.id]);
 
   //获取用户角色
@@ -82,8 +82,9 @@ export default connect(({ global = {} }) => ({
     })
       .then(res => {
         if (res?.code === 1) {
-          const { testRole = '{}' } = res;
-          setIsGLY(JSON.parse(testRole).ALLROLE?.includes('人员评价管理员'));
+          const { testRole = '{}', role = '' } = res;
+          const roleTxt = (JSON.parse(testRole).ALLROLE || '') + role;
+          setIsGLY(roleTxt.includes('人员评价管理员') || roleTxt.includes('二级部门领导'));
           setIsSpinning(false);
         }
       })
@@ -193,7 +194,7 @@ export default connect(({ global = {} }) => ({
             setCurPrj({ id, name, done, open });
             setUpdateData([]);
           },
-          onCancel() { },
+          onCancel() {},
         });
       } else {
         setCurPrj({ id, name, done, open });
@@ -273,7 +274,6 @@ export default connect(({ global = {} }) => ({
     }
   }, [JSON.stringify(updateData), JSON.stringify(tableData), JSON.stringify(curPrj)]);
 
-
   return (
     <div className="mutual-evaluation-box">
       <Spin
@@ -323,7 +323,7 @@ export default connect(({ global = {} }) => ({
               list={prjList}
               handlePrjItemClick={handlePrjItemClick}
               curPrjID={curPrj.id}
-            // height={showSwitch ? '' : '100%'}
+              // height={showSwitch ? '' : '100%'}
             />
           </div>
           <div className="right-box">

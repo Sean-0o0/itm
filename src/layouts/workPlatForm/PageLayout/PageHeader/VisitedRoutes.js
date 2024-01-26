@@ -337,7 +337,7 @@ function VisitedRoutes(props) {
                 urlEnd: 'MutualEvaluationSituation',
               },
               {
-                title: '预算录入',
+                title: '预算管理',
                 urlEnd: 'BudgetInput',
               },
               {

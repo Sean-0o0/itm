@@ -278,10 +278,11 @@ export default connect(({ global = {} }) => ({
       if (roleData.success) {
         setIsLeader(roleData.role !== '普通人员');
         setIsBdgtMnger(roleData.zyrole === '预算管理人');
+        const roleTxt = (JSON.parse(roleData.testRole || '{}').ALLROLE || '') + roleData.role;
         setIsGLY({
-          zscq: JSON.parse(roleData.testRole || '{}').ALLROLE?.includes('知识产权管理员'),
-          hjry: JSON.parse(roleData.testRole || '{}').ALLROLE?.includes('获奖荣誉管理员'),
-          rypj: JSON.parse(roleData.testRole || '{}').ALLROLE?.includes('人员评价管理员'),
+          zscq: roleTxt.includes('知识产权管理员'),
+          hjry: roleTxt.includes('获奖荣誉管理员'),
+          rypj: roleTxt.includes('人员评价管理员') || roleTxt.includes('二级部门领导'),
         });
         //灰度测试
         const testRole = JSON.parse(roleData.testRole || '{}');

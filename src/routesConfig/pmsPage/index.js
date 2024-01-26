@@ -444,12 +444,12 @@ exports.routes = [
     component: './pmsPage/BudgetSubmit',
   },
   {
-    // 统计分析 - 预算录入
+    // 统计分析 - 预算管理
     path: `${prefix}/BudgetInput/:params`,
     component: './pmsPage/BudgetInput',
   },
   {
-    // 统计分析 - 预算录入
+    // 统计分析 - 预算管理
     path: `${prefix}/BudgetInput`,
     component: './pmsPage/BudgetInput',
   },

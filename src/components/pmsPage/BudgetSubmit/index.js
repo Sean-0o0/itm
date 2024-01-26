@@ -196,7 +196,7 @@ export default connect(({ global }) => ({
     //获取去年同类预算下拉数据
     const getLastYearBudgetPrj = year => {
       FetchQueryBudgetProjects({
-        type: 'ZBX',
+        type: 'ZBXJZ',
         year,
       })
         .then(res => {
