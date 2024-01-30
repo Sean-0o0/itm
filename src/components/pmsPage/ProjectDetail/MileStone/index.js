@@ -435,7 +435,7 @@ export default function MileStone(props) {
 
   //是否成员或领导
   const isMember = () => {
-    const arr = member.filter(x => x.RYZT === '1').map(x => x.RYID);
+    const arr = member.filter(x => x.RYZT === '1').map(x => String(x.RYID));
     return arr.includes(String(LOGIN_USER_INFO.id)) || isLeader;
   };
 
@@ -469,7 +469,10 @@ export default function MileStone(props) {
             </div>
           )}
           <div className="bottom">
-            <span className="bottom-label">项目风险：</span>
+            {(prjBasic.XMJLID === String(LOGIN_USER_INFO.id) ||
+              risk.filter(x => x.GLLCBID === hLMileStone.lcbid).length > 0) && (
+              <span className="bottom-label">项目风险：</span>
+            )}
             <div className="bottom-risk">
               {risk
                 .filter(x => x.GLLCBID === hLMileStone.lcbid)
@@ -482,9 +485,11 @@ export default function MileStone(props) {
                     </Tooltip>
                   </div>
                 ))}
-              <Button size="small" onClick={() => handleRisk(hLMileStone)}>
-                <span>+</span>添加
-              </Button>
+              {prjBasic.XMJLID === String(LOGIN_USER_INFO.id) && (
+                <Button size="small" onClick={() => handleRisk(hLMileStone)}>
+                  <span>+</span>添加
+                </Button>
+              )}
             </div>
           </div>
         </div>
@@ -497,7 +502,7 @@ export default function MileStone(props) {
   };
 
   //预算审批隐藏
-  if(ysspHide) return null;
+  if (ysspHide) return null;
 
   return (
     <div className="mile-stone-box">

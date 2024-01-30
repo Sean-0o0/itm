@@ -24,10 +24,10 @@ const TooltipItem = (props) => {
         ? <Popover
           title={null}
           content={
-            <div className="popoverBox">{data}</div>
+            <div className="content-box">{data}</div>
           }
         // placement="topRight"
-        // overlayClassName="lxr-info-popover"
+        overlayClassName="ite-process-initiate-box-table-popover-qsbgnr"
         >
           <span className="Component_TooltipItem_value" >
             查看详情

@@ -330,7 +330,7 @@ const CustomTable = props => {
       render: (text, row, index) => {
         return isShowMoney(projectData.responsiblePeopleId, row.projectManagerId) ? (
           <Tooltip title={text} placement="topLeft">
-            <span className="statisticalFont" style={{ cursor: 'default' }}>
+            <span style={{ cursor: 'default' }}>
               {text}%
             </span>
           </Tooltip>

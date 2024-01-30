@@ -63,8 +63,7 @@ export default function AnalyzeRepsCard(props) {
   };
 
   const toDetail = i => {
-    console.log('bbid', i);
-    window.location.href = `/#/pms/manage/CustomRptInfo/${EncryptBase64(
+    window.location.href = `/#/pms/manage/CustomRptManagement/${EncryptBase64(
       JSON.stringify({
         routes: [{ name: '个人工作台', pathname: location.pathname }],
         bbid: i.BBID,

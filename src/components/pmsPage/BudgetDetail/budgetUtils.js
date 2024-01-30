@@ -60,7 +60,7 @@ export const dictionarySearchHandle = (dictionary, dictionaryId) => {
   if (Lodash.isEmpty(dictionary) || Lodash.isEmpty(dictionaryId)) return;
   const findItem = dictionary.find((item) => {
     return String(item.ibm) === String(dictionaryId)
-  })
+  }) || {};
   return findItem.note
 }
 

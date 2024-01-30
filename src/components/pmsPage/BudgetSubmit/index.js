@@ -1673,11 +1673,13 @@ export default connect(({ global }) => ({
                 <Button className="btn-cancel" onClick={handleCancel}>
                   返回
                 </Button>
-                <Popconfirm title="是否确定退回？" onConfirm={handleSendBack}>
-                  <Button className="btn-submit" type="primary">
-                    退回
-                  </Button>
-                </Popconfirm>
+                {propsData.sendBackParams && (
+                  <Popconfirm title="是否确定退回？" onConfirm={handleSendBack}>
+                    <Button className="btn-submit" type="primary">
+                      退回
+                    </Button>
+                  </Popconfirm>
+                )}
                 {propsData.isGLY && (
                   <Popconfirm title="是否确定保存？" onConfirm={handleSave}>
                     <Button className="btn-submit" type="primary">

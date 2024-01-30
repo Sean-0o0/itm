@@ -76,7 +76,7 @@ export default function BudgetCarryover(props) {
             setIsForbiddenLeader(true);
           }
           const roleTxt = JSON.parse(testRole).ALLROLE || '';
-          setUserRole(roleTxt);
+          setUserRole(roleTxt + loginRole);
           setRole(loginRole);
           queryTableData({ ...params, userType: getUserType(roleTxt, loginRole) });
         }

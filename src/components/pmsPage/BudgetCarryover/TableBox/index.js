@@ -133,7 +133,7 @@ const TableBox = props => {
     return submitType;
   };
 
-  //列配置 - 资本性
+  //列配置 - 预算管理
   const columns = [
     {
       title: '年份',
@@ -186,7 +186,7 @@ const TableBox = props => {
                 }),
               )}`,
               state: {
-                routes: [{ name: '预算结转', pathname: location.pathname }],
+                routes: [{ name: '预算管理', pathname: location.pathname }],
               },
             }}
             className="table-link-strong"
@@ -292,6 +292,7 @@ const TableBox = props => {
               >
                 修改
               </span>
+              {/** 刚生成的数据CZR是0，这时不允许提交 */}
               {Number(row.CZR) !== 0 && (
                 <Popconfirm
                   title="是否确定提交？"
@@ -477,6 +478,44 @@ const TableBox = props => {
               </Popconfirm>
             </Fragment>
           )}
+          {/**不是上边四种情况的，一、二级部门领导、预算管理人特殊处理，显示详情，但详情里没有退回保存按钮 */}
+          {!(
+            (Number(row.TBZTID) === 1 && Number(userBasicInfo.id) === Number(row.FZRID)) ||
+            (Number(row.TBZTID) === 2 &&
+              userRole.includes('预算统筹人') &&
+              Number(userBasicInfo.id) === Number(row.YSTCR)) ||
+            (Number(row.TBZTID) === 3 && userRole.includes('预算管理人')) ||
+            (Number(row.TBZTID) === 4 && Number(userBasicInfo.id) === Number(row.FZRID))
+          ) &&
+            (userRole.includes('二级部门领导') ||
+              userRole.includes('一级部门领导') ||
+              userRole.includes('预算管理人')) && (
+              <Fragment>
+                <span
+                  onClick={() => {
+                    history.push({
+                      pathname: `/pms/manage/BudgetSubmit/${EncryptBase64(
+                        JSON.stringify({
+                          operateType: 'XQ',
+                          isGLY: false, //管理员允许编辑 “关联去年同类预算”
+                          budgetId: Number(row.YSID),
+                          routes: [{ name: '预算管理', pathname: location.pathname }],
+                          refreshParams: {
+                            ...filterData,
+                            activeKey,
+                            current: tableData.current,
+                            pageSize: tableData.pageSize,
+                            sort: curSorter,
+                          },
+                        }),
+                      )}`,
+                    });
+                  }}
+                >
+                  详情
+                </span>
+              </Fragment>
+            )}
         </div>
       ),
     },

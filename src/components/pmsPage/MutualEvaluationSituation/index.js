@@ -127,6 +127,26 @@ export default connect(({ global = {} }) => ({
       });
   };
 
+  function findNodesWithValue(root, targetValue) {
+    let result = [];
+
+    function traverse(node) {
+      if (node.orgId === targetValue) {
+        result.push(node);
+      }
+
+      if (node.children && node.children.length > 0) {
+        for (let child of node.children) {
+          traverse(child);
+        }
+      }
+    }
+
+    traverse(root);
+
+    return result;
+  }
+
   const getOrgData = (roleTxt = '') => {
     setIsSpinning(true);
     FetchQueryOrganizationInfo({
@@ -176,10 +196,9 @@ export default connect(({ global = {} }) => ({
             return treeData;
           }
           let data = toTreeData(res.record)[0].children[0].children[0].children;
-          console.log(
-            '🚀 ~ getOrgData ~ data:',
-            toTreeData(res.record)[0].children[0].children,
-            userBasicInfo,
+          let filteredData = findNodesWithValue(
+            toTreeData(res.record)[0].children[0],
+            userBasicInfo.orgid,
           );
           // data.forEach(node => {
           //   setParentSelectableFalse(node);
@@ -189,7 +208,7 @@ export default connect(({ global = {} }) => ({
           if (roleTxt.includes('二级部门领导')) {
             setStaffData([{ value: String(userBasicInfo.orgid) }]);
           } else {
-            setStaffData(toTreeData(res.record)[0].children[0].children);
+            setStaffData(filteredData);
           }
           setIsSpinning(false);
         }

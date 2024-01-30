@@ -8,6 +8,7 @@ import CustomTable from '../_Component/customTable'
 import TooltipItem from '../_Component/tooltipItem'
 import { BudgetDetailContext } from '../index'
 import { dictionarySearchHandle, tagGenerator } from '../budgetUtils'
+import MultiLinesEllipsis from '../_Component/multiLinesEllipsis';
 
 /**
  * 资本预算详情
@@ -94,15 +95,15 @@ const CapitalBudget = (props) => {
 
               <div className="content">
                 <div className="content_item">
-                  <NormalItem title='系统名称' value={projectData.systemName ?? '--'}></NormalItem>
+                  <NormalItem title='系统名称' value={projectData.systemName ?? '--'} tooltip={true}></NormalItem>
                 </div>
 
                 <div className="content_item">
-                  <NormalItem title='项目分类说明' value={projectData.projectCategoryDescription ?? '--'} tooltip={true}></NormalItem>
+                  <MultiLinesEllipsis title='项目分类说明' value={projectData.projectCategoryDescription ?? '--'} tooltip={true}></MultiLinesEllipsis>
                 </div>
 
                 <div className="content_item">
-                  <NormalItem title='项目必要性' value={projectData.projectNecessity ?? '--'} tooltip={true}></NormalItem>
+                  <MultiLinesEllipsis title='项目必要性' value={projectData.projectNecessity ?? '--'} tooltip={true}></MultiLinesEllipsis>
                 </div>
 
                 <div className="content_item">
@@ -182,11 +183,11 @@ const CapitalBudget = (props) => {
 
 
                 <div className="content_item">
-                  <TooltipItem title='硬件云资源配置' data={projectData.hardwareCloudResourcesConfigure} ></TooltipItem>
+                  <NormalItem title='硬件云资源配置' value={projectData.hardwareCloudResourcesConfigure} tooltip={true}></NormalItem>
                 </div>
 
                 <div className="content_item">
-                  <TooltipItem title='硬件存储配置' data={projectData.hardwareStorageConfiguration} ></TooltipItem>
+                  <NormalItem title='硬件存储配置' value={projectData.hardwareStorageConfiguration} tooltip={true}></NormalItem>
                 </div>
 
               </div>

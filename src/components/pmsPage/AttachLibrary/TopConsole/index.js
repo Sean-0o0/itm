@@ -70,7 +70,6 @@ class ToConsole extends Component {
     })
       .then(res => {
         const { code = 0 } = res;
-        this.props.setSpin(false);
         if (code > 0) {
           const wdlx = JSON.parse(res.fileTypeRecord);
           const label = JSON.parse(res.labelRecord);
@@ -111,6 +110,7 @@ class ToConsole extends Component {
             wdlxList: wdlxList.length ? wdlxList[0]?.children : [],
             prjTypeList: prjTypeList.length ? prjTypeList[0]?.children : [],
           });
+          this.props.setSpin(false);
         }
       })
       .catch(error => {
@@ -378,7 +378,6 @@ class ToConsole extends Component {
       glysOpen = false,
       params: { xmid, xmbq, xmlx, wdlx, xmjl, yssxlx, ysje1, ysje2 },
     } = this.state;
-    console.log("🚀 ~ file: index.js:379 ~ ToConsole ~ render ~ xmid:", xmid)
     const { dictionary = {} } = this.props;
     const { XMLX: xmlxList = [] } = dictionary;
 

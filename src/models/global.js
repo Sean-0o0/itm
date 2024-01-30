@@ -6,10 +6,10 @@ import { AccountUser, AccountLogout, UserBusinessRole, UserBasicInfo } from '../
 import { FetchAuths } from '../services/amslb/user';
 import TreeUtils from '../utils/treeUtils';
 // import { fetchObject } from '../services/sysCommon';
-import {fetchUserAuthorityDepartment} from '../services/commonbase/userAuthorityDepartment';
+import { fetchUserAuthorityDepartment } from '../services/commonbase/userAuthorityDepartment';
+import { QueryUserRole } from '../services/pmsServices';
 
 export default {
-
   namespace: 'global',
 
   state: {
@@ -29,10 +29,12 @@ export default {
     userHighestLevelDept: '', // 当前登录人最高级别的营业部id
     globalDepartments: [],
     dataAnonymization: false, //是否数据匿名化 脱敏 - 敏感信息不能输出到日志和返回到前端展示，即接口返回了敏感信息
+    roleData: {}, //用户角色数据，包含gender、role、testRole、weekday、zyrole
   },
 
   subscriptions: {
-    setup({ dispatch, history }) {  // eslint-disable-line
+    setup({ dispatch, history }) {
+      // eslint-disable-line
       history.listen(({ pathname }) => {
         const blackList = ['/login', '/logout', '/403'];
         if (!blackList.includes(pathname)) {
@@ -43,11 +45,13 @@ export default {
   },
 
   effects: {
-    *fetch({ payload }, { call, put }) {  // eslint-disable-line
+    *fetch({ payload }, { call, put }) {
+      // eslint-disable-line
       yield put({ type: 'save' });
     },
     checkAuth: [
-      function* (_, { call, put, all }) {  // eslint-disable-line
+      function*(_, { call, put, all }) {
+        // eslint-disable-line
         const data = yield call(AccountUser); // 此处不捕获异常,将异常抛到dva最外层的onError事件捕捉,如果过期就跳转到登录页面
         if (data.success) {
           yield put({
@@ -59,10 +63,10 @@ export default {
           });
           sessionStorage.setItem('user', JSON.stringify(data.user || {}));
           window.sessionStorage.setItem('loginStatus', '1'); // 登录状态: 0|未登录;1|已登录;-1|过期;
-          // localStorage.setItem('loginStatus','1');
           yield all([
             put({ type: 'fetchDictionary' }), // 每次访问的时候检查一下字典是否查询了,如果没有查询,那么就查一下
             put({ type: 'fetchUserBasicInfo', payload: {} }), // 每次登陆的时候获取系统授权业务角色
+            put({ type: 'fetchUserRole' }), //用户角色
             put({ type: 'fetchUserAuthorities' }), // 每次登陆的时候获取权限点信息
             put({ type: 'fetchDescription' }), // 获取系统说明
             put({ type: 'fetchObjects' }), // 获取系统liveBos对象
@@ -80,13 +84,13 @@ export default {
       window.sessionStorage.setItem('loginStatus', '0'); // 登录状态为未登录
       sessionStorage.setItem('user', null); // 清除用户基本信息
       sessionStorage.setItem('cacheUrl', ''); // 清除tab页缓存信息
-      sessionStorage.setItem('recentlyVisited', '');// 清除历史记录
+      sessionStorage.setItem('recentlyVisited', ''); // 清除历史记录
       localStorage.setItem('loginStatus', '0');
       // 重新加载页面,刷新页面会去掉各个model里面的数据
       window.location.reload();
       yield put({
         type: 'onAuthDataChange',
-        payload: {hasAuthed: false},
+        payload: { hasAuthed: false },
       });
     },
     // 获取用户基本信息
@@ -108,22 +112,22 @@ export default {
               const record = records[0];
               const finalRecord = {};
               const keys = Object.keys(record);
-              keys.forEach((item) => {
+              keys.forEach(item => {
                 if (record[item] instanceof Object) {
                   const chiKeys = Object.keys(record[item]);
-                  chiKeys.forEach((chiItem) => {
+                  chiKeys.forEach(chiItem => {
                     finalRecord[chiItem] = record[item][chiItem] || '';
                   });
                 } else {
                   finalRecord[item] = record[item];
                 }
               });
-              const {xtjs = ''} = finalRecord;
+              const { xtjs = '' } = finalRecord;
               userBusinessRole = xtjs;
               Object.assign(userBasicInfoTemp, finalRecord);
             }
             // if (isFirst) {
-            const {userid} = userBasicInfoTemp;
+            const { userid } = userBasicInfoTemp;
             // console.log("userid", userid)
             if (userid) {
               // console.log("userBasicInfoTemp", userBasicInfoTemp)
@@ -133,7 +137,7 @@ export default {
             // }
             yield put({
               type: 'saveUserBasicInfo',
-              payload: {userBusinessRole, userBasicInfo: userBasicInfoTemp},
+              payload: { userBusinessRole, userBasicInfo: userBasicInfoTemp },
             });
           }
         } catch (error) {
@@ -151,7 +155,7 @@ export default {
         const { code = 0, records = [] } = data || {};
         if (code > 0) {
           let userBusinessRole = '';
-          records.forEach((item) => {
+          records.forEach(item => {
             const { ywjs } = item;
             userBusinessRole = ywjs;
           });
@@ -178,7 +182,7 @@ export default {
           if (records && records.length > 0) {
             const authoritiesData = { loading: false };
             const authsOrOpertData = {};
-            records.forEach((item) => {
+            records.forEach(item => {
               const { objectName = '', commands = [], operates = 0 } = item || {};
               if (objectName !== '') {
                 authoritiesData[objectName] = commands;
@@ -212,7 +216,11 @@ export default {
       // const hasAuthed = yield select(state => state.global.hasAuthed);
       const dictionaryInstate = yield select(state => state.global.dictionary);
       // if (hasAuthed && (!dictionaryInstate || dictionaryInstate.loading || Object.keys(dictionaryInstate).length === 1)) {
-      if (!dictionaryInstate || dictionaryInstate.loading || Object.keys(dictionaryInstate).length === 1) {
+      if (
+        !dictionaryInstate ||
+        dictionaryInstate.loading ||
+        Object.keys(dictionaryInstate).length === 1
+      ) {
         yield put({
           type: 'saveDictionary',
           payload: { loading: false },
@@ -222,7 +230,7 @@ export default {
           const { code = 0, records = [] } = data || {};
           const dictionary = { loading: false };
           if (code > 0) {
-            records.forEach((item) => {
+            records.forEach(item => {
               const { fldm = '' } = item;
               if (fldm !== '' && dictionary[fldm]) {
                 dictionary[fldm].push(item);
@@ -266,7 +274,7 @@ export default {
           ]);
           // 解析数据,将records存起来
           const objectsMap = { loading: false };
-          datas.forEach((item) => {
+          datas.forEach(item => {
             const { name = 'yyb', records = [] } = item || {};
             objectsMap[name] = records;
           });
@@ -287,7 +295,7 @@ export default {
     *fetchParam(_, { select, call, put }) {
       const sysParam = yield select(state => state.global.sysParam);
       if (sysParam && sysParam.length === 0) {
-        const data = yield call(fetchSysParam, {csmc:""});
+        const data = yield call(fetchSysParam, { csmc: '' });
         const { code = 0, records = [] } = data || {};
         if (code > 0) {
           let isSwitchUser = '';
@@ -306,43 +314,60 @@ export default {
           let homepageCheckSysRoleType = ''; // 首页是否判断用户角色类型 1：启用 | 0：不启用
           let refreshWebPage = ''; //大屏页面刷新时间
           let sysName = ''; //系统名称
-          records.forEach((item) => {
+          records.forEach(item => {
             const { csmc = '', csz = '' } = item || {};
 
             switch (csmc) {
-              case ('UserSwitchEnable'): isSwitchUser = csz;
+              case 'UserSwitchEnable':
+                isSwitchUser = csz;
                 break;
-              case ('system.glpt.url'): livebosPrefix = csz;
+              case 'system.glpt.url':
+                livebosPrefix = csz;
                 break;
-              case ('system.gzpt.url'): mdPrefix = `${csz}/count`;
+              case 'system.gzpt.url':
+                mdPrefix = `${csz}/count`;
                 break;
-              case ('system.zxtg.url'): sdoPrefix = csz;
+              case 'system.zxtg.url':
+                sdoPrefix = csz;
                 break;
-              case ('system.didi.url'): didiPrefix = csz;
+              case 'system.didi.url':
+                didiPrefix = csz;
                 break;
-              case ('system.menu.isexpansion'): menuExpansion = csz;
+              case 'system.menu.isexpansion':
+                menuExpansion = csz;
                 break;
-              case ('sys.taskcenter.classifyrolerule'): taskcenterclass = csz;
+              case 'sys.taskcenter.classifyrolerule':
+                taskcenterclass = csz;
                 break;
-              case ('password.strength.level'): usrPwdStrengthLevel = csz;
+              case 'password.strength.level':
+                usrPwdStrengthLevel = csz;
                 break;
-              case ('password.strength.length.min'): usrPwdMinLength = csz;
+              case 'password.strength.length.min':
+                usrPwdMinLength = csz;
                 break;
-              case ('CustomerPanorama.ComplianceCheck'): complianceCheck = csz;
+              case 'CustomerPanorama.ComplianceCheck':
+                complianceCheck = csz;
                 break;
-              case ('CpotentialCusIsAudit'): potentialCusIsAudit = csz;
+              case 'CpotentialCusIsAudit':
+                potentialCusIsAudit = csz;
                 break;
-              case ('openSecureMarker'): openSecureMarker = csz;
+              case 'openSecureMarker':
+                openSecureMarker = csz;
                 break;
-              case ('c5.session.timeout'): sessionTimeout = csz || 180000;
+              case 'c5.session.timeout':
+                sessionTimeout = csz || 180000;
                 break;
-              case ('HomepageCheckSysRoleType'): homepageCheckSysRoleType = csz;
+              case 'HomepageCheckSysRoleType':
+                homepageCheckSysRoleType = csz;
                 break;
-              case ('refresh-webpage'): refreshWebPage = csz;
+              case 'refresh-webpage':
+                refreshWebPage = csz;
                 break;
-              case ('SysName'): sysName = csz;
+              case 'SysName':
+                sysName = csz;
                 break;
-              default: break;
+              default:
+                break;
             }
           });
           localStorage.setItem('isSwitchUser', isSwitchUser);
@@ -377,14 +402,30 @@ export default {
     },
 
     *fetchUserHighestLevelDepartment(_, { call, put }) {
-      const data = yield call(fetchUserAuthorityDepartment, { paging: 0, current: 1, pageSize: 10, total: -1, sort: '' });
+      const data = yield call(fetchUserAuthorityDepartment, {
+        paging: 0,
+        current: 1,
+        pageSize: 10,
+        total: -1,
+        sort: '',
+      });
       const { code = 0, records = [] } = data || {};
       // 如果有权限信息,那么就转化成对象的格式
       if (code > 0 && records && records.length > 0) {
         const { yybid } = records[0] || {};
-        const datas = TreeUtils.toTreeData(records, { keyName: 'yybid', pKeyName: 'fid', titleName: 'yybmc', normalizeTitleName: 'title', normalizeKeyName: 'value' }, true);
+        const datas = TreeUtils.toTreeData(
+          records,
+          {
+            keyName: 'yybid',
+            pKeyName: 'fid',
+            titleName: 'yybmc',
+            normalizeTitleName: 'title',
+            normalizeKeyName: 'value',
+          },
+          true,
+        );
         const globalDepartments = [];
-        datas.forEach((item) => {
+        datas.forEach(item => {
           const { children } = item;
           globalDepartments.push(...children);
         });
@@ -411,6 +452,29 @@ export default {
         },
       });
     },
+    // 获取用户角色信息
+    *fetchUserRole(_, { select, call, put }) {
+      const userBasicInfo = yield select(state => state.global.userBasicInfo);
+      const userRole = yield select(state => state.global.roleData);
+      if (JSON.stringify(userRole) === '{}') {
+        try {
+          const data = yield call(QueryUserRole, { userId: userBasicInfo.id });
+          if (data.code > 0) {
+            yield put({
+              type: 'saveUserRole',
+              payload: { roleData: data },
+            });
+          }
+        } catch (error) {
+          console.error(error);
+          // 请求如果出错,切换路由时尝试再次请求数据
+          yield put({
+            type: 'saveUserRole',
+            payload: { roleData: {} },
+          });
+        }
+      }
+    },
   },
 
   reducers: {
@@ -419,7 +483,7 @@ export default {
     },
     changeTheme(state, { payload }) {
       const { theme } = payload;
-      window.localStorage.setItem('userTheme', theme);// eslint-disable-line
+      window.localStorage.setItem('userTheme', theme); // eslint-disable-line
       return {
         ...state,
         theme,
@@ -439,6 +503,13 @@ export default {
         ...state,
         userBusinessRole,
         userBasicInfo,
+      };
+    },
+    saveUserRole(state, { payload }) {
+      const { roleData } = payload;
+      return {
+        ...state,
+        roleData,
       };
     },
     saveUserAuthsOrOpert(state, { payload }) {

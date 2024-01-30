@@ -7,14 +7,14 @@ import { EncryptBase64 } from '../../../../Common/Encrypt';
 class StaffTable extends Component {
   state = {
     current: 1,
-    pageSize: 10,
+    pageSize: 20,
   };
 
   componentDidUpdate(prevProps, prevState, snapshot) {
     if (this.props.defaultYear !== prevProps.defaultYear) {
       this.setState({
         current: 1,
-        pageSize: 10,
+        pageSize: 20,
       });
     }
   }
@@ -41,7 +41,7 @@ class StaffTable extends Component {
     let spanArr = [];
     let position = 0;
     let order = 1;
-    const { current = 1, pageSize = 10 } = this.state;
+    const { current = 1, pageSize = 20 } = this.state;
     const data = userData.slice((current - 1) * pageSize, current * pageSize);
     data.forEach((item, index) => {
       let obj = {};
@@ -75,7 +75,7 @@ class StaffTable extends Component {
       bmry = [],
       wbry = [],
     } = this.props;
-    const { current = 1, pageSize = 10 } = this.state;
+    const { current = 1, pageSize = 20 } = this.state;
     console.log('current', current);
     const rowspan = this.rowspan(tableData);
     console.log('rowspan', rowspan);
@@ -274,7 +274,7 @@ class StaffTable extends Component {
           height:
             role === '信息技术事业部领导' || role === '一级部门领导'
               ? `calc(100vh - 375px - ${getHeight()}px)`
-              : `calc(100vh - 250px - ${getHeight()}px)`,
+              : `calc(100vh - 160px)`,
         }}
       >
         <div className="project-info-table-box">
@@ -287,7 +287,7 @@ class StaffTable extends Component {
             pagination={{
               current: current,
               pageSize: pageSize,
-              pageSizeOptions: ['10', '20', '30', '40'],
+              pageSizeOptions: ['20', '40', '50', '100'],
               showSizeChanger: true,
               showQuickJumper: true,
               showTotal: total => `共 ${total} 条数据`,

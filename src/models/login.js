@@ -80,6 +80,7 @@ export default {
         yield put({ type: 'global/resetAll' });
         yield put({ type: 'global/checkAuth' });
         yield put({ type: 'global/fetchUserBasicInfo', payload: { isFirst: true } });
+        yield put({ type: 'global/fetchUserRole' });
         yield put(routerRedux.push('/'));
       } catch (error) {
         const { code = 0, note = '' } = error || {};
