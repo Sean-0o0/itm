@@ -1600,6 +1600,7 @@
       margin: 24px 24px 2.6784rem 24px;
       background-color: white;
       box-shadow: 0 1px 4px 0 rgba(20, 38, 98, 0.04);
+      transition: box-shadow 0.3s;
       border-radius: 8px;
       padding: 0 24px;
 
@@ -12604,6 +12605,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
             overflow: hidden;
             margin-bottom: 20px;
             box-shadow: 0px 4px 24px -4px rgba(0, 0, 0, 0.06);
+            transition: box-shadow 0.3s;
             border-radius: 8px;
             border: 1px solid #ebeef5;
             // border: 1px solid #fafafb;
@@ -22288,6 +22290,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
         width: 33.33%;
 
         .prj-tracking-infos-content-box:hover {
+          transition: box-shadow 0.3s;
           box-shadow: 0px 3px 6px -4px rgba(0, 0, 0, 0.12), 0px 6px 16px 0px rgba(0, 0, 0, 0.08),
             0px 9px 28px 8px rgba(0, 0, 0, 0.05);
         }
@@ -26684,7 +26687,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
             }
 
             button {
-              .antd-btn-default();
+              .antd-btn-primary();
               margin-left: auto;
               flex-shrink: 0;
             }
@@ -27879,3 +27882,6 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
 
 // 迭代项目统一流程发起
 @import '../components/pmsPage/IteProcessInitiate/index.less';
+
+// //常用组件
+// @import '../components/Usual/index.less';
