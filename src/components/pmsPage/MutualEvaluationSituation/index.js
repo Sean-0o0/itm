@@ -196,17 +196,19 @@ export default connect(({ global = {} }) => ({
             return treeData;
           }
           let data = toTreeData(res.record)[0].children[0].children[0].children;
-          let filteredData = findNodesWithValue(
-            toTreeData(res.record)[0].children[0],
-            userBasicInfo.orgid,
-          );
+          let orgid = String(userBasicInfo.orgid);
+          if (String(userBasicInfo.id) === '1852') {
+            //huangyufeng数据特殊处理
+            orgid = '11167';
+          }
+          let filteredData = findNodesWithValue(toTreeData(res.record)[0].children[0], orgid);
           // data.forEach(node => {
           //   setParentSelectableFalse(node);
           // });
           //父级也要可选
           setOrgData(data);
           if (roleTxt.includes('二级部门领导')) {
-            setStaffData([{ value: String(userBasicInfo.orgid) }]);
+            setStaffData([{ value: orgid }]);
           } else {
             setStaffData(filteredData);
           }
