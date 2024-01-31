@@ -17,6 +17,7 @@ import OpenValuationModal from './OpenValuationModal';
 export default connect(({ global = {} }) => ({
   userBasicInfo: global.userBasicInfo,
   dictionary: global.dictionary,
+  authorities: global.authorities,
 }))(function MutualEvaluation(props) {
   const {
     dictionary = {},
@@ -24,7 +25,13 @@ export default connect(({ global = {} }) => ({
       params: { params = '' },
     },
     userBasicInfo = {},
+    authorities = {},
   } = props;
+  // console.log(
+  //   '🚀 ~ connect ~ authorities:',
+  //   authorities.RYPJ,
+  //   authorities.RYPJ.includes('OpenEvaluation'),
+  // );
   const [isSpinning, setIsSpinning] = useState(false); //加载状态
   const [prjList, setPrjList] = useState([]); //左侧项目列表
   const [tableData, setTableData] = useState({
@@ -309,9 +316,11 @@ export default connect(({ global = {} }) => ({
         />
         <div className="content-box">
           <div className="left-box">
-            <div className="btn-row">
-              <Button onClick={handleOpen}>评价状态管理</Button>
-            </div>
+            {authorities.RYPJ.includes('OpenEvaluation') && (
+              <div className="btn-row">
+                <Button onClick={handleOpen}>评价状态管理</Button>
+              </div>
+            )}
             <OpenValuationModal
               visible={modalVisible}
               setVisible={setModalVisible}
@@ -338,7 +347,11 @@ export default connect(({ global = {} }) => ({
                 <div className="btn-row">
                   <Tooltip title={curPrj.name} placement="topLeft">
                     <Link
-                      style={{ color: '#3361ff' }}
+                      style={
+                        curPrj.done || !curPrj.open
+                          ? { color: '#3361ff', maxWidth: '100%' }
+                          : { color: '#3361ff' }
+                      }
                       to={{
                         pathname: `/pms/manage/ProjectDetail/${EncryptBase64(
                           JSON.stringify({

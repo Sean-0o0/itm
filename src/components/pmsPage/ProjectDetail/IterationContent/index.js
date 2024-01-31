@@ -133,7 +133,7 @@ export default function IterationContent(props) {
         <div className="item-title">
           <div className="title-left">
             {getDate(date)}
-            <i className="iconfont icon-edit" onClick={handleEdit} />
+            {is_XMJL_FXMJL && <i className="iconfont icon-edit" onClick={handleEdit} />}
           </div>
           <img className="title-right-img" src={ImgArrowUp} alt="arrow-bg" />
         </div>
@@ -165,7 +165,7 @@ export default function IterationContent(props) {
     }
   };
 
-  if (iterationCtn.length === 0 && !is_XMJL_FXMJL) return null;
+  if (iterationCtn.length === 0) return null;
   return (
     <div className="iteration-content-box">
       <OprtModal

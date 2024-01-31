@@ -748,7 +748,7 @@ export default function IterationPayment(props) {
     footer: null,
   };
 
-  if (iterationPayment.length === 0 && !is_XMJL_FXMJL) return null;
+  if (iterationPayment.length === 0 || !is_XMJL_FXMJL) return null;
   return (
     <div className="iteration-payment-box">
       <OprtModal

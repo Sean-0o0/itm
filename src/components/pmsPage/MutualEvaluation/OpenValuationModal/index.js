@@ -242,6 +242,7 @@ export default function OpenValuationModal(props) {
     setSelectedRowIds([]);
     setFilterData({
       openStatus: 0,
+      appraiseState: 0,
     });
     setMemberCount({
       type: '1',
@@ -365,7 +366,13 @@ export default function OpenValuationModal(props) {
   const handleTableChange = useCallback(
     (pagination = {}) => {
       const { current = 1, pageSize = 20 } = pagination;
-      getPrjList({ current, pageSize, projectManager, ...filterData, year: filterData.year?.year(), });
+      getPrjList({
+        current,
+        pageSize,
+        projectManager,
+        ...filterData,
+        year: filterData.year?.year(),
+      });
       return;
     },
     [JSON.stringify(filterData), projectManager],
@@ -441,7 +448,11 @@ export default function OpenValuationModal(props) {
       let rows = [];
       if (isSelected) {
         selectedRowKeys = Array.from(new Set([...(selectedRowIds || []), selectedRow.XMID])) || [];
-        rows = Array.from(new Set([...(selectedRows || []), selectedRow])) || [];
+        function uniqueFunc(arr, uniId) {
+          const res = new Map();
+          return arr.filter(item => !res.has(item[uniId]) && res.set(item[uniId], 1));
+        }
+        rows = uniqueFunc([...(selectedRows || []), selectedRow], 'XMID') || [];
       } else {
         selectedRowKeys = selectedRowIds.filter(item => {
           return item !== selectedRow.XMID;
@@ -469,11 +480,12 @@ export default function OpenValuationModal(props) {
     })
       .then(res => {
         if (res?.success) {
-          getPrjList({ ...filterData, projectManager, year: filterData.year?.year(), });
+          getPrjList({ ...filterData, projectManager, year: filterData.year?.year() });
           refresh();
           message.success('操作成功', 1);
           setIsSpinning(false);
           setSelectedRowIds([]);
+          setSelectedRows([]);
         }
       })
       .catch(e => {

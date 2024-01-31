@@ -406,7 +406,7 @@ export default function PrjTracking(props) {
   //预算审批隐藏
   if(ysspHide) return null;
 
-  if (trackingData.length === 0) return (
+  if (trackingData.length === 0) return isXMJL ? (
     <div className="prj-tracking-box">
       {/*新增——项目信息弹窗*/}
       {addModal.visible && (
@@ -421,15 +421,13 @@ export default function PrjTracking(props) {
 
       <div className="top-box">
         项目跟踪
-        {isXMJL &&
-          <div className="icon-box" onClick={addBtnClickHandle}>
-            <Icon type='plus-circle' style={{ fontSize: 14, marginRight: 5, color: '#3361ff' }}></Icon>
-            <span>新增</span>
-          </div>
-        }
+        <div className="icon-box" onClick={addBtnClickHandle}>
+          <Icon type='plus-circle' style={{ fontSize: 14, marginRight: 5, color: '#3361ff' }}></Icon>
+          <span>新增</span>
+        </div>
       </div>
     </div>
-  );
+  ): '';
 
   return (
     <div className="prj-tracking-box">
