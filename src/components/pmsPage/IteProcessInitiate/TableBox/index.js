@@ -293,7 +293,7 @@ export default function TableBox(props) {
             current: tableData.current,
             pageSize: tableData.pageSize,
             defaultCurrent: 1,
-            pageSizeOptions: ['2', '40', '50', '100'],
+            pageSizeOptions: ['20', '40', '50', '100'],
             showSizeChanger: true,
             hideOnSinglePage: false,
             showTotal: t => `共 ${tableData.data.length} 条数据`,

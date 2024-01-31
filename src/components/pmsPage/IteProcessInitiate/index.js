@@ -16,7 +16,7 @@ export default connect(({ global = {} }) => ({
   const [tableData, setTableData] = useState({
     data: [],
     current: 1,
-    pageSize: 10,
+    pageSize: 20,
     sort: '',
     total: 0,
   }); //表格数据
