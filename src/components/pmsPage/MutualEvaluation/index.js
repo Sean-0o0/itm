@@ -26,7 +26,7 @@ export default connect(({ global = {} }) => ({
     },
     userBasicInfo = {},
     authorities = {},
-  } = props;
+  } = props; 
   const [isSpinning, setIsSpinning] = useState(false); //加载状态
   const [prjList, setPrjList] = useState([]); //左侧项目列表
   const [tableData, setTableData] = useState({

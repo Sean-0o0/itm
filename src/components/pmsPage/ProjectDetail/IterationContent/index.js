@@ -164,8 +164,8 @@ export default function IterationContent(props) {
       setDataShow([...iterationCtn.slice(0, getColNum(itemWidth) * 2)]);
     }
   };
-
-  if (iterationCtn.length === 0) return null;
+  //当非项目经理且无数据时隐藏
+  if (iterationCtn.length === 0 && !is_XMJL_FXMJL) return null;
   return (
     <div className="iteration-content-box">
       <OprtModal

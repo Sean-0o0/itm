@@ -55,6 +55,9 @@ export default function PersonnelEvaluation(props) {
   const [filterData, setFilterData] = useState({
     year: moment().subtract(1, 'year'),
   });
+  const hideLeftBox =
+    role.includes('二级部门领导') &&
+    !['1703', '1781', '1852', '1604', '10704'].includes(String(userBasicInfo.id));
 
   const filterConfig = [
     {
@@ -705,7 +708,7 @@ export default function PersonnelEvaluation(props) {
         }}
       />
       <div className="content-box">
-        {!role.includes('二级部门领导') && (
+        {!hideLeftBox && (
           <div className="left-box">
             <div className="tree-box">
               <Tree
@@ -721,7 +724,7 @@ export default function PersonnelEvaluation(props) {
             </div>
           </div>
         )}
-        <div className="right-box" style={role.includes('二级部门领导') ? { width: '100%' } : {}}>
+        <div className="right-box" style={hideLeftBox ? { width: '100%' } : {}}>
           {curOrgID === -1 ? (
             <Empty
               description="选择部门后查看数据"

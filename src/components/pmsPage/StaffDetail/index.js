@@ -207,7 +207,7 @@ class StaffDetailComponent extends Component {
 
             {/* 人员评价列表 */}
             {/* 朱校均 1703 陈燕萍1781 黄玉锋 1852 童卫 1604 */}
-            {!['1703', '1781', '1852', '1604'].includes(String(this.props.userBasicInfo?.id)) && (
+            {['1703', '1781', '1852', '1604'].includes(String(this.props.userBasicInfo?.id)) && (
                 <TabPane tab="评价情况" key="evaluationSituation">
                     <EvaluationTable
                       userBasicInfo={userBasicInfo}

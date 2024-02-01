@@ -748,7 +748,8 @@ export default function IterationPayment(props) {
     footer: null,
   };
 
-  if (iterationPayment.length === 0 || !is_XMJL_FXMJL) return null;
+  //当非项目经理且无数据时隐藏
+  if ((iterationPayment.length === 0 && !is_XMJL_FXMJL) || !is_XMJL_FXMJL) return null;
   return (
     <div className="iteration-payment-box">
       <OprtModal

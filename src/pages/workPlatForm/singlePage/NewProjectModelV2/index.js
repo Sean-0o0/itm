@@ -5129,32 +5129,35 @@ class NewProjectModelV2 extends React.Component {
                                       console.log(
                                         '🚀 ~ file: index.js:5115 ~ NewProjectModelV2 ~ render ~ e:',
                                         node?.triggerNode?.props.ysID,
+                                        e,
+                                        node,
                                       );
                                       budgetProjectList.forEach(item => {
                                         if (Number(node?.triggerNode?.props.ysID) <= 0) {
                                           item?.children?.forEach(ite => {
-                                            if (ite.value === e) {
-                                              console.log('iteiteiteite', ite);
-                                              const _this = this;
-                                              this.setState(
-                                                {
-                                                  budgetInfo: {
-                                                    ...this.state.budgetInfo,
-                                                    budgetProjectId: ite.ysID,
-                                                    totalBudget: 0,
-                                                    relativeBudget: 0,
-                                                    budgetType: '资本性预算',
+                                            ite?.children?.forEach(i => {
+                                              if (i.value === e) {
+                                                const _this = this;
+                                                this.setState(
+                                                  {
+                                                    budgetInfo: {
+                                                      ...this.state.budgetInfo,
+                                                      budgetProjectId: i.ysID,
+                                                      totalBudget: 0,
+                                                      relativeBudget: 0,
+                                                      budgetType: '资本性预算',
+                                                    },
+                                                    ysKZX: i.ysKZX,
                                                   },
-                                                  ysKZX: ite.ysKZX,
-                                                },
-                                                function() {
-                                                  _this.props.form.resetFields(['projectBudget']);
-                                                  _this.props.form.validateFields([
-                                                    'projectBudget',
-                                                  ]);
-                                                },
-                                              );
-                                            }
+                                                  function() {
+                                                    _this.props.form.resetFields(['projectBudget']);
+                                                    _this.props.form.validateFields([
+                                                      'projectBudget',
+                                                    ]);
+                                                  },
+                                                );
+                                              }
+                                            });
                                           });
                                         } else {
                                           item?.children?.forEach(ite => {

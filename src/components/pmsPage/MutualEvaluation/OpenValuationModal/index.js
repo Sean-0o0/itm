@@ -60,10 +60,6 @@ export default function OpenValuationModal(props) {
     year: undefined,
   });
   const [yearOpen, setYearOpen] = useState(false); //年份下拉框收起/展开
-  const [memberCount, setMemberCount] = useState({
-    type: '1',
-    value: undefined,
-  });
   const notAllowOpen = selectedRowIds.length === 0 || conditions.includesOpened;
   const notAllowClose = selectedRowIds.length === 0 || conditions.includesClosed;
   const KQZT = [
@@ -240,13 +236,14 @@ export default function OpenValuationModal(props) {
   const onCancel = () => {
     setVisible(false);
     setSelectedRowIds([]);
+    setSelectedRows([]);
+    setConditions({
+      includesOpened: false,
+      includesClosed: false,
+    });
     setFilterData({
       openStatus: 0,
       appraiseState: 0,
-    });
-    setMemberCount({
-      type: '1',
-      value: undefined,
     });
   };
 
@@ -486,6 +483,10 @@ export default function OpenValuationModal(props) {
           setIsSpinning(false);
           setSelectedRowIds([]);
           setSelectedRows([]);
+          setConditions({
+            includesOpened: false,
+            includesClosed: false,
+          });
         }
       })
       .catch(e => {
@@ -547,6 +548,11 @@ export default function OpenValuationModal(props) {
                         e.persist();
                         setFilterData(p => ({ ...p, projectName: e.target.value }));
                         setSelectedRowIds([]);
+                        setSelectedRows([]);
+                        setConditions({
+                          includesOpened: false,
+                          includesClosed: false,
+                        });
                         debounce(e => {
                           getPrjList({
                             ...filterData,
@@ -571,6 +577,11 @@ export default function OpenValuationModal(props) {
                         e.persist();
                         setFilterData(p => ({ ...p, projectManagerName: e.target.value }));
                         setSelectedRowIds([]);
+                        setSelectedRows([]);
+                        setConditions({
+                          includesOpened: false,
+                          includesClosed: false,
+                        });
                         debounce(e => {
                           getPrjList({
                             ...filterData,
@@ -595,6 +606,11 @@ export default function OpenValuationModal(props) {
                       onChange: v => {
                         setFilterData(p => ({ ...p, projectType: v }));
                         setSelectedRowIds([]);
+                        setSelectedRows([]);
+                        setConditions({
+                          includesOpened: false,
+                          includesClosed: false,
+                        });
                         getPrjList({
                           ...filterData,
                           projectType: Number(v),
@@ -613,6 +629,11 @@ export default function OpenValuationModal(props) {
                       onChange: v => {
                         setFilterData(p => ({ ...p, projectStage: v }));
                         setSelectedRowIds([]);
+                        setSelectedRows([]);
+                        setConditions({
+                          includesOpened: false,
+                          includesClosed: false,
+                        });
                         getPrjList({
                           ...filterData,
                           projectStage: Number(v),
@@ -640,6 +661,11 @@ export default function OpenValuationModal(props) {
                       });
                       setFilterData(p => ({ ...p, openStatus: Number(e.target.value) }));
                       setSelectedRowIds([]);
+                      setSelectedRows([]);
+                      setConditions({
+                        includesOpened: false,
+                        includesClosed: false,
+                      });
                     }}
                   >
                     {KQZT.map(x => (
@@ -665,6 +691,11 @@ export default function OpenValuationModal(props) {
                       });
                       setFilterData(p => ({ ...p, appraiseState: Number(e.target.value) }));
                       setSelectedRowIds([]);
+                      setSelectedRows([]);
+                      setConditions({
+                        includesOpened: false,
+                        includesClosed: false,
+                      });
                     }}
                   >
                     {PJZT.map(x => (
@@ -725,6 +756,10 @@ export default function OpenValuationModal(props) {
                     });
                     setFilterData(p => ({ ...p, openStatus: Number(e.target.value) }));
                     setSelectedRowIds([]);
+                    setConditions({
+                      includesOpened: false,
+                      includesClosed: false,
+                    });
                   }}
                 >
                   {KQZT.map(x => (
