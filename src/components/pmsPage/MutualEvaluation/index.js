@@ -27,11 +27,6 @@ export default connect(({ global = {} }) => ({
     userBasicInfo = {},
     authorities = {},
   } = props;
-  // console.log(
-  //   '🚀 ~ connect ~ authorities:',
-  //   authorities.RYPJ,
-  //   authorities.RYPJ.includes('OpenEvaluation'),
-  // );
   const [isSpinning, setIsSpinning] = useState(false); //加载状态
   const [prjList, setPrjList] = useState([]); //左侧项目列表
   const [tableData, setTableData] = useState({
@@ -316,7 +311,7 @@ export default connect(({ global = {} }) => ({
         />
         <div className="content-box">
           <div className="left-box">
-            {authorities.RYPJ.includes('OpenEvaluation') && (
+            {authorities.RYPJ?.includes('OpenEvaluation') && (
               <div className="btn-row">
                 <Button onClick={handleOpen}>评价状态管理</Button>
               </div>

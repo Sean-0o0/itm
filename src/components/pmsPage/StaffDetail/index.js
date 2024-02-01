@@ -205,17 +205,18 @@ class StaffDetailComponent extends Component {
               </div>
             </TabPane>
 
-            {/*人员评价列表 */}
-           {this.state.role.includes('人员评价查看人员') && (
-              <TabPane tab="评价情况" key="evaluationSituation">
-                  <EvaluationTable
-                    userBasicInfo={userBasicInfo}
-                    curTab={this.state.curTab}
-                    ryid={ryid}
-                  >
-                  </EvaluationTable>
-              </TabPane>
-           )}
+            {/* 人员评价列表 */}
+            {/* 朱校均 1703 陈燕萍1781 黄玉锋 1852 童卫 1604 */}
+            {!['1703', '1781', '1852', '1604'].includes(String(this.props.userBasicInfo?.id)) && (
+                <TabPane tab="评价情况" key="evaluationSituation">
+                    <EvaluationTable
+                      userBasicInfo={userBasicInfo}
+                      curTab={this.state.curTab}
+                      ryid={ryid}
+                    >
+                    </EvaluationTable>
+                </TabPane>
+            )}
           </Tabs>
         </div>
 

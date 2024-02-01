@@ -306,7 +306,8 @@ export default function PersonnelEvaluation(props) {
     {
       title: '评价详情',
       dataIndex: 'PJXQ',
-      width: role.includes('二级部门领导') ? 0 : '10%',
+      //朱校均 1703 陈燕萍1781 黄玉锋 1852 童卫 1604
+      width: !['1703', '1781', '1852', '1604'].includes(String(userBasicInfo.id)) ? 0 : '10%',
       key: 'PJXQ',
       ellipsis: true,
       render: (txt, row) => (

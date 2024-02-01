@@ -195,16 +195,13 @@ export default connect(({ global = {} }) => ({
 
             return treeData;
           }
-          let data = toTreeData(res.record)[0].children[0].children[0].children;
+          let data = toTreeData(res.record)[0]?.children[0]?.children[0]?.children;
           let orgid = String(userBasicInfo.orgid);
-          if (String(userBasicInfo.id) === '1852') {
-            //huangyufeng数据特殊处理
-            orgid = '11167';
+          let filteredData = findNodesWithValue(toTreeData(res.record)[0]?.children[0], orgid);
+          if (['1703', '1781', '1852', '1604'].includes(String(userBasicInfo.id))) {
+            //朱校均 1703 陈燕萍1781 黄玉锋 1852 童卫 1604
+            filteredData = toTreeData(res.record)[0]?.children[0]?.children;
           }
-          let filteredData = findNodesWithValue(toTreeData(res.record)[0].children[0], orgid);
-          // data.forEach(node => {
-          //   setParentSelectableFalse(node);
-          // });
           //父级也要可选
           setOrgData(data);
           if (roleTxt.includes('二级部门领导')) {
