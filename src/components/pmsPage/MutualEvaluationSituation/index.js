@@ -199,9 +199,14 @@ export default connect(({ global = {} }) => ({
           setOrgData(data);
           let orgid = String(userBasicInfo.orgid);
           let filteredData = findNodesWithValue(toTreeData(res.record)[0]?.children[0], orgid);
-          if (['1703', '1781', '1852', '1604', '10704'].includes(String(userBasicInfo.id))) {
-            //朱校均 1703 陈燕萍1781 黄玉锋 1852 童卫 1604 看全部，钟证乐 10704特殊处理
+          console.log('🚀 ~ getOrgData ~ filteredData:', data);
+          if (['1703', '1781', '1852', '1604'].includes(String(userBasicInfo.id))) {
+            //朱校均 1703 陈燕萍1781 黄玉锋 1852 童卫 1604 看全部
             filteredData = toTreeData(res.record)[0]?.children[0]?.children;
+            setStaffData(filteredData);
+          } else if (['10704'].includes(String(userBasicInfo.id))) {
+            //钟证乐 10704特殊处理
+            filteredData = findNodesWithValue(toTreeData(res.record)[0]?.children[0], '357');
             setStaffData(filteredData);
           } else if (roleTxt.includes('二级部门领导')) {
             setStaffData([{ value: orgid }]);
