@@ -437,7 +437,7 @@ export default connect(({ global = {} }) => ({
         //     ((is_XMJL_FXMJL &&
         //       (hasEvaluationData === true || authorities.RYPJ?.includes('OpenEvaluation'))) ||
         //       (isProjectMember === true && hasEvaluationData === true))),
-        '\n评价管理：' + (grayTest.DDMK && authorities.RYPJ?.includes('OpenEvaluation')),
+        '\n评价管理：' + authorities.RYPJ?.includes('OpenEvaluation'),
         '\n转为迭代：' + (is_XMJL_FXMJL && showZWDD),
       );
     return () => {};
@@ -458,7 +458,7 @@ export default connect(({ global = {} }) => ({
       //   ((is_XMJL_FXMJL &&
       //     (hasEvaluationData === true || authorities.RYPJ?.includes('OpenEvaluation'))) ||
       //     (isProjectMember === true && hasEvaluationData === true))) ||
-      (grayTest.DDMK && authorities.RYPJ?.includes('OpenEvaluation')) ||
+      authorities.RYPJ?.includes('OpenEvaluation') ||
       (grayTest.DDMK && is_XMJL_FXMJL && showZWDD)
     )
   )
@@ -530,8 +530,7 @@ export default connect(({ global = {} }) => ({
                 },
               }))} */}
 
-        {grayTest.DDMK &&
-          authorities.RYPJ?.includes('OpenEvaluation') &&
+        {authorities.RYPJ?.includes('OpenEvaluation') &&
           getShortcutItem({
             imgTxt: 'mutualEvaluation',
             txt: '评价管理',
