@@ -22,7 +22,7 @@ import { connect } from 'dva';
 export default connect(({ global = {} }) => ({
   authorities: global.authorities,
 }))(function ShortcutCard(props) {
-  const { dataProps = {}, funcProps = {} } = props;
+  const { dataProps = {}, funcProps = {}, authorities = {} } = props;
   const {
     xmid,
     ZYXMKQLX = [],
@@ -35,7 +35,6 @@ export default connect(({ global = {} }) => ({
     is_XMJL_FXMJL = false, // 项目详情页的是否是项目经理或者副项目经理，非账号登录人的
     allStaffData = [], //用于判断 验收报告 事项是否已完成
     ysspHide = false,
-    authorities = {},
   } = dataProps;
 
   const { prjBasic = {}, member = [], contrastArr = [] } = prjData;
