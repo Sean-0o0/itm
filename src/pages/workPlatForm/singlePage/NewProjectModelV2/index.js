@@ -1312,7 +1312,9 @@ class NewProjectModelV2 extends React.Component {
           let relativeBudget = 0;
           let ysKZX = 0;
           let budgetProjectName =
-            Number(result.budgetProject) <= 0
+            result.budgetProject === ''
+              ? undefined
+              : Number(result.budgetProject) <= 0
               ? result.budgetProject + '4'
               : result.budgetProject + result.budgetTypeId;
           //其他里面的预算id，都是小于等于0
@@ -2495,7 +2497,7 @@ class NewProjectModelV2 extends React.Component {
           String(this.state.subItem) === '1'
             ? 0
             : budgetInfo.budgetProjectId === ''
-            ? -1
+            ? -999
             : Number(budgetInfo.budgetProjectId),
         projectBudget:
           String(this.state.basicInfo.haveHard) === '1'
