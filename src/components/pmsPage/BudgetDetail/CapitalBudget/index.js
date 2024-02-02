@@ -15,8 +15,7 @@ import MultiLinesEllipsis from '../_Component/multiLinesEllipsis';
  */
 const CapitalBudget = (props) => {
 
-  const { projectData = {}, dictionary, isLeader, userBasicInfo = {}, } = useContext(BudgetDetailContext)
-
+  const { projectData = {}, dictionary, isLeader, userBasicInfo = {}, } = useContext(BudgetDetailContext) 
   //是否显示金额
   const isShowMoney = (fzrId) =>  isLeader || String(userBasicInfo.id) === String(fzrId)
 
@@ -41,14 +40,14 @@ const CapitalBudget = (props) => {
           </div>
 
           <div className="TopInfo_LeftBox_projectInfo">
-            <NormalItem title='负责人' value={projectData.responsiblePeople}></NormalItem>
+            <NormalItem title='负责人' value={projectData.responsiblePeople ?? '-'}></NormalItem>
 
             <NormalItem title='预算类别'
-              value={dictionarySearchHandle(dictionary.YSFL, projectData.budgetCategory)}
+              value={dictionarySearchHandle(dictionary.YSFL, projectData.budgetCategory) ?? '-'}
             ></NormalItem>
 
             <NormalItem title='项目分类'
-              value={dictionarySearchHandle(dictionary.YSLB, projectData.projectCategory)}></NormalItem>
+              value={dictionarySearchHandle(dictionary.YSLB, projectData.projectCategory) ?? '-'}></NormalItem>
           </div>
 
         </div>
@@ -56,17 +55,17 @@ const CapitalBudget = (props) => {
           <Fragment>
             <div className="TopInfo_MiddleBox">
               <ExecutionProgress
-                partObj={{ '已执行金额': projectData.executedMoney }}
-                remainingObj={{ '可执行金额': projectData.canExecuteMoney }}
-                totalObj={{ '总金额': projectData.totalMoney }}
+                partObj={{ '已执行金额': projectData.executedMoney ?? '-' }}
+                remainingObj={{ '可执行金额': projectData.canExecuteMoney ?? '-' }}
+                totalObj={{ '总金额': projectData.totalMoney ?? '-' }}
               ></ExecutionProgress>
             </div>
 
             <div className="TopInfo_RightBox">
               <ExecutionProgress
-                partObj={{ '已立项金额': projectData.approvalMoney }}
-                remainingObj={{ '可立项金额': projectData.canApprovalMoney }}
-                totalObj={{ '总金额': projectData.totalMoney }}
+                partObj={{ '已立项金额': projectData.approvalMoney ?? '-' }}
+                remainingObj={{ '可立项金额': projectData.canApprovalMoney ?? '-' }}
+                totalObj={{ '总金额': projectData.totalMoney ?? '-' }}
               >
               </ExecutionProgress>
             </div>
@@ -95,15 +94,15 @@ const CapitalBudget = (props) => {
 
               <div className="content">
                 <div className="content_item">
-                  <NormalItem title='系统名称' value={projectData.systemName ?? '--'} tooltip={true}></NormalItem>
+                  <NormalItem title='系统名称' value={projectData.systemName ?? '-'} tooltip={true}></NormalItem>
                 </div>
 
                 <div className="content_item">
-                  <MultiLinesEllipsis title='项目分类说明' value={projectData.projectCategoryDescription ?? '--'} tooltip={true}></MultiLinesEllipsis>
+                  <MultiLinesEllipsis title='项目分类说明' value={projectData.projectCategoryDescription ?? '-'} tooltip={true}></MultiLinesEllipsis>
                 </div>
 
                 <div className="content_item">
-                  <MultiLinesEllipsis title='项目必要性' value={projectData.projectNecessity ?? '--'} tooltip={true}></MultiLinesEllipsis>
+                  <MultiLinesEllipsis title='项目必要性' value={projectData.projectNecessity ?? '-'} tooltip={true}></MultiLinesEllipsis>
                 </div>
 
                 <div className="content_item">
@@ -125,14 +124,14 @@ const CapitalBudget = (props) => {
                 <div className="content_item">
                   <NormalItem
                     title='软件投资'
-                    value={`${projectData.softwareInvestment} (计划支付 ${projectData.softwareInvestmentCurYear})`}
+                    value={(projectData.softwareInvestment ?? '-')+` (计划支付 ${projectData.softwareInvestmentCurYear ?? '-'})`}
                   ></NormalItem>
                 </div>
 
                 <div className="content_item">
                   <NormalItem
                     title='其中信创-软件投资'
-                    value={`${projectData.xinChuang_SoftwareInvestment} (计划支付 ${projectData.xinChuang_SoftwareInvestmentCurYear})`}
+                    value={`${projectData.xinChuang_SoftwareInvestment ?? '-'} (计划支付 ${projectData.xinChuang_SoftwareInvestmentCurYear ?? '-'})`}
                   >
                   </NormalItem>
                 </div>
@@ -140,14 +139,14 @@ const CapitalBudget = (props) => {
                 <div className="content_item">
                   <NormalItem
                     title='硬件服务器'
-                    value={`${projectData.hardwareServer} (计划支付 ${projectData.hardwareServerCurYear})`}
+                    value={`${projectData.hardwareServer ?? '-'} (计划支付 ${projectData.hardwareServerCurYear ?? '-'})`}
                   ></NormalItem>
                 </div>
 
                 <div className="content_item">
                   <NormalItem
                     title='硬件网络设备'
-                    value={`${projectData.hardwareNetworkEquipment} (计划支付 ${projectData.hardwareNetworkEquipmentCurYear})`}
+                    value={`${projectData.hardwareNetworkEquipment ?? '-'} (计划支付 ${projectData.hardwareNetworkEquipmentCurYear ?? '-'})`}
                   ></NormalItem>
                 </div>
 
@@ -156,38 +155,38 @@ const CapitalBudget = (props) => {
                 <div className="content_item">
                   <NormalItem
                     title='硬件其他'
-                    value={`${projectData.hardwareOther} (计划支付 ${projectData.hardwareOtherCurYear})`}
+                    value={`${projectData.hardwareOther ?? '-'} (计划支付 ${projectData.hardwareOtherCurYear ?? '-'})`}
                   ></NormalItem>
                 </div>
 
                 <div className="content_item">
                   <NormalItem
                     title='硬件投资总金额'
-                    value={`${projectData.totalHardwareInvestment} (计划支付 ${projectData.totalHardwareInvestmentCurYear})`}
+                    value={`${projectData.totalHardwareInvestment ?? '-'} (计划支付 ${projectData.totalHardwareInvestmentCurYear ?? '-'})`}
                   ></NormalItem>
                 </div>
 
                 <div className="content_item">
                   <NormalItem
                     title='其中信创-硬件投资'
-                    value={`${projectData.xinChuang_HardwareInvestment} (计划支付 ${projectData.xinChuang_HardwareInvestmentCurYear})`}
+                    value={`${projectData.xinChuang_HardwareInvestment ?? '-'} (计划支付 ${projectData.xinChuang_HardwareInvestmentCurYear ?? '-'})`}
                   ></NormalItem>
                 </div>
 
                 <div className="content_item">
                   <NormalItem
                     title='总投资'
-                    value={`${projectData.totalInvestment} (计划支付 ${projectData.totalInvestmentCurYear})`}
+                    value={`${projectData.totalInvestment ?? '-'} (计划支付 ${projectData.totalInvestmentCurYear ?? '-'})`}
                   ></NormalItem>
                 </div>
 
 
                 <div className="content_item">
-                  <NormalItem title='硬件云资源配置' value={projectData.hardwareCloudResourcesConfigure} tooltip={true}></NormalItem>
+                  <NormalItem title='硬件云资源配置' value={projectData.hardwareCloudResourcesConfigure ?? '-'} tooltip={true}></NormalItem>
                 </div>
 
                 <div className="content_item">
-                  <NormalItem title='硬件存储配置' value={projectData.hardwareStorageConfiguration} tooltip={true}></NormalItem>
+                  <NormalItem title='硬件存储配置' value={projectData.hardwareStorageConfiguration ?? '-'} tooltip={true}></NormalItem>
                 </div>
 
               </div>

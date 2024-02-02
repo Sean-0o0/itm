@@ -68,7 +68,7 @@ const TableBox = props => {
       ellipsis: true,
       render: (text, record, extra) => {
         return <Tooltip title={text} placement="topLeft">
-          <Link
+          {/* <Link
             style={{ color: '#3361ff' }}
             to={{
               pathname: `/pms/manage/BudgetDetail/${EncryptBase64(
@@ -85,7 +85,8 @@ const TableBox = props => {
             className="table-link-strong"
           >
             {text}
-          </Link>
+          </Link> */}
+          <span style={{ cursor: 'default' }}>{text}</span>
         </Tooltip>
       }
     },
@@ -211,7 +212,7 @@ const TableBox = props => {
       ellipsis: true,
       render: (text, record, extra) => {
         return <Tooltip title={text} placement="topLeft">
-          <Link
+          {/* <Link
             style={{ color: '#3361ff' }}
             to={{
               pathname: `/pms/manage/BudgetDetail/${EncryptBase64(
@@ -228,7 +229,8 @@ const TableBox = props => {
             className="table-link-strong"
           >
             {text}
-          </Link>
+          </Link> */}
+          <span style={{ cursor: 'default' }}>{text}</span>
         </Tooltip>
       }
     },

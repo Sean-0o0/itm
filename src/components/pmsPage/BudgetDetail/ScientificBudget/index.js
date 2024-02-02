@@ -15,7 +15,6 @@ import { approvalTimeFormater, tagGenerator } from '../budgetUtils'
 const ScientificBudget = (props) => {
 
   const { projectData = {}, dictionary, isLeader, userBasicInfo = {}, } = useContext(BudgetDetailContext)
-
   //是否显示金额
   const isShowMoney = (fzrId) =>  isLeader || String(userBasicInfo.id) === String(fzrId)
 
@@ -38,9 +37,9 @@ const ScientificBudget = (props) => {
           </div>
 
           <div className="TopInfo_LeftBox_projectInfo">
-            <NormalItem title='负责人' value={projectData.responsiblePeople}></NormalItem>
-            <NormalItem title='项目立项时间' value={approvalTimeFormater(projectData.Tag_approvalTime)}></NormalItem>
-            <NormalItem title='建设周期' value={projectData.constructionCycle ?? '--'}></NormalItem>
+            <NormalItem title='负责人' value={projectData.responsiblePeople ?? '-'}></NormalItem>
+            <NormalItem title='项目立项时间' value={approvalTimeFormater(projectData.Tag_approvalTime) ?? '-'}></NormalItem>
+            <NormalItem title='建设周期' value={projectData.constructionCycle ?? '-'}></NormalItem>
           </div>
 
         </div>
@@ -49,17 +48,17 @@ const ScientificBudget = (props) => {
           <Fragment>
             <div className="TopInfo_MiddleBox">
               <ExecutionProgress
-                partObj={{ '已执行金额': projectData.executedMoney }}
-                remainingObj={{ '可执行金额': projectData.canExecuteMoney }}
-                totalObj={{ '总金额': projectData.totalMoney }}
+                partObj={{ '已执行金额': projectData.executedMoney ?? '-' }}
+                remainingObj={{ '可执行金额': projectData.canExecuteMoney ?? '-' }}
+                totalObj={{ '总金额': projectData.totalMoney ?? '-' }}
               ></ExecutionProgress>
             </div>
 
             <div className="TopInfo_RightBox">
               <ExecutionProgress
-                partObj={{ '已立项金额': projectData.approvalMoney }}
-                remainingObj={{ '可立项金额': projectData.canApprovalMoney }}
-                totalObj={{ '总金额': projectData.totalMoney }}
+                partObj={{ '已立项金额': projectData.approvalMoney ?? '-' }}
+                remainingObj={{ '可立项金额': projectData.canApprovalMoney ?? '-' }}
+                totalObj={{ '总金额': projectData.totalMoney ?? '-' }}
               >
               </ExecutionProgress>
             </div>
@@ -88,23 +87,23 @@ const ScientificBudget = (props) => {
 
               <div className="content">
                 <div className="content_item">
-                  <NormalItem title='资本性预算' value={projectData.capitalBudget}></NormalItem>
+                  <NormalItem title='资本性预算' value={projectData.capitalBudget ?? '-'}></NormalItem>
                 </div>
 
                 <div className="content_item">
-                  <NormalItem title='非资本性预算' value={projectData.nonCapitalBudget}></NormalItem>
+                  <NormalItem title='非资本性预算' value={projectData.nonCapitalBudget ?? '-'}></NormalItem>
                 </div>
 
                 <div className="content_item">
-                  <NormalItem title='人力成本' value={projectData.humanCost}></NormalItem>
+                  <NormalItem title='人力成本' value={projectData.humanCost ?? '-'}></NormalItem>
                 </div>
 
                 <div className="content_item">
-                  <NormalItem title='总投资' value={projectData.totalInvestment}></NormalItem>
+                  <NormalItem title='总投资' value={projectData.totalInvestment ?? '-'}></NormalItem>
                 </div>
 
                 <div className="content_item">
-                  <NormalItem title='本年计划支付' value={projectData.currentYearScheduledPay}></NormalItem>
+                  <NormalItem title='本年计划支付' value={projectData.currentYearScheduledPay ?? '-'}></NormalItem>
                 </div>
 
               </div>

@@ -33,7 +33,7 @@ const TooltipItem = (props) => {
             查看详情
           </span>
         </Popover>
-        : <span>--</span>
+        : <span style={{ color: '#303133', fontSize: '14px' }}>-</span>
       }
 
 

@@ -102,10 +102,22 @@ export default function OpenValuationModal(props) {
         isFirst: true,
         projectManager,
         projectName,
+        year: filterData.year?.year(),
       });
     setFilterData(p => ({ ...p, projectName }));
+    setSelectedRowIds([]);
+    setSelectedRows([]);
+    setConditions({
+      includesOpened: false,
+      includesClosed: false,
+    });
     return () => {};
   }, [visible]);
+
+  useEffect(() => {
+    console.log('selectedRowIds', selectedRowIds);
+    return () => {};
+  }, [JSON.stringify(selectedRowIds)]);
 
   //获取项目数据
   const getPrjList = ({
@@ -411,10 +423,7 @@ export default function OpenValuationModal(props) {
             if (res?.success) {
               const rows = JSON.parse(res.result || '[]');
               setSelectedRowIds(rows.map(x => x.XMID));
-              console.log(
-                '🚀 ~ file: index.js:395 ~ OpenValuationModal ~ rows.map(x => x.XMID):',
-                rows.map(x => x.XMID),
-              );
+              setSelectedRows(rows);
               setConditions({
                 includesOpened: rows.some(x => x.KQZT === '已开启'),
                 includesClosed: rows.some(x => x.KQZT !== '已开启'),
@@ -441,6 +450,7 @@ export default function OpenValuationModal(props) {
         '🚀 ~ file: index.js:384 ~ OpenValuationModal ~ selectedRow, isSelected:',
         selectedRow,
         isSelected,
+        selectedRows,
       );
       let selectedRowKeys = [];
       let rows = [];
@@ -451,6 +461,7 @@ export default function OpenValuationModal(props) {
           return arr.filter(item => !res.has(item[uniId]) && res.set(item[uniId], 1));
         }
         rows = uniqueFunc([...(selectedRows || []), selectedRow], 'XMID') || [];
+        console.log('🚀 ~ OpenValuationModal ~ rows:', rows);
       } else {
         selectedRowKeys = selectedRowIds.filter(item => {
           return item !== selectedRow.XMID;
@@ -458,9 +469,11 @@ export default function OpenValuationModal(props) {
         rows = selectedRows.filter(item => {
           return item.XMID !== selectedRow.XMID;
         });
+        console.log('🚀 ~ OpenValuationModal ~ rows:', rows);
       }
       setSelectedRowIds(selectedRowKeys);
       setSelectedRows(rows);
+      console.log('🚀 ~ OpenValuationModal ~ rows:', rows);
       setConditions({
         includesOpened: rows.some(x => x.KQZT === '已开启'),
         includesClosed: rows.some(x => x.KQZT !== '已开启'),
@@ -525,6 +538,12 @@ export default function OpenValuationModal(props) {
                           projectManager,
                         });
                         setFilterData(p => ({ ...p, year: undefined }));
+                        setSelectedRowIds([]);
+                        setSelectedRows([]);
+                        setConditions({
+                          includesOpened: false,
+                          includesClosed: false,
+                        });
                       }}
                       onPanelChange={v => {
                         setYearOpen(false);
@@ -534,6 +553,12 @@ export default function OpenValuationModal(props) {
                           projectManager,
                         });
                         setFilterData(p => ({ ...p, year: v }));
+                        setSelectedRowIds([]);
+                        setSelectedRows([]);
+                        setConditions({
+                          includesOpened: false,
+                          includesClosed: false,
+                        });
                       }}
                       onOpenChange={v => setYearOpen(v)}
                       style={{ width: '100%' }}
@@ -728,6 +753,12 @@ export default function OpenValuationModal(props) {
                         projectManager,
                       });
                       setFilterData(p => ({ ...p, year: undefined }));
+                      setSelectedRowIds([]);
+                      setSelectedRows([]);
+                      setConditions({
+                        includesOpened: false,
+                        includesClosed: false,
+                      });
                     }}
                     onPanelChange={v => {
                       setYearOpen(false);
@@ -737,6 +768,12 @@ export default function OpenValuationModal(props) {
                         projectManager,
                       });
                       setFilterData(p => ({ ...p, year: v }));
+                      setSelectedRowIds([]);
+                      setSelectedRows([]);
+                      setConditions({
+                        includesOpened: false,
+                        includesClosed: false,
+                      });
                     }}
                     onOpenChange={v => setYearOpen(v)}
                     style={{ width: '100%' }}
@@ -757,6 +794,7 @@ export default function OpenValuationModal(props) {
                     });
                     setFilterData(p => ({ ...p, openStatus: Number(e.target.value) }));
                     setSelectedRowIds([]);
+                    setSelectedRows([]);
                     setConditions({
                       includesOpened: false,
                       includesClosed: false,

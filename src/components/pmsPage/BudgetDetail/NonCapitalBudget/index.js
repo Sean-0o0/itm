@@ -17,7 +17,6 @@ import { dictionarySearchHandle, tagGenerator } from '../budgetUtils'
 const NonCapitalBudget = (props) => {
 
   const { projectData = {}, dictionary, isLeader, userBasicInfo = {}, } = useContext(BudgetDetailContext)
-
   //是否显示金额
   const isShowMoney = (fzrId) =>  isLeader || String(userBasicInfo.id) === String(fzrId)
 
@@ -42,7 +41,7 @@ const NonCapitalBudget = (props) => {
 
           <div className="TopInfo_LeftBox_projectInfo">
             <div className="TopInfo_LeftBox_projectInfo_Item">
-              <NormalItem title='负责人' value={projectData.responsiblePeople}></NormalItem>
+              <NormalItem title='负责人' value={projectData.responsiblePeople ?? '-' }></NormalItem>
             </div>
 
             {/* <div className="TopInfo_LeftBox_projectInfo_Item">
@@ -51,12 +50,12 @@ const NonCapitalBudget = (props) => {
 
             <div className="TopInfo_LeftBox_projectInfo_Item">
               <NormalItem title='维护费用类别'
-                value={dictionarySearchHandle(dictionary.YSLB, projectData.maintainCostCategory)}
+                value={dictionarySearchHandle(dictionary.YSLB, projectData.maintainCostCategory) ?? '-' }
               ></NormalItem>
             </div>
 
             <div className="TopInfo_LeftBox_projectInfo_Item">
-              <NormalItem title='维护年费' value={projectData.maintenanceAnnualFee + '万元'}></NormalItem>
+              <NormalItem title='维护年费' value={(projectData.maintenanceAnnualFee ?? '-')  + '万元'}></NormalItem>
             </div>
 
             {/* <div className="TopInfo_LeftBox_projectInfo_Item">
@@ -64,7 +63,7 @@ const NonCapitalBudget = (props) => {
             </div> */}
 
             <div className="TopInfo_LeftBox_projectInfo_Item">
-              <NormalItem title='可执行金额' value={projectData.canExecuteMoney + '万元'}></NormalItem>
+              <NormalItem title='可执行金额' value={projectData.canExecuteMoney ?? '-'  + '万元'}></NormalItem>
             </div>
 
           </div>
@@ -75,17 +74,17 @@ const NonCapitalBudget = (props) => {
           <Fragment>
             <div className="TopInfo_MiddleBox">
               <ExecutionProgress
-                partObj={{ '已执行金额': projectData.executedMoney }}
-                remainingObj={{ '可执行金额': projectData.canExecuteMoney }}
-                totalObj={{ '总金额': projectData.totalMoney }}
+                partObj={{ '已执行金额': projectData.executedMoney ?? '-' }}
+                remainingObj={{ '可执行金额': projectData.canExecuteMoney ?? '-'  }}
+                totalObj={{ '总金额': projectData.totalMoney ?? '-'  }}
               ></ExecutionProgress>
             </div>
 
             <div className="TopInfo_RightBox">
               <ExecutionProgress
-                partObj={{ '已立项金额': projectData.approvalMoney }}
-                remainingObj={{ '可立项金额': projectData.canApprovalMoney }}
-                totalObj={{ '总金额': projectData.totalMoney }}
+                partObj={{ '已立项金额': projectData.approvalMoney ?? '-'  }}
+                remainingObj={{ '可立项金额': projectData.canApprovalMoney ?? '-'  }}
+                totalObj={{ '总金额': projectData.totalMoney ?? '-'  }}
               >
               </ExecutionProgress>
             </div>
