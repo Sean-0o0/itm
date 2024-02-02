@@ -405,6 +405,7 @@ export default function OpenValuationModal(props) {
           total: -1,
           projectManager,
           ...filterData,
+          year: filterData.year?.year(),
         })
           .then(res => {
             if (res?.success) {
