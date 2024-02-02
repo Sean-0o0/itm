@@ -659,7 +659,7 @@ class searchModal extends React.Component {
                                 return (
                                   <div className="content">
                                     <img className="icon" src={ysxxIcon} />
-                                    {/* <Link
+                                    <Link
                                       style={{ color: '#3361ff' }}
                                       to={{
                                         pathname: `/pms/manage/BudgetDetail/${EncryptBase64(
@@ -675,8 +675,8 @@ class searchModal extends React.Component {
                                       className="table-link-strong"
                                     >
                                       &nbsp;&nbsp;{ysxx.YSXM}
-                                    </Link> */}
-                                    &nbsp;&nbsp;{ysxx.YSXM}
+                                    </Link>
+                                    {/* &nbsp;&nbsp;{ysxx.YSXM} */}
                                   </div>
                                 );
                               })}
