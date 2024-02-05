@@ -1348,9 +1348,10 @@ export default connect(({ global = {} }) => ({
                 is_XMJL_FXMJL={is_XMJL_FXMJL}
                 getIterationCtn={getIterationCtn}
                 openNewIteContent={openNewIteContent}
+                ysspHide={ysspHide}
               />
             )}
-            {isDDXMFK && (
+            {isDDXMFK && !ysspHide && (
               <IterationPayment
                 prjData={prjData}
                 xmid={xmid}

@@ -5,7 +5,14 @@ import ImgArrowUp from '../../../../assets/projectDetail/icon_arrow_up.png';
 import OprtModal from './OprtModal';
 
 export default function IterationContent(props) {
-  const { prjData = {}, xmid, is_XMJL_FXMJL, getIterationCtn, openNewIteContent = false } = props;
+  const {
+    prjData = {},
+    xmid,
+    is_XMJL_FXMJL,
+    getIterationCtn,
+    openNewIteContent = false,
+    ysspHide = false,
+  } = props;
   const { iterationCtn = [], prjBasic = {} } = prjData;
   const [dataShow, setDataShow] = useState([]); //展示用
   const [isUnfold, setIsUnfold] = useState(false); //是否展开
@@ -133,7 +140,9 @@ export default function IterationContent(props) {
         <div className="item-title">
           <div className="title-left">
             {getDate(date)}
-            {is_XMJL_FXMJL && <i className="iconfont icon-edit" onClick={handleEdit} />}
+            {is_XMJL_FXMJL && !ysspHide && (
+              <i className="iconfont icon-edit" onClick={handleEdit} />
+            )}
           </div>
           <img className="title-right-img" src={ImgArrowUp} alt="arrow-bg" />
         </div>
@@ -164,8 +173,8 @@ export default function IterationContent(props) {
       setDataShow([...iterationCtn.slice(0, getColNum(itemWidth) * 2)]);
     }
   };
-  //当非项目经理且无数据时隐藏
-  if (iterationCtn.length === 0 && !is_XMJL_FXMJL) return null;
+  //当非项目经理且无数据时隐藏、预算审批中隐藏
+  if (iterationCtn.length === 0 && (!is_XMJL_FXMJL || ysspHide)) return null;
   return (
     <div className="iteration-content-box">
       <OprtModal
@@ -176,7 +185,7 @@ export default function IterationContent(props) {
       />
       <div className="top-title">
         项目迭代内容
-        {is_XMJL_FXMJL && (
+        {is_XMJL_FXMJL && !ysspHide && (
           <span
             onClick={() =>
               setModalData({

@@ -29,6 +29,7 @@ import AssociationContract from './AssociationContract';
 import { FetchQueryHardwareTendersAndContract } from '../../../../../services/projectManage';
 import SoftwarePaymentWHT from './SoftwarePaymentWHT';
 import AssociationInitiatedProcess from './AssociationInitiatedProcess';
+import SoftwarePaymentYHT from './SoftwarePaymentYHT';
 
 const { api } = config;
 const { confirm } = Modal;
@@ -103,6 +104,7 @@ class ItemBtn extends React.Component {
     rjfysplcwhtModalVisible: false, //软件费用审批流程-无合同
     isDdhtqslc: false, //是否迭代合同签署流程
     glyfqlcModalVisible: false, //关联已发起流程弹窗
+    rjfysplcyhtModalVisible: false, //软件费用审批流程-有合同
   };
   // timer = null;
 
@@ -1053,12 +1055,16 @@ class ItemBtn extends React.Component {
         },
       ]);
       if (item.sxmc === '软件费用审批流程-有合同') {
-        params = this.getParams('TLC_LCFQ', 'TLC_LCFQ_SUBMIT_RJGMHT', [
-          {
-            name: 'GLXM',
-            value: Number(item.xmid),
-          },
-        ]);
+        // params = this.getParams('TLC_LCFQ', 'TLC_LCFQ_SUBMIT_RJGMHT', [
+        //   {
+        //     name: 'GLXM',
+        //     value: Number(item.xmid),
+        //   },
+        // ]);
+        this.setState({
+          rjfysplcyhtModalVisible: true,
+        });
+        return;
       }
       if (item.sxmc === '软件费用审批流程-无合同') {
         //lb弹窗
@@ -1695,6 +1701,7 @@ class ItemBtn extends React.Component {
       rjfysplcwhtModalVisible,
       isDdhtqslc,
       glyfqlcModalVisible,
+      rjfysplcyhtModalVisible,
     } = this.state;
     const { item, xmmc, xmbh, isHwSltPrj, auth = {} } = this.props;
     // console.log('🚀 ~ file: index.js:1005 ~ ItemBtn ~ render ~ item:', item);
@@ -2067,6 +2074,20 @@ class ItemBtn extends React.Component {
           }}
           funcProps={{
             setVisible: v => this.setState({ rjfysplcwhtModalVisible: v }),
+            onSuccess: v => this.onSuccess(v),
+          }}
+        />
+
+        {/* 软件费用审批流程-有合同 */}
+        <SoftwarePaymentYHT
+          dataProps={{
+            visible: rjfysplcyhtModalVisible,
+            currentXmid: Number(item.xmid),
+            currentXmmc: xmmc,
+            xmbh,
+          }}
+          funcProps={{
+            setVisible: v => this.setState({ rjfysplcyhtModalVisible: v }),
             onSuccess: v => this.onSuccess(v),
           }}
         />

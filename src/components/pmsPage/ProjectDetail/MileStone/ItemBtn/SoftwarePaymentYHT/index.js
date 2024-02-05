@@ -16,6 +16,7 @@ import {
   Tooltip,
   Icon,
   Popconfirm,
+  Checkbox,
 } from 'antd';
 import moment from 'moment';
 import AssociatedFile from '../../../../LifeCycleManagement/AssociatedFile';
@@ -28,7 +29,7 @@ export default connect(({ global }) => ({
   userBasicInfo: global.userBasicInfo,
   dataAnonymization: global.dataAnonymization,
 }))(
-  Form.create()(function SoftwarePaymentWHT(props) {
+  Form.create()(function SoftwarePaymentYHT(props) {
     const {
       dataProps = {},
       funcProps = {},
@@ -39,12 +40,15 @@ export default connect(({ global }) => ({
     const { visible, currentXmid, xmbh, FKJHID } = dataProps;
     const { setVisible, onSuccess } = funcProps;
     const { getFieldDecorator, getFieldValue, validateFields, resetFields } = form;
-    const { CXBM = [] } = dictionary;
+    const { CXBM = [], YZLX = [] } = dictionary;
     const [isSpinning, setIsSpinning] = useState(false); //加载状态
-    const [upldData, setUpldData] = useState([]); //附件信息
+    const [upldData, setUpldData] = useState([]); //附件信息 - 用印
+    const [upldDataFYY, setUpldDataFYY] = useState([]); //附件信息 - 非用印
+    const [isTurnRed, setIsTurnRed] = useState(false); //用印附件报红
     const [isUnfold, setIsUnfold] = useState({
       jbxx: true,
       htxx: true,
+      qsbgnr: true,
       fjxx: true,
       gllc: false,
     }); //是否展开
@@ -85,6 +89,9 @@ export default connect(({ global }) => ({
         { title: '直接送审', value: 1 },
         { title: '发送至OA草稿箱', value: 2 },
       ],
+      fqbmlb: [{ title: '总部部门发起', value: 1 }],
+      sffdht: [{ title: '是', value: 1 }],
+      htmblx: [{ title: '非模板合同', value: 1 }],
     };
 
     useEffect(() => {
@@ -106,9 +113,9 @@ export default connect(({ global }) => ({
     };
 
     //输入框 - 灰
-    const getInputDisabled = (label, value, labelCol, wrapperCol) => {
+    const getInputDisabled = (label, value, labelCol, wrapperCol, colSpan = 12) => {
       return (
-        <Col span={12}>
+        <Col span={colSpan}>
           <Form.Item label={label} labelCol={{ span: labelCol }} wrapperCol={{ span: wrapperCol }}>
             <div
               style={{
@@ -246,6 +253,32 @@ export default connect(({ global }) => ({
       );
     };
 
+    //多选框
+    const getCheckbox = ({
+      label,
+      dataIndex,
+      initialValue,
+      options = [{ label: 'xx', value: 1 }],
+      labelCol,
+      wrapperCol,
+      labelNode,
+      colSpan = 12,
+    }) => {
+      return (
+        <Col span={colSpan}>
+          <Form.Item
+            label={labelNode ? labelNode : label}
+            labelCol={{ span: labelCol }}
+            wrapperCol={{ span: wrapperCol }}
+          >
+            {getFieldDecorator(dataIndex, {
+              initialValue,
+            })(<Checkbox.Group options={options} />)}
+          </Form.Item>
+        </Col>
+      );
+    };
+
     //单选普通下拉框
     const getSingleSelector = ({
       label,
@@ -299,7 +332,13 @@ export default connect(({ global }) => ({
                   message: '请输入请示报告内容',
                 },
               ],
-            })(<RichTextEditor className="w-e-menu w-e-text-container w-e-toolbar" />)}
+            })(
+              <RichTextEditor
+                id="yht"
+                key="yht"
+                className="w-e-menu w-e-text-container w-e-toolbar"
+              />,
+            )}
           </Form.Item>
         </Col>
       );
@@ -472,7 +511,7 @@ export default connect(({ global }) => ({
     const onOk = () => {
       validateFields(async (err, values) => {
         if (!err) {
-          function convertFilesToBase64(fileArray) {
+          function convertFilesToBase64(fileArray, fyy = false) {
             return Promise.all(
               fileArray.map(file => {
                 if (file.url !== undefined)
@@ -482,7 +521,7 @@ export default connect(({ global }) => ({
                       content: file.base64,
                       nrtitle: file.name,
                       nrtype: '1',
-                      filetype: '附件',
+                      filetype: fyy ? '非用印附件' : '用印附件',
                     });
                   });
                 return new Promise((resolve, reject) => {
@@ -495,7 +534,7 @@ export default connect(({ global }) => ({
                       content: base64,
                       nrtitle: fileName,
                       nrtype: '1',
-                      filetype: '附件',
+                      filetype: fyy ? '非用印附件' : '用印附件',
                     });
                   };
 
@@ -515,9 +554,12 @@ export default connect(({ global }) => ({
               busdata: {
                 BGRQ: Number(moment(values.bgrq).format('YYYYMMDD')), // 报告日期
                 QSBGNR: values.qsbgnr, //请示报告内容
-                LB: String(values.fylb), //费用类别
-                // XMLB: String(values.xmlx), //项目类型
-                SFFDHT: '0', //固定0
+                LB: '1', //发起部门类别，固定为1
+                XMLB: String(values.xmlx), //项目类型
+                HTMBLX: '3', //固定3
+                YZLX: values.yzlx?.join(','), //印章类型，多个用逗号隔开
+                FYLB: String(values.fqbmlb), //费用类别
+                SFFDHT: '1', //是否附带合同，固定为1
                 LX: String(values.lx), //类型
                 ...bmValue,
                 NGR1: '', //传空
@@ -527,32 +569,42 @@ export default connect(({ global }) => ({
             //关联文件id，数组形式，多个id用“,”隔开，比如[102,102]
             filerela: gllcData.list?.map(x => x.id) || [],
             issend: Number(values.sfzjss), //是否直接送审
-            je: values.xmysje, //金额
+            je: values.htje, //合同金额
             loginname: userBasicInfo.userid, //登录用户userid
-            title: values.sy, //标题
+            title: values.bt, //标题
             urgent: Number(values.jjcd), //紧急程度id
-            groupno: xmbh,
+            groupno: xmbh, //项目编号
           };
           //附件数据
-          const attachments = await convertFilesToBase64(upldData.map(x => x.originFileObj || x));
+          const yyArr = await convertFilesToBase64(upldData.map(x => x.originFileObj || x));
+          const fyyArr = await convertFilesToBase64(
+            upldDataFYY.map(x => x.originFileObj || x),
+            true,
+          );
+          const attachments = yyArr.concat(fyyArr);
           const flowdata = {
             xmmc: String(currentXmid), //项目的id
             bm: String(userBasicInfo.orgid), //部门id
             fkjhid: FKJHID,
           };
           const params = {
-            objectclass: '软件费用审批无合同流程',
+            objectclass: '软件费用审批有合同流程',
             formdata: JSON.stringify(formdata),
             attachments,
             flowdata: JSON.stringify(flowdata),
           };
-          console.log('🚀 ~ validateFields ~ params:', params);
+          console.log(
+            '🚀 ~ validateFields ~ params, formdata, flowdata: ',
+            params,
+            formdata,
+            flowdata,
+          );
           IndividuationGetOAResult(params)
             .then(result => {
               const { code = -1 } = result;
               if (code > 0) {
                 //刷新数据
-                onSuccess('软件费用审批流程-无合同发起');
+                onSuccess('软件费用审批流程-有合同发起');
                 setVisible(false);
               }
             })
@@ -601,7 +653,7 @@ export default connect(({ global }) => ({
     return (
       <Modal {...modalProps}>
         <div className="body-title-box">
-          <strong>软件费用审批流程-无合同发起</strong>
+          <strong>软件费用审批流程-有合同发起</strong>
         </div>
         <Spin spinning={isSpinning} tip="加载中">
           {gllcData.modalVisible && (
@@ -635,10 +687,10 @@ export default connect(({ global }) => ({
                 <Row>
                   {getInputDisabled('拟稿人', userBasicInfo.name, labelCol, wrapperCol)}
                   {getRadio({
-                    label: '费用类别',
-                    dataIndex: 'fylb',
+                    label: '发起部门类别',
+                    dataIndex: 'fqbmlb',
                     initialValue: 1,
-                    radioArr: constData.fylb,
+                    radioArr: constData.fqbmlb,
                     labelCol: labelCol,
                     wrapperCol: wrapperCol,
                   })}
@@ -678,20 +730,24 @@ export default connect(({ global }) => ({
                   })}
                 </Row>
                 <Row>
-                  {getInputNumber({
-                    label: '项目预算金额(元)',
-                    dataIndex: 'xmysje',
-                    initialValue: undefined,
+                  {getRadio({
+                    label: '费用类别',
+                    dataIndex: 'fylb',
+                    initialValue: 1,
+                    radioArr: constData.fylb,
                     labelCol: labelCol,
                     wrapperCol: wrapperCol,
-                    rules: [
-                      {
-                        required: true,
-                        message: '项目预算金额不允许空值',
-                      },
-                    ],
-                    max: 999999999,
                   })}
+                  {getRadio({
+                    label: '是否附带合同',
+                    dataIndex: 'sffdht',
+                    initialValue: 1,
+                    radioArr: constData.sffdht,
+                    labelCol: labelCol,
+                    wrapperCol: wrapperCol,
+                  })}
+                </Row>
+                <Row>
                   {getRadio({
                     label: '类型',
                     dataIndex: 'lx',
@@ -700,8 +756,6 @@ export default connect(({ global }) => ({
                     labelCol: labelCol,
                     wrapperCol: wrapperCol,
                   })}
-                </Row>
-                <Row>
                   {getRadio({
                     label: '是否直接送审',
                     dataIndex: 'sfzjss',
@@ -711,26 +765,82 @@ export default connect(({ global }) => ({
                     wrapperCol: wrapperCol,
                   })}
                 </Row>
-                <Row>{getInput('事由', 'sy', undefined, labelCol / 2, 24 - labelCol / 2)}</Row>
               </Fragment>
             )}
             {getTitle('合同信息', isUnfold.htxx, 'htxx')}
-            {isUnfold.htxx && <Row>{getRichTextArea()}</Row>}
+            {isUnfold.htxx && (
+              <Fragment>
+                <Row>
+                  {getRadio({
+                    label: '合同模板类型',
+                    dataIndex: 'htmblx',
+                    initialValue: 1,
+                    radioArr: constData.htmblx,
+                    labelCol: labelCol,
+                    wrapperCol: wrapperCol,
+                  })}
+                  {getInputNumber({
+                    label: '合同金额(元)',
+                    dataIndex: 'htje',
+                    initialValue: undefined,
+                    labelCol: labelCol,
+                    wrapperCol: wrapperCol,
+                    rules: [
+                      {
+                        required: true,
+                        message: '合同金额不允许空值',
+                      },
+                    ],
+                    max: 999999999,
+                  })}
+                </Row>
+                {getCheckbox({
+                  label: '印章类型',
+                  dataIndex: 'yzlx',
+                  options: YZLX.map(x => ({ label: x.note, value: x.ibm })),
+                  colSpan: 24,
+                  labelCol: labelCol / 2,
+                  wrapperCol: 24 - labelCol / 2,
+                })}
+              </Fragment>
+            )}
+            {getTitle('请示报告内容', isUnfold.qsbgnr, 'qsbgnr')}
+            {isUnfold.qsbgnr && (
+              <Fragment>
+                <Row>{getInput('标题', 'bt', undefined, labelCol / 2, 24 - labelCol / 2)}</Row>
+                {getInputDisabled(
+                  '内容填写说明',
+                  '请将正文要素填写完整，例如: 报送单位、付款金额、申报缘由等',
+                  labelCol / 2,
+                  24 - labelCol / 2,
+                  24,
+                )}
+                <Row>{getRichTextArea()}</Row>
+              </Fragment>
+            )}
             {getTitle('附件信息', isUnfold.fjxx, 'fjxx')}
             {isUnfold.fjxx && (
               <Row>
                 {getMultipleUpload({
-                  label: '附件',
+                  label: '用印附件',
                   labelCol: labelCol,
                   wrapperCol: wrapperCol,
                   fileList: upldData,
                   setFileList: setUpldData,
+                  isTurnRed,
+                  setIsTurnRed,
+                })}
+                {getMultipleUpload({
+                  label: '非用印附件',
+                  labelCol: labelCol,
+                  wrapperCol: wrapperCol,
+                  fileList: upldDataFYY,
+                  setFileList: setUpldDataFYY,
                   isTurnRed: undefined,
                   setIsTurnRed: () => {},
                 })}
               </Row>
             )}
-
             {getGllc()}
           </Form>
         </Spin>
