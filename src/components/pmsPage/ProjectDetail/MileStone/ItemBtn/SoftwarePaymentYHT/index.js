@@ -41,6 +41,7 @@ export default connect(({ global }) => ({
     const { setVisible, onSuccess } = funcProps;
     const { getFieldDecorator, getFieldValue, validateFields, resetFields } = form;
     const { CXBM = [], YZLX = [] } = dictionary;
+    console.log('🚀 ~ SoftwarePaymentYHT ~ CXBM:', CXBM);
     const [isSpinning, setIsSpinning] = useState(false); //加载状态
     const [upldData, setUpldData] = useState([]); //附件信息 - 用印
     const [upldDataFYY, setUpldDataFYY] = useState([]); //附件信息 - 非用印
@@ -678,7 +679,7 @@ export default connect(({ global }) => ({
                         initialValue: undefined,
                         labelCol: labelCol,
                         wrapperCol: wrapperCol,
-                        sltArr: CXBM,
+                        sltArr: CXBM?.map(x => ({ title: x.note, value: x.ibm })) || [],
                         onChange: handleBmChange,
                       })
                     : getInputDisabled('部门', userBasicInfo.orgname, labelCol, wrapperCol)}

@@ -626,7 +626,7 @@ export default connect(({ global }) => ({
                         initialValue: undefined,
                         labelCol: labelCol,
                         wrapperCol: wrapperCol,
-                        sltArr: CXBM,
+                        sltArr: CXBM?.map(x => ({ title: x.note, value: x.ibm })) || [],
                         onChange: handleBmChange,
                       })
                     : getInputDisabled('部门', userBasicInfo.orgname, labelCol, wrapperCol)}
