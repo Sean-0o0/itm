@@ -28,6 +28,7 @@ class ToConsole extends Component {
         zbxm = '-', //专班项目
       },
       dataAnonymization,
+      role = '',
     } = this.props;
     // console.log('routesroutes-ccc-staf', routes);
     return (
@@ -56,7 +57,10 @@ class ToConsole extends Component {
               <div className="staff-info-cont flex-c">
                 <div className="staff-line-import">
                   <span className="staff-name">{rymc}</span>
-                  <span className="staff-experience">&nbsp;已加入{dataAnonymization ? '****' : '浙商证券'}{jrts}天</span>
+                  <span className="staff-experience">
+                    &nbsp;已加入{dataAnonymization ? '****' : '浙商证券'}
+                    {jrts}天
+                  </span>
                 </div>
                 <div className="staff-line flex1 flex-r">
                   <span className="staff-label">部门：</span>
@@ -92,7 +96,13 @@ class ToConsole extends Component {
               <div className="statistics-block">
                 <div className="statistics-label">
                   <img src={cyImg} className="statistics-img" />
-                  <div className="statistics-text">参与项目</div>
+                  <div className="statistics-text">
+                    {role.includes('一级部门领导') ||
+                    role.includes('二级部门领导') ||
+                    role.includes('信息技术事业部领导')
+                      ? '管理项目'
+                      : '参与项目'}
+                  </div>
                 </div>
                 <div className="statistics-value">{cyxm}</div>
               </div>

@@ -174,6 +174,7 @@ class StaffDetailComponent extends Component {
       attachList = [],
       pageParams = {},
       curTab = 'projectSituation',
+      role = '',
     } = this.state
     const { routes, ryid, userBasicInfo } = this.props
 
@@ -195,6 +196,7 @@ class StaffDetailComponent extends Component {
             xb,//性别
             zbxm,//专班项目
           }}
+          role={role}
         />
 
         <div className='StaffDetailTabs'>

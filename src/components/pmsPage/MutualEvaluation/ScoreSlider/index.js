@@ -115,6 +115,7 @@ const ScoreSlider = props => {
     setTooltip({ visible: false, num: null, current: -1 });
     e.target.removeEventListener('mousemove', handleMouseMove);
     setIsSelecting(false);
+    setIsGradeShow(true)
   }, []);
 
   // 归零
