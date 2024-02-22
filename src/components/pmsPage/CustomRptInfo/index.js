@@ -112,6 +112,43 @@ export default function CustomRptInfo(props) {
     return treeData;
   }
 
+  //获取组合条件树形数据
+  const getConditionGroupTreeData = (arr = []) => {
+    let treeData = buildTree(arr);
+    // 递归遍历树，处理没有子节点的元素
+    const traverse = node => {
+      if (node.children && node.children.length > 0) {
+        node.children.forEach(child => {
+          traverse(child);
+        });
+        // node.selectable = false;
+      } else {
+        if (node.GRADE < 3 && node.ID !== 19 && node.FID !== 28) {
+          // node.selectable = true;
+        }
+      }
+    };
+    // 处理没有子节点的元素
+    treeData.forEach(node => {
+      traverse(node);
+    });
+    // 加handledTitle，用于显示区分
+    function handleTreeData(data, parentTitle) {
+      return data.map(node => {
+        const handledTitle = parentTitle ? `${parentTitle}-${node.NAME}` : node.NAME;
+        const children = node.children ? handleTreeData(node.children, node.NAME) : null;
+        return {
+          ...node,
+          handledTitle,
+          children,
+        };
+      });
+    }
+    treeData = handleTreeData(treeData, '');
+    // console.log('🚀 ~ getConditionGroupTreeData ~ treeData:', treeData);
+    return treeData;
+  };
+
   //获取数据
   const getData = () => {
     s = performance.now();
@@ -146,7 +183,7 @@ export default function CustomRptInfo(props) {
   };
 
   //下拉框数据
-  const getSelectorData = obj => {
+  const getSelectorData = async obj => {
     const columns = JSON.parse(obj.QDZSBTZD)?.map(x => {
       return {
         ...x,
@@ -160,8 +197,10 @@ export default function CustomRptInfo(props) {
     });
     let filterData = JSON.parse(obj.QDZSSXZD);
     filterData.forEach(async x => {
-      //TJBCXLX用于查询下拉框数据入参
-      if (x.TJBCXLX) {
+      if (x.ZJLX === 'ZHTJ') {
+        //组合条件特殊处理
+      } else if (x.TJBCXLX) {
+        //TJBCXLX用于查询下拉框数据入参
         try {
           const res = await QueryCustomQueryCriteria({
             queryType: x.TJBCXLX,
@@ -201,11 +240,11 @@ export default function CustomRptInfo(props) {
       authIds: obj.KJR?.split(';'),
       columns,
       filterData,
-      groupData: [], //不要了
+      groupData: [],
       origin: {
         columns: JSON.parse(obj.QDZSBTZD),
-        filterData: JSON.parse(obj.QDZSSXZD),
-        groupData: [], //不要了
+        filterData,
+        groupData: [],
       },
     };
     setData(finalObj);
@@ -220,21 +259,40 @@ export default function CustomRptInfo(props) {
   };
 
   //表格数据 - 查询按钮
-  const getSQL = (tableParams = {}, data, year = moment().year()) => {
+  const getSQL = async (tableParams = {}, data, year = moment().year()) => {
     setIsSpinning(true);
     const {
       origin = {
         columns: [],
       },
       filterData = [],
-      groupData = [],
     } = data;
     const zszdArr = origin.columns.map(x => ({ ID: x.ID, ZSZD: x.ZSZD }));
     let bmArr = ['TXMXX_XMXX XM'];
     let sxtjArr = [];
     let columnFieldsArr = [...origin.columns];
-    let conditionFilterArr = JSON.parse(JSON.stringify(filterData));
-    let conditionGroupArr = [...groupData];
+    let conditionFilterArr = filterData.filter(x => x.ZJLX !== 'ZHTJ');
+    //组合条件特殊处理
+    let conditionGroupObj = filterData.find(x => x.ZJLX === 'ZHTJ') || {};
+    let conditionGroupArr = [];
+    if (JSON.stringify(conditionGroupObj) !== '{}') {
+      //组合条件特殊处理
+      const res = await QueryCustomQueryCriteria({
+        queryType: 'ZHTJ',
+      });
+      if (res?.success) {
+        filterData.forEach(x => {
+          if (x.ZJLX === 'ZHTJ') {
+            x.SELECTORDATA = getConditionGroupTreeData(JSON.parse(res.result));
+            x.SELECTDATAORIGIN = JSON.parse(res.result);
+          }
+        });
+        setData({ ...data, filterData });
+        conditionGroupArr = JSON.parse(res.result)?.filter(x =>
+          conditionGroupObj.SELECTORVALUE?.includes(x.ID),
+        );
+      }
+    }
     columnFieldsArr.forEach(x => {
       bmArr.push(x.BM);
     });
@@ -331,13 +389,14 @@ export default function CustomRptInfo(props) {
       delete x.SELECTORDATA;
     });
     conditionGroupArr.forEach(x => {
-      bmArr.push(x[x.length - 1].BM);
+      bmArr.push(x.BM);
       sxtjArr.push({
         SXLX: 'ZHTJ',
-        SXTJ: x[x.length - 1].SXTJ,
+        SXTJ: x.SXTJ,
         SXSJ: [],
       });
     });
+
     bmArr = [...new Set(bmArr)]; //去重
 
     let params = {

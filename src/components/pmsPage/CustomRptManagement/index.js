@@ -105,10 +105,16 @@ export default function CustomRptManagement(props) {
         QueryCustomQueryCriteria({
           queryType: 'ZSZD',
         }),
+        QueryCustomQueryCriteria({
+          queryType: 'ZHTJ',
+        }),
       ];
-      const [conditionFilterRes, columnFieldsRes] = await Promise.all(promiseArr);
-      if (conditionFilterRes?.success && columnFieldsRes?.success) {
+      const [conditionFilterRes, columnFieldsRes, conditionGroupRes] = await Promise.all(
+        promiseArr,
+      );
+      if (conditionFilterRes?.success && columnFieldsRes?.success && conditionGroupRes.success) {
         let conditionFilterData = JSON.parse(conditionFilterRes.result);
+        let conditionGroupData = JSON.parse(conditionGroupRes.result);
         let columnFieldsArr = JSON.parse(columnFieldsRes.result);
         columnFieldsArr.forEach(x => {
           if (x.ID === 8) {
@@ -118,7 +124,7 @@ export default function CustomRptManagement(props) {
         const columnFieldsData = buildTree(columnFieldsArr, 'title', 'key');
         setBasicData({
           conditionFilter: conditionFilterData,
-          conditionGroup: [],
+          conditionGroup: conditionGroupData,
           columnFields: columnFieldsData,
         });
         //新增时 - 筛选条件和展示字段默认项目名称, ID为8
@@ -211,7 +217,7 @@ export default function CustomRptManagement(props) {
           let filterData = JSON.parse(obj.QDZSSXZD || '[]');
           const promiseArr = filterData.map(x =>
             QueryCustomQueryCriteria({
-              queryType: x.TJBCXLX,
+              queryType: x.TJBCXLX || x.ZJLX,
               year: obj.NF !== undefined ? Number(obj.NF) : moment().year(),
             }),
           );
@@ -231,6 +237,8 @@ export default function CustomRptManagement(props) {
                 };
               } else if (filterData[index].ZJLX === 'TREE-MULTIPLE') {
                 filterData[index].SELECTORDATA = buildTree(JSON.parse(res.result));
+              } else if (filterData[index].ZJLX === 'ZHTJ') {
+                filterData[index].SELECTORDATA = getConditionGroupTreeData(JSON.parse(res.result));
               } else {
                 filterData[index].SELECTORDATA = JSON.parse(res.result);
               }
@@ -342,6 +350,43 @@ export default function CustomRptManagement(props) {
 
     return treeData;
   }
+
+  //获取组合条件树形数据
+  const getConditionGroupTreeData = (arr = []) => {
+    let treeData = buildTree(arr);
+    // 递归遍历树，处理没有子节点的元素
+    const traverse = node => {
+      if (node.children && node.children.length > 0) {
+        node.children.forEach(child => {
+          traverse(child);
+        });
+        // node.selectable = false;
+      } else {
+        if (node.GRADE < 3 && node.ID !== 19 && node.FID !== 28) {
+          // node.selectable = true;
+        }
+      }
+    };
+    // 处理没有子节点的元素
+    treeData.forEach(node => {
+      traverse(node);
+    });
+    // 加handledTitle，用于显示区分
+    function handleTreeData(data, parentTitle) {
+      return data.map(node => {
+        const handledTitle = parentTitle ? `${parentTitle}-${node.NAME}` : node.NAME;
+        const children = node.children ? handleTreeData(node.children, node.NAME) : null;
+        return {
+          ...node,
+          handledTitle,
+          children,
+        };
+      });
+    }
+    treeData = handleTreeData(treeData, '');
+    // console.log('🚀 ~ getConditionGroupTreeData ~ treeData:', treeData);
+    return treeData;
+  };
 
   //数据还原
   const hangleDataRestore = () => {

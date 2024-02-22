@@ -259,7 +259,7 @@ export default function InfoTable(props) {
               }
             });
             setTableColumns(arr);
-            console.log('🚀 ~ file: index.js:246 ~ useEffect ~ arr:', arr);
+            // console.log('🚀 ~ file: index.js:246 ~ useEffect ~ arr:', arr);
           }
         })
         .catch(e => {});

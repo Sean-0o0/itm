@@ -297,6 +297,8 @@ export default connect(({ global }) => ({
           message.error(obj.TJBCXLX + '信息获取失败', 1);
           setIsSpinning(false);
         });
+    } else if (obj.ZJLX === 'ZHTJ') {
+      obj.sltOpen = false; //树下拉框展开收起
     }
     setSelectedData(p => ({
       ...p,
@@ -383,8 +385,7 @@ export default connect(({ global }) => ({
 
   //获取组合、筛选条件树形数据
   const getConditionGroupTreeData = () => {
-    let idArr = selectedData.conditionGroup.map(x => x[x?.length - 1].ID);
-    let arr = basicData.conditionGroup.filter(x => !idArr.includes(x.ID));
+    let arr = basicData.conditionGroup;
     let treeData = buildTree(arr);
     // 递归遍历树，处理没有子节点的元素
     const traverse = node => {
@@ -392,10 +393,10 @@ export default connect(({ global }) => ({
         node.children.forEach(child => {
           traverse(child);
         });
-        node.disabled = false;
+        // node.selectable = false;
       } else {
         if (node.GRADE < 3 && node.ID !== 19 && node.FID !== 28) {
-          node.disabled = true;
+          // node.selectable = true;
         }
       }
     };
@@ -403,6 +404,20 @@ export default connect(({ global }) => ({
     treeData.forEach(node => {
       traverse(node);
     });
+    // 加handledTitle，用于显示区分
+    function handleTreeData(data, parentTitle) {
+      return data.map(node => {
+        const handledTitle = parentTitle ? `${parentTitle}-${node.NAME}` : node.NAME;
+        const children = node.children ? handleTreeData(node.children, node.NAME) : null;
+        return {
+          ...node,
+          handledTitle,
+          children,
+        };
+      });
+    }
+    treeData = handleTreeData(treeData, '');
+    console.log('🚀 ~ getConditionGroupTreeData ~ treeData:', treeData);
     return treeData;
   };
   const getConditionFilterTreeData = () => {
@@ -426,6 +441,25 @@ export default connect(({ global }) => ({
     treeData.forEach(node => {
       traverse(node);
     });
+    if (!idArr.includes('ZHTJ'))
+      treeData.push({
+        ID: 'ZHTJ',
+        FID: 6,
+        GRADE: 1,
+        FDNCODE: '0.6.ZHTJ',
+        NAME: '组合条件',
+        BM: '',
+        ZSZD: '',
+        SXTJ: '',
+        ZJLX: 'ZHTJ',
+        QDQZZD: 'ZHTJ',
+        value: 'ZHTJ',
+        label: '组合条件',
+        fid: 6,
+        disabled: false,
+        SELECTORDATA: getConditionGroupTreeData(),
+        SELECTORVALUE: [],
+      });
     return treeData;
   };
 
@@ -749,13 +783,24 @@ export default connect(({ global }) => ({
       if (rptName === '未命名报表') {
         message.error('请修改默认报表名称', 1);
       } else {
-        setIsSpinning(true);
+        // setIsSpinning(true);
         const zszdArr = selectedData.columnFields.map(x => ({ ID: x.ID, ZSZD: x.ZSZD }));
         let bmArr = ['TXMXX_XMXX XM'];
         let sxtjArr = [];
         let columnFieldsArr = [...selectedData.columnFields];
-        let conditionFilterArr = JSON.parse(JSON.stringify(selectedData.conditionFilter));
-        let conditionGroupArr = [...selectedData.conditionGroup];
+        let conditionFilterArr = JSON.parse(JSON.stringify(selectedData.conditionFilter)).filter(
+          x => x.ZJLX !== 'ZHTJ',
+        );
+        //组合条件特殊处理
+        let conditionGroupObj =
+          JSON.parse(JSON.stringify(selectedData.conditionFilter)).find(x => x.ZJLX === 'ZHTJ') ||
+          {};
+        if (conditionGroupObj.SELECTORDATA !== undefined) {
+          delete conditionGroupObj.SELECTORDATA;
+        }
+        let conditionGroupArr = basicData.conditionGroup?.filter(x =>
+          conditionGroupObj.SELECTORVALUE?.includes(x.ID),
+        );
         columnFieldsArr.forEach(x => {
           bmArr.push(x.BM);
         });
@@ -852,10 +897,10 @@ export default connect(({ global }) => ({
           delete x.SELECTORDATA;
         });
         conditionGroupArr.forEach(x => {
-          bmArr.push(x[x.length - 1].BM);
+          bmArr.push(x.BM);
           sxtjArr.push({
             SXLX: 'ZHTJ',
-            SXTJ: x[x.length - 1].SXTJ,
+            SXTJ: x.SXTJ,
             SXSJ: [],
           });
         });
@@ -865,8 +910,11 @@ export default connect(({ global }) => ({
           sxtj: sxtjArr,
           cxb: bmArr,
           cxzd: zszdArr,
-          qdzssxzd: conditionFilterArr,
-          qdzszhzd: conditionGroupArr,
+          qdzssxzd:
+            JSON.stringify(conditionGroupObj) === '{}'
+              ? conditionFilterArr
+              : columnFieldsArr.concat(conditionGroupObj),
+          qdzszhzd: [],
           qdzsbtzd: columnFieldsArr,
           czlx: status === 'adding' ? 'ADD' : 'UPDATE',
           bbid: status === 'adding' ? -1 : activeBbData.bbid,
@@ -996,6 +1044,9 @@ export default connect(({ global }) => ({
               yearData={yearData}
               setYearData={setYearData}
               handleYearChange={handleYearChange}
+              setGroupData={v => {
+                setSelectedData(p => ({ ...p, conditionGroup: v }));
+              }}
             />
           </div>
           {/* <div className="group-condition">

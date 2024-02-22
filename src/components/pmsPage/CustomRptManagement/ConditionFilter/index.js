@@ -53,8 +53,9 @@ export default function ConditionFilter(props) {
             handleYearChange(v?.year());
           }}
           onOpenChange={v => setYearData(p => ({ ...p, open: v }))}
-          style={{ width: '100%' }}
+          className="item-component"
         />
+        <div style={{ width: 17, marginLeft: 8 }}></div>
       </div>
     );
   };
@@ -112,7 +113,7 @@ export default function ConditionFilter(props) {
     };
 
     const handleMultipleSltChange = (v, node) => {
-      console.log('🚀 ~ handleMultipleSltChange ~ v, node:', v, node);
+      // console.log('🚀 ~ handleMultipleSltChange ~ v, node:', v, node);
       modifyData(v);
     };
 
@@ -142,7 +143,7 @@ export default function ConditionFilter(props) {
       });
     };
     const handleYSXMChange = v => {
-      console.log('🚀 ~ file: index.js:125 ~ handleYSXMChange ~ v:', v);
+      // console.log('🚀 ~ file: index.js:125 ~ handleYSXMChange ~ v:', v);
       modifyData({
         type: SELECTORVALUE?.type,
         typeObj: SELECTORVALUE?.typeObj,
@@ -390,6 +391,39 @@ export default function ConditionFilter(props) {
               <Radio value={true}>正常</Radio>
               <Radio value={false}>逾期</Radio>
             </Radio.Group>
+          );
+          break;
+
+        case 'ZHTJ':
+          component = (
+            <Fragment>
+              <TreeSelect
+                allowClear
+                className="item-component"
+                showSearch
+                treeCheckable
+                maxTagCount={1}
+                maxTagPlaceholder={extraArr => {
+                  return `+${extraArr.length + maxTagCount}`;
+                }}
+                showCheckedStrategy={TreeSelect.SHOW_CHILD}
+                treeNodeFilterProp="title"
+                treeNodeLabelProp="handledTitle"
+                dropdownClassName="newproject-treeselect"
+                dropdownStyle={{ maxHeight: 300, overflow: 'auto' }}
+                treeData={SELECTORDATA}
+                value={SELECTORVALUE}
+                placeholder="请选择"
+                onChange={handleMultipleSltChange}
+                treeDefaultExpandedKeys={treeDefaultExpandedKeys}
+                open={sltOpen}
+                onDropdownVisibleChange={v => modifySltOpen(v)}
+              />
+              <Icon
+                type="down"
+                className={'label-selector-arrow' + (sltOpen ? ' selector-rotate' : '')}
+              />
+            </Fragment>
           );
           break;
         case 'SINGLE':

@@ -401,6 +401,39 @@ export default function TopConsole(props) {
             </Radio.Group>
           );
           break;
+
+        case 'ZHTJ':
+          component = (
+            <Fragment>
+              <TreeSelect
+                allowClear
+                className="item-component"
+                showSearch
+                treeCheckable
+                maxTagCount={maxTagCount}
+                maxTagPlaceholder={extraArr => {
+                  return `+${extraArr.length + maxTagCount}`;
+                }}
+                showCheckedStrategy={TreeSelect.SHOW_CHILD}
+                treeNodeFilterProp="title"
+                treeNodeLabelProp="handledTitle"
+                dropdownClassName="newproject-treeselect"
+                dropdownStyle={{ maxHeight: 300, overflow: 'auto' }}
+                treeData={SELECTORDATA}
+                value={SELECTORVALUE}
+                placeholder="请选择"
+                onChange={handleMultipleSltChange}
+                open={sltOpen}
+                onDropdownVisibleChange={v => modifySltOpen(v)}
+                treeDefaultExpandedKeys={['51', '76']}
+              />
+              <Icon
+                type="down"
+                className={'label-selector-arrow' + (sltOpen ? ' selector-rotate' : '')}
+              />
+            </Fragment>
+          );
+          break;
         case 'SINGLE':
         case 'TREE-SINGLE':
         default:
