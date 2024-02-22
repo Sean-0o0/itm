@@ -317,15 +317,15 @@ function VisitedRoutes(props) {
                 urlEnd: 'AwardHonor',
               },
               {
-                title: '合同列表',
+                title: '信创合同信息列表',
                 urlEnd: 'InnovationContract',
               },
               {
-                title: '合同信息编辑',
+                title: '信创合同信息编辑',
                 urlEnd: 'InnovationContractEdit',
               },
               {
-                title: '合同信息查看',
+                title: '信创合同信息查看',
                 urlEnd: 'InnovationContractView',
               },
               {
