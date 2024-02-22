@@ -11,7 +11,7 @@ import { QueryProjectListPara, QueryProjectListInfo } from '../../../../services
 import TreeUtils from '../../../../utils/treeUtils';
 import moment from 'moment';
 import { setParentSelectableFalse } from '../../../../utils/pmsPublicUtils';
-import * as Lodash from 'lodash'
+import * as Lodash from 'lodash';
 
 const { Option } = Select;
 
@@ -29,7 +29,7 @@ export default forwardRef(function TopConsole(props, ref) {
   //查询的值
   const [budget, setBudget] = useState(undefined); //关联预算
   const [budgetValue, setBudgetValue] = useState(undefined); //关联预算-为了重置
-  const [budgetType, setBudgetType] = useState('1'); //关联预算类型id
+  const [budgetType, setBudgetType] = useState(undefined); //关联预算类型id
   const [label, setLabel] = useState([]); //项目标签
   const [prjName, setPrjName] = useState(undefined); //项目名称
   // const [prjMnger, setPrjMnger] = useState(undefined); //项目经理
@@ -57,55 +57,27 @@ export default forwardRef(function TopConsole(props, ref) {
     setTotal,
     setCurPage,
     setCurPageSize,
-    curPage,
     curPageSize,
-    queryType,
     setQueryType,
-    prjMnger,
-    setPrjMnger,
-    // year,
-    // setYear,
-    // defaultYearRef
     dateRange,
     setDateRange,
-    defaultDateRangeRef,
+    setFilterData,
+    setSortInfo,
+    prjMnger,
+    setPrjMnger,
   } = props;
 
   useEffect(() => {
     getFilterData();
-    return () => { };
+    return () => {};
   }, [projectManager]);
 
-  useImperativeHandle(
-    ref,
-    () => {
-      return {
-        handleSearch,
-        handleReset,
-      };
-    },
-    //筛选栏的每个组件的值都得转发到父组件，否则切换分页的时候状态丢失 -- 目前有问题
-    [
-      budget,
-      budgetValue,
-      budgetType,
-      label,
-      prjName,
-      prjMnger,
-      org,
-      prjType,
-      gtAmount,
-      ltAmount,
-      minAmount,
-      maxAmount,
-      filterTime,
-      // dateRange,
-      // undertakingDepartmentObj,
-      // year,
-      JSON.stringify(dateRange),
-      JSON.stringify(undertakingDepartmentObj.data),
-    ],
-  );
+  useImperativeHandle(ref, () => {
+    return {
+      handleSearch,
+      handleReset,
+    };
+  });
 
   //转为树结构-关联项目
   const toItemTree = (list, parId) => {
@@ -212,56 +184,55 @@ export default forwardRef(function TopConsole(props, ref) {
   };
 
   //顶部下拉框查询数据
-  const getFilterData = () => {
-    QueryProjectListPara({
-      current: 1,
-      czr: 0,
-      pageSize: 10,
-      paging: 1,
-      sort: 'string',
-      total: -1,
-      cxlx: 'XMLB',
-    })
-      .then(res => {
-        if (res?.success) {
-          setBudgetData(p => [...toItemTree(JSON.parse(res.budgetProjectRecord))]);
-          let labelTree = TreeUtils.toTreeData(JSON.parse(res.labelRecord), {
-            keyName: 'ID',
-            pKeyName: 'FID',
-            titleName: 'BQMC',
-            normalizeTitleName: 'title',
-            normalizeKeyName: 'value',
-          })[0].children[0];
-          setLabelData(p => [...[labelTree]]);
-          let orgTree = TreeUtils.toTreeData(JSON.parse(res.orgRecord), {
-            keyName: 'ID',
-            pKeyName: 'FID',
-            titleName: 'NAME',
-            normalizeTitleName: 'title',
-            normalizeKeyName: 'value',
-          })[0].children[0];
-          setOrgData(p => [...[orgTree]]);
-          setPrjMngerData(p => [...JSON.parse(res.projectManagerRecord)]);
-          // if (projectManager) {
-          //   setPrjMnger(String(projectManager));
-          // }
-          setPrjNameData(p => [...JSON.parse(res.projectRecord)]);
-          let xmlx = TreeUtils.toTreeData(JSON.parse(res.projectTypeRecord), {
-            keyName: 'ID',
-            pKeyName: 'FID',
-            titleName: 'NAME',
-            normalizeTitleName: 'title',
-            normalizeKeyName: 'value',
-          })[0].children[0];
-          xmlx.selectable = false;
-          xmlx.children?.forEach(node => setParentSelectableFalse(node));
-          setPrjTypeData(p => [...[xmlx]]);
-        }
-      })
-      .catch(e => {
-        console.error('QueryProjectListPara', e);
-        message.error('下拉框信息查询失败', 1);
+  const getFilterData = async () => {
+    try {
+      const res = await QueryProjectListPara({
+        current: 1,
+        czr: 0,
+        pageSize: 10,
+        paging: 1,
+        sort: 'string',
+        total: -1,
+        cxlx: 'XMLB',
       });
+      if (res?.success) {
+        setBudgetData(p => [...toItemTree(JSON.parse(res.budgetProjectRecord))]);
+        let labelTree = TreeUtils.toTreeData(JSON.parse(res.labelRecord), {
+          keyName: 'ID',
+          pKeyName: 'FID',
+          titleName: 'BQMC',
+          normalizeTitleName: 'title',
+          normalizeKeyName: 'value',
+        })[0].children[0];
+        setLabelData(p => [...[labelTree]]);
+        let orgTree = TreeUtils.toTreeData(JSON.parse(res.orgRecord), {
+          keyName: 'ID',
+          pKeyName: 'FID',
+          titleName: 'NAME',
+          normalizeTitleName: 'title',
+          normalizeKeyName: 'value',
+        })[0].children[0];
+        setOrgData(p => [...[orgTree]]);
+        setPrjMngerData(p => [...JSON.parse(res.projectManagerRecord)]);
+        // if (projectManager) {
+        //   setPrjMnger(String(projectManager));
+        // }
+        setPrjNameData(p => [...JSON.parse(res.projectRecord)]);
+        let xmlx = TreeUtils.toTreeData(JSON.parse(res.projectTypeRecord), {
+          keyName: 'ID',
+          pKeyName: 'FID',
+          titleName: 'NAME',
+          normalizeTitleName: 'title',
+          normalizeKeyName: 'value',
+        })[0].children[0];
+        xmlx.selectable = false;
+        xmlx.children?.forEach(node => setParentSelectableFalse(node));
+        setPrjTypeData(p => [...[xmlx]]);
+      }
+    } catch (e) {
+      console.error('QueryProjectListPara', e);
+      message.error('下拉框信息查询失败', 1);
+    }
   };
 
   //查询按钮
@@ -271,6 +242,16 @@ export default forwardRef(function TopConsole(props, ref) {
     prjMnger = undefined,
     queryType = 'ALL',
     sort = 'XMNF DESC,ID DESC',
+    budget,
+    budgetType,
+    label,
+    prjName,
+    org,
+    prjType,
+    gtAmount,
+    ltAmount,
+    minAmount,
+    maxAmount,
   }) => {
     setTableLoading(true);
     setCurPage(current);
@@ -286,7 +267,7 @@ export default forwardRef(function TopConsole(props, ref) {
       queryType,
       // year: moment.isMoment(year) ? new Date(year.valueOf()).getFullYear() : '', //年
     };
-    if (dateRange.length !== 0) {
+    if (dateRange?.length > 0) {
       params.startTime = moment(dateRange[0]).format('YYYYMMDD'); //日期区间
       params.endTime = moment(dateRange[1]).format('YYYYMMDD');
     }
@@ -332,13 +313,13 @@ export default forwardRef(function TopConsole(props, ref) {
     // if (org !== undefined && org !== '') {
     //   params.orgId = Number(org);
     // }
-    if (org.length !== 0) {
+    if (org?.length > 0) {
       params.orgId = org.map(x => x.value).join(';|;'); //应用部门
     }
     if (!Lodash.isEmpty(undertakingDepartmentObj.data)) {
       params.undertakingDepartment = Number(undertakingDepartmentObj.data); //承接部门
     }
-    if (label.length !== 0) {
+    if (label?.length > 0) {
       params.projectLabel = label.join(';|;');
     }
     if (prjType !== undefined && prjType !== '') {
@@ -451,9 +432,6 @@ export default forwardRef(function TopConsole(props, ref) {
   };
   // onChange-end
 
-
-
-
   return (
     <div className="top-console">
       {/* 第一行 */}
@@ -551,14 +529,42 @@ export default forwardRef(function TopConsole(props, ref) {
         <Button
           className="btn-search"
           type="primary"
-          onClick={() =>
+          onClick={() => {
+            setSortInfo({
+              sort: undefined,
+              columnKey: '',
+            });
+            setFilterData({
+              budget,
+              budgetType,
+              label,
+              prjName,
+              prjMnger,
+              org,
+              prjType,
+              gtAmount,
+              ltAmount,
+              minAmount,
+              maxAmount,
+            });
             handleSearch({
               current: 1,
               pageSize: curPageSize,
               prjMnger: prjMnger,
               queryType: 'ALL',
-            })
-          }
+              budget,
+              budgetType,
+              label,
+              prjName,
+              prjMnger,
+              org,
+              prjType,
+              gtAmount,
+              ltAmount,
+              minAmount,
+              maxAmount,
+            });
+          }}
         >
           查询
         </Button>
@@ -638,14 +644,13 @@ export default forwardRef(function TopConsole(props, ref) {
             value={undertakingDepartmentObj.data}
             treeDefaultExpandAll
             onChange={(val, label, extra) => {
-              setUndertakingDepartmentObj({ ...undertakingDepartmentObj, data: val })
+              setUndertakingDepartmentObj({ ...undertakingDepartmentObj, data: val });
             }}
             open={undertakingDepartmentObj.isOpen}
             onDropdownVisibleChange={open => {
               setUndertakingDepartmentObj({ ...undertakingDepartmentObj, isOpen: open });
             }}
           />
-
         </div>
 
         {filterFold && (
@@ -655,8 +660,6 @@ export default forwardRef(function TopConsole(props, ref) {
           </div>
         )}
       </div>
-
-
 
       {/* 第三行 */}
       {!filterFold && (
@@ -769,5 +772,5 @@ export default forwardRef(function TopConsole(props, ref) {
         </div>
       )}
     </div>
-  )
+  );
 });

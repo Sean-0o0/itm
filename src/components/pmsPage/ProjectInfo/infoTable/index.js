@@ -9,7 +9,6 @@ import PrjTypeModal from '../../HomePage/ShortcutCard/PrjTypeModal';
 import NewProjectModelV2 from '../../../../pages/workPlatForm/singlePage/NewProjectModelV2';
 
 export default function InfoTable(props) {
-  const [sortedInfo, setSortedInfo] = useState({}); //金额排序
   const [modalVisible, setModalVisible] = useState(false); //项目详情弹窗显示
   const [fileAddVisible, setFileAddVisible] = useState(false); //项目详情弹窗显示
   const [src_fileAdd, setSrc_fileAdd] = useState({}); //项目信息修改弹窗显示
@@ -25,20 +24,10 @@ export default function InfoTable(props) {
     handleReset,
     curPage,
     curPageSize,
-    prjMnger,
+    sortInfo = {},
+    setSortInfo,
   } = props; //表格数据
   const location = useLocation();
-  // console.log("🚀 ~ file: index.js:15 ~ InfoTable ~ location:", location)
-
-  const fileAddModalProps = {
-    isAllWindow: 1,
-    title: '新建项目',
-    width: '1000px',
-    height: '700px',
-    style: { top: '10px' },
-    visible: true,
-    footer: null,
-  };
 
   //金额格式化
   const getAmountFormat = value => {
@@ -81,12 +70,12 @@ export default function InfoTable(props) {
   const handleTableChange = (pagination, filters, sorter, extra) => {
     // console.log('    yaer,    yaer,', year)
     const { current = 1, pageSize = 20 } = pagination;
+    setSortInfo(sorter);
     if (sorter.order !== undefined) {
       if (sorter.order === 'ascend') {
         handleSearch({
           current,
           pageSize,
-          prjMnger,
           queryType,
           sort: 'YSJE ASC,ID DESC',
         });
@@ -94,13 +83,12 @@ export default function InfoTable(props) {
         handleSearch({
           current,
           pageSize,
-          prjMnger,
           queryType,
           sort: 'YSJE DESC,ID DESC',
         });
       }
     } else {
-      handleSearch({ current, pageSize, prjMnger, queryType });
+      handleSearch({ current, pageSize, queryType });
     }
     return;
   };
@@ -243,6 +231,7 @@ export default function InfoTable(props) {
       align: 'right',
       key: 'projectBudget',
       ellipsis: true,
+      sortOrder: sortInfo.columnKey === 'projectBudget' ? sortInfo.order : undefined,
       sorter: true,
       sortDirections: ['descend', 'ascend'],
       render: text => (
@@ -392,6 +381,10 @@ export default function InfoTable(props) {
         setVisible={setVisible}
         setFileAddVisible={setFileAddVisible}
         setSrc_fileAdd={setSrc_fileAdd}
+        refresh={() => {
+          handleReset();
+          getTableData({}); //刷新数据
+        }}
       />
       <InfoDetail modalVisible={modalVisible} setModalVisible={setModalVisible} />
       <div className="btn-add-prj-box">

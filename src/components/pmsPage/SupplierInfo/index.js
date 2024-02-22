@@ -14,23 +14,27 @@ export default function SupplierInfo(props) {
   const [curPage, setCurPage] = useState(1); //当前页码
   const [curPageSize, setCurPageSize] = useState(20); //每页数量
   const { params = {}, dictionary = {} } = props;
-  // console.log('🚀 ~ file: index.js:14 ~ SupplierInfo ~ dictionary:', dictionary);
   const { supplierId = -2 } = params;
   const { GYSLX } = dictionary;
   const topConsoleRef = useRef(null);
-  // console.log("🚀 ~ file: index.js:17 ~ SupplierInfo ~ GYSLX:", GYSLX)
+  const [filterData, setFilterData] = useState({}); //点查询后的顶部筛选数据
+  const [sortInfo, setSortInfo] = useState({
+    sort: undefined,
+    columnKey: '',
+  }); //用于查询后清空排序状态
 
   useEffect(() => {
-    console.log("刷新刷新1111")
     if (supplierId === -2) {
       //无参数
       getTableData({});
       topConsoleRef?.current?.handleReset();
+      setFilterData({});
+      setSortInfo({ sort: undefined, columnKey: '' });
     }
     return () => {};
   }, [props]);
 
-  //获取表格数据
+  //获取初始表格数据、下拉框数据
   const getTableData = ({ current = 1, pageSize = 20, queryType = 'ALL', sort = 'ID ASC' }) => {
     setTableLoading(true);
     QuerySupplierList({
@@ -101,6 +105,8 @@ export default function SupplierInfo(props) {
         setCurPageSize={setCurPageSize}
         curPage={curPage}
         curPageSize={curPageSize}
+        setFilterData={setFilterData}
+        setSortInfo={setSortInfo}
       />
       <InfoTable
         tableData={tableData}
@@ -108,10 +114,13 @@ export default function SupplierInfo(props) {
         getTableData={getTableData}
         projectManager={params?.supplierId}
         total={total}
-        handleSearch={topConsoleRef?.current?.handleSearch}
+        handleSearch={(v = {}) => topConsoleRef?.current?.handleSearch({ ...filterData, ...v })}
         curPage={curPage}
         curPageSize={curPageSize}
         GYSLX={GYSLX}
+        setFilterData={setFilterData}
+        sortInfo={sortInfo}
+        setSortInfo={setSortInfo}
       />
     </div>
   );

@@ -15,112 +15,33 @@ export default function ProjectInfo(props) {
   const { prjManager, cxlx } = params;
   const topConsoleRef = useRef(null);
   const [queryType, setQueryType] = useState('ALL'); //
-  const [prjMnger, setPrjMnger] = useState(undefined); //项目经理
   const [isComplete, setIsComplete] = useState(false);
+  const [prjMnger, setPrjMnger] = useState(undefined); //项目经理
+  const [dateRange, setDateRange] = useState([moment().subtract(1, 'year'), moment()]); //日期区间
 
-  const [dateRange, setDateRange] = useState([moment().subtract(1, 'year'), moment()]) //日期区间
-
-  const [isQueryDefaultDateRange, setIsQueryDefaultDateRange] = useState(true) // 是否在计算默认日期区间
-  const defaultDateRangeRef = useRef([])
-
-
-  /**
-   * 查询默认日期区间
-   */
-  // const queryDefaultDateRange = async () => {
-  //   setIsQueryDefaultDateRange(true)
-  //   let curYear = new Date().getFullYear()
-  //   const queryParams = {
-  //     "budgetType": "ZB",
-  //     "current": 1,
-  //     "pageSize": 20,
-  //     "paging": 1,
-  //     "queryType": "YSTJ",
-  //     "sort": "",
-  //     "total": -1,
-  //     'year': curYear
-  //   }
-  //   const res = await QueryBudgetStatistics(queryParams)
-  //   if (res.code === 1) {
-  //     const { budgetInfo } = res
-  //     const obj = JSON.parse(budgetInfo)
-  //     if (obj.length === 0) {
-  //       curYear--;
-  //     }
-  //     const startDay = `${curYear}-01-01 00:00:00`
-  //     const endDay = `${curYear}-12-31 23:59:59`
-  //     const computedDateRange = [moment(startDay), moment(endDay)]
-  //     setDateRange(computedDateRange)
-  //     defaultDateRangeRef.current = computedDateRange
-  //     setIsQueryDefaultDateRange(false)
-  //   }
-  // }
-
-  // useEffect(() => {
-  // queryDefaultDateRange().catch((err) => {
-  //   message.error(`计算默认日期区间失败${err}`, 2)
-  //   setIsQueryDefaultDateRange(false)
-  // })
-  // }, [])
-
-  // useEffect(() => {
-  //   getTableData({})
-  // }, [isQueryDefaultDateRange])
-
-  //TIP：——————————————————以下有关year的代码最好不要删；需求在变动，也许又改为按年份匹配；——————————————————
-  // const [year, setYear] = useState() //年
-  // const [isQueryDefaultYear, setIsQueryDefaultYear] = useState(true) // 是否在计算默认年份
-  // const defaultYearRef = useRef(undefined)
-
-  /** 查默认年 */
-  // const queryDefaultYear = async () => {
-  //   setIsQueryDefaultYear(true)
-  //   let curYear = new Date().getFullYear()
-  //   const queryParams = {
-  //     "budgetType": "ZB",
-  //     "current": 1,
-  //     "pageSize": 20,
-  //     "paging": 1,
-  //     "queryType": "YSTJ",
-  //     "sort": "",
-  //     "total": -1,
-  //     "year": curYear
-  //   }
-  //   const res = await QueryBudgetStatistics(queryParams)
-  //   if (res.code === 1) {
-  //     const { budgetInfo } = res
-  //     const obj = JSON.parse(budgetInfo)
-  //     if (obj.length === 0) {
-  //       curYear--;
-  //     }
-  //     setYear(moment().year(curYear))
-  //     defaultYearRef.current = moment().year(curYear)
-  //     setIsQueryDefaultYear(false)
-  //   }
-  // }
-
-  // useEffect(() => {
-  //   queryDefaultYear().catch((err) => {
-  //     message.error(`计算默认年份失败${err}`, 2)
-  //     setIsQueryDefaultYear(false)
-  //   })
-  // }, [])
-
-  // useEffect(() => {
-  //   getTableData({})
-  // }, [isQueryDefaultYear])
-
+  const [isQueryDefaultDateRange, setIsQueryDefaultDateRange] = useState(true); // 是否在计算默认日期区间
+  const defaultDateRangeRef = useRef([]);
+  const [filterData, setFilterData] = useState({}); //点查询后的顶部筛选数据
+  const [sortInfo, setSortInfo] = useState({
+    sort: undefined,
+    columnKey: '',
+  }); //用于查询后清空排序状态
 
   useEffect(() => {
     getTableData({});
-    return () => { };
+    return () => {};
   }, []);
 
   useEffect(() => {
     setCurPage(1);
     setCurPageSize(20);
     setDateRange([moment().subtract(1, 'year'), moment()]);
-    return () => { };
+    setFilterData({});
+    setSortInfo({
+      sort: undefined,
+      columnKey: '',
+    });
+    return () => {};
   }, [cxlx]);
   //cxlx查询类型
 
@@ -130,9 +51,19 @@ export default function ProjectInfo(props) {
       getTableData({ projectManager: prjManager, cxlx });
       setQueryType(cxlx);
       setPrjMnger(String(prjManager));
+      setFilterData(p => ({ ...p, prjMnger: String(prjManager) }));
+      setSortInfo({
+        sort: undefined,
+        columnKey: '',
+      });
     }
-    return () => { };
+    return () => {};
   }, [isComplete, prjManager, cxlx]);
+
+  useEffect(() => {
+    console.log('filterData', filterData);
+    return () => {};
+  }, [JSON.stringify(filterData)]);
 
   //获取表格数据
   const getTableData = async ({
@@ -155,7 +86,7 @@ export default function ProjectInfo(props) {
         total: -1,
         queryType: cxlx,
         // year: moment.isMoment(year) ? new Date(year.valueOf()).getFullYear() : ''
-      }
+      };
       if (dateRange.length !== 0) {
         defaultParams.startTime = moment(dateRange[0]).format('YYYYMMDD');
         defaultParams.endTime = moment(dateRange[1]).format('YYYYMMDD');
@@ -168,7 +99,6 @@ export default function ProjectInfo(props) {
         setTableLoading(false);
         setIsComplete(true);
       }
-
     } catch (error) {
       message.error('表格数据查询失败', 1);
       setTableLoading(false);
@@ -192,12 +122,11 @@ export default function ProjectInfo(props) {
         setQueryType={setQueryType}
         prjMnger={prjMnger}
         setPrjMnger={setPrjMnger}
-        // year={year}
-        // setYear={setYear}
-        // defaultYearRef={defaultYearRef}
         dateRange={dateRange}
         setDateRange={setDateRange}
         defaultDateRangeRef={defaultDateRangeRef}
+        setFilterData={setFilterData}
+        setSortInfo={setSortInfo}
       />
       <InfoTable
         tableData={tableData}
@@ -206,12 +135,16 @@ export default function ProjectInfo(props) {
         projectManager={params?.prjManager}
         cxlx={params?.cxlx}
         total={total}
-        handleSearch={topConsoleRef?.current?.handleSearch}
+        handleSearch={(v = {}) => {
+          topConsoleRef?.current?.handleSearch({ ...filterData, ...v });
+          console.log('🚀 ~ ProjectInfo ~ { ...filterData, ...v }:', v);
+        }}
         handleReset={topConsoleRef?.current?.handleReset}
         curPage={curPage}
         curPageSize={curPageSize}
         queryType={queryType}
-        prjMnger={prjMnger}
+        sortInfo={sortInfo}
+        setSortInfo={setSortInfo}
       />
     </div>
   );

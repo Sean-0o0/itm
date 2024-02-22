@@ -1,13 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Table, Popover, message, Tooltip } from 'antd';
+import { Button, Table, Popover, message, Tooltip, Checkbox } from 'antd';
 // import InfoDetail from '../InfoDetail';
 import BridgeModel from '../../../Common/BasicModal/BridgeModel.js';
 import { EncryptBase64 } from '../../../Common/Encrypt';
 import { Link } from 'react-router-dom';
 import { useLocation } from 'react-router';
 import InfoOprtModal from '../../SupplierDetail/TopConsole/InfoOprtModal/index.js';
+import { connect } from 'dva';
 
-export default function InfoTable(props) {
+export default connect(({ global = {} }) => ({
+  authorities: global.authorities,
+}))(function InfoTable(props) {
   const {
     tableData,
     tableLoading,
@@ -18,6 +21,10 @@ export default function InfoTable(props) {
     curPage,
     curPageSize,
     GYSLX,
+    authorities = {},
+    setFilterData,
+    sortInfo = {},
+    setSortInfo,
   } = props; //表格数据
   const [visible, setVisible] = useState(false); //新增供应商弹窗显隐
   const location = useLocation();
@@ -27,14 +34,15 @@ export default function InfoTable(props) {
     // console.log('handleTableChange', pagination, filters, sorter, extra);
     const { current = 1, pageSize = 20 } = pagination;
     // getTableData({ current, pageSize });
+    setSortInfo(sorter);
     if (sorter.order !== undefined) {
       if (sorter.order === 'ascend') {
-        handleSearch(current, pageSize, sorter.field + ' ASC,ID ASC');
+        handleSearch({ current, pageSize, sort: sorter.field + ' ASC,ID ASC' });
       } else {
-        handleSearch(current, pageSize, sorter.field + ' DESC,ID DESC');
+        handleSearch({ current, pageSize, sort: sorter.field + ' DESC,ID DESC' });
       }
     } else {
-      handleSearch(current, pageSize);
+      handleSearch({ current, pageSize });
     }
     return;
   };
@@ -113,6 +121,7 @@ export default function InfoTable(props) {
       align: 'right',
       key: 'XMJE',
       ellipsis: true,
+      sortOrder: sortInfo.columnKey === 'XMJE' ? sortInfo.order : undefined,
       sorter: true,
       sortDirections: ['descend', 'ascend'],
       render: text => <span style={{ marginRight: 20 }}>{getAmountFormat(text)}</span>,
@@ -124,6 +133,7 @@ export default function InfoTable(props) {
       key: 'XMSL',
       ellipsis: true,
       align: 'right',
+      sortOrder: sortInfo.columnKey === 'XMSL' ? sortInfo.order : undefined,
       sorter: true,
       sortDirections: ['descend', 'ascend'],
       render: text => <span style={{ marginRight: 20 }}>{text}</span>,
@@ -174,6 +184,20 @@ export default function InfoTable(props) {
     },
   ];
 
+  const onCheckboxChange = e => {
+    setSortInfo({
+      sort: undefined,
+      columnKey: '',
+    });
+    if (e?.target?.checked) {
+      setFilterData(p => ({ ...p, queryType: 'WB' }));
+      handleSearch({ current: 1, pageSize: curPageSize, queryType: 'WB' });
+    } else {
+      setFilterData(p => ({ ...p, queryType: 'ALL' }));
+      handleSearch({ current: 1, pageSize: curPageSize, queryType: 'ALL' });
+    }
+  };
+
   return (
     <div className="info-table">
       {visible && (
@@ -189,6 +213,9 @@ export default function InfoTable(props) {
         <Button type="primary" className="btn-add-prj" onClick={() => setVisible(true)}>
           新增
         </Button>
+        {authorities.GYSLB?.includes('OnlyWBGys') && (
+          <Checkbox onChange={onCheckboxChange}>只看人力外包供应商</Checkbox>
+        )}
       </div>
       <div className="project-info-table-box">
         <Table
@@ -214,4 +241,4 @@ export default function InfoTable(props) {
       </div>
     </div>
   );
-}
+});

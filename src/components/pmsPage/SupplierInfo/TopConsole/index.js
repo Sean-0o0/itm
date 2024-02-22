@@ -40,21 +40,33 @@ export default forwardRef(function TopConsole(props, ref) {
     setCurPageSize,
     curPage,
     curPageSize,
+    setFilterData,
+    setSortInfo,
   } = props;
 
-  useImperativeHandle(
-    ref,
-    () => {
-      return {
-        handleSearch,
-        handleReset,
-      };
-    },
-    [gysmc, gyslx, lxrmc, gyszt, gtAmount, ltAmount, minAmount, maxAmount, xmNum],
-  );
+  useImperativeHandle(ref, () => {
+    return {
+      handleSearch,
+      handleReset,
+    };
+  });
 
   //查询按钮
-  const handleSearch = (current = 1, pageSize = 20, sort = 'ID ASC') => {
+  const handleSearch = ({
+    current = 1,
+    pageSize = 20,
+    sort = 'ID ASC',
+    queryType = 'ALL',
+    gysmc,
+    gyslx,
+    lxrmc,
+    gyszt,
+    gtAmount,
+    ltAmount,
+    minAmount,
+    maxAmount,
+    xmNum,
+  }) => {
     setTableLoading(true);
     setCurPage(current);
     setCurPageSize(pageSize);
@@ -64,12 +76,13 @@ export default forwardRef(function TopConsole(props, ref) {
       paging: 1,
       sort,
       total: -1,
-      queryType: 'ALL',
+      queryType,
     };
+    console.log('🚀 ~ TopConsole ~ params.queryType:', params.queryType);
     if (gysmc !== undefined && gysmc !== '') {
       params.supplierId = Number(gysmc);
     }
-    if (gyslx.length !== 0) {
+    if (gyslx?.length > 0) {
       params.supplierType = gyslx.join(';');
     }
     if (lxrmc !== undefined && lxrmc !== '') {
@@ -108,10 +121,10 @@ export default forwardRef(function TopConsole(props, ref) {
     if (xmNumSelector === '1') {
       //区间 ,目前暂定只有均不为空时才查
       if (
-        xmNum.min !== undefined &&
-        xmNum.min !== '' &&
-        xmNum.max !== undefined &&
-        xmNum.max !== ''
+        xmNum?.min !== undefined &&
+        xmNum?.min !== '' &&
+        xmNum?.max !== undefined &&
+        xmNum?.max !== ''
       ) {
         params.projectCountType = 'SCOPE';
         params.projectUpper = Number(xmNum.max);
@@ -119,20 +132,19 @@ export default forwardRef(function TopConsole(props, ref) {
       }
     } else if (xmNumSelector === '2') {
       //大于
-      if (xmNum.gt !== undefined && xmNum.gt !== '') {
+      if (xmNum?.gt !== undefined && xmNum?.gt !== '') {
         params.projectCountType = 'BIGGER';
         params.projectBelow = Number(xmNum.gt);
         params.projectUpper = 0;
       }
     } else {
       //小于
-      if (xmNum.lt !== undefined && xmNum.lt !== '') {
+      if (xmNum?.lt !== undefined && xmNum?.lt !== '') {
         params.projectCountType = 'SMALLER';
         params.projectUpper = 0;
         params.projectBelow = Number(xmNum.lt);
       }
     }
-    console.log('🚀 ~ file: index.js:119 ~ handleSearch ~ params:', params);
     QuerySupplierList(params)
       .then(res => {
         if (res?.success) {
@@ -325,7 +337,36 @@ export default forwardRef(function TopConsole(props, ref) {
         <Button
           className="btn-search"
           type="primary"
-          onClick={() => handleSearch(curPage, curPageSize)}
+          onClick={() => {
+            setSortInfo({
+              sort: undefined,
+              columnKey: '',
+            });
+            setFilterData({
+              gysmc,
+              gyslx,
+              lxrmc,
+              gyszt,
+              gtAmount,
+              ltAmount,
+              minAmount,
+              maxAmount,
+              xmNum,
+            });
+            handleSearch({
+              current: 1,
+              pageSize: curPageSize,
+              gysmc,
+              gyslx,
+              lxrmc,
+              gyszt,
+              gtAmount,
+              ltAmount,
+              minAmount,
+              maxAmount,
+              xmNum,
+            });
+          }}
         >
           查询
         </Button>
