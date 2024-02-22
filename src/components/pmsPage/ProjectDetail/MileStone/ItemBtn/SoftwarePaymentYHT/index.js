@@ -41,7 +41,6 @@ export default connect(({ global }) => ({
     const { setVisible, onSuccess } = funcProps;
     const { getFieldDecorator, getFieldValue, validateFields, resetFields } = form;
     const { CXBM = [], YZLX = [] } = dictionary;
-    console.log('🚀 ~ SoftwarePaymentYHT ~ CXBM:', CXBM);
     const [isSpinning, setIsSpinning] = useState(false); //加载状态
     const [upldData, setUpldData] = useState([]); //附件信息 - 用印
     const [upldDataFYY, setUpldDataFYY] = useState([]); //附件信息 - 非用印
@@ -521,7 +520,7 @@ export default connect(({ global }) => ({
                     resolve({
                       content: file.base64,
                       nrtitle: file.name,
-                      nrtype: '1',
+                      nrtype: fyy ? '51' : '1',
                       filetype: fyy ? '非用印附件' : '用印附件',
                     });
                   });
@@ -534,7 +533,7 @@ export default connect(({ global }) => ({
                     resolve({
                       content: base64,
                       nrtitle: fileName,
-                      nrtype: '1',
+                      nrtype:  fyy ? '51' : '1',
                       filetype: fyy ? '非用印附件' : '用印附件',
                     });
                   };
