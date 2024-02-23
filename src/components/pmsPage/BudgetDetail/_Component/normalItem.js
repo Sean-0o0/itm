@@ -3,7 +3,7 @@ import { message, Spin, Tabs, Tooltip } from 'antd';
 
 
 /**
- * 
+ *
  * 输出格式 （灰色）项目类型： （黑色）前端项目
  * @param {*} title 标题：
  * @param {*} value 值

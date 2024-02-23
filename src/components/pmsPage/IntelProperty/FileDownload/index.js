@@ -8,11 +8,11 @@ const {
 } = api;
 
 export default function FileDownload(props) {
-  const { fileStr = '{}', params = {} } = props;
 
-  useEffect(() => {
-    return () => { };
-  }, []);
+  const {
+    fileStr = '{}',   //fileStr：文件的名称（有后缀） 后端好像是用文件名称去匹配文件而不是文件ID
+    params = {}
+  } = props;
 
   //单个下载
   const handleSingleDownload = (id, title, params = {}) => {

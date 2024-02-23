@@ -36,6 +36,7 @@ export default function AwardHonor(props) {
     listId: undefined,
   }); //筛选栏数据
   const [activeKey, setActiveKey] = useState('KJJX');
+
   const [spinningData, setSpinningData] = useState({
     spinning: false,
     tip: '加载中',
@@ -47,6 +48,7 @@ export default function AwardHonor(props) {
   const [subTableData, setSubTableData] = useState([]); //子表数据
   const tabData = [
     { title: '科技奖项', value: 'KJJX' },
+    { title: '科技荣誉', value: 'KJRY' },
     { title: '研究课题', value: 'YJKT' },
   ];
 
@@ -119,7 +121,7 @@ export default function AwardHonor(props) {
     })
       .then(res => {
         if (res?.success) {
-          console.log('🚀 ~ AwardHonor:', JSON.parse(res.result), JXJB, HJQK, KTZT);
+          // console.log('🚀 ~ AwardHonor:', JSON.parse(res.result), JXJB, HJQK, KTZT);
           setTableData(p => ({
             ...p,
             current,

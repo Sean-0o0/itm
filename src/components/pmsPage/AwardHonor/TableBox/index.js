@@ -21,6 +21,7 @@ const { Option } = Select;
 
 const TableBox = props => {
   const { dataProps = {}, funcProps = {} } = props;
+
   const {
     tableData = {},
     filterData = {},
@@ -33,6 +34,7 @@ const TableBox = props => {
     expandedRowKeys,
     subTableData,
   } = dataProps;
+
   const {
     setFilterData = () => { },
     queryTableData = () => { },
@@ -153,7 +155,123 @@ const TableBox = props => {
           ),
         },
       ];
-    } else {
+    }
+    else if (key === 'KJRY') {    // 科技荣誉
+      return [
+        {
+          title: '荣誉名称',
+          dataIndex: 'RYMC',
+          key: 'RYMC',
+          width: '17%', //有子表格时必须每列表明宽度
+          ellipsis: true,
+          render: txt => (
+            <Tooltip title={txt} placement="topLeft">
+              <span style={{ cursor: 'default' }}>{txt}</span>
+            </Tooltip>
+          ),
+        },
+        {
+          title: '颁发单位',
+          dataIndex: 'BFDW',
+          key: 'BFDW',
+          width: '17%',
+          ellipsis: true,
+          render: txt => (
+            <Tooltip title={txt} placement="topLeft">
+              <span style={{ cursor: 'default' }}>{txt}</span>
+            </Tooltip>
+          ),
+        },
+        {
+          title: '关联项目名称',
+          dataIndex: 'GLXMMC',
+          width: '17%',
+          key: 'GLXMMC',
+          ellipsis: true,
+          render: (text, row, index) => {
+            return (
+              <Tooltip title={text} placement="topLeft">
+                <Link
+                  style={{ color: '#3361ff' }}
+                  to={{
+                    pathname: `/pms/manage/ProjectDetail/${EncryptBase64(
+                      JSON.stringify({
+                        xmid: row.GLXMID,
+                      }),
+                    )}`,
+                    state: {
+                      routes: [{ name: '项目列表', pathname: location.pathname }],
+                    },
+                  }}
+                  className="table-link-strong"
+                >
+                  {text}
+                </Link>
+              </Tooltip>
+            )
+          },
+        },
+        {
+          title: '联系人',
+          dataIndex: 'LXR',
+          key: 'LXR',
+          width: '11%',
+          ellipsis: true,
+        },
+        {
+          title: '参考资料',
+          dataIndex: 'FJ',  // 虽然中文名字叫 参考资料  但是  命名要根据下面 axios 的  params.columnName
+          key: 'FJ',
+          width: '7%',
+          ellipsis: true,
+          render: (txt, row) => {
+            return <FileDownload
+              fileStr={txt}
+              params={{
+                objectName: 'TXMXX_HJRY_SBXQ',  //找后端要
+                columnName: 'FJ',               //找后端要
+                id: row.ID,
+              }}
+            />
+          },
+        },
+        {
+          title: '获奖日期',
+          dataIndex: 'HJSJ',
+          key: 'HJSJ',
+          width: '8%',
+          ellipsis: true,
+          render: txt => (txt ? moment(String(txt)).format('YYYY-MM-DD') : ''),
+        },
+        {
+          title: '修改时间',
+          dataIndex: 'XGSJ',
+          key: 'XGSJ',
+          width: '8%',
+          ellipsis: true,
+          render: txt => (txt ? moment(String(txt)).format('YYYY-MM-DD') : ''),
+        },
+        {
+          title: '操作',
+          dataIndex: 'OPRT',
+          width: '10%',
+          align: 'center',
+          key: 'OPRT',
+          ellipsis: true,                   //科技荣誉
+          render: (txt, row) => (
+            <div className="opr-column">
+              {allowEdit(row.LXRID) && <span onClick={() => handleEdit(row)}>修改</span>}
+              {allowEdit(row.LXRID) && (
+                <Popconfirm title={`确定删除吗?`} onConfirm={() => handleDelete(row)}>
+                  <span>删除</span>
+                </Popconfirm>
+              )}
+            </div>
+          ),
+        },
+      ]
+    }
+    else if (key === 'YJKT') {
       return [
         {
           title: '课题名称',
@@ -222,7 +340,7 @@ const TableBox = props => {
         {
           title: '操作',
           dataIndex: 'OPRT',
-          width: '12%',
+          width: '10%',
           align: 'center',
           key: 'OPRT',
           ellipsis: true,
@@ -492,6 +610,8 @@ const TableBox = props => {
       switch (type) {
         case 'YJKT':
           return 2;
+        case 'KJRY':
+          return 3;
         default:
           return 1;
       }
@@ -499,12 +619,15 @@ const TableBox = props => {
     const params = {
       operateType: 'DELETE',
       awardType: getHJLX(activeKey),
-      dataType: 'LB',
+      dataType: activeKey === 'KJRY' ? 'XQ' : 'LB',
       awardId: Number(row.ID),
       // state: row.DQZT,
       projectId: row.GLXMID,
       fileInfo: '[]',
     };
+    if (activeKey === 'KJRY') {
+      params.detailId = Number(row.ID)
+    }
     OperateAwardAndHonor(params)
       .then(res => {
         if (res?.success) {
@@ -730,6 +853,7 @@ const TableBox = props => {
   return (
     <>
       <div className="table-box">
+
         <OprModal
           setVisible={v => setModalData(p => ({ ...p, visible: v }))}
           type={activeKey}
@@ -738,26 +862,30 @@ const TableBox = props => {
           isGLY={isGLY}
           tableData={tableData}
         />
+
         <div className="filter-row">
-          <div className="console-item">
-            <div className="item-label">{getInputName(activeKey)}</div>
-            <div className="item-selector">
-              <Input
-                value={filterData.awardName}
-                onChange={v => {
-                  v.persist();
-                  if (v.target.value === '') {
-                    setFilterData(p => ({ ...p, awardName: undefined }));
-                  } else {
-                    setFilterData(p => ({ ...p, awardName: v.target.value }));
-                  }
-                }}
-                placeholder={'请输入' + getInputName(activeKey)}
-                allowClear
-                style={{ width: '100%' }}
-              />
+
+          {(activeKey === 'KJJX' || activeKey === 'YJKT') && (
+            <div className="console-item">
+              <div className="item-label">{getInputName(activeKey)}</div>
+              <div className="item-selector">
+                <Input
+                  value={filterData.awardName}
+                  onChange={v => {
+                    v.persist();
+                    if (v.target.value === '') {
+                      setFilterData(p => ({ ...p, awardName: undefined }));
+                    } else {
+                      setFilterData(p => ({ ...p, awardName: v.target.value }));
+                    }
+                  }}
+                  placeholder={'请输入' + getInputName(activeKey)}
+                  allowClear
+                  style={{ width: '100%' }}
+                />
+              </div>
             </div>
-          </div>
+          )}
 
           {activeKey === 'KJJX' && (
             <div className="console-item">
@@ -782,46 +910,97 @@ const TableBox = props => {
               </Select>
             </div>
           )}
-          <div className="console-item">
-            <div className="item-label">发起单位</div>
-            <div className="item-selector">
-              <Input
-                value={filterData.unit}
-                onChange={v => {
-                  v.persist();
-                  if (v.target.value === '') {
-                    setFilterData(p => ({ ...p, unit: undefined }));
-                  } else {
-                    setFilterData(p => ({ ...p, unit: v.target.value }));
-                  }
-                }}
-                placeholder={'请输入发起单位'}
-                allowClear
-                style={{ width: '100%' }}
-              />
+
+          {activeKey === 'KJRY' && (
+            <>
+              <div className="console-item">
+                <div className="item-label">荣誉名称</div>
+                <div className="item-selector">
+                  <Input
+                    value={filterData.awardName}
+                    onChange={v => {
+                      v.persist();
+                      if (v.target.value === '') {
+                        setFilterData(p => ({ ...p, awardName: undefined }));
+                      } else {
+                        setFilterData(p => ({ ...p, awardName: v.target.value }));
+                      }
+                    }}
+                    placeholder='请输入荣誉名称'
+                    allowClear
+                    style={{ width: '100%' }}
+                  />
+                </div>
+              </div>
+
+              <div className="console-item">
+                <div className="item-label">颁发单位</div>
+                <div className="item-selector">
+                  <Input
+                    value={filterData.unit}
+                    onChange={v => {
+                      v.persist();
+                      if (v.target.value === '') {
+                        setFilterData(p => ({ ...p, unit: undefined }));
+                      } else {
+                        setFilterData(p => ({ ...p, unit: v.target.value }));
+                      }
+                    }}
+                    placeholder='请输入颁发单位'
+                    allowClear
+                    style={{ width: '100%' }}
+                  />
+                </div>
+              </div>
+            </>
+          )}
+
+          {(activeKey === 'KJJX' || activeKey === 'YJKT') && (
+            <div className="console-item">
+              <div className="item-label">发起单位</div>
+              <div className="item-selector">
+                <Input
+                  value={filterData.unit}
+                  onChange={v => {
+                    v.persist();
+                    if (v.target.value === '') {
+                      setFilterData(p => ({ ...p, unit: undefined }));
+                    } else {
+                      setFilterData(p => ({ ...p, unit: v.target.value }));
+                    }
+                  }}
+                  placeholder={'请输入发起单位'}
+                  allowClear
+                  style={{ width: '100%' }}
+                />
+              </div>
             </div>
-          </div>
-          <div className="console-item">
-            <div className="item-label">{getSlt(activeKey)}</div>
-            <Select
-              className="item-selector"
-              dropdownClassName={'item-selector-dropdown'}
-              filterOption={(input, option) =>
-                option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-              }
-              showSearch
-              allowClear
-              onChange={v => setFilterData(p => ({ ...p, status: v }))}
-              value={filterData.status}
-              placeholder={'请选择' + getSlt(activeKey)}
-            >
-              {getSlt(activeKey, true).map((x, i) => (
-                <Option key={x.ibm} value={Number(x.ibm)}>
-                  {x.note}
-                </Option>
-              ))}
-            </Select>
-          </div>
+          )}
+
+          {(activeKey === 'KJJX' || activeKey === 'YJKT') && (
+            <div className="console-item">
+              <div className="item-label">{getSlt(activeKey)}</div>
+              <Select
+                className="item-selector"
+                dropdownClassName={'item-selector-dropdown'}
+                filterOption={(input, option) =>
+                  option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                }
+                showSearch
+                allowClear
+                onChange={v => setFilterData(p => ({ ...p, status: v }))}
+                value={filterData.status}
+                placeholder={'请选择' + getSlt(activeKey)}
+              >
+                {getSlt(activeKey, true).map((x, i) => (
+                  <Option key={x.ibm} value={Number(x.ibm)}>
+                    {x.note}
+                  </Option>
+                ))}
+              </Select>
+            </div>
+          )}
+
           <Button
             className="btn-search"
             type="primary"
@@ -835,10 +1014,12 @@ const TableBox = props => {
           >
             查询
           </Button>
+
           <Button className="btn-reset" onClick={() => handleReset()}>
             重置
           </Button>
         </div>
+
         {isGLY && (
           <div className="export-row">
             <Button type="primary" onClick={handleAddRow}>
@@ -846,31 +1027,53 @@ const TableBox = props => {
             </Button>
           </div>
         )}
+
         <div
           className="project-info-table-box"
           style={isGLY ? {} : { height: 'calc(100% - 81px)' }}
         >
-          <Table
-            columns={columns(activeKey)}
-            rowKey={'ID'}
-            dataSource={tableData.data}
-            onChange={handleTableChange}
-            expandedRowRender={expandedRowRender}
-            expandedRowKeys={expandedRowKeys}
-            onExpand={onExpand}
-            pagination={{
-              current: tableData.current,
-              pageSize: tableData.pageSize,
-              defaultCurrent: 1,
-              pageSizeOptions: ['20', '40', '50', '100'],
-              showSizeChanger: true,
-              hideOnSinglePage: false,
-              showQuickJumper: true,
-              showTotal: t => `共 ${tableData.total} 条数据`,
-              total: tableData.total,
-            }}
-            bordered
-          />
+          {activeKey === 'KJRY'
+            ? <Table
+              columns={columns(activeKey)}
+              rowKey={'ID'}
+              dataSource={tableData.data}
+              onChange={handleTableChange}
+              pagination={{
+                current: tableData.current,
+                pageSize: tableData.pageSize,
+                defaultCurrent: 1,
+                pageSizeOptions: ['20', '40', '50', '100'],
+                showSizeChanger: true,
+                hideOnSinglePage: false,
+                showQuickJumper: true,
+                showTotal: t => `共 ${tableData.total} 条数据`,
+                total: tableData.total,
+              }}
+              bordered
+            />
+            : <Table
+              columns={columns(activeKey)}
+              rowKey={'ID'}
+              dataSource={tableData.data}
+              onChange={handleTableChange}
+              expandedRowRender={expandedRowRender}
+              expandedRowKeys={expandedRowKeys}
+              onExpand={onExpand}
+              pagination={{
+                current: tableData.current,
+                pageSize: tableData.pageSize,
+                defaultCurrent: 1,
+                pageSizeOptions: ['20', '40', '50', '100'],
+                showSizeChanger: true,
+                hideOnSinglePage: false,
+                showQuickJumper: true,
+                showTotal: t => `共 ${tableData.total} 条数据`,
+                total: tableData.total,
+              }}
+              bordered
+            />
+          }
+
         </div>
       </div>
     </>

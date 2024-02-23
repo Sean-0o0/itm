@@ -30,7 +30,11 @@ import YJKT from './YJKT';
 import KJJX from './KJJX';
 import KJJXSB from './KJJXSB';
 import YJKTSB from './YJKTSB';
+import ScienceHoner from './ScienceHoner';
 import { setParentSelectableFalse } from '../../../../utils/pmsPublicUtils';
+import Lodash from 'lodash';
+
+
 const { api } = config;
 const {
   pmsServices: { queryFileStream },
@@ -79,6 +83,7 @@ export default connect(({ global = {} }) => ({
     useEffect(() => {
       if (visible && rowData !== undefined) {
         setIsSpinning(true);
+        //解析文件
         handleFileStrParse(rowData?.FJ, {
           objectName: isSB ? 'TXMXX_HJRY_SBXQ' : 'TXMXX_HJRY',
           columnName: isSB ? 'FJ' : 'CKZL',
@@ -89,7 +94,9 @@ export default connect(({ global = {} }) => ({
           if (isSB) getPrjNameData();
           else setIsSpinning(false);
         });
-      } else if (visible && isSB) {
+      }
+      // type 指父组件传递的 tabkey
+      else if (visible && isSB) {
         setIsSpinning(true);
         getPrjNameData();
       }
@@ -108,7 +115,12 @@ export default connect(({ global = {} }) => ({
           if (res.code === 1) {
             setSltData(p => ({
               ...p,
-              prjName: [...res.record].map(x => ({ XMMC: x.xmmc, XMID: x.xmid })),
+              prjName: [...res.record].map(x => ({
+                XMMC: x.xmmc,
+                XMID: x.xmid,
+                label: x.xmmc,
+                value: x.xmid,
+              })),
             }));
             if (isGLY) {
               getContactData();
@@ -411,6 +423,7 @@ export default connect(({ global = {} }) => ({
               treeNodeFilterProp="title"
               showCheckedStrategy="SHOW_CHILD"
               treeData={sltArr}
+              placeholder={`请选择${label}`}
             />,
           )}
         </Form.Item>
@@ -616,7 +629,7 @@ export default connect(({ global = {} }) => ({
             wrapperCol={{ span: wrapperCol }}
           >
             {getFieldDecorator(dataIndex, {
-              initialValue,
+              initialValue: initialValue.length !== 0 ? moment(String(initialValue)) : '',
               rules: [
                 {
                   required: true,
@@ -683,7 +696,7 @@ export default connect(({ global = {} }) => ({
         });
     };
 
-    //自定义下载框
+    //自定义WORD文件下载框(livebos风格)
     const getDownloadBox = (colSpan, label, labelCol, wrapperCol, boxMarginLeft, clickRowData) => {
 
       const { CKZL } = clickRowData
@@ -760,6 +773,8 @@ export default connect(({ global = {} }) => ({
             switch (type) {
               case 'YJKT':
                 return 2;
+              case 'KJRY':
+                return 3;
               default:
                 return 1;
             }
@@ -773,13 +788,13 @@ export default connect(({ global = {} }) => ({
             operateType: oprType,
             awardId: isSB ? values.awardId : oprType === 'ADD' ? -1 : rowData?.ID,
             awardType: getHJLX(type),
-            dataType: isSB ? 'XQ' : 'LB',
+            dataType: (type === 'KJRY' || isSB) ? 'XQ' : 'LB',
             awardName: values.name,
             honorLeve: turnNumber(values.jxjb),
             unit: values.fqdw,
             deadline: turnNumber(values.sbjzrq?.format('YYYYMMDD')),
             projectId: turnNumber(values.xmmc),
-            declareProject: values.sbxm,
+            declareProject: values.sbxm,  //详情数据时传 （新增、编辑科技荣誉时荣誉名称传这个字段里）
             contact: isGLY ? turnNumber(values.lxr) : turnNumber(userBasicInfo.id),
             illustrate: values.sbsm,
             awardStatus: turnNumber(values.hjzt),
@@ -855,6 +870,9 @@ export default connect(({ global = {} }) => ({
           break;
         case 'KJJXSB':
           prefix = '科技奖项申报';
+          break;
+        case 'KJRY':
+          prefix = '科技荣誉';
           break;
         default:
           prefix = '科技奖项';
@@ -964,6 +982,27 @@ export default connect(({ global = {} }) => ({
               funcProps={{ setUpldData, setIsTurnRed }}
             />
           );
+        case 'KJRY':
+          return (
+            <ScienceHoner
+              components={{
+                getInput,
+                getSingleSelector,
+                getSingleTreeSelector,
+                getDatePicker,
+                getMultipleUpload
+              }}
+              dataProps={{
+                rowData,
+                upldData,
+                isTurnRed,
+                sltData,
+                isGLY,
+                userBasicInfo,
+              }}
+              funcProps={{ setUpldData, setIsTurnRed, setIsSpinning, getContactData, getFieldDecorator }}
+            />
+          )
         default:
           return (
             <KJJX
@@ -979,7 +1018,7 @@ export default connect(({ global = {} }) => ({
                 isTurnRed,
                 JXJB,
               }}
-              funcProps={{ setUpldData, setIsTurnRed }}
+              funcProps={{ setUpldData, setIsTurnRed, getFieldValue, }}
             />
           );
       }
