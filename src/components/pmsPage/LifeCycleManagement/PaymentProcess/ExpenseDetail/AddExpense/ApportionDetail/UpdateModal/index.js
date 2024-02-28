@@ -60,12 +60,12 @@ export default function UpdateModal(props) {
           default:
             const UUID = String(Date.now());
             let arr = getFieldValue('org-multiple').map((x, i) => {
-              let item = bxbmOrigin.filter(y => y.ID === x);
-              let ykbid = item.length > 0 ? item[0]?.id : '';
+              // let item = bxbmOrigin.filter(y => y.ID === x);
+              // let ykbid = item.length > 0 ? item[0]?.id : '';
               return {
                 ID: UUID + i,
                 ['BXBM' + UUID + i]: x,
-                ['BXBMYKBID' + UUID + i]: ykbid,
+                ['BXBMYKBID' + UUID + i]: x,
                 ['FTBL' + UUID + i]: getFieldValue('rate'),
                 ['FTJE' + UUID + i]: getFieldValue('amount'),
               };

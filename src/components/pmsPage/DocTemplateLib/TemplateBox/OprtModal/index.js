@@ -323,7 +323,8 @@ export default Form.create()(function OprtModal(props) {
             }),
           );
         }
-        console.log(upldData);
+        setIsSpinning(true)
+        // console.log(upldData);
         const file = await convertFilesToBase64(upldData.map(x => x.originFileObj || x));
         let submitProps = {
           id: operateType === 'ADD' ? -1 : id,

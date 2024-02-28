@@ -76,7 +76,7 @@ export default function AwardHonor(props) {
       .then(res => {
         if (res?.code === 1) {
           const { testRole = '{}' } = res;
-          setIsGLY(JSON.parse(testRole).ALLROLE?.includes('知识产权管理员'));
+          setIsGLY(JSON.parse(testRole).ALLROLE?.includes('获奖荣誉管理员'));
         }
       })
       .catch(e => {
