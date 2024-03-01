@@ -52,12 +52,15 @@ export default function BudgetInput(props) {
         setFilterData(p => ({ ...p, [field]: obj.xmmc }));
         getDefaultYear({ [field]: obj.xmmc });
       } else {
-        //预算提交页面跳转回来
+        //预算填报页面跳转回来
+        if (obj.refreshParams?.budgetName !== undefined) {
+          setFilterData(p => ({ ...p, budgetName: obj.refreshParams?.budgetName }));
+        }
         getDefaultYear(obj.refreshParams);
       }
     } else {
       //首次刷新
-      getDefaultYear({ });
+      getDefaultYear({});
     }
     return () => {};
   }, [params]);

@@ -27,16 +27,20 @@ import {
   OperateXCContract,
   QueryCapitalBudgetCarryoverInfo,
   QueryDocTemplate,
+  UpdateMessageState,
 } from '../../../services/pmsServices';
 import { useHistory } from 'react-router';
 import { DecryptBase64, EncryptBase64 } from '../../Common/Encrypt';
 import Decimal from 'decimal.js';
 import { FetchQueryBudgetProjects } from '../../../services/projectManage';
+import SendBackModal from '../BudgetCarryover/TableBox/SendBackModal';
+import { get } from 'lodash';
 const { TextArea } = Input;
 
 export default connect(({ global }) => ({
   dictionary: global.dictionary,
   userBasicInfo: global.userBasicInfo,
+  roleData: global.roleData,
 }))(
   Form.create()(function BudgetSubmit(props) {
     const {
@@ -46,9 +50,9 @@ export default connect(({ global }) => ({
       },
       userBasicInfo = {},
       form = {},
+      roleData = {},
     } = props;
     const { YSFL = [], YSLB = [], ZDTSNRPZ = [] } = dictionary;
-    // console.log('🚀 ~ BudgetSubmit ~ ZDTSNRPZ:', ZDTSNRPZ);
     const radioArr = [
       { note: '是', ibm: 1 },
       { note: '否', ibm: 2 },
@@ -89,6 +93,12 @@ export default connect(({ global }) => ({
     const [lastBudgetPrj, setLastBudgetPrj] = useState([]); //去年同类预算下拉框数据
     const [lastBudgetPrjOrigin, setLastBudgetPrjOrigin] = useState([]); //去年同类预算下拉框数据 - 处理前数据
     const [curFileTypeName, setCurFileTypeName] = useState('立项备案表'); //用于判断控制不频繁刷新模板接口
+    const [sendBackData, setSendBackData] = useState({
+      visible: false,
+      data: {}, //行数据
+      budgetId: -1, //最外头的预算ID
+    }); //退回弹窗
+    const userRole = (roleData.role || '') + (JSON.parse(roleData.testRole)?.ALLROLE || '');
 
     useEffect(() => {
       if (params !== '') {
@@ -140,7 +150,8 @@ export default connect(({ global }) => ({
             const data = JSON.parse(res.result);
             if (data.length > 0) {
               setUpdateData(data[0]);
-              getLastYearBudgetPrj(Number(data[0].NF) - 1);
+              console.log('🚀 ~ getUpdateData ~ data[0]:', data[0]);
+              getLastYearBudgetPrj(Number(data[0].NF) - 1, data[0]);
               const fileList = JSON.parse(data[0].LXBAB || '[]').map((x, index) => ({
                 uid: Date.now() + '-' + index,
                 name: x.fileName,
@@ -151,7 +162,7 @@ export default connect(({ global }) => ({
               }));
               setFileList(fileList);
             } else {
-              getLastYearBudgetPrj(Number(year) - 1);
+              getLastYearBudgetPrj(Number(year) - 1, {});
             }
             setIsSpinning(false);
           }
@@ -194,15 +205,51 @@ export default connect(({ global }) => ({
     };
 
     //获取去年同类预算下拉数据
-    const getLastYearBudgetPrj = year => {
+    const getLastYearBudgetPrj = (year, obj = false) => {
       FetchQueryBudgetProjects({
         type: 'ZBXJZ',
         year,
       })
         .then(res => {
           if (res?.success) {
-            let data = toTreeData(res.record);
-            setLastBudgetPrj(data.length > 0 ? data[0]?.children : []);
+            let data = get(toTreeData(res.record), '[0].children', []);
+            if (obj !== false && obj.GLJZYSLB !== undefined) {
+              //获取预算类别文本
+              const yslbTxt = YSLB.find(x => String(x.ibm) === String(obj.GLJZYSLB))?.note;
+              console.log('🚀 ~ getLastYearBudgetPrj ~ yslbTxt:', yslbTxt);
+              const dataIndex = data.findIndex(x => x.ysLB === yslbTxt);
+              const newItemChildren = {
+                key: String(obj.GLJZYS),
+                title: obj.GLYSXMMC,
+                value: String(obj.GLJZYS),
+                ysID: String(obj.GLJZYS),
+                ysLB: yslbTxt,
+                ysName: obj.GLYSXMMC,
+              };
+              const newItem = {
+                key: String(new Date().getTime()),
+                value: String(new Date().getTime()),
+                title: yslbTxt,
+                ysLB: yslbTxt,
+                selectable: false,
+                children: [newItemChildren],
+              };
+              //没有该预算类别 则新加一个
+              if (dataIndex === -1) {
+                data.push(newItem);
+              } else {
+                //有则判断有无该预算，没有则加进去
+                if (
+                  data[dataIndex]?.children?.findIndex(
+                    x => String(x.ysID) === String(obj.GLJZYS),
+                  ) === -1
+                ) {
+                  data[dataIndex]?.children.push(newItemChildren);
+                }
+              }
+            }
+            console.log('🚀 ~ getLastYearBudgetPrj ~ data:', data);
+            setLastBudgetPrj(data);
             setLastBudgetPrjOrigin(res.record);
             setIsSpinning(false);
           }
@@ -840,23 +887,6 @@ export default connect(({ global }) => ({
               titleField: 'note',
               display,
             })}
-            {getTreeSelect({
-              label: '关联去年同类预算',
-              labelNode: (
-                <span>
-                  关联去年同类预算
-                  <Tooltip title={getQesTip('关联去年同类预算问号内容')}>
-                    <Icon type="question-circle-o" style={{ marginLeft: 4, marginRight: 2 }} />
-                  </Tooltip>
-                </span>
-              ),
-              dataIndex: 'glqntlys',
-              initialValue: updateData.GLJZYS !== undefined ? String(updateData.GLJZYS) : undefined,
-              treeData: lastBudgetPrj,
-              display,
-            })}
-          </Row>
-          <Row gutter={24}>
             {getRadio({
               label: '是否涉及软件开发或系统对接',
               dataIndex: 'sfsjrjkfhxtdj',
@@ -866,6 +896,8 @@ export default connect(({ global }) => ({
               titleField: 'note',
               display,
             })}
+          </Row>
+          <Row gutter={24}>
             {getInput({
               label: '系统名称',
               dataIndex: 'xtmc',
@@ -881,14 +913,40 @@ export default connect(({ global }) => ({
               titleFeild: 'note',
               display,
             })}
+            {getRadio({
+              label: '去年是否有同类预算',
+              dataIndex: 'qnsfytlys',
+              initialValue: updateData.QNSFYTLYS,
+              radioArr,
+              valueField: 'ibm',
+              titleField: 'note',
+              display,
+            })}
           </Row>
           <Row gutter={24}>
-            {getInput({
+            {/* {getInput({
               label: '项目分类说明',
               dataIndex: 'xmflsm',
               initialValue: updateData.XMFLSM,
               display,
-            })}
+            })} */}
+            {getFieldValue('qnsfytlys') === 1 &&
+              getTreeSelect({
+                label: '关联去年同类预算',
+                labelNode: (
+                  <span>
+                    关联去年同类预算
+                    <Tooltip title={getQesTip('关联去年同类预算问号内容')}>
+                      <Icon type="question-circle-o" style={{ marginLeft: 4, marginRight: 2 }} />
+                    </Tooltip>
+                  </span>
+                ),
+                dataIndex: 'glqntlys',
+                initialValue:
+                  updateData.GLJZYS !== undefined ? String(updateData.GLJZYS) : undefined,
+                treeData: lastBudgetPrj,
+                display,
+              })}
           </Row>
           {getTextArea({
             label: '项目必要性',
@@ -948,7 +1006,9 @@ export default connect(({ global }) => ({
               display,
               onChange: v => {
                 setFieldsValue({
-                  ztz: Decimal(getFieldValue('yjtzzje') || 0).plus(v || 0),
+                  ztz: Decimal(getFieldValue('yjtzzje') || 0)
+                    .plus(v || 0)
+                    .toNumber(),
                 });
               },
             })}
@@ -979,6 +1039,14 @@ export default connect(({ global }) => ({
               ],
               max: 999999999,
               display,
+              onChange: v => {
+                setFieldsValue({
+                  yjtzzje: Decimal(getFieldValue('yjwlsb') || 0)
+                    .plus(getFieldValue('yjqt') || 0)
+                    .plus(v || 0)
+                    .toNumber(),
+                });
+              },
             })}
             {getInputNumber({
               label: '硬件网络设备（万元）',
@@ -992,6 +1060,14 @@ export default connect(({ global }) => ({
               ],
               max: 999999999,
               display,
+              onChange: v => {
+                setFieldsValue({
+                  yjtzzje: Decimal(getFieldValue('yjqt') || 0)
+                    .plus(getFieldValue('yjfwq') || 0)
+                    .plus(v || 0)
+                    .toNumber(),
+                });
+              },
             })}
             {getInputNumber({
               label: '硬件其他（万元）',
@@ -1005,6 +1081,21 @@ export default connect(({ global }) => ({
               ],
               max: 999999999,
               display,
+              onChange: v => {
+                setFieldsValue({
+                  yjtzzje: Decimal(getFieldValue('yjwlsb') || 0)
+                    .plus(getFieldValue('yjfwq') || 0)
+                    .plus(v || 0)
+                    .toNumber(),
+                });
+                console.log(
+                  'llll',
+                  Decimal(getFieldValue('yjwlsb') || 0)
+                    .plus(getFieldValue('yjfwq') || 0)
+                    .plus(v || 0)
+                    .toNumber(),
+                );
+              },
             })}
           </Row>
           <Row gutter={24}>
@@ -1022,7 +1113,9 @@ export default connect(({ global }) => ({
               display,
               onChange: v => {
                 setFieldsValue({
-                  ztz: Decimal(getFieldValue('rjtz') || 0).plus(v || 0),
+                  ztz: Decimal(getFieldValue('rjtz') || 0)
+                    .plus(v || 0)
+                    .toNumber(),
                 });
               },
             })}
@@ -1133,7 +1226,9 @@ export default connect(({ global }) => ({
               display,
               onChange: v => {
                 setFieldsValue({
-                  bn_ztz: Decimal(getFieldValue('bn_yjtzzje') || 0).plus(v || 0),
+                  bn_ztz: Decimal(getFieldValue('bn_yjtzzje') || 0)
+                    .plus(v || 0)
+                    .toNumber(),
                 });
               },
             })}
@@ -1207,7 +1302,9 @@ export default connect(({ global }) => ({
               display,
               onChange: v => {
                 setFieldsValue({
-                  bn_ztz: Decimal(getFieldValue('bn_rjtz') || 0).plus(v || 0),
+                  bn_ztz: Decimal(getFieldValue('bn_rjtz') || 0)
+                    .plus(v || 0)
+                    .toNumber(),
                 });
               },
             })}
@@ -1225,7 +1322,7 @@ export default connect(({ global }) => ({
               display,
             })}
             {getInputNumber({
-              label: '其中基础硬件入围金额',
+              label: '其中基础硬件入围金额（万元）',
               dataIndex: 'bn_qzjcyjrwje',
               initialValue: updateData.KZXJCYJRWJE,
               rules: [
@@ -1258,7 +1355,7 @@ export default connect(({ global }) => ({
                   : '',
             })}
           </Row>
-          {getTextArea({
+          {/* {getTextArea({
             label: '硬件云资源配置',
             dataIndex: 'bn_yjyzypz',
             initialValue: updateData.BNJHYJYZYPZ,
@@ -1283,7 +1380,7 @@ export default connect(({ global }) => ({
             ],
             maxLength: 500,
             display,
-          })}
+          })} */}
         </Fragment>
       );
     };
@@ -1400,7 +1497,8 @@ export default connect(({ global }) => ({
               newOrCarryover: Number(values.syxzjzxm),
               budgetClassify: Number(values.yslb),
               isFirst: Number(values.sfsclx),
-              lastYearBudget: Number(values.glqntlys),
+              haveLastYearBudget: Number(values.qnsfytlys),
+              lastYearBudget: getValue(values.glqntlys, 'number'),
               isSoftDevOrSysDock: Number(values.sfsjrjkfhxtdj),
               sysName: values.xtmc,
               budgetCategory: Number(values.xmfl),
@@ -1474,6 +1572,124 @@ export default connect(({ global }) => ({
       });
     };
 
+    //保存并提交
+    const handleSaveAndSubmit = () => {
+      validateFields(async (err, values) => {
+        if (fileList.length === 0) {
+          setIsTurnRed(true);
+          message.warn('必填项未填写完整，请检查！', 3);
+        } else if (!err && !isTurnRed) {
+          if (
+            Decimal(values.rjtz)
+              .plus(values.yjtzzje)
+              .gt(values.ztz)
+          ) {
+            message.warn('预算信息中的软硬件总金额不能大于总投资，请修改！', 3);
+          } else if (
+            Decimal(values.bn_rjtz)
+              .plus(values.bn_yjtzzje)
+              .gt(values.bn_ztz)
+          ) {
+            message.warn('本年计划支付预算信息中的软硬件总金额不能大于总投资，请修改！', 3);
+          } else {
+            setIsSpinning(true);
+            const fileInfo = await convertFilesToBase64(
+              fileList.map(x => x.originFileObj || x),
+              '立项备案表',
+            );
+            const params = {
+              operateType: propsData.operateType,
+              submitType: Number(propsData.submitType),
+              budgetId: Number(propsData.budgetId),
+              year: values.nf.year(),
+              budgetName: values.nf.year() + values.ysxmmc,
+              newOrCarryover: Number(values.syxzjzxm),
+              budgetClassify: Number(values.yslb),
+              isFirst: Number(values.sfsclx),
+              haveLastYearBudget: Number(values.qnsfytlys),
+              lastYearBudget: getValue(values.glqntlys, 'number'),
+              isSoftDevOrSysDock: Number(values.sfsjrjkfhxtdj),
+              sysName: values.xtmc,
+              budgetCategory: Number(values.xmfl),
+              projectCategoryDes: String(values.xmflsm),
+              projectNecessity: String(values.xmbyx),
+              projectContent: String(values.xmnr),
+              softBudget: String(values.rjtz),
+              xcSoftBudget: String(values.qzxcrjtz),
+              hwServer: String(values.yjfwq),
+              hwNetworkEquipment: String(values.yjwlsb),
+              hwOther: String(values.yjqt),
+              hwBudget: String(values.yjtzzje),
+              xcHWBudget: String(values.qzxcyjtz),
+              hwBase: String(values.qzjcyjrwje),
+              totalBudget: String(values.ztz),
+              cloudResources: String(values.yjyzypz),
+              hwStorageConfig: String(values.yjccpz),
+              tySoftBudget: String(values.bn_rjtz),
+              tyXCSoftBudget: String(values.bn_qzxcrjtz),
+              tyHWServer: String(values.bn_yjfwq),
+              tyHWNetworkEquipment: String(values.bn_yjwlsb),
+              tyHWOther: String(values.bn_yjqt),
+              tyHWBudget: String(values.bn_yjtzzje),
+              tyXCHWBudget: String(values.bn_qzxcyjtz),
+              tyHWBase: String(values.bn_qzjcyjrwje),
+              tyTotalBudget: String(values.bn_ztz),
+              tyCloudResources: String(values.bn_yjyzypz),
+              tyHwStorageConfig: String(values.bn_yjccpz),
+              fileInfo: JSON.stringify(fileInfo),
+            };
+            OperateCapitalBeginYearBudgetInfo(params)
+              .then(res => {
+                if (res.success) {
+                  OperateCapitalBeginYearBudgetInfo({
+                    operateType: 'SUBMIT',
+                    submitType: Number(propsData.submitType),
+                    budgetId: Number(propsData.budgetId),
+                    fileInfo: '[]',
+                  })
+                    .then(res => {
+                      if (res.success) {
+                        message.success('提交成功', 1);
+                        resetFields();
+                        setRowTitle({
+                          basic: true,
+                          budget: true,
+                          yearPlan: true,
+                          attachment: true,
+                        });
+                        setFileList([]);
+                        setIsTurnRed(false);
+                        setPropsData({
+                          operateType: 'ADD', //operateType
+                          budgetId: -1, //UPDATE时有传
+                          submitType: 1, //在外边判断好
+                        });
+                        setIsSpinning(false);
+                        //提交后返回首页
+                        history.push({
+                          pathname: '/pms/manage/HomePage/',
+                        });
+                      }
+                    })
+                    .catch(e => {
+                      console.error('提交失败', e);
+                      message.error('提交失败', 1);
+                      setIsSpinning(false);
+                    });
+                }
+              })
+              .catch(e => {
+                console.error('保存失败', e);
+                message.error('操作失败', 1);
+                setIsSpinning(false);
+              });
+          }
+        } else {
+          message.warn('必填项未填写完整，请检查！', 3);
+        }
+      });
+    };
+
     //暂存
     const handleStage = () => {
       validateFields(['ysxmmc'], async err => {
@@ -1492,6 +1708,7 @@ export default connect(({ global }) => ({
             newOrCarryover: getValue(getFieldValue('syxzjzxm'), 'number'),
             budgetClassify: getValue(getFieldValue('yslb'), 'number'),
             isFirst: getValue(getFieldValue('sfsclx'), 'number'),
+            haveLastYearBudget: getValue(getFieldValue('qnsfytlys'), 'number'),
             lastYearBudget: getValue(getFieldValue('glqntlys'), 'number'),
             isSoftDevOrSysDock: getValue(getFieldValue('sfsjrjkfhxtdj'), 'number'),
             sysName: getFieldValue('xtmc'),
@@ -1567,32 +1784,11 @@ export default connect(({ global }) => ({
 
     //退回
     const handleSendBack = () => {
-      setIsSpinning(true);
-      OperateCapitalBeginYearBudgetInfo({
-        ...propsData.sendBackParams,
-        fileInfo: '[]',
-      })
-        .then(res => {
-          if (res.success) {
-            message.success('退回成功', 1);
-            setIsSpinning(false);
-            history.push({
-              pathname:
-                '/pms/manage/BudgetInput/' +
-                EncryptBase64(
-                  JSON.stringify({
-                    refreshParams: propsData.refreshParams,
-                    timeStamp: new Date().getTime(), //用于数据刷新
-                  }),
-                ),
-            });
-          }
-        })
-        .catch(e => {
-          console.error('退回失败', e);
-          message.error('退回失败', 1);
-          setIsSpinning(false);
-        });
+      setSendBackData({
+        visible: true,
+        fromBudget: true, //外边表格的退回，false时是抽屉里的退回
+        data: propsData.sendBackParams,
+      });
     };
 
     //取消-返回列表页
@@ -1612,7 +1808,13 @@ export default connect(({ global }) => ({
         submitType: 1, //在外边判断好
       });
       history.push({
-        pathname: '/pms/manage/BudgetInput',
+        pathname:
+          '/pms/manage/BudgetInput/' +
+          EncryptBase64(
+            JSON.stringify({
+              refreshParams: propsData.refreshParams ?? {},
+            }),
+          ),
       });
     };
 
@@ -1662,11 +1864,19 @@ export default connect(({ global }) => ({
                   暂存
                 </Button>
 
-                <Popconfirm title="是否确定保存？" onConfirm={handleSave}>
-                  <Button className="btn-submit" type="primary">
-                    保存
-                  </Button>
-                </Popconfirm>
+                {propsData.saveAndSubmit === true ? (
+                  <Popconfirm title="是否确定保存并提交？" onConfirm={handleSaveAndSubmit}>
+                    <Button className="btn-submit" type="primary">
+                      保存并提交
+                    </Button>
+                  </Popconfirm>
+                ) : (
+                  <Popconfirm title="是否确定保存？" onConfirm={handleSave}>
+                    <Button className="btn-submit" type="primary">
+                      保存
+                    </Button>
+                  </Popconfirm>
+                )}
               </Fragment>
             ) : (
               <Fragment>
@@ -1674,13 +1884,11 @@ export default connect(({ global }) => ({
                   返回
                 </Button>
                 {propsData.sendBackParams && (
-                  <Popconfirm title="是否确定退回？" onConfirm={handleSendBack}>
-                    <Button className="btn-submit" type="primary">
-                      退回
-                    </Button>
-                  </Popconfirm>
+                  <Button className="btn-submit" type="primary" onClick={handleSendBack}>
+                    退回
+                  </Button>
                 )}
-                {propsData.isGLY && (
+                {propsData.isGLY && getFieldValue('qnsfytlys') === 1 && (
                   <Popconfirm title="是否确定保存？" onConfirm={handleSave}>
                     <Button className="btn-submit" type="primary">
                       保存
@@ -1690,6 +1898,44 @@ export default connect(({ global }) => ({
               </Fragment>
             )}
           </div>
+          <SendBackModal
+            visible={sendBackData.visible}
+            setVisible={v => setSendBackData(p => ({ ...p, visible: v }))}
+            data={sendBackData.data}
+            budgetId={sendBackData.budgetId}
+            fromBudget={sendBackData.fromBudget} //true时是外边表格的退回，false时是抽屉里的退回
+            refresh={() => {
+              //不为空时，完成事项，退回后返回首页
+              if (propsData.backToHome !== undefined) {
+                UpdateMessageState({
+                  zxlx: 'EXECUTE',
+                  xxid: propsData.backToHome,
+                })
+                  .then((ret = {}) => {
+                    const { code = 0, note = '', record = [] } = ret;
+                    if (code === 1) {
+                      history.push({
+                        pathname: '/pms/manage/HomePage',
+                      });
+                    }
+                  })
+                  .catch(error => {
+                    message.error('操作失败', 1);
+                  });
+              } else {
+                history.push({
+                  pathname:
+                    '/pms/manage/BudgetInput/' +
+                    EncryptBase64(
+                      JSON.stringify({
+                        refreshParams: propsData.refreshParams,
+                        timeStamp: new Date().getTime(), //用于数据刷新
+                      }),
+                    ),
+                });
+              }
+            }}
+          />
         </Spin>
       </div>
     );

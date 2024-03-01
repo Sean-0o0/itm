@@ -105,6 +105,7 @@ const TableBox = props => {
     //type ADD|新增；UPDATE|修改；DELETE|删除；SUBMIT|提交；BACK|退回
     //isSendBack 是否退回
     //负责人的新增和修改 传1，提交传2；统筹人审核的新增、修改传2，提交传3，退回传1；管理员的新增、修改传3，退回2
+    //最新修改 123已经没区别了，只有草稿 4 有区别
     let submitType = 1;
     if (userRole.includes('预算管理人')) {
       // if (['ADD', 'UPDATE'].includes(type)) {
@@ -331,8 +332,13 @@ const TableBox = props => {
                           },
                           sendBackParams: {
                             operateType: 'BACK',
-                            submitType: getSubmitType(userRole, true, 'BACK'),
+                            submitType: getSubmitType(
+                              userRole,
+                              Number(userBasicInfo.id) === Number(row.FZRID),
+                              'BACK',
+                            ),
                             budgetId: Number(row.YSID),
+                            budgetName: row.YSXMMC,
                           },
                         }),
                       )}`,
@@ -348,7 +354,11 @@ const TableBox = props => {
                       fromBudget: true, //外边表格的退回，false时是抽屉里的退回
                       data: {
                         operateType: 'BACK',
-                        submitType: getSubmitType(userRole, true, 'BACK'),
+                        submitType: getSubmitType(
+                          userRole,
+                          Number(userBasicInfo.id) === Number(row.FZRID),
+                          'BACK',
+                        ),
                         budgetId: Number(row.YSID),
                         budgetName: row.YSXMMC,
                       },
@@ -363,7 +373,11 @@ const TableBox = props => {
                     onConfirm={() =>
                       handleSubmit({
                         operateType: 'SUBMIT',
-                        submitType: getSubmitType(userRole, true, 'SUBMIT'),
+                        submitType: getSubmitType(
+                          userRole,
+                          Number(userBasicInfo.id) === Number(row.FZRID),
+                          'SUBMIT',
+                        ),
                         budgetId: Number(row.YSID),
                       })
                     }
@@ -394,8 +408,13 @@ const TableBox = props => {
                         },
                         sendBackParams: {
                           operateType: 'BACK',
-                          submitType: getSubmitType(userRole, true, 'BACK'),
+                          submitType: getSubmitType(
+                            userRole,
+                            Number(userBasicInfo.id) === Number(row.FZRID),
+                            'BACK',
+                          ),
                           budgetId: Number(row.YSID),
+                          budgetName: row.YSXMMC,
                         },
                       }),
                     )}`,
@@ -411,7 +430,11 @@ const TableBox = props => {
                     fromBudget: true, //外边表格的退回，false时是抽屉里的退回
                     data: {
                       operateType: 'BACK',
-                      submitType: getSubmitType(userRole, true, 'BACK'),
+                      submitType: getSubmitType(
+                        userRole,
+                        Number(userBasicInfo.id) === Number(row.FZRID),
+                        'BACK',
+                      ),
                       budgetId: Number(row.YSID),
                       budgetName: row.YSXMMC,
                     },
@@ -993,6 +1016,26 @@ const TableBox = props => {
                   style={{ width: '100%' }}
                 />
               </div>
+              {userRole.includes('预算管理人') && (
+                <div className="console-item" key="项目经理">
+                  <div className="item-label">项目经理</div>
+                  <Input
+                    value={filterData.projectManagerName}
+                    className="item-selector"
+                    onChange={v => {
+                      v.persist();
+                      if (v.target.value === '') {
+                        setFilterData(p => ({ ...p, projectManagerName: undefined }));
+                      } else {
+                        setFilterData(p => ({ ...p, projectManagerName: v.target.value }));
+                      }
+                    }}
+                    placeholder={'请输入项目经理'}
+                    allowClear={true}
+                    style={{ width: '100%' }}
+                  />
+                </div>
+              )}
               <Button
                 className="btn-search"
                 type="primary"
@@ -1221,7 +1264,7 @@ const TableBox = props => {
                   : 'calc(100vh - 285px)'
                 : 'calc(100vh - 367px)',
             }}
-            bordered //记得注释
+            // bordered //记得注释
           />
         </div>
         <Drawer
@@ -1246,7 +1289,7 @@ const TableBox = props => {
             rowKey={'XMMC'}
             dataSource={drawerData.data}
             pagination={false}
-            bordered //记得注释
+            // bordered //记得注释
           />
         </Drawer>
         <ExportModal

@@ -133,6 +133,7 @@ export default function BudgetCarryover(props) {
     sort = curSorter,
     budgetProject,
     projectName,
+    projectManagerName,
   }) => {
     setSpinningData(p => ({
       tip: '加载中',
@@ -143,6 +144,7 @@ export default function BudgetCarryover(props) {
       queryType: 'ALL',
       budgetProject,
       projectName,
+      projectManagerName,
       current,
       pageSize,
       paging: 1,
