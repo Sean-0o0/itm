@@ -6,7 +6,7 @@ import AddPrjTracking from '../../ProjectTracking/addPrjTracking/index.js';
 import Lodash from 'lodash'
 
 export default function PrjTracking(props) {
-  const { xmid = -2, prjData = {}, getTrackingData, dictionary, ysspHide = false } = props;
+  const { xmid = -2, prjData = {}, getTrackingData, dictionary, ysspHide = false, isSinglePayment = false } = props;
   const { trackingData = [] } = prjData;
   const [activeKey, setActiveKey] = useState('');
   const [btnVisible, setBtnVisible] = useState({
@@ -404,7 +404,7 @@ export default function PrjTracking(props) {
   };
 
   //预算审批隐藏
-  if(ysspHide) return null;
+  if(ysspHide || isSinglePayment) return null;
 
   if (trackingData.length === 0) return isXMJL ? (
     <div className="prj-tracking-box">

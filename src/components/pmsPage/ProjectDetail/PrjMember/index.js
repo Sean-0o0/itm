@@ -9,7 +9,7 @@ import { useHistory } from 'react-router-dom';
 import { InviteMemberAgain } from '../../../../services/pmsServices';
 
 export default function PrjMember(props) {
-  const { prjData, routes, xmid, getPrjDtlData, isLeader } = props;
+  const { prjData = {}, routes, xmid, getPrjDtlData, isLeader, isSinglePayment = false } = props;
   const { member = [], prjBasic = {} } = prjData;
   const history = useHistory();
   let LOGIN_USER_ID = Number(JSON.parse(sessionStorage.getItem('user'))?.id);
@@ -111,7 +111,7 @@ export default function PrjMember(props) {
     );
   };
 
-  if (getMemberData().length === 0) return null;
+  if (getMemberData().length === 0 || isSinglePayment) return null;
   return (
     <div className="prj-member-box">
       <div className="top-title">项目人员（{getMemberData().length}）</div>

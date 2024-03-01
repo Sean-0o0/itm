@@ -38,7 +38,7 @@ export default connect(({ global = {} }) => ({
   userBasicInfo: global.userBasicInfo,
   dictionary: global.dictionary,
 }))(function ProjectDetail(props) {
-  const { routes, xmid, dictionary = {}, userBasicInfo = {} } = props;
+  const { routes = [], xmid, dictionary = {}, userBasicInfo = {} } = props;
   const [isSpinning, setIsSpinning] = useState(false); //加载状态
   const [prjData, setPrjData] = useState({}); //项目信息-所有
   const {
@@ -120,6 +120,7 @@ export default connect(({ global = {} }) => ({
   }); //是否管理员
   const [openNewIteContent, setOpenNewIteContent] = useState(false); //（转为自研迭代项目后）打开新增升级内容弹窗
   const ysspHide = String(prjData.prjBasic?.XMZT) === '5'; //预算审批的情况 隐藏 里程碑、项目跟踪、快捷方式、编辑及更多按钮
+  const isSinglePayment = String(prjData.prjBasic?.XMLX).includes('单费用付款'); //是否单费用付款项目 项目人员、项目节点、项目跟踪模块不展示。右上角的更多按钮也不展示
   // var s = 0;
   // var e = 0;
 
@@ -1338,6 +1339,7 @@ export default connect(({ global = {} }) => ({
           grayTest={grayTest}
           isAdmin={userBasicInfo.id === '0'} //项目编辑，管理员可以编辑所有项目，子项目的项目立项里程碑信息，也对管理员开放编辑
           ysspHide={ysspHide}
+          isSinglePayment={isSinglePayment}
         />
         <div className="detail-row">
           <div className="col-left">
@@ -1392,6 +1394,8 @@ export default connect(({ global = {} }) => ({
                 setEndIndex,
               }}
               ysspHide={ysspHide}
+              isSinglePayment={isSinglePayment}
+              routes={routes}
             />
             <PrjTracking
               xmid={xmid}
@@ -1400,6 +1404,7 @@ export default connect(({ global = {} }) => ({
               isLeader={isLeader}
               dictionary={dictionary}
               ysspHide={ysspHide}
+              isSinglePayment={isSinglePayment}
             />
             <InfoDisplay
               isHwSltPrj={isHwSltPrj}
@@ -1410,6 +1415,7 @@ export default connect(({ global = {} }) => ({
               isBdgtMnger={isBdgtMnger}
               isDDXM={isDDXM}
               grayTest={grayTest}
+              isSinglePayment={isSinglePayment}
             />
             <SubPrjProgress dataProps={{ prjData, routes }} funcProps={{}} />
             {showKQXX && (
@@ -1433,6 +1439,7 @@ export default connect(({ global = {} }) => ({
                 is_XMJL_FXMJL,
                 allStaffData,
                 ysspHide,
+                isSinglePayment,
               }}
               funcProps={{
                 getPrjDtlData,
@@ -1448,9 +1455,10 @@ export default connect(({ global = {} }) => ({
               xmid={xmid}
               getPrjDtlData={getPrjDtlData}
               isLeader={isLeader}
+              isSinglePayment={isSinglePayment}
             />
             {isDDXM && <PaymentRecord prjData={prjData} />}
-            <PrjNode prjData={prjData} />
+            <PrjNode prjData={prjData} isSinglePayment={isSinglePayment} />
             <PrjDoc
               prjDocData={prjDocData}
               setPrjDocData={setPrjDocData}

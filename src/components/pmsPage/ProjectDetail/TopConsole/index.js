@@ -18,6 +18,7 @@ import { CreateOperateHyperLink, ProjectCollect } from '../../../../services/pms
 import EditProjectInfoModel from '../../EditProjectInfoModel';
 import iconCompleted from '../../../../assets/projectDetail/icon_completed.png';
 import PaymentModal from './PaymentModal';
+import SinglePaymentModal from '../../HomePage/ShortcutCard/SinglePaymentModal';
 
 const { Item } = Breadcrumb;
 const { SubMenu } = Menu;
@@ -37,6 +38,7 @@ export default function TopConsole(props) {
     grayTest = {},
     isAdmin = false,
     ysspHide = false,
+    isSinglePayment = false,
   } = props;
   const [fileAddVisible, setFileAddVisible] = useState(false); //项目信息修改弹窗显示
   const [src_fileAdd, setSrc_fileAdd] = useState({}); //项目信息修改弹窗显示
@@ -69,6 +71,7 @@ export default function TopConsole(props) {
   } = prjData;
   let LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
   const history = useHistory();
+  const [singlePaymentVisible, setSinglePaymentVisible] = useState(false); //单费用付款弹窗显隐
 
   //项目经理
   const allowEdit = () => {
@@ -191,20 +194,23 @@ export default function TopConsole(props) {
 
   //编辑项目弹窗
   const handleEditPrjInfo = () => {
-    setFileAddVisible(true);
-
-    let p = { xmid, type: true, projectStatus: 'SAVE' };
-    //当项目状态为5时，编辑项目弹窗，无法修改预算信息，在关联预算的字段后面加一个文字提示“项目审批中，暂时无法修改预算信息”
-    String(prjBasic.XMZT) === '5' && (p.notAllowEditBudget = false); //有变动，暂时改成false
-    prjBasic.FXMMC && (p.subItemFlag = true);
-    //项目编辑，管理员可以编辑所有项目，子项目的项目立项里程碑信息，也对管理员开放编辑
-    if (isAdmin) {
-      p.subItemFlag = false;
+    if (isSinglePayment) {
+      setSinglePaymentVisible(true);
+    } else {
+      setFileAddVisible(true);
+      let p = { xmid, type: true, projectStatus: 'SAVE' };
+      //当项目状态为5时，编辑项目弹窗，无法修改预算信息，在关联预算的字段后面加一个文字提示“项目审批中，暂时无法修改预算信息”
+      String(prjBasic.XMZT) === '5' && (p.notAllowEditBudget = false); //有变动，暂时改成false
+      prjBasic.FXMMC && (p.subItemFlag = true);
+      //项目编辑，管理员可以编辑所有项目，子项目的项目立项里程碑信息，也对管理员开放编辑
+      if (isAdmin) {
+        p.subItemFlag = false;
+      }
+      setSrc_fileAdd(
+        p,
+        // `/#/single/pms/EditProject/${EncryptBase64(JSON.stringify(p))}`
+      );
     }
-    setSrc_fileAdd(
-      p,
-      // `/#/single/pms/EditProject/${EncryptBase64(JSON.stringify(p))}`
-    );
   };
 
   //申请餐券/权限弹窗
@@ -853,7 +859,7 @@ export default function TopConsole(props) {
               <i className="iconfont icon-star-fill" />
             </Popconfirm>
           )}
-          {
+          {!isSinglePayment && (
             <Fragment>
               {/* 科技奖项 */}
               {award
@@ -955,7 +961,7 @@ export default function TopConsole(props) {
                 </Popover>
               )}
             </Fragment>
-          }
+          )}
           {getTags(prjBasic.XMBQ, prjBasic.XMBQID)}
           {/* 1已完结2未完结 */}
           {grayTest.DDMK && prjBasic.WJZT === '1' && (
@@ -966,7 +972,7 @@ export default function TopConsole(props) {
               编辑
             </Button>
           )}
-          {!ysspHide && (allowEdit() || String(LOGIN_USER_INFO.id) === '0') && (
+          {!isSinglePayment && !ysspHide && (allowEdit() || String(LOGIN_USER_INFO.id) === '0') && (
             <Dropdown overlay={btnMoreContent()} overlayClassName="tc-btn-more-content-dropdown">
               <Button className="btn-more">
                 <i className="iconfont icon-more" />
@@ -992,6 +998,16 @@ export default function TopConsole(props) {
           </div>
         )}
       </div>
+      <SinglePaymentModal
+        visible={singlePaymentVisible}
+        setVisible={setSinglePaymentVisible}
+        type="MOD"
+        refresh={() => {
+          getPrjDtlData();
+          getMileStoneData(true);
+        }}
+        xmid={xmid}
+      />
     </div>
   );
 }

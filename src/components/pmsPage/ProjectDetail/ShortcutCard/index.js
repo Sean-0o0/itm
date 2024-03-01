@@ -35,6 +35,7 @@ export default connect(({ global = {} }) => ({
     is_XMJL_FXMJL = false, // 项目详情页的是否是项目经理或者副项目经理，非账号登录人的
     allStaffData = [], //用于判断 验收报告 事项是否已完成
     ysspHide = false,
+    isSinglePayment = false, //单费用付款项目
   } = dataProps;
 
   const { prjBasic = {}, member = [], contrastArr = [] } = prjData;
@@ -469,87 +470,76 @@ export default connect(({ global = {} }) => ({
   return (
     <div className="shortcut-card-box">
       <div className="top-title">快捷入口</div>
-      <div className="content">
-        {is_XMJL_FXMJL &&
-          getShortcutItem({
-            imgTxt: 'zscq',
-            txt: '知识产权',
-            fn: () => {},
-            content: intelPropertyMenu,
-          })}
+      {isSinglePayment ? (
+        <div className="content">
+          {is_XMJL_FXMJL &&
+            prjBasic.WJZT !== '1' &&
+            getShortcutItem({
+              imgTxt: 'xmwj',
+              txt: '项目完结',
+              fn: () => handlePrjFinish(xmid),
+            })}
+        </div>
+      ) : (
+        <div className="content">
+          {is_XMJL_FXMJL &&
+            getShortcutItem({
+              imgTxt: 'zscq',
+              txt: '知识产权',
+              fn: () => {},
+              content: intelPropertyMenu,
+            })}
 
-        {is_XMJL_FXMJL &&
-          getShortcutItem({
-            imgTxt: 'hjry',
-            txt: '获奖荣誉',
-            fn: () => {},
-            content: awardHonorMenu,
-          })}
+          {is_XMJL_FXMJL &&
+            getShortcutItem({
+              imgTxt: 'hjry',
+              txt: '获奖荣誉',
+              fn: () => {},
+              content: awardHonorMenu,
+            })}
 
-        {showKQXX &&
-          getShortcutItem({
-            imgTxt: 'kqdj',
-            txt: '考勤登记',
-            fn: handleAttendanceRegister,
-          })}
+          {showKQXX &&
+            getShortcutItem({
+              imgTxt: 'kqdj',
+              txt: '考勤登记',
+              fn: handleAttendanceRegister,
+            })}
 
-        {is_XMJL_FXMJL &&
-          showSCDD &&
-          getShortcutItem({
-            imgTxt: 'scdd',
-            txt: '生成迭代',
-            fn: createIterationPrj,
-          })}
+          {is_XMJL_FXMJL &&
+            showSCDD &&
+            getShortcutItem({
+              imgTxt: 'scdd',
+              txt: '生成迭代',
+              fn: createIterationPrj,
+            })}
 
-        {is_XMJL_FXMJL &&
-          prjBasic.WJZT !== '1' &&
-          getShortcutItem({
-            imgTxt: 'xmwj',
-            txt: '项目完结',
-            fn: () => handlePrjFinish(xmid),
-          })}
+          {is_XMJL_FXMJL &&
+            prjBasic.WJZT !== '1' &&
+            getShortcutItem({
+              imgTxt: 'xmwj',
+              txt: '项目完结',
+              fn: () => handlePrjFinish(xmid),
+            })}
 
-        {/* {grayTest.DDMK &&
-          (authorities.RYPJ?.includes('OpenEvaluation')
-            ? // 出现浮窗，可选人员互评或评价状态管理
-              getShortcutItem({
-                imgTxt: 'mutualEvaluation',
-                txt: '人员互评',
-                fn: () => {
-                  mutualEvaluationClick(true);
-                },
-                content: mutualEvaluationMenu,
-              })
-            : // 直接跳转人员评价页面(同时要判断是不是项目成员有没有数据)
-              Number(prjBasic.SFBHZXM || 0) <= 0 &&
-              isForbiddenLeader === false &&
-              hasEvaluationData === true &&
-              getShortcutItem({
-                imgTxt: 'mutualEvaluation',
-                txt: '人员互评',
-                fn: () => {
-                  mutualEvaluationClick(false);
-                },
-              }))} */}
+          {authorities.RYPJ?.includes('OpenEvaluation') &&
+            getShortcutItem({
+              imgTxt: 'mutualEvaluation',
+              txt: '评价管理',
+              fn: () => {
+                switchToEmployeePage('manage');
+              },
+            })}
 
-        {authorities.RYPJ?.includes('OpenEvaluation') &&
-          getShortcutItem({
-            imgTxt: 'mutualEvaluation',
-            txt: '评价管理',
-            fn: () => {
-              switchToEmployeePage('manage');
-            },
-          })}
-
-        {is_XMJL_FXMJL &&
-          showZWDD &&
-          getShortcutItem({
-            imgTxt: 'kqdj',
-            txt: '转为迭代',
-            fn: handleZWDD,
-            popConfirmTxt: '确认转为自研迭代项目？',
-          })}
-      </div>
+          {is_XMJL_FXMJL &&
+            showZWDD &&
+            getShortcutItem({
+              imgTxt: 'kqdj',
+              txt: '转为迭代',
+              fn: handleZWDD,
+              popConfirmTxt: '确认转为自研迭代项目？',
+            })}
+        </div>
+      )}
 
       <canvas
         ref={flowers}

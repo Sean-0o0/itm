@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import moment from 'moment';
 
 export default function PrjNode(props) {
-  const { prjData } = props;
+  const { prjData = {}, isSinglePayment = false } = props;
   const { nodeData = [] } = prjData;
 
   const getPrjNodeItem = (nodeName = '--', date = '--', ago = '', key) => (
@@ -37,7 +37,7 @@ export default function PrjNode(props) {
     return '';
   };
 
-  if (nodeData.length === 0) return null;
+  if (nodeData.length === 0 || isSinglePayment) return null;
   return (
     <div className="prj-node-box">
       <div className="top-title">项目节点</div>

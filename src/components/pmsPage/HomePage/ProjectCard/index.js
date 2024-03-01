@@ -9,6 +9,7 @@ import { QueryProjectGeneralInfo } from '../../../../services/pmsServices';
 import NewProjectModelV2 from '../../../../pages/workPlatForm/singlePage/NewProjectModelV2';
 import emptyImg from '../../../../assets/homePage/img_no data@2x.png';
 import EditProjectInfoModel from '../../EditProjectInfoModel';
+import SinglePaymentModal from '../ShortcutCard/SinglePaymentModal';
 
 export default function ProjectCard(props) {
   const {
@@ -34,6 +35,10 @@ export default function ProjectCard(props) {
     url: '#',
     visible: false,
   }); //流程详情弹窗数据
+  const [singlePaymentData, setSinglePaymentData] = useState({
+    visible: false,
+    xmid: -1,
+  }); //单费用付款弹窗
 
   //流程详情弹窗配置
   const lcxqModalProps = {
@@ -85,42 +90,37 @@ export default function ProjectCard(props) {
   };
 
   //编辑
-  const handleModify = (xmid, { isDraft, isBack, isStop, isPending, noPass }) => {
-    if (isPending) return; //审批中不允许编辑
-    if (isBack) {
-      //被退回，打开流程详情
-      openLCXQModal(xmid);
+  const handleModify = (xmid, { isDraft, isBack, isStop, isPending, noPass }, item = {}) => {
+    if (isBack || isPending) {
+      //被退回\审批中，打开流程详情
+      openLCXQModal(JSON.parse(item.LCXX));
       return;
     }
-    //其他的 打开项目编辑
-    setFileAddVisible(true);
-    setSrc_fileAdd({
-      xmid,
-      type: true,
-      projectStatus: 'SAVE',
-      isDraft,
-      // notAllowEditBudget: isDraft ? false : true,
-    });
+    if (String(item.XMLX) === '17') {
+      //单费用付款项目
+      setSinglePaymentData({
+        xmid,
+        visible: true,
+      });
+    } else {
+      //其他的 打开项目编辑
+      setFileAddVisible(true);
+      setSrc_fileAdd({
+        xmid,
+        type: true,
+        projectStatus: 'SAVE',
+        isDraft,
+        // notAllowEditBudget: isDraft ? false : true,
+      });
+    }
   };
 
   //打开lb流程详情弹窗
-  const openLCXQModal = xmid => {
-    const item =
-      toDoData.find(
-        x =>
-          String(x.xmid) === String(xmid) &&
-          x.txnr.includes('退回') &&
-          x.kzzd !== '' &&
-          x.kzzd !== undefined,
-      ) || {};
-    if (item.kzzd) {
-      setLcxqModalData({
-        url: `/livebos/ShowWorkflow?wfid=${JSON.parse(item.kzzd).INSTID}&stepId=${
-          JSON.parse(item.kzzd).STEP
-        }&PopupWin=true&HideCancelBtn=true`,
-        visible: true,
-      });
-    }
+  const openLCXQModal = (LCXX = {}) => {
+    setLcxqModalData({
+      url: `/livebos/ShowWorkflow?wfid=${LCXX.instid}&stepId=${LCXX.step}&PopupWin=true&HideCancelBtn=true`,
+      visible: true,
+    });
   };
 
   //草稿删除
@@ -183,19 +183,7 @@ export default function ProjectCard(props) {
   };
 
   //获取项目块
-  const getProjectItem = ({
-    title = '--',
-    content = '--',
-    rate = 0,
-    key,
-    participantData = [],
-    riskData = [],
-    isLate = false,
-    state = '2',
-    xmid = -1,
-    YSLCZT,
-    kzzd,
-  }) => {
+  const getProjectItem = ({ title = '--', key, state = '2', xmid = -1, YSLCZT, item = {} }) => {
     const isDraft = state === '2'; //草稿
     const isBack = YSLCZT === '退回'; //被退回
     const isStop = YSLCZT === '终止'; //被终止
@@ -225,7 +213,7 @@ export default function ProjectCard(props) {
         >
           <div
             className="item-top"
-            onClick={() => handleModify(xmid, { isDraft, isBack, isStop, isPending, noPass })}
+            onClick={() => handleModify(xmid, { isDraft, isBack, isStop, isPending, noPass }, item)}
           >
             <span>{title}</span>
             <div className="tag" style={{ backgroundColor: fontColor }}>
@@ -234,7 +222,7 @@ export default function ProjectCard(props) {
           </div>
           <div
             className="item-middle"
-            onClick={() => handleModify(xmid, { isDraft, isBack, isStop, isPending, noPass })}
+            onClick={() => handleModify(xmid, { isDraft, isBack, isStop, isPending, noPass }, item)}
           >
             <img src={emptyImg} alt="" />
           </div>
@@ -242,7 +230,9 @@ export default function ProjectCard(props) {
             {!isPending && (
               <div
                 className="btn-edit"
-                onClick={() => handleModify(xmid, { isDraft, isBack, isStop, isPending, noPass })}
+                onClick={() =>
+                  handleModify(xmid, { isDraft, isBack, isStop, isPending, noPass }, item)
+                }
               >
                 <div className="btn-edit-wrapper">
                   <i className="iconfont edit" />
@@ -319,6 +309,16 @@ export default function ProjectCard(props) {
           )}
         </Modal>
       )}
+      {/* 单费用付款 */}
+      <SinglePaymentModal
+        visible={singlePaymentData.visible}
+        setVisible={v => setSinglePaymentData(p => ({ ...p, visible: v }))}
+        type="MOD"
+        refresh={() => {
+          getPrjInfo(userRole); //刷新数据
+        }}
+        xmid={singlePaymentData.xmid}
+      />
       {/*流程详醒弹窗*/}
       {lcxqModalData.visible && (
         <BridgeModel
@@ -348,6 +348,7 @@ export default function ProjectCard(props) {
             riskData: item.riskData,
             isLate: item.LCBZT === '4',
             xmid: item.XMID,
+            item: item,
           });
         })}
         {total === 0 && (

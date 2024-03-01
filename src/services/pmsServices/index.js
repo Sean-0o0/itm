@@ -176,6 +176,7 @@ const {
     queryBudgetProjectDetail,
     queryMemberRevaluationByORG,
     queryUnifiedProjectInitProcess,
+    operateSinglePaymentProject,
     queryIteContractInfoList,
     queryOperateStatistics,
     queryOperateDetail,
@@ -1901,6 +1902,15 @@ export async function QueryUnifiedProjectInitProcess(payload) {
   return request(option);
 }
 
+// 编辑单费用付款项目
+export async function OperateSinglePaymentProject(payload) {
+  const option = {
+    url: operateSinglePaymentProject,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
 
 // 合同列表页面查询查询迭代合同信息
 export async function QueryIteContractInfoList(payload) {

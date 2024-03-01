@@ -1012,6 +1012,12 @@ export default [
   },
   {
     code: '',
+    key: 'operateSinglePaymentProject',
+    url: '/projectManage/operateSinglePaymentProject',
+    dis: '编辑单费用付款项目',
+  },
+  {
+    code: '',
     key: 'queryIteContractInfoList',
     url: '/projectManage/queryIteContractInfoList',
     dis: '合同列表页面查询查询迭代合同信息',

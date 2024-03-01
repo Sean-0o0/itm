@@ -14,7 +14,17 @@ const {
 } = api;
 
 export default function InfoDisplay(props) {
-  const { prjData, xmid, routes, isLeader, isHwSltPrj, isBdgtMnger, isDDXM, grayTest = {} } = props;
+  const {
+    prjData,
+    xmid,
+    routes,
+    isLeader,
+    isHwSltPrj,
+    isBdgtMnger,
+    isDDXM,
+    grayTest = {},
+    isSinglePayment = false,
+  } = props;
   const {
     prjBasic = {},
     award = [],
@@ -485,131 +495,133 @@ export default function InfoDisplay(props) {
       <div className="top-box">项目信息</div>
 
       {/* 基本信息 */}
-      <div className="info-box" key="xmxx">
-        <div className="top-title">基本信息</div>
-        <div className="info-row-box">
-          {getInfoItem('项目类型：', notNull(prjBasic.XMLX))}
-          <div className="info-item" key="关联软件：">
-            <span>关联软件：</span>
-            {notNull(prjBasic.GLXT) === '暂无数据' ? (
-              '暂无数据'
-            ) : (
-              <Tooltip placement="topLeft" title={prjBasic.GLXT.replace(/,/g, '、')}>
-                <span style={{ cursor: 'default', color: '#303133' }}>
-                  {prjBasic.GLXT.replace(/,/g, '、')}
-                </span>
-              </Tooltip>
-            )}
-          </div>
-          <div className="info-item" key="应用部门：">
-            <span>应用部门：</span>
-            {notNull(prjBasic.SSBM) === '暂无数据' ? (
-              '暂无数据'
-            ) : (
-              <Tooltip placement="topLeft" title={prjBasic.SSBM.replace(/,/g, '、')}>
-                <span style={{ cursor: 'default', color: '#303133' }}>
-                  {prjBasic.SSBM.replace(/,/g, '、')}
-                </span>
-              </Tooltip>
-            )}
-          </div>
-          {prjBasic.FXMMC && (
-            <div className="info-item" key="父项目名称：">
-              <span>父项目名称：</span>
-              <Tooltip placement="topLeft" title={prjBasic.FXMMC}>
-                <Link
-                  style={{ color: '#3361ff' }}
-                  to={{
-                    pathname: `/pms/manage/ProjectDetail/${EncryptBase64(
-                      JSON.stringify({
-                        xmid: prjBasic.GLFXMID,
-                      }),
-                    )}`,
-                    state: {
-                      routes,
-                    },
-                  }}
-                >
-                  {prjBasic.FXMMC}
-                </Link>
-              </Tooltip>
-            </div>
-          )}
-          {getInfoItem('是否包含硬件：', prjBasic.SFBHYJ === '1' ? '是' : '否')}
-          {/* {getInfoItem('是否在硬件入围内：', prjBasic.SFYJRW === '1' ? '是' : '否')} */}
-          {isMember() && (
-            <div className="info-item" key="文档库：">
-              <span>文档库：</span>
-              <Link
-                to={{
-                  pathname: '/pms/manage/attachLibrary',
-                  query: {
-                    xmid,
-                  },
-                }}
-                style={{ color: '#3361ff' }}
-              >
-                查看详情
-              </Link>
-            </div>
-          )}
-          {!isHwSltPrj && (
-            <div className="info-item">
-              <span>变更类/计划外需求：</span>
-              {demand.length === 0 ? (
+      {!isSinglePayment && (
+        <div className="info-box" key="xmxx">
+          <div className="top-title">基本信息</div>
+          <div className="info-row-box">
+            {getInfoItem('项目类型：', notNull(prjBasic.XMLX))}
+            <div className="info-item" key="关联软件：">
+              <span>关联软件：</span>
+              {notNull(prjBasic.GLXT) === '暂无数据' ? (
                 '暂无数据'
               ) : (
-                <Popover
-                  placement="bottom"
-                  title={null}
-                  content={tablePopover(demand, [
-                    {
-                      title: '需求标题',
-                      dataIndex: 'XQBT',
-                      width: 144,
-                      key: 'XQBT',
-                      ellipsis: true,
-                      render: txt => (
-                        <Tooltip title={txt} placement="topLeft">
-                          <span style={{ cursor: 'default' }}>{txt}</span>
-                        </Tooltip>
-                      ),
-                    },
-                    {
-                      title: '需求内容',
-                      dataIndex: 'XQNR',
-                      width: 188,
-                      key: 'XQNR',
-                      ellipsis: true,
-                      render: txt => (
-                        <Tooltip title={txt} placement="topLeft">
-                          <span style={{ cursor: 'default' }}>{txt}</span>
-                        </Tooltip>
-                      ),
-                    },
-                    {
-                      title: '需求日期',
-                      dataIndex: 'XQRQ',
-                      // width: 100,
-                      key: 'XQRQ',
-                      ellipsis: true,
-                      render: txt => (
-                        <span style={{ cursor: 'default' }}>
-                          {moment(txt).format('YYYY-MM-DD')}
-                        </span>
-                      ),
-                    },
-                  ])}
-                  overlayClassName="unplanned-demand-content-popover"
-                >
-                  <a style={{ color: '#3361ff' }}>查看详情</a>
-                </Popover>
+                <Tooltip placement="topLeft" title={prjBasic.GLXT.replace(/,/g, '、')}>
+                  <span style={{ cursor: 'default', color: '#303133' }}>
+                    {prjBasic.GLXT.replace(/,/g, '、')}
+                  </span>
+                </Tooltip>
               )}
             </div>
-          )}
-          {isDDXM && getGlddxmmc(prjBasic.GLDDXM)}
+            <div className="info-item" key="应用部门：">
+              <span>应用部门：</span>
+              {notNull(prjBasic.SSBM) === '暂无数据' ? (
+                '暂无数据'
+              ) : (
+                <Tooltip placement="topLeft" title={prjBasic.SSBM.replace(/,/g, '、')}>
+                  <span style={{ cursor: 'default', color: '#303133' }}>
+                    {prjBasic.SSBM.replace(/,/g, '、')}
+                  </span>
+                </Tooltip>
+              )}
+            </div>
+            {prjBasic.FXMMC && (
+              <div className="info-item" key="父项目名称：">
+                <span>父项目名称：</span>
+                <Tooltip placement="topLeft" title={prjBasic.FXMMC}>
+                  <Link
+                    style={{ color: '#3361ff' }}
+                    to={{
+                      pathname: `/pms/manage/ProjectDetail/${EncryptBase64(
+                        JSON.stringify({
+                          xmid: prjBasic.GLFXMID,
+                        }),
+                      )}`,
+                      state: {
+                        routes,
+                      },
+                    }}
+                  >
+                    {prjBasic.FXMMC}
+                  </Link>
+                </Tooltip>
+              </div>
+            )}
+            {getInfoItem('是否包含硬件：', prjBasic.SFBHYJ === '1' ? '是' : '否')}
+            {/* {getInfoItem('是否在硬件入围内：', prjBasic.SFYJRW === '1' ? '是' : '否')} */}
+            {isMember() && (
+              <div className="info-item" key="文档库：">
+                <span>文档库：</span>
+                <Link
+                  to={{
+                    pathname: '/pms/manage/attachLibrary',
+                    query: {
+                      xmid,
+                    },
+                  }}
+                  style={{ color: '#3361ff' }}
+                >
+                  查看详情
+                </Link>
+              </div>
+            )}
+            {!isHwSltPrj && (
+              <div className="info-item">
+                <span>变更类/计划外需求：</span>
+                {demand.length === 0 ? (
+                  '暂无数据'
+                ) : (
+                  <Popover
+                    placement="bottom"
+                    title={null}
+                    content={tablePopover(demand, [
+                      {
+                        title: '需求标题',
+                        dataIndex: 'XQBT',
+                        width: 144,
+                        key: 'XQBT',
+                        ellipsis: true,
+                        render: txt => (
+                          <Tooltip title={txt} placement="topLeft">
+                            <span style={{ cursor: 'default' }}>{txt}</span>
+                          </Tooltip>
+                        ),
+                      },
+                      {
+                        title: '需求内容',
+                        dataIndex: 'XQNR',
+                        width: 188,
+                        key: 'XQNR',
+                        ellipsis: true,
+                        render: txt => (
+                          <Tooltip title={txt} placement="topLeft">
+                            <span style={{ cursor: 'default' }}>{txt}</span>
+                          </Tooltip>
+                        ),
+                      },
+                      {
+                        title: '需求日期',
+                        dataIndex: 'XQRQ',
+                        // width: 100,
+                        key: 'XQRQ',
+                        ellipsis: true,
+                        render: txt => (
+                          <span style={{ cursor: 'default' }}>
+                            {moment(txt).format('YYYY-MM-DD')}
+                          </span>
+                        ),
+                      },
+                    ])}
+                    overlayClassName="unplanned-demand-content-popover"
+                  >
+                    <a style={{ color: '#3361ff' }}>查看详情</a>
+                  </Popover>
+                )}
+              </div>
+            )}
+            {isDDXM && getGlddxmmc(prjBasic.GLDDXM)}
+          </div>
         </div>
-      </div>
+      )}
       {/* 预算信息 */}
       {isMember() || isBdgtMnger ? (
         <div className="info-box" key="ysxx">

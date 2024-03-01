@@ -19,6 +19,8 @@ export default function MileStone(props) {
     stateProps = {},
     isDDXM = false,
     ysspHide = false,
+    isSinglePayment = false,
+    routes = [],
   } = props;
   const {
     currentStep,
@@ -70,7 +72,7 @@ export default function MileStone(props) {
       setLastBtnVisible(false);
       setNextBtnVisible(false);
     };
-  }, []);
+  }, [isSinglePayment]);
 
   useEffect(() => {
     // console.log('里程碑更新了', xmid, prjBasic);
@@ -88,6 +90,11 @@ export default function MileStone(props) {
     if (isDDXM) setIsUnfold(false);
     return () => {};
   }, [isDDXM]);
+
+  useEffect(() => {
+    if (isSinglePayment) setItemWidth('31.851%');
+    return () => {};
+  }, [isSinglePayment]);
 
   //展开、收起
   const handleUnfold = bool => {
@@ -128,7 +135,25 @@ export default function MileStone(props) {
         setItemWidth('11.572%'); //8个
       }
     };
-    debounce(fn, 300);
+    const fn2 = () => {
+      let w = e.target.innerWidth; //屏幕宽度
+      if (w < 1730) {
+        setItemWidth('31.851%');
+      } else if (w < 2008) {
+        setItemWidth('23.718%');
+      } else if (w < 2292) {
+        setItemWidth('18.911%');
+      } else if (w < 2576) {
+        setItemWidth('15.724%');
+      } else if (w < 2860) {
+        setItemWidth('13.4565%');
+      } else if (w < 3145) {
+        setItemWidth('11.7605%');
+      } else {
+        setItemWidth('10.4441%'); //9个
+      }
+    };
+    debounce(isSinglePayment ? fn2 : fn, 300);
   };
 
   //flex列表尾部占位置的空标签，处理justify-content对齐问题
@@ -201,11 +226,7 @@ export default function MileStone(props) {
   //里程碑块
   const getItem = item => {
     return (
-      <div
-        className="item"
-        // style={{ width: itemWidth }}
-        key={item.swlx}
-      >
+      <div className="item" style={{ width: itemWidth }} key={item.swlx}>
         <div className="item-top">{item.swlx}</div>
         <div className="item-bottom">
           {item.swItem?.map((x, i) => (
@@ -246,6 +267,7 @@ export default function MileStone(props) {
                   isMnger: String(prjBasic.XMJLID) === String(LOGIN_USER_INFO.id),
                   isFXMJL: (prjBasic.FXMJL?.split(',') || []).includes(String(LOGIN_USER_INFO.id)),
                 }}
+                routes={routes}
               />
             </div>
           ))}
@@ -352,8 +374,22 @@ export default function MileStone(props) {
     }
   };
 
+  // 单费用付款显示的里程碑数据
+  const getSinglePaymentMilestoneData = (arr = []) => {
+    let itemData = arr.reduce((acc, cur) => [...acc, ...(cur.itemData || [])], []);
+    if (arr.length > 0) {
+      let obj = JSON.parse(JSON.stringify(arr[0]));
+      obj.itemData = itemData;
+      return obj;
+    }
+    return {};
+  };
+
   //高亮的里程碑数据
-  const hLMileStone = mileStoneData[currentStep] || [];
+  const hLMileStone = isSinglePayment
+    ? getSinglePaymentMilestoneData(mileStoneData)
+    : mileStoneData[currentStep] || [];
+
   //日期格式化
   const dateFormat = (kssj, jssj) =>
     moment(kssj).format('YYYY-MM-DD') + '至' + moment(jssj).format('MM-DD');
@@ -443,56 +479,58 @@ export default function MileStone(props) {
   const getBottomBox = () => {
     return (
       <div className="bottom-box">
-        <div className="left-box">
-          <div className="top">
-            <div className="circle">
-              <div className="dot"></div>
-            </div>
-            {hLMileStone.lcbmc}
-            <div className="rate-tag">进度{hLMileStone.jd}</div>
-          </div>
-          {hLMileStone.lcbmc === '项目付款' ? (
-            ''
-          ) : (
-            <div className="middle">
-              <div className="current-plan">
-                现计划：{dateFormat(hLMileStone.kssj, hLMileStone.jssj)}
+        {!isSinglePayment && (
+          <div className="left-box">
+            <div className="top">
+              <div className="circle">
+                <div className="dot"></div>
               </div>
-              {Number(hLMileStone.xgcs) > 0 && (
-                <>
-                  <div className="original-plan">
-                    原计划：{dateFormat(hLMileStone.yckssj, hLMileStone.ycjssj)}
-                  </div>
-                  <div className="remarks">{getDateDiff(hLMileStone)}</div>
-                </>
-              )}
+              {hLMileStone.lcbmc}
+              <div className="rate-tag">进度{hLMileStone.jd}</div>
             </div>
-          )}
-          <div className="bottom">
-            {(prjBasic.XMJLID === String(LOGIN_USER_INFO.id) ||
-              risk.filter(x => x.GLLCBID === hLMileStone.lcbid).length > 0) && (
-              <span className="bottom-label">项目风险：</span>
+            {hLMileStone.lcbmc === '项目付款' ? (
+              ''
+            ) : (
+              <div className="middle">
+                <div className="current-plan">
+                  现计划：{dateFormat(hLMileStone.kssj, hLMileStone.jssj)}
+                </div>
+                {Number(hLMileStone.xgcs) > 0 && (
+                  <>
+                    <div className="original-plan">
+                      原计划：{dateFormat(hLMileStone.yckssj, hLMileStone.ycjssj)}
+                    </div>
+                    <div className="remarks">{getDateDiff(hLMileStone)}</div>
+                  </>
+                )}
+              </div>
             )}
-            <div className="bottom-risk">
-              {risk
-                .filter(x => x.GLLCBID === hLMileStone.lcbid)
-                ?.map(x => (
-                  <div key={x.ID}>
-                    <Tooltip title={x.FXBT} placement="topLeft">
-                      <div className="risk-tag" key={x.ID} onClick={() => handleRisk(x, 'MOD')}>
-                        {x.FXBT}
-                      </div>
-                    </Tooltip>
-                  </div>
-                ))}
-              {prjBasic.XMJLID === String(LOGIN_USER_INFO.id) && (
-                <Button size="small" onClick={() => handleRisk(hLMileStone)}>
-                  <span>+</span>添加
-                </Button>
+            <div className="bottom">
+              {(prjBasic.XMJLID === String(LOGIN_USER_INFO.id) ||
+                risk.filter(x => x.GLLCBID === hLMileStone.lcbid).length > 0) && (
+                <span className="bottom-label">项目风险：</span>
               )}
+              <div className="bottom-risk">
+                {risk
+                  .filter(x => x.GLLCBID === hLMileStone.lcbid)
+                  ?.map(x => (
+                    <div key={x.ID}>
+                      <Tooltip title={x.FXBT} placement="topLeft">
+                        <div className="risk-tag" key={x.ID} onClick={() => handleRisk(x, 'MOD')}>
+                          {x.FXBT}
+                        </div>
+                      </Tooltip>
+                    </div>
+                  ))}
+                {prjBasic.XMJLID === String(LOGIN_USER_INFO.id) && (
+                  <Button size="small" onClick={() => handleRisk(hLMileStone)}>
+                    <span>+</span>添加
+                  </Button>
+                )}
+              </div>
             </div>
           </div>
-        </div>
+        )}
         <div className="right-box">
           {hLMileStone?.itemData?.map(x => getItem(x))}
           {getAfterItem(itemWidth)}
@@ -503,7 +541,20 @@ export default function MileStone(props) {
 
   //预算审批隐藏
   if (ysspHide) return null;
-
+  else if (isSinglePayment)
+    return (
+      <div className="mile-stone-box">
+        <div className="top-box">
+          项目里程碑
+          <div className="overall-rate">
+            <img src={overallRateImg} alt="" />
+            <span>事项完成度：</span>
+            <span className="rate">{prjBasic.XMJD}%</span>
+          </div>
+        </div>
+        {getBottomBox()}
+      </div>
+    );
   return (
     <div className="mile-stone-box">
       {/*风险信息修改弹窗*/}
@@ -524,12 +575,6 @@ export default function MileStone(props) {
         </div>
       </div>
       <div className="middle-box">
-        {/* {lastBtnVisible && (
-          <img className="last-milestone" src={lastBtn} alt="" onClick={() => stepSwitch('last')} />
-        )}
-        {nextBtnVisible && (
-          <img className="next-milestone" src={nextBtn} alt="" onClick={() => stepSwitch('next')} />
-        )} */}
         {lastBtnVisible && (
           <div className="last-milestone" onClick={() => stepSwitch('last')}>
             <i className="iconfont icon-left" />
