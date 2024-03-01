@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { Button, Form, InputNumber, message, Select, Tooltip, Popconfirm } from 'antd';
 import moment from 'moment';
 import {
+  FetchQueryGysInZbxx,
   FetchQueryOwnerProjectList,
   QueryUserRole,
   QueryXCContractInfo,
@@ -92,8 +93,8 @@ const getPrjNameData = (isGLY, setData, setIsSpinning, obj) => {
           return arr.filter(item => !res.has(item[uniId]) && res.set(item[uniId], 1));
         }
         const arr = [...res.record].map(x => ({ XMMC: x.xmmc, XMID: x.xmid }));
-        setData(uniqueFunc([...arr, obj], 'XMID'));
-        setIsSpinning(false);
+        setData(p => ({ ...p, glxm: uniqueFunc([...arr, obj], 'XMID') }));
+        fetchQueryGysInZbxx(setData, setIsSpinning);
       }
     })
     .catch(e => {
@@ -104,11 +105,11 @@ const getPrjNameData = (isGLY, setData, setIsSpinning, obj) => {
 };
 
 //信息块
-const getInfoItem = ({ label, val, style, node }) => {
+const getInfoItem = ({ label, val = '-', style = {}, node }, isShow = false) => {
   return (
-    <div className="info-item" key={label} style={style ?? {}}>
+    <div className="info-item" key={label} style={{ ...style, display: isShow ? 'block' : 'none' }}>
       <span>{label}：</span>
-      <Tooltip title={val} placement="topLeft">
+      <Tooltip title={val === '-' ? '' : val} placement="topLeft">
         <div style={{ display: 'inline', cursor: 'default' }}>{node ?? val}</div>
       </Tooltip>
     </div>
@@ -183,7 +184,7 @@ const getNote = (data = [], ibm) =>
 
 //金额格式化
 const getAmountFormat = value => {
-  if ([undefined, null, '', ' ', NaN].includes(value)) return '';
+  if ([undefined, null, '', ' ', NaN].includes(value)) return '-';
   return `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 };
 
@@ -300,6 +301,29 @@ const columns = ({ getNote, sltData, SFXC, xc_cat_1, xc_cat_2, routes, glxm }) =
     ),
   },
 ];
+
+// 查询供应商下拉列表
+const fetchQueryGysInZbxx = (setData, setIsSpinning) => {
+  FetchQueryGysInZbxx({
+    paging: -1,
+    sort: '',
+    current: 1,
+    pageSize: 20,
+    total: -1,
+  })
+    .then(res => {
+      if (res.success) {
+        let rec = res.record;
+        setData(p => ({ ...p, gys: rec }));
+        setIsSpinning(false);
+      }
+    })
+    .catch(e => {
+      console.error('供应商信息查询失败', e);
+      message.error('供应商信息查询失败', 1);
+      setIsSpinning(false);
+    });
+};
 
 export {
   queryDetailData,

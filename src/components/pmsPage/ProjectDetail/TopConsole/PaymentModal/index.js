@@ -306,8 +306,8 @@ export default Form.create()(function PaymentModal(props) {
           >
             {dhtData.map(x => (
               <Select.Option key={x.ID} value={x.ID}>
-                <Tooltip title={x.GYSMC + '-' + x.QSRQ} placement="topLeft">
-                  {x.GYSMC + '-' + x.QSRQ}
+                <Tooltip title={x.HTMC} placement="topLeft">
+                  {x.HTMC}
                 </Tooltip>
               </Select.Option>
             ))}

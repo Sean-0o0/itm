@@ -7,7 +7,16 @@ import NewProjectModelV2 from '../../../../pages/workPlatForm/singlePage/NewProj
 import OverviewCard from '../OverviewCard';
 
 export default function ShortcutCard(props) {
-  const { userRole, getPrjInfo, toDoData = [], toDoDataNum = 0, dictionary, reflush } = props;
+  const {
+    userRole,
+    getPrjInfo,
+    toDoData = [],
+    toDoDataNum = 0,
+    dictionary,
+    reflush,
+    getToDoData,
+    popLoading,
+  } = props;
   const [fileAddVisible, setFileAddVisible] = useState(false); //项目信息修改弹窗显示
   const [src_fileAdd, setSrc_fileAdd] = useState({}); //项目信息修改弹窗显示
   const [visible, setVisible] = useState(false); //类型弹窗显隐
@@ -59,6 +68,8 @@ export default function ShortcutCard(props) {
             dictionary={dictionary}
             toDoDataNum={toDoDataNum}
             reflush={reflush}
+            getToDoData={getToDoData}
+            popLoading={popLoading}
           />
         )}
         {getShortcutItem('xjxm', '新建项目', () => {
@@ -160,6 +171,7 @@ export default function ShortcutCard(props) {
         setVisible={setVisible}
         setFileAddVisible={setFileAddVisible}
         setSrc_fileAdd={setSrc_fileAdd}
+        refresh={() => getPrjInfo(userRole)}
         fromHome={true} //来自首页
       />
       {getShortcutBox()}

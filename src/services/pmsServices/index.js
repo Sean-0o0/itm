@@ -176,6 +176,7 @@ const {
     queryBudgetProjectDetail,
     queryMemberRevaluationByORG,
     queryUnifiedProjectInitProcess,
+    queryIteContractInfoList,
     queryOperateStatistics,
     queryOperateDetail,
   },
@@ -1894,6 +1895,17 @@ export async function QueryMemberRevaluationByORG(payload) {
 export async function QueryUnifiedProjectInitProcess(payload) {
   const option = {
     url: queryUnifiedProjectInitProcess,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+
+// 合同列表页面查询查询迭代合同信息
+export async function QueryIteContractInfoList(payload) {
+  const option = {
+    url: queryIteContractInfoList,
     method: 'post',
     data: payload,
   };

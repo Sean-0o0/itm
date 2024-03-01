@@ -1012,6 +1012,12 @@ export default [
   },
   {
     code: '',
+    key: 'queryIteContractInfoList',
+    url: '/projectManage/queryIteContractInfoList',
+    dis: '合同列表页面查询查询迭代合同信息',
+  },
+  {
+    code: '',
     key: 'queryOperateStatistics',
     url: '/projectManage/queryOperateStatistics',
     dis: '查询埋点的操作统计',

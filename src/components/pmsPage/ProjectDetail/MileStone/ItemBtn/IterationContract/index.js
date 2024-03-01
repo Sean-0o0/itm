@@ -14,6 +14,7 @@ import {
   Radio,
   Select,
   Tooltip,
+  Input,
 } from 'antd';
 import moment from 'moment';
 import {
@@ -35,7 +36,7 @@ export default Form.create()(function IterationContract(props) {
   const { modalData = {} } = dataProps;
   const { setModalData, refresh } = funcProps;
   const { visible, type = 'ADD', xmid } = modalData;
-  const { getFieldDecorator, getFieldValue, validateFields, resetFields } = form;
+  const { getFieldDecorator, getFieldValue, validateFields, resetFields, setFieldsValue } = form;
   const [isSpinning, setIsSpinning] = useState(false); //加载状态
   const [upldData, setUpldData] = useState([]); //附件上传数据
   const [gysData, setGysData] = useState([]); //供应商下拉数据
@@ -165,6 +166,8 @@ export default Form.create()(function IterationContract(props) {
           fileInfo,
           operateType: type,
           relContract: Number(values.glqtkjht || -1),
+          contractName: values.htmc,
+          contractCode: values.htbh,
         };
         console.log('🚀 ~ file: index.js:90 ~ handleOk ~ submitProps :', submitProps);
         InsertIteContract(submitProps)
@@ -374,6 +377,25 @@ export default Form.create()(function IterationContract(props) {
     );
   };
 
+  //输入框
+  const getInput = (label, dataIndex, initialValue, labelCol, wrapperCol) => {
+    return (
+      <Col span={12}>
+        <Form.Item label={label} labelCol={{ span: labelCol }} wrapperCol={{ span: wrapperCol }}>
+          {getFieldDecorator(dataIndex, {
+            initialValue,
+            rules: [
+              {
+                required: true,
+                message: label + '不允许空值',
+              },
+            ],
+          })(<Input placeholder={'请输入' + label} allowClear style={{ width: '100%' }} />)}
+        </Form.Item>
+      </Col>
+    );
+  };
+  
   //获取关联其他框架合同下拉框数据
   const getGlqtkjhtSelector = () => {
     function convertBlobsToBase64(fileArray) {
@@ -436,7 +458,17 @@ export default Form.create()(function IterationContract(props) {
           QSRQ: String(obj.qsrq),
           RLDJ: obj.rldj,
           GLDDHT: obj.id,
+          HTMC: obj.htmc,
+          HTBH: obj.htbh,
         }));
+        setFieldsValue({
+          qsrq: obj.qsrq === undefined ? null : moment(String(obj.qsrq)),
+          gys: obj.gys === undefined ? undefined : String(obj.gys),
+          djlx: obj.djlx === undefined ? undefined : Number(obj.djlx),
+          rldj: obj.rldj === undefined ? undefined : Number(obj.rldj),
+          htmc: obj.htmc,
+          htbh: obj.htbh,
+        });
       }
       setIsSpinning(false);
     };
@@ -458,11 +490,13 @@ export default Form.create()(function IterationContract(props) {
               showSearch
               allowClear
               optionFilterProp="optionfilter"
+              optionLabelProp="optionfilter"
             >
               {glqtkjhtData.map(x => (
                 <Select.Option optionfilter={x.xm} key={x.id} value={x.id} htdata={x}>
                   <Tooltip title={x.xm} placement="topLeft">
                     {x.xm}
+                    <div style={{ fontSize: '12px', color: '#bfbfbf' }}>{x.xmnf}</div>
                   </Tooltip>
                 </Select.Option>
               ))}
@@ -503,6 +537,17 @@ export default Form.create()(function IterationContract(props) {
       </div>
       <Spin spinning={isSpinning} tip="加载中">
         <Form className="content-box" style={{ paddingLeft: 24 }}>
+          {/* {type === 'UPDATE' ? (
+            <Row>
+              {getInputDisabled('合同名称', oldData.HTMC, 8, 16)}
+              {getInputDisabled('合同编号', oldData.HTBH, 8, 16)}
+            </Row>
+          ) : ( */}
+          <Row>
+            {getInput('合同名称', 'htmc', oldData.HTMC, 8, 16)}
+            {getInput('合同编号', 'htbh', oldData.HTBH, 8, 16)}
+          </Row>
+          {/* )} */}
           <Row>
             {getGlqtkjhtSelector()}
             {getDatePicker()}

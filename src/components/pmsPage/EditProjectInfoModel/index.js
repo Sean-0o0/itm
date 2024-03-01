@@ -4101,11 +4101,11 @@ class EditProjectInfoModel extends React.Component {
             },
             tableData: [...this.state.tableData, ...arr],
             htxxCzlx: htxxRec.length > 0 ? 'UPDATE' : 'ADD',
-            htxxVisiable: true,
+            // htxxVisiable: true,
           });
         } else {
           this.setState({
-            htxxVisiable: false,
+            // htxxVisiable: false,
           });
         }
       })

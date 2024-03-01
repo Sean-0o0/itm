@@ -1,7 +1,8 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, Fragment } from 'react';
 import { Button, Form, InputNumber, message, Select, Tooltip, Popconfirm } from 'antd';
 import moment from 'moment';
 import {
+  FetchQueryGysInZbxx,
   FetchQueryOwnerProjectList,
   QueryUserRole,
   QueryXCContractInfo,
@@ -12,7 +13,7 @@ import { EncryptBase64 } from '../../../Common/Encrypt';
 
 //查询详情数据
 const queryDetailData = (
-  contractCode, //合同编号
+  id, //原本合同编号，后来改成了id
   setData,
   setTableData,
   setIsSpinning,
@@ -22,7 +23,7 @@ const queryDetailData = (
   setIsSpinning(true);
   //知识产权信息
   QueryXCContractInfo({
-    contractCode, //合同编号
+    id, //原本合同编号，后来改成了id
     current: 1,
     pageSize: 999,
     paging: -1,
@@ -32,8 +33,8 @@ const queryDetailData = (
     .then(res => {
       if (res?.success) {
         const htxx = JSON.parse(res.result ?? '[]')[0] ?? {};
+        console.log('🚀 ~ htxx:', htxx);
         setData(htxx);
-
         QueryXCContractSubInfo({
           contractId: htxx.HTID,
         }).then(res => {
@@ -90,9 +91,9 @@ const getPrjNameData = (isGLY, setData, setIsSpinning, obj) => {
           const res = new Map();
           return arr.filter(item => !res.has(item[uniId]) && res.set(item[uniId], 1));
         }
-        const arr = [...res.record].map(x => ({ XMMC: x.xmmc, XMID: x.xmid }));
-        setData(uniqueFunc([...arr, obj], 'XMID'));
-        setIsSpinning(false);
+        const arr = [...res.record].map(x => ({ XMMC: x.xmmc, XMID: x.xmid, XMNF: x.xmnf }));
+        setData(p => ({ ...p, glxm: uniqueFunc([...arr, obj], 'XMID') }));
+        fetchQueryGysInZbxx(setData, setIsSpinning);
       }
     })
     .catch(e => {
@@ -103,11 +104,11 @@ const getPrjNameData = (isGLY, setData, setIsSpinning, obj) => {
 };
 
 //信息块
-const getInfoItem = ({ label, val, style, node }) => {
+const getInfoItem = ({ label, val = '-', style = {}, node }, isShow = false) => {
   return (
-    <div className="info-item" key={label} style={style ?? {}}>
+    <div className="info-item" key={label} style={{ ...style, display: isShow ? 'block' : 'none' }}>
       <span>{label}：</span>
-      <Tooltip title={val} placement="topLeft">
+      <Tooltip title={val === '-' ? '' : val} placement="topLeft">
         <div style={{ display: 'inline', cursor: 'default' }}>{node ?? val}</div>
       </Tooltip>
     </div>
@@ -117,16 +118,21 @@ const getInfoItem = ({ label, val, style, node }) => {
 //获取下拉框
 const getSelector = ({
   label,
+  labelNode = false,
   dataIndex,
   initialValue,
   data = [],
   titleField,
   valueField,
   getFieldDecorator,
+  display,
+  optionNode,
+  optionLabelProp = 'children',
+  optionFilterProp = 'children',
 }) => {
   return (
-    <div className="console-item" key={label}>
-      <div className="item-label">{label}：</div>
+    <div className="console-item" key={label} style={{ display }}>
+      <div className="item-label">{labelNode !== false ? labelNode : label}：</div>
       <Form.Item
       // labelAlign="left"
       // label={label}
@@ -145,18 +151,21 @@ const getSelector = ({
           <Select
             className="item-selector"
             dropdownClassName="item-selector-dropdown"
-            filterOption={(input, option) =>
-              option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-            }
             showSearch
             allowClear
             placeholder={'请选择' + label}
+            optionLabelProp={optionLabelProp}
+            optionFilterProp={optionFilterProp}
           >
-            {data.map((x, i) => (
-              <Select.Option key={i} value={Number(x[valueField])}>
-                {x[titleField]}
-              </Select.Option>
-            ))}
+            {data.map((x, i) =>
+              optionNode ? (
+                optionNode(x)
+              ) : (
+                <Select.Option key={i} value={Number(x[valueField])}>
+                  {x[titleField]}
+                </Select.Option>
+              ),
+            )}
           </Select>,
         )}
       </Form.Item>
@@ -165,10 +174,17 @@ const getSelector = ({
 };
 
 //获取数字输入框
-const getIputNumber = ({ label, initialValue, dataIndex, getFieldDecorator }) => {
+const getIputNumber = ({
+  label,
+  labelNode = false,
+  initialValue,
+  dataIndex,
+  getFieldDecorator,
+  display,
+}) => {
   return (
-    <div className="console-item" key={label}>
-      <div className="item-label">{label}：</div>
+    <div className="console-item" key={label} style={{ display }}>
+      <div className="item-label">{labelNode !== false ? labelNode : label}：</div>
       <Form.Item>
         {getFieldDecorator(dataIndex, {
           initialValue,
@@ -184,6 +200,9 @@ const getIputNumber = ({ label, initialValue, dataIndex, getFieldDecorator }) =>
             placeholder={'请输入' + label}
             allowClear
             style={{ width: '100%', marginTop: 4 }}
+            min={0}
+            step={0.01}
+            precision={2}
           />,
         )}
       </Form.Item>
@@ -226,7 +245,7 @@ const getNote = (data = [], ibm) =>
 
 //金额格式化
 const getAmountFormat = value => {
-  if ([undefined, null, '', ' ', NaN].includes(value)) return '';
+  if ([undefined, null, '', ' ', NaN].includes(value)) return '-';
   return `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 };
 
@@ -398,6 +417,103 @@ const columns = ({
   },
 ];
 
+//供应商下拉框
+const getGysSelector = ({
+  label,
+  labelNode = false,
+  dataIndex,
+  initialValue,
+  data = [],
+  titleField,
+  valueField,
+  getFieldDecorator,
+  display,
+  setAddGysModalVisible,
+}) => {
+  return (
+    <div className="console-item" key={label} style={{ display }}>
+      <div className="item-label">{labelNode !== false ? labelNode : label}：</div>
+      <Form.Item>
+        {getFieldDecorator(dataIndex, {
+          initialValue,
+          rules: [
+            {
+              required: true,
+              message: label + '不允许空值',
+            },
+          ],
+        })(
+          <Select
+            style={{ width: '100%' }}
+            placeholder={'请选择' + label}
+            showSearch
+            allowClear
+            dropdownClassName="item-selector-dropdown"
+            className="contrast-update-gys-selector item-selector"
+            optionFilterProp="children"
+            filterOption={(input, option) =>
+              option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+            }
+          >
+            {data.map((x, i) => (
+              <Select.Option key={i} value={Number(x[valueField])}>
+                {x[titleField]}
+              </Select.Option>
+            ))}
+          </Select>,
+        )}
+        <div
+          style={{
+            height: '20px',
+            width: '1px',
+            backgroundColor: '#c7c7c7',
+            marginLeft: '8px',
+            cursor: 'pointer',
+            position: 'absolute',
+            top: '-12px',
+            right: '52px',
+          }}
+        ></div>
+        <i
+          className="iconfont circle-add"
+          onClick={() => setAddGysModalVisible(true)}
+          style={{
+            cursor: 'pointer',
+            position: 'absolute',
+            top: '-16px',
+            right: '28px',
+            color: '#c7c7c7',
+            fontSize: '20px',
+          }}
+        />
+      </Form.Item>
+    </div>
+  );
+};
+
+// 查询供应商下拉列表
+const fetchQueryGysInZbxx = (setData, setIsSpinning) => {
+  FetchQueryGysInZbxx({
+    paging: -1,
+    sort: '',
+    current: 1,
+    pageSize: 20,
+    total: -1,
+  })
+    .then(res => {
+      if (res.success) {
+        let rec = res.record;
+        setData(p => ({ ...p, gys: rec }));
+        setIsSpinning(false);
+      }
+    })
+    .catch(e => {
+      console.error('供应商信息查询失败', e);
+      message.error('供应商信息查询失败', 1);
+      setIsSpinning(false);
+    });
+};
+
 export {
   queryDetailData,
   getPrjNameData,
@@ -407,4 +523,6 @@ export {
   getStaffNode,
   getNote,
   columns,
+  getGysSelector,
+  fetchQueryGysInZbxx,
 };

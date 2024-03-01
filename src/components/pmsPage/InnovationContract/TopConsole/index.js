@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef, Fragment } from 'react';
-import { Button, Input, Select, TreeSelect } from 'antd';
+import { Button, Input, Select, Tooltip, TreeSelect } from 'antd';
 import moment from 'moment';
 
 export default function TopConsole(props) {
@@ -27,32 +27,50 @@ export default function TopConsole(props) {
     xc_sys = [], //系统类型
     xc_cont_type = [], //合同类型
   } = dictionary;
-  const { setFilterData = () => {}, queryTableData = () => {}, setFilterFold } = funcProps;
+  const {
+    setFilterData = () => {},
+    queryTableData = () => {},
+    setFilterFold = () => {},
+    setSearchData = () => {},
+  } = funcProps;
+  const [sltOpen, setSltOpen] = useState(false); //
 
   useEffect(() => {
     return () => {};
   }, []);
 
   //获取下拉框
-  const getSelector = ({ value, onChange, data = [], titleField, valueField }) => {
+  const getSelector = ({
+    value,
+    onChange,
+    data = [],
+    titleField,
+    valueField,
+    optionNode,
+    optionLabelProp = 'children',
+    optionFilterProp = 'children',
+  }) => {
     return (
       <Select
         className="item-selector"
         dropdownClassName="item-selector-dropdown"
-        filterOption={(input, option) =>
-          option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-        }
         showSearch
         allowClear
         onChange={onChange}
         value={value}
         placeholder="请选择"
+        optionLabelProp={optionLabelProp}
+        optionFilterProp={optionFilterProp}
       >
-        {data.map((x, i) => (
-          <Option key={i} value={Number(x[valueField])}>
-            {x[titleField]}
-          </Option>
-        ))}
+        {data.map((x, i) =>
+          optionNode ? (
+            optionNode(x)
+          ) : (
+            <Select.Option key={i} value={Number(x[valueField])}>
+              {x[titleField]}
+            </Select.Option>
+          ),
+        )}
       </Select>
     );
   };
@@ -91,6 +109,16 @@ export default function TopConsole(props) {
             data: sltData.glxm,
             titleField: 'XMMC',
             valueField: 'XMID',
+            optionNode: x => (
+              <Select.Option key={x.XMID} value={x.XMID} title={x.XMMC}>
+                <Tooltip title={x.XMMC} placement="topLeft">
+                  {x.XMMC}
+                  {<div style={{ fontSize: '12px', color: '#bfbfbf' }}>{x.XMNF}</div>}
+                </Tooltip>
+              </Select.Option>
+            ),
+            optionLabelProp: 'title',
+            optionFilterProp: 'title',
           })}
         </div>
         <div className="console-item">
@@ -112,11 +140,7 @@ export default function TopConsole(props) {
         <Button
           className="btn-search"
           type="primary"
-          onClick={() =>
-            queryTableData({
-              ...filterData,
-            })
-          }
+          onClick={() => queryTableData(filterData, setSearchData)}
         >
           查询
         </Button>

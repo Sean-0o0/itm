@@ -165,12 +165,12 @@ const specialMenus = [
   },
   {
     // 合同编辑
-    title: [{ text: '信创合同信息编辑' }],
+    title: [{ text: '普通合同信息编辑' }],
     url: '/pms/manage/InnovationContractEdit',
   },
   {
     // 合同查看
-    title: [{ text: '信创合同信息查看' }],
+    title: [{ text: '普通合同信息查看' }],
     url: '/pms/manage/InnovationContractView',
   },
   {

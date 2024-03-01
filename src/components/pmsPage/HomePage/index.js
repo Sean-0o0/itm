@@ -36,7 +36,7 @@ const getAmountFormat = value => {
 };
 export { getAmountFormat };
 export default function HomePage(props) {
-  const { cacheLifecycles, dictionary } = props;
+  const { cacheLifecycles, dictionary, roleData = {} } = props;
   let LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
   const [leftWidth, setLeftWidth] = useState('65.48%'); //左侧功能块宽度
   const [itemWidth, setItemWidth] = useState('32%'); //待办、项目每小块宽度
@@ -87,6 +87,7 @@ export default function HomePage(props) {
     DDMK: false, //迭代模块
     ZSCQ: false, //知识产权、获奖荣誉
   }); //灰度测试
+  const [popLoading, setPopLoading] = useState(false); //浮窗数据加载状态 - 待办
   var s = 0;
   var e = 0;
 
@@ -356,7 +357,10 @@ export default function HomePage(props) {
               x =>
                 !x.sxmc?.includes('预算审核被退回') &&
                 !x.sxmc?.includes('项目预算结转待查看') &&
-                !x.sxmc?.includes('结转项目被退回'),
+                !x.sxmc?.includes('结转项目被退回') &&
+                !x.sxmc?.includes('预算审批流程待处理') &&
+                !x.sxmc?.includes('预算审批流程被退回') &&
+                !x.sxmc?.includes('预算信息待审核'),
             );
           }
           setToDoData(data);
@@ -462,6 +466,67 @@ export default function HomePage(props) {
     // }
     // getOverviewInfo(userRole, year);
     handlePromiseAll(year);
+  };
+
+  //刷新待办数据 - 后续刷新数据
+  const getToDoData = async (year = moment().year()) => {
+    try {
+      //获取待办、系统公告数据
+      setPopLoading(true);
+      const todoPromise = FetchQueryOwnerMessage({
+        cxlx: 'DB',
+        date: Number(new moment().format('YYYYMMDD')),
+        paging: 1,
+        current: 1,
+        pageSize: 99999,
+        total: -1,
+        sort: '',
+      });
+      const overviewPromise = QueryStagingOverviewInfo({
+        org: Number(LOGIN_USER_INFO.org),
+        role: roleData.role,
+        year,
+        queryType: 'NR2',
+      });
+      const [todoRes, overviewRes] = await Promise.all([todoPromise, overviewPromise]);
+      if (todoRes.success) {
+        const DDXM_AUTH = JSON.parse(roleData.testRole || '{}').ALLROLE?.includes(
+          '迭代项目灰度测试人员',
+        );
+        let data = [...todoRes.record];
+        if (!DDXM_AUTH) {
+          data = [...todoRes.record].filter(
+            x =>
+              !x.sxmc?.includes('预算审核被退回') &&
+              !x.sxmc?.includes('项目预算结转待查看') &&
+              !x.sxmc?.includes('结转项目被退回') &&
+              !x.sxmc?.includes('预算审批流程待处理') &&
+              !x.sxmc?.includes('预算审批流程被退回') &&
+              !x.sxmc?.includes('预算信息待审核'),
+          );
+        }
+        setToDoData(data);
+        setTotal(p => {
+          return {
+            ...p,
+            todo: data.length,
+          };
+        });
+        // setIsSpinning(false);
+      }
+      if (overviewRes.success) {
+        setOverviewInfo(p => ({
+          ...p,
+          ...JSON.parse(overviewRes.result)[0],
+        }));
+      }
+      setTimeout(() => {}, 3000);
+      setPopLoading(false);
+    } catch (error) {
+      console.error('getToDoData', error);
+      message.error('待办数据查询失败', 1);
+      setPopLoading(false);
+    }
   };
 
   //项目草稿 - 后续刷新数据
@@ -690,6 +755,8 @@ export default function HomePage(props) {
               statisticYearData={statisticYearData}
               setStatisticYearData={setStatisticYearData}
               handleCurYearChange={handleCurYearChange}
+              getToDoData={getToDoData}
+              popLoading={popLoading}
             />
             {!['二级部门领导', '普通人员'].includes(userRole) && (
               <CptBudgetCard
@@ -756,6 +823,8 @@ export default function HomePage(props) {
               toDoData={toDoData}
               dictionary={dictionary}
               toDoDataNum={total.todo}
+              getToDoData={getToDoData}
+              popLoading={popLoading}
             />
             {['二级部门领导', '普通人员'].includes(userRole) ? (
               <Fragment>

@@ -30,6 +30,7 @@ import { FetchQueryHardwareTendersAndContract } from '../../../../../services/pr
 import SoftwarePaymentWHT from './SoftwarePaymentWHT';
 import AssociationInitiatedProcess from './AssociationInitiatedProcess';
 import SoftwarePaymentYHT from './SoftwarePaymentYHT';
+import AssociationOAContract from './AssociationOAContract';
 
 const { api } = config;
 const { confirm } = Modal;
@@ -105,6 +106,8 @@ class ItemBtn extends React.Component {
     isDdhtqslc: false, //是否迭代合同签署流程
     glyfqlcModalVisible: false, //关联已发起流程弹窗
     rjfysplcyhtModalVisible: false, //软件费用审批流程-有合同
+    glOAhtModalVisible: false, //关联OA合同弹窗
+    glOAhtData: {}, //关联OA合同弹窗所需数据
   };
   // timer = null;
 
@@ -732,6 +735,155 @@ class ItemBtn extends React.Component {
     );
   };
 
+  getHtxxlr = (done, item) => {
+    //录入
+    const htxxlr = () => {
+      message.info('请先在OA中进行合同录入，后在系统中进行确认即可', 2);
+    };
+    if (done) {
+      const htxxck = async () => {
+        try {
+          this.setState({
+            rjhtxxData: {
+              ...this.state.rjhtxxData,
+              loading: true,
+            },
+            fklcLoading: true,
+          });
+          // 查询供应商下拉列表、合同信息
+          const htxxRes = await FetchQueryHTXXByXQTC({
+            xmmc: Number(item.xmid),
+          });
+          if (htxxRes.success) {
+            const htxxData = [...htxxRes.record];
+            let htxxList = htxxData.reduce((acc, cur) => {
+              if (acc.findIndex(x => x.htxxid === cur.htxxid) === -1) {
+                return [...acc, cur];
+              }
+              return acc;
+            }, []);
+            this.setState({
+              rjhtxxData: {
+                ...this.state.rjhtxxData,
+                list: htxxList,
+                loading: false,
+              },
+              fklcLoading: false,
+            });
+            console.log('🚀 ~ htxxList:', htxxList);
+          }
+        } catch (error) {
+          console.error('查询供应商下拉列表、合同信息', error);
+          this.setState({
+            rjhtxxData: {
+              ...this.state.rjhtxxData,
+              loading: false,
+            },
+            fklcLoading: false,
+          });
+        }
+      };
+
+      const htxxxg = (obj = {}) => {
+        console.log('🚀 ~ htxxxg ~ obj:', obj);
+        if (obj.oahtxxid !== '') {
+          window.location.href =
+            '/#/pms/manage/InnovationContractEdit/' +
+            EncryptBase64(
+              JSON.stringify({
+                id: obj.oahtxxid,
+                routes: this.props.routes ?? [],
+                timeStamp: new Date().getTime(),
+              }),
+            );
+        } else {
+          //历史数据无关联OA时，弹出关联OA合同弹窗，让用户关联OA合同
+          this.setState({
+            glOAhtModalVisible: true,
+            glOAhtData: obj,
+          });
+        }
+      };
+      const reoprMoreContent = (
+        <div className="list">
+          <div className="item" onClick={htxxlr} key="录入">
+            录入
+          </div>
+        </div>
+      );
+      const documentContent = (
+        <Spin tip="加载中" spinning={this.state.fklcLoading} size="small">
+          <div className="list" style={this.state.fklcLoading ? { minHeight: 40 } : {}}>
+            {this.state.rjhtxxData.list?.map(x => (
+              <div
+                className="item"
+                key={x.htxxid}
+                style={{
+                  height: 'unset',
+                  lineHeight: 'unset',
+                  marginBottom: 0,
+                  paddingTop: 4,
+                  paddingBottom: 4,
+                  display: 'flex',
+                  alignItems: 'center',
+                }}
+              >
+                <Tooltip title={x.htbt} placement="topLeft" key={x.htxxid}>
+                  <div className="subject" style={{ color: '#1f1f1f' }}>
+                    {x.htbt}
+                  </div>
+                </Tooltip>
+                <div className="opr-btn" onClick={() => htxxxg(x)}>
+                  修改
+                </div>
+              </div>
+            ))}
+            {this.state.rjhtxxData.list.length === 0 && (
+              <Empty
+                style={{ margin: 0 }}
+                image={Empty.PRESENTED_IMAGE_SIMPLE}
+                description="暂无数据"
+              />
+            )}
+          </div>
+        </Spin>
+      );
+      return (
+        <div className="opr-more">
+          <Popover
+            placement="bottomRight"
+            title={null}
+            content={documentContent}
+            overlayClassName="document-list-content-popover"
+            trigger="click"
+            visible={this.state.rjhtxxData.popoverVisible}
+            onVisibleChange={v =>
+              this.setState({ rjhtxxData: { ...this.state.rjhtxxData, popoverVisible: v } })
+            }
+          >
+            <div className="reopr-btn" onClick={() => htxxck(item)}>
+              查看
+            </div>
+          </Popover>
+          <Popover
+            placement="bottom"
+            title={null}
+            content={reoprMoreContent}
+            overlayClassName="btn-more-content-popover"
+          >
+            <div className="reopr-more">
+              <i className="iconfont icon-more2" />
+            </div>
+          </Popover>
+        </div>
+      );
+    }
+    return (
+      <div className="opr-btn" onClick={htxxlr}>
+        录入
+      </div>
+    );
+  };
   //迭代合同信息录入
   getDdhtxxlr = (done, item) => {
     const xxlrxg = (item, type = 'ADD') => {
@@ -1525,6 +1677,8 @@ class ItemBtn extends React.Component {
           return that.getXbjglr(done, item);
         case '迭代合同信息录入':
           return that.getDdhtxxlr(done, item);
+        case '合同信息录入':
+          return that.getHtxxlr(done, item);
 
         //文档上传
         case '总办会会议纪要':
@@ -1702,6 +1856,8 @@ class ItemBtn extends React.Component {
       isDdhtqslc,
       glyfqlcModalVisible,
       rjfysplcyhtModalVisible,
+      glOAhtModalVisible,
+      glOAhtData,
     } = this.state;
     const { item, xmmc, xmbh, isHwSltPrj, auth = {} } = this.props;
     // console.log('🚀 ~ file: index.js:1005 ~ ItemBtn ~ render ~ item:', item);
@@ -2097,6 +2253,14 @@ class ItemBtn extends React.Component {
           visible={glyfqlcModalVisible}
           setVisible={v => this.setState({ glyfqlcModalVisible: v })}
           xmid={Number(item.xmid)}
+        />
+
+        {/* 关联OA合同弹窗 */}
+        <AssociationOAContract
+          visible={glOAhtModalVisible}
+          setVisible={v => this.setState({ glOAhtModalVisible: v })}
+          htData={{ ...glOAhtData, xmid: Number(item.xmid) }}
+          refresh={this.props.refresh}
         />
 
         <iframe src={src} id="Iframe" style={{ display: 'none' }} />

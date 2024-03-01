@@ -319,6 +319,7 @@ export default function InfoDisplay(props) {
     const suffix = i => (contrastArr.length > 1 ? '-' + (i + 1) + '：' : '：'); //是否多合同，后缀
     return contrastArr.map((x, i) => (
       <div className="htxx-info-row-box" key={x.ID}>
+        {x.HTMC && getInfoItem('合同名称' + suffix(i), x.HTMC)}
         {x.GYSMC && getInfoItem('合同供应商' + suffix(i), x.GYSMC)}
         {x.HTJE && haveAuth && getInfoItem('合同金额' + suffix(i), getAmountFormat(x.HTJE) + '元')}
         {x.YFKJE &&

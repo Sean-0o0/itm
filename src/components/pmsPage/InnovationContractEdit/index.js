@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, ReactDOM } from 'react';
+import React, { useEffect, useState, useRef, ReactDOM, Fragment } from 'react';
 import {
   Breadcrumb,
   Button,
@@ -10,6 +10,8 @@ import {
   Table,
   Popconfirm,
   Spin,
+  Col,
+  Icon,
 } from 'antd';
 import moment from 'moment';
 import { connect } from 'dva';
@@ -22,15 +24,20 @@ import {
   getStaffNode,
   getNote,
   columns,
+  getGysSelector,
+  fetchQueryGysInZbxx,
 } from './FuncUtils';
 import OprtModal from './OprtModal';
 import { OperateXCContract } from '../../../services/pmsServices';
 import { useHistory } from 'react-router';
 import { DecryptBase64, EncryptBase64 } from '../../Common/Encrypt';
+import BridgeModel from '../../Common/BasicModal/BridgeModel';
+import InfoOprtModal from '../SupplierDetail/TopConsole/InfoOprtModal';
 
 export default connect(({ global }) => ({
   dictionary: global.dictionary,
   userBasicInfo: global.userBasicInfo,
+  roleData: global.roleData,
 }))(
   Form.create()(function InnovationContractEdit(props) {
     const {
@@ -40,12 +47,15 @@ export default connect(({ global }) => ({
       },
       userBasicInfo = {},
       form = {},
+      roleData = {},
     } = props;
     const {
       xc_sys = [], //系统类型
       xc_cont_type = [], //合同类型
       xc_cat_1 = [], //信创大类
       xc_cat_2 = [], //信创小类
+      ZDTSNRPZ = [], //问号内容
+      GYSLX = [], //供应商类型
     } = dictionary;
     const SFXC = [
       { note: '是', ibm: 1 },
@@ -78,29 +88,32 @@ export default connect(({ global }) => ({
       visible: false,
       type: 'ADD',
     }); //弹窗显隐
-    const [isTurnRed, setIsTurnRed] = useState(false); //关联项目是否报红
+    const [rowTitle, setRowTitle] = useState({
+      oa: true,
+      supplement: true,
+    }); //标题展开收起
     const history = useHistory();
     const location = useLocation();
+    const roleTxt =
+      (JSON.parse(roleData.testRole || '{}')?.ALLROLE ?? '') + ',' + (roleData.role ?? ''); //角色信息
+    const [addGysModalVisible, setAddGysModalVisible] = useState(false); //新增供应商弹窗显隐
 
     useEffect(() => {
       if (params !== '') {
         let obj = JSON.parse(DecryptBase64(params));
+        console.log('🚀 ~ useEffect ~ obj:', obj);
         queryDetailData(
-          obj.htbh,
+          obj.id,
           setData,
           setTableData,
           setIsSpinning,
-          v =>
-            setSltData(p => ({
-              ...p,
-              glxm: v,
-            })),
+          setSltData, //setData2
           userBasicInfo.id,
         );
         //名称路由去重
         const routesArr = [
           ...obj.routes,
-          { name: '信创合同信息编辑', pathname: location.pathname },
+          { name: '普通合同信息编辑', pathname: location.pathname },
         ]?.filter((obj, index, arr) => {
           return !arr.slice(index + 1).some(item => item.name === obj.name);
         });
@@ -110,7 +123,6 @@ export default connect(({ global }) => ({
         resetFields();
         setTableData([]);
         setDelData([]);
-        setIsTurnRed(false);
         setData({});
       };
     }, [params]);
@@ -118,9 +130,7 @@ export default connect(({ global }) => ({
     //保存
     const handleSave = () => {
       validateFields((err, values) => {
-        if (values.glxm === undefined) {
-          setIsTurnRed(true);
-        } else if (!err) {
+        if (!err) {
           const subInfo = [...tableData, ...delData].map(x => ({
             xxid: x.CZLX === 'ADD' ? -1 : x.ID, //附属信息id，新增的传-1，其他传对应id
             xcdl: Number(x.XCDL), //信创大类             字典xc_cat_1
@@ -138,14 +148,18 @@ export default connect(({ global }) => ({
             glxm: Number(x.GLXM), //关联项目
           }));
           const params = {
-            amount: String(values.zje),
+            amount: String(values.zje ?? data.ZJE), //现在显示为合同金额
             contractId: Number(data.HTID),
-            contractType: Number(values.htlx),
-            isXC: Number(values.sfxc),
-            projectId: Number(values.glxm),
-            sysType: Number(values.xtlx),
+            contractType: Number(values.htlx ?? data.HTLX),
+            isXC: Number(values.sfxc ?? data.SFXC),
+            projectId: Number(values.glxm ?? data.GLXM),
+            sysType: Number(values.xtlx ?? data.XTLX),
             subInfo,
+            vendor: Number(values.gys ?? data.GYS), //查询的可能没值，所以得让他选
+            state: Number(data.ZT),
+            signingDate: Number(data.QDRQ),
           };
+          setIsSpinning(true);
           OperateXCContract(params)
             .then(res => {
               if (res.success) {
@@ -153,7 +167,6 @@ export default connect(({ global }) => ({
                 resetFields();
                 setTableData([]);
                 setDelData([]);
-                setIsTurnRed(false);
                 setData({});
                 history.push({
                   pathname:
@@ -161,14 +174,17 @@ export default connect(({ global }) => ({
                     EncryptBase64(
                       JSON.stringify({
                         timeStamp: new Date().getTime(),
+                        tab: 'PTHT',
                       }),
                     ),
                 });
+                setIsSpinning(false);
               }
             })
             .catch(e => {
               console.error('保存失败', e);
               message.error('操作失败', 1);
+              setIsSpinning(false);
             });
         }
       });
@@ -179,7 +195,6 @@ export default connect(({ global }) => ({
       resetFields();
       setTableData([]);
       setDelData([]);
-      setIsTurnRed(false);
       setData({});
       history.push({
         pathname: '/pms/manage/InnovationContract',
@@ -213,9 +228,6 @@ export default connect(({ global }) => ({
       });
     };
 
-    //关联项目报错时特殊处理行高
-    const styleLineHeight = { lineHeight: isTurnRed ? '61px' : '42px' };
-
     //新增后滚至底部
     const scrolltoBottom = () => {
       let tableNode = document.querySelectorAll('.table-box .ant-table-body')[0];
@@ -227,6 +239,35 @@ export default connect(({ global }) => ({
       if (['', null, undefined].includes(v)) return undefined;
       if (type === 'number') return Number(v);
       return String(v);
+    };
+
+    const getRowTitle = ({ open, setOpen, title = '--', redTipTxt = '' }) => (
+      <div
+        className="row-title"
+        style={{ margin: '16px 24px 0 0', width: '100%' }}
+        key={title}
+        onClick={setOpen}
+      >
+        <Icon
+          type={'caret-right'}
+          className={'row-title-icon' + (open ? ' row-title-icon-rotate' : '')}
+        />
+        <span>{title}</span>
+        <span className="row-title-red-tip-txt">{redTipTxt}</span>
+      </div>
+    );
+
+    //判断是否为数字
+    function IsNum(s) {
+      if (s != null && s != '') {
+        return !isNaN(s);
+      }
+      return false;
+    }
+
+    //获取问号提示
+    const getQesTip = (txt = '') => {
+      return ZDTSNRPZ.find(x => x.cbm === txt)?.note ?? '';
     };
 
     return (
@@ -257,63 +298,187 @@ export default connect(({ global }) => ({
           </div>
           <div className="info-content">
             <div className="info-top">
+              {getRowTitle({
+                title: 'OA合同信息',
+                open: rowTitle.oa,
+                setOpen: () =>
+                  setRowTitle(p => ({
+                    ...p,
+                    oa: !p.oa,
+                  })),
+              })}
               {[
                 { label: '合同编号', val: data.HTBH },
                 { label: '合同名称', val: data.HTMC },
-                { label: '合同甲方', val: data.HTJF },
-                { label: '合同乙方', val: data.HTYF },
-                {
-                  label: '签订日期',
-                  val: (data.QDRQ && moment(String(data.QDRQ)).format('YYYY年MM月DD日')) || '',
-                },
-                { label: '到期日', val: data.DQSJ },
-                {
-                  label: '经办人',
-                  node: data.JBR ? getStaffNode(data.JBR, data.JBRID, routes) : data.YJBR,
-                },
-              ].map(x => getInfoItem(x))}
-              {getSelector({
-                label: '关联项目',
-                dataIndex: 'glxm',
-                initialValue: getValue(data.GLXM),
-                data: sltData.glxm,
-                titleField: 'XMMC',
-                valueField: 'XMID',
-                getFieldDecorator,
+                { label: '合同主体甲方', val: data.HTJF },
+                { label: '合同主体乙方', val: data.HTYF },
+                { label: '合同其他主体', val: data.HTQTZT },
+                { label: '合同有效期', val: data.HTYXQ },
+                { label: '合同到期日', val: data.DQSJ },
+                { label: '签订日期', val: data.QDRQ },
+                { label: '合同金额', val: data.HTJE },
+                { label: '负责人', val: data.FZR },
+                { label: '联系方式', val: data.LXFS },
+                { label: '合同备注', val: data.HTBZ },
+              ].map(x => getInfoItem(x, rowTitle.oa))}
+              {getRowTitle({
+                title: '补充合同信息',
+                open: rowTitle.supplement,
+                setOpen: () =>
+                  setRowTitle(p => ({
+                    ...p,
+                    supplement: !p.supplement,
+                  })),
               })}
-              {getIputNumber({
-                label: '总金额(元)',
-                dataIndex: 'zje',
-                initialValue: getValue(data.ZJE),
-                getFieldDecorator,
-              })}
-              {getSelector({
-                label: '系统类型',
-                dataIndex: 'xtlx',
-                initialValue: getValue(data.XTLX),
-                data: xc_sys,
-                titleField: 'note',
-                valueField: 'ibm',
-                getFieldDecorator,
-              })}
-              {getSelector({
-                label: '合同类型',
-                dataIndex: 'htlx',
-                initialValue: getValue(data.HTLX),
-                data: xc_cont_type,
-                titleField: 'note',
-                valueField: 'ibm',
-                getFieldDecorator,
-              })}
-              {getSelector({
-                label: '是否信创',
-                dataIndex: 'sfxc',
-                initialValue: getValue(data.SFXC),
-                data: SFXC,
-                titleField: 'note',
-                valueField: 'ibm',
-                getFieldDecorator,
-              })}
+              {roleTxt.includes('信创管理员') && Number(userBasicInfo.id) !== Number(data.JBRID) ? (
+                [
+                  {
+                    label: '关联项目',
+                    val: sltData.glxm?.find(x => Number(x.XMID) === Number(data.GLXM))?.XMMC,
+                  },
+                  {
+                    label: '合同金额(元)',
+                    val: getValue(data.ZJE) ?? (IsNum(data.HTJE) ? Number(data.HTJE) : undefined),
+                  },
+                  {
+                    label: '系统类型',
+                    val: xc_sys.find(x => Number(x.ibm) === Number(data.XTLX))?.note,
+                  },
+                  {
+                    label: '合同类型:',
+                    val: xc_cont_type.find(x => Number(x.ibm) === Number(data.HTLX))?.note,
+                  },
+                  {
+                    label: '是否信创',
+                    val: SFXC.find(x => Number(x.ibm) === Number(data.SFXC))?.note,
+                  },
+                  {
+                    label: '供应商',
+                    val: sltData.gys?.find(x => Number(x.id) === Number(data.GYS))?.gysmc,
+                  },
+                ].map(x => getInfoItem(x, rowTitle.supplement))
+              ) : (
+                <Fragment>
+                  {getSelector({
+                    label: '关联项目',
+                    labelNode: (
+                      <span>
+                        <span style={{ color: '#f5222d', marginRight: '4px' }}>*</span>
+                        关联项目
+                      </span>
+                    ),
+                    dataIndex: 'glxm',
+                    initialValue: getValue(data.GLXM, 'string'),
+                    data: sltData.glxm,
+                    titleField: 'XMMC',
+                    valueField: 'XMID',
+                    getFieldDecorator,
+                    display: rowTitle.supplement ? 'flex' : 'none',
+                    optionNode: x => (
+                      <Select.Option key={x.XMID} value={x.XMID} title={x.XMMC}>
+                        <Tooltip title={x.XMMC} placement="topLeft">
+                          {x.XMMC}
+                          <div style={{ fontSize: '12px', color: '#bfbfbf' }}>{x.XMNF}</div>
+                        </Tooltip>
+                      </Select.Option>
+                    ),
+                    optionLabelProp: 'title',
+                    optionFilterProp: 'title',
+                  })}
+                  {getIputNumber({
+                    label: '合同金额(元)',
+                    labelNode: (
+                      <span>
+                        <span style={{ color: '#f5222d', marginRight: '4px' }}>*</span>
+                        合同金额(元)
+                        <Tooltip title={getQesTip('合同金额问号内容')}>
+                          <Icon
+                            type="question-circle-o"
+                            style={{ marginLeft: 4, marginRight: 2 }}
+                          />
+                        </Tooltip>
+                      </span>
+                    ),
+                    dataIndex: 'zje',
+                    initialValue:
+                      getValue(data.ZJE) ?? (IsNum(data.HTJE) ? Number(data.HTJE) : undefined), //ZJE有值时直接取，没有则自行判断
+                    getFieldDecorator,
+                    display: rowTitle.supplement ? 'flex' : 'none',
+                  })}
+                  {getSelector({
+                    label: '系统类型',
+                    labelNode: (
+                      <span>
+                        <span style={{ color: '#f5222d', marginRight: '4px' }}>*</span>
+                        系统类型
+                      </span>
+                    ),
+                    dataIndex: 'xtlx',
+                    initialValue: getValue(data.XTLX),
+                    data: xc_sys,
+                    titleField: 'note',
+                    valueField: 'ibm',
+                    getFieldDecorator,
+                    display: rowTitle.supplement ? 'flex' : 'none',
+                  })}
+                  {getSelector({
+                    label: '合同类型',
+                    labelNode: (
+                      <span>
+                        <span style={{ color: '#f5222d', marginRight: '4px' }}>*</span>
+                        合同类型
+                      </span>
+                    ),
+                    dataIndex: 'htlx',
+                    initialValue: getValue(data.HTLX),
+                    data: xc_cont_type,
+                    titleField: 'note',
+                    valueField: 'ibm',
+                    getFieldDecorator,
+                    display: rowTitle.supplement ? 'flex' : 'none',
+                  })}
+                  {getSelector({
+                    label: '是否信创',
+                    labelNode: (
+                      <span>
+                        <span style={{ color: '#f5222d', marginRight: '4px' }}>*</span>
+                        是否信创
+                      </span>
+                    ),
+                    dataIndex: 'sfxc',
+                    initialValue: getValue(data.SFXC),
+                    data: SFXC,
+                    titleField: 'note',
+                    valueField: 'ibm',
+                    getFieldDecorator,
+                    display: rowTitle.supplement ? 'flex' : 'none',
+                  })}
+                  {getGysSelector({
+                    label: '供应商',
+                    labelNode: (
+                      <span>
+                        <span style={{ color: '#f5222d', marginRight: '4px' }}>*</span>
+                        供应商
+                      </span>
+                    ),
+                    dataIndex: 'gys',
+                    initialValue: data.GYS !== undefined ? getValue(data.GYS) : undefined,
+                    data: sltData.gys,
+                    titleField: 'gysmc',
+                    valueField: 'id',
+                    getFieldDecorator,
+                    display: rowTitle.supplement ? 'flex' : 'none',
+                    setAddGysModalVisible,
+                  })}
+                  {rowTitle.supplement &&
+                    Number(data.CLZT) === 1 &&
+                    getFieldValue('gys') === undefined && (
+                      <span style={{ color: '#f5222d', lineHeight: '61px' }}>
+                        OA中的合同乙方在系统中无对应供应商，请先新增供应商数据
+                      </span>
+                    )}
+                </Fragment>
+              )}
             </div>
             <div className="table-box">
               <div className="btn-row">
@@ -336,8 +501,8 @@ export default connect(({ global }) => ({
                   rowKey={'xxid'}
                   dataSource={tableData}
                   pagination={false}
-                  bordered
-                  scroll={{ x: 1520}}
+                  // bordered
+                  scroll={{ x: 1520 }}
                   // scroll={{ x: 1500, y: 'calc(100vh - 439px)' }}
                 />
               </div>
@@ -362,6 +527,13 @@ export default connect(({ global }) => ({
               glxm: getValue(data.GLXM),
             }}
             funcProps={{ setTableData, scrolltoBottom }}
+          />
+          <InfoOprtModal
+            visible={addGysModalVisible}
+            setVisible={setAddGysModalVisible}
+            oprtType={'ADD'}
+            GYSLX={GYSLX}
+            getTableData={() => fetchQueryGysInZbxx(setSltData, setIsSpinning)}
           />
         </Spin>
       </div>

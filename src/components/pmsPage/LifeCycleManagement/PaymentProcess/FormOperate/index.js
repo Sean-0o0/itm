@@ -534,8 +534,8 @@ export default function FormOperate(props) {
               >
                 {dhtData.map(x => (
                   <Option key={x.ID} value={x.ID}>
-                    <Tooltip title={x.GYSMC + '-' + x.QSRQ} placement="topLeft">
-                      {x.GYSMC + '-' + x.QSRQ}
+                    <Tooltip title={x.HTMC} placement="topLeft">
+                      {x.HTMC}
                     </Tooltip>
                   </Option>
                 ))}

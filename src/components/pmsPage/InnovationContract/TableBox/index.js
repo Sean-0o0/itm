@@ -6,6 +6,7 @@ import { EncryptBase64 } from '../../../Common/Encrypt';
 import { EditIPRInfo, TransferXCContract } from '../../../../services/pmsServices';
 import { useHistory } from 'react-router';
 import TransferModal from './TransferModal';
+import TopConsole from '../TopConsole';
 
 const { Option } = Select;
 
@@ -18,12 +19,16 @@ const TableBox = props => {
     dictionary = {},
     sltData = {},
     filterFold,
+    userBasicInfo = {},
+    roleTxt = '',
+    searchData = {},
   } = dataProps;
   const {
     setFilterData = () => {},
     queryTableData = () => {},
-    allowEdit = () => {},
     setIsSpinning = () => {},
+    setFilterFold = () => {},
+    setSearchData = () => {},
   } = funcProps;
   const {
     xc_deal_flag = [], //处理状态
@@ -112,7 +117,7 @@ const TableBox = props => {
                   }),
                 )}`,
                 state: {
-                  routes: [{ name: '信创合同信息列表', pathname: location.pathname }],
+                  routes: [{ name: '合同列表', pathname: location.pathname }],
                 },
               }}
             >
@@ -192,9 +197,7 @@ const TableBox = props => {
       ellipsis: true,
       render: (txt, row) => {
         return txt
-          ? getStaffNode(txt, row.JBRID, [
-              { name: '信创合同信息列表', pathname: location.pathname },
-            ])
+          ? getStaffNode(txt, row.JBRID, [{ name: '合同列表', pathname: location.pathname }])
           : row.YJBR;
       },
     },
@@ -204,6 +207,7 @@ const TableBox = props => {
       key: 'CLZT',
       width: 80,
       ellipsis: true,
+      fixed: 'right',
       render: txt => getNote(xc_deal_flag, txt),
     },
     {
@@ -215,9 +219,15 @@ const TableBox = props => {
       ellipsis: true,
       fixed: 'right',
       render: (txt, row) =>
-        allowEdit(row.CJRID) ? (
+        String(row.JBRID) === String(userBasicInfo.id) || roleTxt.includes('信创管理员') ? (
+          //登录人为经办人时可编辑转办
+          //管理员可转办
+          //不是经办人但是管理员，且处理状态为已处理时可编辑
           <div className="opr-column">
-            <span onClick={() => handleEdit(row)}>编辑</span>
+            {(String(row.JBRID) === String(userBasicInfo.id) ||
+              (roleTxt.includes('信创管理员') && String(row.CLZT) === '2')) && (
+              <span onClick={() => handleEdit(row)}>编辑</span>
+            )}
             <span onClick={() => setTransferData({ visible: true, curRowId: row.HTID })}>转办</span>
           </div>
         ) : (
@@ -313,17 +323,19 @@ const TableBox = props => {
 
   //修改
   const handleEdit = (row = {}) => {
-    history.push({
-      pathname:
-        '/pms/manage/InnovationContractEdit/' +
-        EncryptBase64(
-          JSON.stringify({
-            htbh: row.HTBH,
-            routes: [{ name: '信创合同信息列表', pathname: location.pathname }],
-            timeStamp: new Date().getTime(),
-          }),
-        ),
-    });
+    if (row.HTID !== undefined) {
+      history.push({
+        pathname:
+          '/pms/manage/InnovationContractEdit/' +
+          EncryptBase64(
+            JSON.stringify({
+              id: row.HTID,
+              routes: [{ name: '合同列表', pathname: location.pathname }],
+              timeStamp: new Date().getTime(),
+            }),
+          ),
+      });
+    }
   };
 
   //表格操作后更新数据
@@ -334,13 +346,13 @@ const TableBox = props => {
         current,
         pageSize,
         sort: sorter.field + (sorter.order === 'ascend' ? ' ASC' : ' DESC'),
-        ...filterData,
+        ...searchData,
       });
     } else {
       queryTableData({
         current,
         pageSize,
-        ...filterData,
+        ...searchData,
       });
     }
     return;
@@ -356,12 +368,16 @@ const TableBox = props => {
           contractId={transferData.curRowId}
           refresh={() =>
             queryTableData({
-              ...filterData,
+              ...searchData,
               current: tableData.current,
               pageSize: tableData.pageSize,
               sort: tableData.sort,
             })
           }
+        />
+        <TopConsole
+          dataProps={{ filterData, sltData, dictionary, filterFold }}
+          funcProps={{ setFilterData, queryTableData, setFilterFold, setSearchData }}
         />
         <div className="project-info-table-box">
           <Table
@@ -380,8 +396,18 @@ const TableBox = props => {
               showTotal: t => `共 ${tableData.total} 条数据`,
               total: tableData.total,
             }}
-            bordered
-            scroll={{ x: 1410, y: filterFold ? 'calc(100vh - 303px)' : 'calc(100vh - 393px)' }}
+            // bordered
+            scroll={{
+              x: 1410,
+              y:
+                window.innerWidth < 1440
+                  ? filterFold
+                    ? 'calc(100vh - 335px)'
+                    : 'calc(100vh - 433px)'
+                  : filterFold
+                  ? 'calc(100vh - 318px)'
+                  : 'calc(100vh - 416px)',
+            }}
           />
         </div>
       </div>

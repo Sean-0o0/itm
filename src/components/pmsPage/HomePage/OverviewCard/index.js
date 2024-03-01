@@ -6,9 +6,10 @@ import { Link } from 'react-router-dom';
 import moment from 'moment';
 import avatarMale from '../../../../assets/homePage/img_avatar_male.png';
 import avatarFemale from '../../../../assets/homePage/img_avatar_female.png';
-import { Badge, Dropdown, Menu, message, Modal, Popover, Tooltip } from 'antd';
+import { Badge, Dropdown, Icon, Menu, message, Modal, Popover, Spin, Tooltip } from 'antd';
 import {
   CreateOperateHyperLink,
+  QueryProjectBudgetCarryoverInfo,
   QueryProjectTracking,
   UpdateMessageState,
 } from '../../../../services/pmsServices';
@@ -18,6 +19,8 @@ import BridgeModel from '../../../Common/BasicModal/BridgeModel';
 import EditProjectInfoModel from '../../EditProjectInfoModel';
 import EditPrjTracking from '../../ProjectTracking/editPrjTracking';
 import { connect } from 'dva';
+import { useHistory } from 'react-router';
+import CarryoverModal from '../../BudgetCarryover/TableBox/CarryoverModal';
 
 export default connect(({ global }) => ({
   dataAnonymization: global.dataAnonymization, //是否数据匿名化 脱敏
@@ -35,6 +38,8 @@ export default connect(({ global }) => ({
     handleCurYearChange,
     componentType = 'default', // 'shortcut'
     dataAnonymization,
+    getToDoData,
+    popLoading,
   } = props;
   let LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
   const location = useLocation();
@@ -68,6 +73,12 @@ export default connect(({ global }) => ({
   }); //流程详情弹窗数据
   const [lcxqVisible, setLcxqVisible] = useState(false); //
   const [lcxqUrl, setLcxqUrl] = useState(''); //
+  const history = useHistory();
+  const [carryoverData, setCarryoverData] = useState({
+    visible: false,
+    type: 'TJ', //修改TJ
+    data: {}, //行数据
+  }); //重新结转弹窗显隐
 
   //人员新增提醒弹窗配置
   const ryxztxModalProps = {
@@ -118,7 +129,7 @@ export default connect(({ global }) => ({
   };
 
   //跳转项目详情
-  const jumpToProjectDetail = item => {
+  const jumpToProjectDetail = (item = {}) => {
     window.location.href = `/#/pms/manage/ProjectDetail/${EncryptBase64(
       JSON.stringify({
         routes: [{ name: '个人工作台', pathname: location.pathname }],
@@ -128,7 +139,7 @@ export default connect(({ global }) => ({
   };
 
   //付款流程
-  const handlePaymentProcess = item => {
+  const handlePaymentProcess = (item = {}) => {
     // console.log('handlePaymentProcess', item);
     setPaymentModalVisible(true);
     setProjectCode(item.xmbh);
@@ -144,7 +155,7 @@ export default connect(({ global }) => ({
   };
 
   //人员新增提醒
-  const handleRyxztx = item => {
+  const handleRyxztx = (item = {}) => {
     const params = {
       attribute: 0,
       authFlag: 0,
@@ -181,7 +192,7 @@ export default connect(({ global }) => ({
   };
 
   //信委会会议结果
-  const handleXwhhyjg = item => {
+  const handleXwhhyjg = (item = {}) => {
     UpdateMessageState({
       zxlx: 'EXECUTE',
       xxid: item.xxid,
@@ -201,7 +212,7 @@ export default connect(({ global }) => ({
   };
 
   //创建需求
-  const handleCjxq = item => {
+  const handleCjxq = (item = {}) => {
     console.log('🚀 ~ file: index.js:162 ~ handleCjxq ~ item:', item);
     UpdateMessageState({
       zxlx: 'EXECUTE',
@@ -227,7 +238,7 @@ export default connect(({ global }) => ({
       });
   };
 
-  const jumpToEditProjectInfo = item => {
+  const jumpToEditProjectInfo = (item = {}) => {
     setFileAddVisible(true);
     setSrc_fileAdd({
       xmid: item.xmid,
@@ -239,7 +250,7 @@ export default connect(({ global }) => ({
   };
 
   //外包人员面试评分
-  const handleWbrymspf = item => {
+  const handleWbrymspf = (item = {}) => {
     setModalVisible(p => {
       return {
         ...p,
@@ -255,7 +266,7 @@ export default connect(({ global }) => ({
   };
 
   //简历分发、提交录用申请
-  const jumpToDemandDetail = item => {
+  const jumpToDemandDetail = (item = {}) => {
     if (item.kzzd !== '') {
       UpdateMessageState({
         zxlx: 'EXECUTE',
@@ -283,7 +294,7 @@ export default connect(({ global }) => ({
   };
 
   //自定义报告详情
-  const jumpToCustomReportDetail = item => {
+  const jumpToCustomReportDetail = (item = {}) => {
     console.log(JSON.parse(item.kzzd));
     if (item.kzzd !== '') {
       window.location.href = `/#/pms/manage/CustomReportDetail/${EncryptBase64(
@@ -307,13 +318,10 @@ export default connect(({ global }) => ({
     )}`;
   };
 
-  //预算结转
+  //跳转预算结转
   const jumpToBudgetCarryover = (item = {}) => {
     let xmmc = item.xmmc;
-    if (
-      item.kzzd !== '' &&
-      (item.sxmc === '预算审核被退回' || item.sxmc === '项目预算结转待查看')
-    ) {
+    if (item.kzzd !== '' && item.sxmc === '项目预算结转待查看') {
       xmmc = JSON.parse(item.kzzd || '{}').YSXM || '';
     }
     //带项目名称过去模糊搜索
@@ -321,7 +329,7 @@ export default connect(({ global }) => ({
       JSON.stringify({
         fromHome: true, //来自首页的
         xmmc,
-        tab: item.sxmc === '预算审核被退回' ? 'ZB' : 'YSJZ', //目前3个，只有 预算审核被退回 是 ZB tab
+        tab: 'YSJZ',
         routes: [{ name: '个人工作台', pathname: location.pathname }],
       }),
     )}`;
@@ -344,21 +352,152 @@ export default connect(({ global }) => ({
     }
   };
 
-  //信创合同列表
-  const jumpToInnovationContract = item => {
-    // console.log(JSON.parse(item.kzzd));
+  //跳转预算管理
+  const jumpToBudgetInput = (item = {}) => {
+    let xmmc = undefined;
     if (item.kzzd !== '') {
-      window.location.href = `/#/pms/manage/InnovationContract/${EncryptBase64(
-        JSON.stringify({
-          htbh: JSON.parse(item.kzzd).HTBH,
-          // routes: [{ name: '个人工作台', pathname: location.pathname }],
-        }),
-      )}`;
+      xmmc = JSON.parse(item.kzzd || '{}').YSXM || '';
+    }
+    //带项目名称过去模糊搜索
+    window.location.href = `/#/pms/manage/BudgetInput/${EncryptBase64(
+      JSON.stringify({
+        fromHome: true, //来自首页的
+        xmmc,
+        tab: 'ZB',
+        routes: [{ name: '个人工作台', pathname: location.pathname }],
+      }),
+    )}`;
+    UpdateMessageState({
+      zxlx: 'EXECUTE',
+      xxid: item.xxid,
+    })
+      .then((ret = {}) => {
+        const { code = 0, note = '', record = [] } = ret;
+        if (code === 1) {
+          //刷新数据
+          reflush();
+        }
+      })
+      .catch(error => {
+        message.error('操作失败', 1);
+        console.error('预算信息待审核', !error.success ? error.message : error.note);
+      });
+  };
+
+  //打开重新结转弹窗
+  const openReCarryover = (item = {}) => {
+    console.log('🚀 ~ openReCarryover ~ item:', item);
+    if (item.kzzd !== '') {
+      const obj = JSON.parse(item.kzzd) || {};
+      //先调用接口获取预算结转页面表格数据，然后找到JZJLID对应ID相等的那一行的数据
+      QueryProjectBudgetCarryoverInfo({
+        queryType: 'ALL',
+        current: 1,
+        pageSize: 999,
+        paging: -1,
+        sort: '',
+        total: -1,
+      })
+        .then(res => {
+          if (res?.success) {
+            const data =
+              JSON.parse(res.result).find(x => String(x.ID) === String(obj.JZJLID)) || {};
+            console.log('🚀 ~ openReCarryover ~ data:', data);
+            setCarryoverData({ visible: true, type: 'TJ', data });
+          }
+        })
+        .catch(e => {
+          console.error('🚀预算结转数据', e);
+          message.error('预算结转数据获取失败', 1);
+        });
+    }
+  };
+
+  //跳转预算填报页面
+  const jumpToBudgetSubmit = (item = {}) => {
+    // console.log('🚀 ~ jumpToBudgetSubmit ~ item:', item);
+    if (item.kzzd !== '') {
+      const obj = JSON.parse(item.kzzd) || {};
+      // console.log("🚀 ~ jumpToBudgetSubmit ~ obj:", obj)
+      if (obj.THLX === 'GLYTH') {
+        //显示详情页退回
+        console.log('显示详情页退回');
+        history.push({
+          pathname: `/pms/manage/BudgetSubmit/${EncryptBase64(
+            JSON.stringify({
+              operateType: 'XQ',
+              budgetId: Number(obj.YSID),
+              backToHome: item.xxid, //退回后返回首页, xxid用来完成待办
+              routes: [{ name: '个人工作台', pathname: location.pathname }],
+              refreshParams: {
+                activeKey: 'ZB', //没用了
+                current: 1,
+                pageSize: 20,
+                sort: '',
+                budgetName: obj.YSXM,
+              },
+              sendBackParams: {
+                operateType: 'BACK',
+                submitType: 2, //统筹人的情况
+                budgetId: Number(obj.YSID),
+                budgetName: obj.YSXM,
+              },
+            }),
+          )}`,
+        });
+      } else if (obj.THLX === 'TCRTH') {
+        //显示修改页，保存的按钮文本改为保存并提交
+        console.log('显示修改页，保存的按钮文本改为保存并提交');
+        history.push({
+          pathname: `/pms/manage/BudgetSubmit/${EncryptBase64(
+            JSON.stringify({
+              operateType: 'UPDATE',
+              submitType: 1,
+              budgetId: Number(obj.YSID),
+              saveAndSubmit: true, //保存的按钮文本改为保存并提交
+              routes: [{ name: '个人工作台', pathname: location.pathname }],
+              refreshParams: {
+                activeKey: 'ZB', //没用了
+                current: 1,
+                pageSize: 20,
+                sort: '',
+                budgetName: obj.YSXM,
+              },
+            }),
+          )}`,
+        });
+      }
+    }
+  };
+
+  //信创合同列表
+  const jumpToInnovationContract = (item = {}) => {
+    if (item.kzzd !== '') {
+      UpdateMessageState({
+        zxlx: 'EXECUTE',
+        xxid: item.xxid,
+      })
+        .then((ret = {}) => {
+          const { code = 0, note = '', record = [] } = ret;
+          if (code === 1) {
+            reflush();
+            window.location.href = `/#/pms/manage/InnovationContract/${EncryptBase64(
+              JSON.stringify({
+                htbh: JSON.parse(item.kzzd || '{}')?.HTBH,
+                tab: 'PTHT', //跳转普通合同tab
+                // routes: [{ name: '个人工作台', pathname: location.pathname }],
+              }),
+            )}`;
+          }
+        })
+        .catch(error => {
+          message.error('操作失败', 1);
+        });
     }
   };
 
   //打开跟踪信息编辑弹窗
-  const openTrackingEditModal = item => {
+  const openTrackingEditModal = (item = {}) => {
     if (item.kzzd && item.kzzd !== '') {
       //获取项目跟踪数据
       QueryProjectTracking({
@@ -399,7 +538,7 @@ export default connect(({ global }) => ({
   };
 
   //打开lb流程详情弹窗
-  const openLCXQModal = item => {
+  const openLCXQModal = (item = {}) => {
     if (item.kzzd !== '') {
       setLcxqModalData({
         url: `/livebos/ShowWorkflow?wfid=${JSON.parse(item.kzzd).INSTID}&stepId=${
@@ -407,6 +546,36 @@ export default connect(({ global }) => ({
         }&PopupWin=true&HideCancelBtn=true`,
         visible: true,
       });
+    }
+  };
+
+  //跳转合同信息编辑页面
+  const jumpToInnovationContractEdit = (item = {}) => {
+    if (item.kzzd !== '') {
+      UpdateMessageState({
+        zxlx: 'EXECUTE',
+        xxid: item.xxid,
+      })
+        .then((ret = {}) => {
+          const { code = 0, note = '', record = [] } = ret;
+          if (code === 1) {
+            reflush();
+            history.push({
+              pathname:
+                '/pms/manage/InnovationContractEdit/' +
+                EncryptBase64(
+                  JSON.stringify({
+                    id: JSON.parse(item.kzzd || '{}')?.ID,
+                    routes: [{ name: '个人工作台', pathname: location.pathname }],
+                    timeStamp: new Date().getTime(),
+                  }),
+                ),
+            });
+          }
+        })
+        .catch(error => {
+          message.error('操作失败', 1);
+        });
     }
   };
 
@@ -485,15 +654,23 @@ export default connect(({ global }) => ({
         return openTrackingEditModal(item);
       case '开启人员评分':
         return jumpToMutualValuation(item);
-      case '预算审核被退回':
       case '项目预算结转待查看':
-      case '结转项目被退回':
+      case '项目预算待结转':
         return jumpToBudgetCarryover(item);
+      case '结转项目被退回':
+        return openReCarryover(item);
+      case '预算审核被退回':
+        return jumpToBudgetSubmit(item);
       case '信创合同转办':
         return jumpToInnovationContract(item);
       case '预算审批流程待处理':
       case '预算审批流程被退回':
         return openLCXQModal(item);
+      case '预算信息待审核':
+        return jumpToBudgetInput(item);
+      case 'OA合同信息落地确认':
+        return jumpToInnovationContractEdit(item);
+
       //暂不处理
       case '外包人员录用信息提交':
         return jumpToLBPage('');
@@ -569,6 +746,8 @@ export default connect(({ global }) => ({
     unit = '',
     fn = false,
     linkTo = false,
+    popLoading = false,
+    onClick = () => {},
   }) => {
     return (
       <div className="overview-item" style={{ width }}>
@@ -584,15 +763,16 @@ export default connect(({ global }) => ({
                   title={null}
                   placement="rightTop"
                   trigger="click"
-                  visible={hovered}
+                  visible={!popLoading && hovered}
                   onVisibleChange={handleVisibleChange}
                   getPopupContainer={triggerNode => triggerNode.parentNode}
                   autoAdjustOverflow={true}
                   content={getToDoItem(toDoData)}
                   overlayClassName="todo-card-content-popover"
+                  onClick={onClick}
                 >
                   {title}
-                  <i className="iconfont icon-right" />
+                  {popLoading ? <Icon type="loading" /> : <i className="iconfont icon-right" />}
                 </Popover>
               ) : (
                 title
@@ -789,6 +969,14 @@ export default connect(({ global }) => ({
           isFromToDo={true} //成功提醒区分判断用
         />
       )}
+      {/* 重新结转弹窗 */}
+      <CarryoverModal
+        visible={carryoverData.visible}
+        setVisible={v => setCarryoverData(p => ({ ...p, visible: v }))}
+        type={carryoverData.type}
+        data={carryoverData.data}
+        refresh={reflush}
+      />
     </Fragment>
   );
 
@@ -832,6 +1020,10 @@ export default connect(({ global }) => ({
               addNum: overviewInfo?.dbjrxz,
               unit: '项',
               more: true,
+              popLoading,
+              onClick: () => {
+                getToDoData(statisticYearData.currentYear);
+              },
             })}
             {getOverviewItem({
               title: '现有风险',
@@ -969,12 +1161,15 @@ export default connect(({ global }) => ({
           title={null}
           placement="rightTop"
           trigger="click"
-          visible={hovered}
+          visible={!popLoading && hovered}
           onVisibleChange={handleVisibleChange}
           getPopupContainer={triggerNode => triggerNode.parentNode}
           autoAdjustOverflow={true}
           content={getToDoItem(toDoData)}
           overlayClassName="todo-card-content-popover"
+          onClick={() => {
+            getToDoData(statisticYearData.currentYear);
+          }}
         >
           <div className="shortcut-item">
             <div className="item-img">
@@ -982,7 +1177,9 @@ export default connect(({ global }) => ({
                 <img src={require(`../../../../assets/homePage/icon_yian@2x.png`)} alt="" />
               </Badge>
             </div>
-            <div className="item-txt">我的待办</div>
+            <div className="item-txt">
+              我的待办{popLoading ? <Icon style={{ marginLeft: 4 }} type="loading" /> : ''}
+            </div>
           </div>
         </Popover>
       </Fragment>

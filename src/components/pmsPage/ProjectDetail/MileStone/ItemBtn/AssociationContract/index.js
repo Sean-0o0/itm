@@ -95,8 +95,8 @@ export default Form.create()(function AssociationContract(props) {
               >
                 {dhtData.map(x => (
                   <Option key={x.ID} value={x.ID}>
-                    <Tooltip title={x.GYSMC + '-' + x.QSRQ} placement="topLeft">
-                      {x.GYSMC + '-' + x.QSRQ}
+                    <Tooltip title={x.HTMC} placement="topLeft">
+                      {x.HTMC}
                     </Tooltip>
                   </Option>
                 ))}
