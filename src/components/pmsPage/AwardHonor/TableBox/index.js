@@ -36,10 +36,10 @@ const TableBox = props => {
   } = dataProps;
 
   const {
-    setFilterData = () => { },
-    queryTableData = () => { },
-    setSpinningData = () => { },
-    setTableData = () => { },
+    setFilterData = () => {},
+    queryTableData = () => {},
+    setSpinningData = () => {},
+    setTableData = () => {},
     allowEdit,
     setExpandedRowKeys,
     setSubTableData,
@@ -155,14 +155,14 @@ const TableBox = props => {
           ),
         },
       ];
-    }
-    else if (key === 'KJRY') {    // 科技荣誉
+    } else if (key === 'KJRY') {
+      // 科技荣誉
       return [
         {
           title: '荣誉名称',
           dataIndex: 'RYMC',
           key: 'RYMC',
-          width: '17%', //有子表格时必须每列表明宽度
+          // width: '17%', //有子表格时必须每列表明宽度
           ellipsis: true,
           render: txt => (
             <Tooltip title={txt} placement="topLeft">
@@ -200,7 +200,7 @@ const TableBox = props => {
                       }),
                     )}`,
                     state: {
-                      routes: [{ name: '项目列表', pathname: location.pathname }],
+                      routes: [{ name: '获奖荣誉列表', pathname: location.pathname }],
                     },
                   }}
                   className="table-link-strong"
@@ -208,38 +208,60 @@ const TableBox = props => {
                   {text}
                 </Link>
               </Tooltip>
-            )
+            );
           },
         },
         {
           title: '联系人',
           dataIndex: 'LXR',
           key: 'LXR',
-          width: '11%',
+          width: '7%',
           ellipsis: true,
+          render: (txt, row) => {
+            return (
+              <Link
+                style={{ color: '#3361ff' }}
+                to={{
+                  pathname: `/pms/manage/staffDetail/${EncryptBase64(
+                    JSON.stringify({
+                      ryid: row.LXRID,
+                    }),
+                  )}`,
+                  state: {
+                    routes: [{ name: '获奖荣誉列表', pathname: location.pathname }],
+                  },
+                }}
+                className="table-link-strong"
+              >
+                {txt}
+              </Link>
+            );
+          },
         },
         {
           title: '参考资料',
-          dataIndex: 'FJ',  // 虽然中文名字叫 参考资料  但是  命名要根据下面 axios 的  params.columnName
+          dataIndex: 'FJ', // 虽然中文名字叫 参考资料  但是  命名要根据下面 axios 的  params.columnName
           key: 'FJ',
           width: '7%',
           ellipsis: true,
           render: (txt, row) => {
-            return <FileDownload
-              fileStr={txt}
-              params={{
-                objectName: 'TXMXX_HJRY_SBXQ',  //找后端要
-                columnName: 'FJ',               //找后端要
-                id: row.ID,
-              }}
-            />
+            return (
+              <FileDownload
+                fileStr={txt}
+                params={{
+                  objectName: 'TXMXX_HJRY_SBXQ', //找后端要
+                  columnName: 'FJ', //找后端要
+                  id: row.ID,
+                }}
+              />
+            );
           },
         },
         {
           title: '获奖日期',
           dataIndex: 'HJSJ',
           key: 'HJSJ',
-          width: '8%',
+          width: '10%',
           ellipsis: true,
           render: txt => (txt ? moment(String(txt)).format('YYYY-MM-DD') : ''),
         },
@@ -247,7 +269,7 @@ const TableBox = props => {
           title: '修改时间',
           dataIndex: 'XGSJ',
           key: 'XGSJ',
-          width: '8%',
+          width: '10%',
           ellipsis: true,
           render: txt => (txt ? moment(String(txt)).format('YYYY-MM-DD') : ''),
         },
@@ -257,7 +279,7 @@ const TableBox = props => {
           width: '10%',
           align: 'center',
           key: 'OPRT',
-          ellipsis: true,                   //科技荣誉
+          ellipsis: true, //科技荣誉
           render: (txt, row) => (
             <div className="opr-column">
               {allowEdit(row.LXRID) && <span onClick={() => handleEdit(row)}>修改</span>}
@@ -269,9 +291,8 @@ const TableBox = props => {
             </div>
           ),
         },
-      ]
-    }
-    else if (key === 'YJKT') {
+      ];
+    } else if (key === 'YJKT') {
       return [
         {
           title: '课题名称',
@@ -483,38 +504,38 @@ const TableBox = props => {
       },
       activeKey === 'KJJX'
         ? {
-          title: '获奖情况',
-          dataIndex: 'HJQK',
-          key: 'HJQK',
-          width: '7%',
-          ellipsis: true,
-          render: txt => getNote(HJQK, txt),
-        }
+            title: '获奖情况',
+            dataIndex: 'HJQK',
+            key: 'HJQK',
+            width: '7%',
+            ellipsis: true,
+            render: txt => getNote(HJQK, txt),
+          }
         : {
-          title: '课题状态',
-          dataIndex: 'KTZT',
-          key: 'KTZT',
-          width: '7%',
-          ellipsis: true,
-          render: txt => getNote(KTZT, txt),
-        },
+            title: '课题状态',
+            dataIndex: 'KTZT',
+            key: 'KTZT',
+            width: '7%',
+            ellipsis: true,
+            render: txt => getNote(KTZT, txt),
+          },
       activeKey === 'KJJX'
         ? {
-          title: '获奖时间',
-          dataIndex: 'HJSJ',
-          key: 'HJSJ',
-          width: '10%',
-          ellipsis: true,
-          render: txt => (txt ? moment(String(txt)).format('YYYY-MM-DD') : ''),
-        }
+            title: '获奖时间',
+            dataIndex: 'HJSJ',
+            key: 'HJSJ',
+            width: '10%',
+            ellipsis: true,
+            render: txt => (txt ? moment(String(txt)).format('YYYY-MM-DD') : ''),
+          }
         : {
-          title: '结题时间',
-          dataIndex: 'JTSJ',
-          key: 'JTSJ',
-          width: '10%',
-          ellipsis: true,
-          render: txt => (txt ? moment(String(txt)).format('YYYY-MM-DD') : ''),
-        },
+            title: '结题时间',
+            dataIndex: 'JTSJ',
+            key: 'JTSJ',
+            width: '10%',
+            ellipsis: true,
+            render: txt => (txt ? moment(String(txt)).format('YYYY-MM-DD') : ''),
+          },
       {
         title: '修改时间',
         dataIndex: 'XGSJ',
@@ -626,7 +647,7 @@ const TableBox = props => {
       fileInfo: '[]',
     };
     if (activeKey === 'KJRY') {
-      params.detailId = Number(row.ID)
+      params.detailId = Number(row.ID);
     }
     OperateAwardAndHonor(params)
       .then(res => {
@@ -637,11 +658,13 @@ const TableBox = props => {
             sort: tableData.sort,
             ...filterData,
           });
-          message.success('操作成功', 1);
           setSpinningData(p => ({
             ...p,
             spinning: false,
           }));
+          setTimeout(() => {
+            message.success('操作成功', 1);
+          }, 1000);
         }
       })
       .catch(e => {
@@ -715,7 +738,8 @@ const TableBox = props => {
       HJQK: turnString(row.HJQK),
       JXJB: turnString(row.JXJB),
       SBJZRQ: turnString(row.SBJZRQ) ? moment(turnString(row.SBJZRQ)) : undefined,
-      FJ: row.CKZL,
+      FJ: activeKey === 'KJRY' ? row.FJ : row.CKZL,
+      HJSJ: turnString(row.HJSJ) ? moment(turnString(row.HJSJ)) : undefined,
     };
     // console.log('🚀 ~ file: index.js:252 ~ handleEdit ~ rowData:', rowData);
     setModalData({
@@ -853,7 +877,6 @@ const TableBox = props => {
   return (
     <>
       <div className="table-box">
-
         <OprModal
           setVisible={v => setModalData(p => ({ ...p, visible: v }))}
           type={activeKey}
@@ -864,7 +887,6 @@ const TableBox = props => {
         />
 
         <div className="filter-row">
-
           {(activeKey === 'KJJX' || activeKey === 'YJKT') && (
             <div className="console-item">
               <div className="item-label">{getInputName(activeKey)}</div>
@@ -926,7 +948,7 @@ const TableBox = props => {
                         setFilterData(p => ({ ...p, awardName: v.target.value }));
                       }
                     }}
-                    placeholder='请输入荣誉名称'
+                    placeholder="请输入荣誉名称"
                     allowClear
                     style={{ width: '100%' }}
                   />
@@ -946,7 +968,7 @@ const TableBox = props => {
                         setFilterData(p => ({ ...p, unit: v.target.value }));
                       }
                     }}
-                    placeholder='请输入颁发单位'
+                    placeholder="请输入颁发单位"
                     allowClear
                     style={{ width: '100%' }}
                   />
@@ -1020,7 +1042,7 @@ const TableBox = props => {
           </Button>
         </div>
 
-        {isGLY && (
+        {(isGLY || activeKey === 'KJRY') && (
           <div className="export-row">
             <Button type="primary" onClick={handleAddRow}>
               新建
@@ -1030,10 +1052,10 @@ const TableBox = props => {
 
         <div
           className="project-info-table-box"
-          style={isGLY ? {} : { height: 'calc(100% - 81px)' }}
+          style={isGLY || activeKey === 'KJRY' ? {} : { height: 'calc(100% - 81px)' }}
         >
-          {activeKey === 'KJRY'
-            ? <Table
+          {activeKey === 'KJRY' ? (
+            <Table
               columns={columns(activeKey)}
               rowKey={'ID'}
               dataSource={tableData.data}
@@ -1051,7 +1073,8 @@ const TableBox = props => {
               }}
               bordered
             />
-            : <Table
+          ) : (
+            <Table
               columns={columns(activeKey)}
               rowKey={'ID'}
               dataSource={tableData.data}
@@ -1072,8 +1095,7 @@ const TableBox = props => {
               }}
               bordered
             />
-          }
-
+          )}
         </div>
       </div>
     </>

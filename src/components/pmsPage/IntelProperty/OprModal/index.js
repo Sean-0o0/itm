@@ -107,7 +107,7 @@ export default connect(({ global = {} }) => ({
           if (res.code === 1) {
             setSltData(p => ({
               ...p,
-              prjName: [...res.record].map(x => ({ XMMC: x.xmmc, XMID: x.xmid })),
+              prjName: [...res.record].map(x => ({ XMMC: x.xmmc, XMID: x.xmid, XMNF: x.xmnf })),
             }));
             getContactData();
           }
@@ -340,6 +340,9 @@ export default connect(({ global = {} }) => ({
       valueField,
       titleField,
       required = true,
+      optionNode,
+      optionLabelProp = 'children',
+      optionFilterProp = 'children',
     }) => {
       return (
         <Col span={12}>
@@ -353,8 +356,9 @@ export default connect(({ global = {} }) => ({
                 },
               ],
             })(
-              <Select placeholder="请选择" optionFilterProp="children" showSearch allowClear>
+              <Select placeholder="请选择" showSearch allowClear optionFilterProp={optionFilterProp} optionLabelProp={optionLabelProp}>
                 {sltArr.map(x => (
+                  optionNode ? optionNode(x) : 
                   <Select.Option key={x[valueField]} value={x[valueField]}>
                     {x[titleField]}
                   </Select.Option>

@@ -55,19 +55,22 @@ export default function AwardHonor(props) {
   useLayoutEffect(() => {
     if (params !== '') {
       let obj = JSON.parse(DecryptBase64(params));
+      // console.log('🚀 ~ useLayoutEffect ~ obj:', obj);
       setSpinningData(p => ({
         tip: '加载中',
         spinning: true,
       }));
       setActiveKey(obj.tab);
       setFilterData(p => ({ ...p, awardName: obj.name }));
-      getSubTableData(obj.rowID);
+      if (obj.tab !== 'KJRY') {
+        getSubTableData(obj.rowID);
+      }
       queryTableData({ tab: obj.tab, ...filterData, awardName: obj.name });
     } else {
       queryTableData({});
       getUserRole();
     }
-    return () => { };
+    return () => {};
   }, [params]);
 
   //获取用户角色

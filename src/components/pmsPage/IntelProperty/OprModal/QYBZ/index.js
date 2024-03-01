@@ -1,5 +1,6 @@
 import React, { Fragment } from 'react';
 import moment from 'moment';
+import { Select, Tooltip } from 'antd';
 
 export default function QYBZ(props) {
   const { components = {}, dataProps = {}, funcProps = {} } = props;
@@ -47,6 +48,16 @@ export default function QYBZ(props) {
             valueField: 'XMID',
             titleField: 'XMMC',
             required: false,
+            optionNode: x => (
+              <Select.Option key={x.XMID} value={x.XMID} title={x.XMMC}>
+                <Tooltip title={x.XMMC} placement="topLeft">
+                  {x.XMMC}
+                  <div style={{ fontSize: '12px', color: '#bfbfbf' }}>{x.XMNF}</div>
+                </Tooltip>
+              </Select.Option>
+            ),
+            optionLabelProp: 'title',
+            optionFilterProp: 'title',
           })}
       {getInput('标准名称', 'name', rowData.NAME, labelCol, wrapperCol, 50)}
       {isGLY &&

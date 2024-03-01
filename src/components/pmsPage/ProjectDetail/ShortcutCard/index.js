@@ -264,7 +264,7 @@ export default connect(({ global = {} }) => ({
       oprType: 'ADD',
       rowData: undefined,
       activeKey,
-      isSB: true, //是否申报
+      isSB: activeKey !== 'KJRY', //是否申报 科技荣誉这边不为true
       parentRow: undefined, //申报行的父行数据{}
       fromPrjDetail: {
         xmmc: prjBasic.XMMC,
@@ -296,6 +296,9 @@ export default connect(({ global = {} }) => ({
     <div className="list">
       <div className="item" key="KJJX" onClick={() => handleAddAwardHonor('KJJX')}>
         科技奖项
+      </div>
+      <div className="item" key="KJRY" onClick={() => handleAddAwardHonor('KJRY')}>
+        科技荣誉
       </div>
       <div className="item" key="YJKT" onClick={() => handleAddAwardHonor('YJKT')}>
         研究课题

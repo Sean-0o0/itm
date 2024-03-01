@@ -81,27 +81,27 @@ export default connect(({ global = {} }) => ({
     const singleSelectorSelectedTitleRef = useRef('') //getSingleSelector选中项的值---用于加载数据
 
     useEffect(() => {
+      // console.log(visible, rowData, isSB, type);
       if (visible && rowData !== undefined) {
         setIsSpinning(true);
         //解析文件
         handleFileStrParse(rowData?.FJ, {
-          objectName: isSB ? 'TXMXX_HJRY_SBXQ' : 'TXMXX_HJRY',
-          columnName: isSB ? 'FJ' : 'CKZL',
+          objectName: isSB || type==='KJRY' ? 'TXMXX_HJRY_SBXQ' :'TXMXX_HJRY',
+          columnName: isSB || type==='KJRY' ? 'FJ' : 'CKZL',
           id: rowData?.ID,
         }).then(res => {
-          console.log('🚀 ~ file: index.js:83 ~ useEffect ~ res:', res);
           setUpldData(res || []);
-          if (isSB) getPrjNameData();
+          if (isSB || type==='KJRY') getPrjNameData();
           else setIsSpinning(false);
         });
       }
       // type 指父组件传递的 tabkey
-      else if (visible && isSB) {
+      else if (visible && (isSB || type==='KJRY')) {
         setIsSpinning(true);
         getPrjNameData();
       }
       return () => { };
-    }, [visible, rowData, isSB]);
+    }, [visible, rowData, isSB, type]);
 
     //项目名称下拉数据
     const getPrjNameData = () => {
@@ -120,6 +120,7 @@ export default connect(({ global = {} }) => ({
                 XMID: x.xmid,
                 label: x.xmmc,
                 value: x.xmid,
+                XMNF: x.xmnf,
               })),
             }));
             if (isGLY) {
@@ -357,6 +358,9 @@ export default connect(({ global = {} }) => ({
       valueField,
       titleField,
       required = true,
+      optionNode,
+      optionLabelProp = 'children',
+      optionFilterProp = 'children',
     }) => {
       return (
         <Col span={12}>
@@ -370,7 +374,7 @@ export default connect(({ global = {} }) => ({
                 },
               ],
             })(
-              <Select placeholder="请选择" optionFilterProp="children" showSearch allowClear
+              <Select placeholder="请选择" showSearch allowClear
                 onChange={(value, option) => {
                   if (option !== undefined) {
                     const { children: text } = option.props
@@ -379,9 +383,11 @@ export default connect(({ global = {} }) => ({
                     singleSelectorSelectedTitleRef.current = ''
                   }
                 }}
+                optionLabelProp={optionLabelProp}
+                optionFilterProp={optionFilterProp}
               >
                 {sltArr.map(x => (
-                  <Select.Option key={x[valueField]} value={x[valueField]}>
+                  optionNode ? optionNode(x) : <Select.Option key={x[valueField]} value={x[valueField]}>
                     {x[titleField]}
                   </Select.Option>
                 ))}
@@ -629,7 +635,7 @@ export default connect(({ global = {} }) => ({
             wrapperCol={{ span: wrapperCol }}
           >
             {getFieldDecorator(dataIndex, {
-              initialValue: initialValue.length !== 0 ? moment(String(initialValue)) : '',
+              initialValue,
               rules: [
                 {
                   required: true,
@@ -786,7 +792,7 @@ export default connect(({ global = {} }) => ({
           const fileArr = await convertFilesToBase64(upldData.map(x => x.originFileObj || x));
           const params = {
             operateType: oprType,
-            awardId: isSB ? values.awardId : oprType === 'ADD' ? -1 : rowData?.ID,
+            awardId: (type === 'KJRY' || isSB) ? values.awardId : oprType === 'ADD' ? -1 : rowData?.ID,
             awardType: getHJLX(type),
             dataType: (type === 'KJRY' || isSB) ? 'XQ' : 'LB',
             awardName: values.name,
@@ -801,7 +807,7 @@ export default connect(({ global = {} }) => ({
             topicStatus: turnNumber(values.ktzt),
             awardDate: turnNumber(values.hjrq?.format('YYYYMMDD')),
             fileInfo: JSON.stringify(fileArr),
-            detailId: isSB ? (oprType === 'ADD' ? -1 : rowData?.ID) : undefined,
+            detailId: (type === 'KJRY' || isSB) ? (oprType === 'ADD' ? -1 : rowData?.ID) : undefined,
           };
           console.log('🚀 ~ validateFields ~ params:', params);
           OperateAwardAndHonor(params)
@@ -812,10 +818,11 @@ export default connect(({ global = {} }) => ({
                     ? {}
                     : {
                       name:
-                        parentRow.JXMC ??
+                        parentRow.JXMC ?? (
+                        type==='KJRY' ? values.sbxm : 
                         sltData?.tableData?.find(x => String(x.ID) === String(values.awardId))[
-                        type === 'KJJX' ? 'JXMC' : 'KTMC'
-                        ],
+                          type === 'KJJX' ? 'JXMC' : 'KTMC'
+                        ]),
                       tab: type,
                       rowID: values.awardId,
                     },
@@ -990,7 +997,8 @@ export default connect(({ global = {} }) => ({
                 getSingleSelector,
                 getSingleTreeSelector,
                 getDatePicker,
-                getMultipleUpload
+                getMultipleUpload,
+                getInputDisabled,
               }}
               dataProps={{
                 rowData,
@@ -999,6 +1007,8 @@ export default connect(({ global = {} }) => ({
                 sltData,
                 isGLY,
                 userBasicInfo,
+                visible,
+                fromPrjDetail
               }}
               funcProps={{ setUpldData, setIsTurnRed, setIsSpinning, getContactData, getFieldDecorator }}
             />

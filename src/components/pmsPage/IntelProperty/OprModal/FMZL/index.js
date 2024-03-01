@@ -1,6 +1,6 @@
 import React, { Fragment, useEffect } from 'react';
 import moment from 'moment';
-import { Row } from 'antd';
+import { Row, Select, Tooltip } from 'antd';
 
 export default function FMZL(props) {
   const { components = {}, dataProps = {}, funcProps = {} } = props;
@@ -59,6 +59,16 @@ export default function FMZL(props) {
             valueField: 'XMID',
             titleField: 'XMMC',
             required: false,
+            optionNode: x => (
+              <Select.Option key={x.XMID} value={x.XMID} title={x.XMMC}>
+                <Tooltip title={x.XMMC} placement="topLeft">
+                  {x.XMMC}
+                  <div style={{ fontSize: '12px', color: '#bfbfbf' }}>{x.XMNF}</div>
+                </Tooltip>
+              </Select.Option>
+            ),
+            optionLabelProp: 'title',
+            optionFilterProp: 'title',
           })}
 
         {getInput('专利名称', 'name', rowData.NAME, labelCol, wrapperCol, 50)}

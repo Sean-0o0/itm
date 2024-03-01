@@ -1,5 +1,5 @@
 import React, { useEffect, Fragment, useState } from 'react';
-import { Row, Collapse, Icon, message, Spin } from 'antd';
+import { Row, Collapse, Icon, message, Spin, Tooltip, Select } from 'antd';
 import { QueryAwardAndHonorList, } from '../../../../../services/pmsServices';
 
 export default function KJJXSB(props) {
@@ -215,6 +215,16 @@ export default function KJJXSB(props) {
                 valueField: 'XMID',
                 titleField: 'XMMC',
                 required: false,
+                optionNode: x => (
+                  <Select.Option key={x.XMID} value={x.XMID} title={x.XMMC}>
+                    <Tooltip title={x.XMMC} placement="topLeft">
+                      {x.XMMC}
+                      <div style={{ fontSize: '12px', color: '#bfbfbf' }}>{x.XMNF}</div>
+                    </Tooltip>
+                  </Select.Option>
+                ),
+                optionLabelProp: 'title',
+                optionFilterProp: 'title',
               })}
 
             {getInput('申报项目', 'sbxm', rowData.SBXM, labelCol, wrapperCol, 50)}
