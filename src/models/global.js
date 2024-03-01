@@ -63,10 +63,11 @@ export default {
           });
           sessionStorage.setItem('user', JSON.stringify(data.user || {}));
           window.sessionStorage.setItem('loginStatus', '1'); // 登录状态: 0|未登录;1|已登录;-1|过期;
+          // console.log('🚀', 111);
           yield all([
             put({ type: 'fetchDictionary' }), // 每次访问的时候检查一下字典是否查询了,如果没有查询,那么就查一下
             put({ type: 'fetchUserBasicInfo', payload: {} }), // 每次登陆的时候获取系统授权业务角色
-            put({ type: 'fetchUserRole' }), //用户角色
+            put({ type: 'fetchUserRole', payload: {} }), //用户角色
             put({ type: 'fetchUserAuthorities' }), // 每次登陆的时候获取权限点信息
             put({ type: 'fetchDescription' }), // 获取系统说明
             put({ type: 'fetchObjects' }), // 获取系统liveBos对象
@@ -453,12 +454,16 @@ export default {
       });
     },
     // 获取用户角色信息
-    *fetchUserRole(_, { select, call, put }) {
-      const userBasicInfo = yield select(state => state.global.userBasicInfo);
+    *fetchUserRole({ payload }, { select, call, put }) {
+      // console.log('🚀', 222);
+      // const userBasicInfo = yield select(state => state.global.userBasicInfo);
       const userRole = yield select(state => state.global.roleData);
-      if (JSON.stringify(userRole) === '{}') {
+      const { isFirst = false } = payload;
+      if (JSON.stringify(userRole) === '{}'||isFirst) {
+        //加上isFirst，切换登陆时会调用； 加上JSON.stringify(userRole) === '{}'，才不会多次调用
         try {
-          const data = yield call(QueryUserRole, { userId: userBasicInfo.id });
+          // const data = yield call(QueryUserRole, { userId: userBasicInfo.id });
+          const data = yield call(QueryUserRole, {});
           if (data.code > 0) {
             yield put({
               type: 'saveUserRole',
@@ -466,7 +471,7 @@ export default {
             });
           }
         } catch (error) {
-          console.error(error);
+          console.error('🚀获取用户角色信息', error);
           // 请求如果出错,切换路由时尝试再次请求数据
           yield put({
             type: 'saveUserRole',
@@ -507,6 +512,7 @@ export default {
     },
     saveUserRole(state, { payload }) {
       const { roleData } = payload;
+      console.log('🚀 ~ saveUserRole ~ roleData:', roleData);
       return {
         ...state,
         roleData,
