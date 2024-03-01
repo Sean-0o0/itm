@@ -1576,13 +1576,12 @@ class EditProjectInfoModel extends React.Component {
             //     });
             //   });
             // });
-            totalBudget = Number(result.budgetCanUse || 0);
+            totalBudget = Decimal(result.generalBudget || 0).times(10000)
+              .toNumber();
             relativeBudget = Decimal(result.budgetUse || 0)
               .times(10000)
               .toNumber();
-            ysKZX = Decimal(result.generalBudget || 0)
-              .times(10000)
-              .toNumber();
+            ysKZX = Number(result.budgetCanUse || 0);
           }
           ////console.log("budgetProjectName", budgetProjectName)
           let newOrg = [];

@@ -133,7 +133,7 @@ export default Form.create()(function CarryoverModal(props) {
   //弹窗参数
   const modalProps = {
     wrapClassName: 'carryover-modal',
-    width: 560,
+    width: 600,
     maskClosable: false,
     style: { top: 60 },
     maskStyle: { backgroundColor: 'rgb(0 0 0 / 30%)' },
@@ -207,7 +207,7 @@ export default Form.create()(function CarryoverModal(props) {
                 dataIndex: 'jzje',
                 labelCol,
                 wrapperCol,
-                initialValue: Number(data.JZJE),
+                initialValue: data.JZJE !== undefined ? Number(data.JZJE) : undefined,
                 rules: [
                   {
                     required: true,

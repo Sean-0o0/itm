@@ -217,9 +217,7 @@ export default function BudgetStatistic(props) {
           // console.log(ysxmArr);
           setFilterData(p => ({
             ...p,
-            budgetCategorySlt: YSLB.filter(x =>
-              key === 'ZB' ? Number(x.ibm) <= 6 : Number(x.ibm) > 6,
-            ),
+            budgetCategorySlt: YSLB.filter(x => (key === 'ZB' ? true : Number(x.ibm) > 6)),
             budgetPrjSlt: ysxmArr,
           }));
           setSpinningData(p => ({

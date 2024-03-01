@@ -133,6 +133,7 @@ export default function TableBox(props) {
   //表格操作后更新数据
   const handleTableChange = (pagination = {}, _, sorter = {}) => {
     const { current = 1, pageSize = 20 } = pagination;
+    setSortInfo(sorter);
     if (sorter.order !== undefined) {
       getTableData({
         current,
@@ -141,7 +142,6 @@ export default function TableBox(props) {
         ...filterData,
         year: filterData.year?.year(),
       });
-      setSortInfo(sorter);
     } else {
       getTableData({
         current,

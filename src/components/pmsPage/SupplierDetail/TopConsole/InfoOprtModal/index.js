@@ -125,8 +125,7 @@ function InfoOprtModal(props) {
                   //刷新数据
                   getDetailData && getDetailData(splId);
                   getTableData && getTableData({});
-                  setVisible(false);
-                  resetFields();
+                  handleCancel();
                 } else {
                   message.error('该供应商信息已录入，不可重复录入', 1);
                 }
@@ -146,6 +145,7 @@ function InfoOprtModal(props) {
   //取消
   const handleCancel = () => {
     resetFields();
+    setcontrastTable([]);
     setVisible(false);
   };
 

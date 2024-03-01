@@ -691,7 +691,7 @@ export default function PersonnelEvaluation(props) {
                 showTotal: t => `共 ${drawerData.total} 条数据`,
                 total: drawerData.total,
               }}
-              bordered //记得注释
+              // bordered //记得注释
             />
           </div>
         </div>

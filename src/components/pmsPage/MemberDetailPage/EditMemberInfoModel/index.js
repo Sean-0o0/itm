@@ -66,8 +66,7 @@ class EditMemberInfoModel extends React.Component {
     this.fetchQueryGysInZbxx();
     const { data = {} } = this.props;
     console.log('🚀 ~ file: index.js:66 ~ EditMemberInfoModel ~ componentDidMount ~ data:', data);
-    if (data.jldata && data.bmxydata) {
-      // console.log("jldata", data.jldata)
+    if (data.jldata) {
       let arrTemp = [];
       let arrTemp2 = [];
       arrTemp.push({
@@ -84,6 +83,10 @@ class EditMemberInfoModel extends React.Component {
       this.setState({
         fileList: arrTemp,
         uploadFileParams: arrTemp2,
+      });
+    }
+    if (data.bmxydata) {
+      this.setState({
         fileList2: [
           {
             uid: getUuid(),
@@ -301,13 +304,13 @@ class EditMemberInfoModel extends React.Component {
       xmmc,
       dictionary = {},
       data: {
-        XB = '',
-        GYSID = '',
+        XB,
+        GYSID,
         RYMC = '',
-        GWID = '',
+        GWID,
         DJID = '',
-        SYKHID = '',
-        RYZT = '',
+        SYKHID,
+        RYZT,
         RCSJ = null,
         LCSJ = null,
       },
