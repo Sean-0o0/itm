@@ -5,6 +5,8 @@ import { Icon, Dropdown, Menu, Divider, Tabs } from 'antd';
 import { dropByCacheKey } from 'react-router-cache-route';
 import styles from './visitedRoutes.less';
 import './visitedRoutes.less';
+import { specialMenus } from '../../../../utils/recentlyVisiteUtils';
+import { get } from 'lodash';
 
 /**
  * 把树型结构数据转成扁平数据
@@ -207,156 +209,78 @@ function VisitedRoutes(props) {
           handleUrls(urls).map(item => {
             let { url = '', title = '' } = menuArray.find(m => m.url === item) || {};
             //尾部有带参数的页面需要配置
-            let urlEndArr = [
+            //有菜单，但带有参数的页面
+            let urlArr = [
               {
-                title: '项目详情',
-                urlEnd: 'ProjectDetail',
+                title: [{ text: '项目列表' }],
+                url: 'ProjectInfo',
               },
               {
-                title: '项目列表',
-                urlEnd: 'ProjectInfo',
+                title: [{ text: '文档列表' }],
+                url: 'attachLibrary',
               },
               {
-                title: '人员详情',
-                urlEnd: 'staffDetail',
+                title: [{ text: '需求列表' }],
+                url: 'DemandInfo',
               },
               {
-                title: '标签详情',
-                urlEnd: 'labelDetail',
+                title: [{ text: '人员列表' }],
+                url: 'MemberInfo',
               },
               {
-                title: '文档列表',
-                urlEnd: 'attachLibrary',
+                title: [{ text: '费用列表' }],
+                url: 'ExpenseInfo',
               },
               {
-                title: '供应商详情',
-                urlEnd: 'SupplierDetail',
+                title: [{ text: '自定义报告' }],
+                url: 'CustomReportInfo',
               },
               {
-                title: '项目建设情况',
-                urlEnd: 'projectBuilding',
+                title: [{ text: '预算统计' }],
+                url: 'BudgetStatistic',
               },
               {
-                title: '部门人员情况',
-                urlEnd: 'departmentOverview',
+                title: [{ text: '考勤统计' }],
+                url: 'AttendanceStatistic',
               },
               {
-                title: '预算执行情况',
-                urlEnd: 'BudgetExcute',
+                title: [{ text: '信委会议案上会审批' }],
+                url: 'XwhExamine',
               },
               {
-                title: '供应商情况',
-                urlEnd: 'SupplierSituation',
+                title: [{ text: '知识产权列表' }],
+                url: 'IntelProperty',
               },
               {
-                title: '需求详情',
-                urlEnd: 'DemandDetail',
+                title: [{ text: '获奖荣誉列表' }],
+                url: 'AwardHonor',
               },
               {
-                title: '需求列表',
-                urlEnd: 'DemandInfo',
+                title: [{ text: '合同列表' }],
+                url: 'InnovationContract',
               },
               {
-                title: '人员列表',
-                urlEnd: 'MemberInfo',
+                title: [{ text: '人员评价' }],
+                url: 'MutualEvaluation',
               },
               {
-                title: '人员详情',
-                urlEnd: 'MemberDetail',
+                title: [{ text: '人员评价统计' }],
+                url: 'MutualEvaluationSituation',
               },
               {
-                title: '简历分发',
-                urlEnd: 'ResumeDistribution',
+                title: [{ text: '预算管理' }],
+                url: 'BudgetInput',
               },
               {
-                title: '外包需求列表',
-                urlEnd: 'SupplierDmInfo',
+                title: [{ text: '预算结转' }],
+                url: 'BudgetCarryover',
               },
-              {
-                title: '费用列表',
-                urlEnd: 'ExpenseInfo',
-              },
-              {
-                title: '报表管理',
-                urlEnd: 'CustomRptManagement',
-              },
-              {
-                title: '报表详情',
-                urlEnd: 'CustomRptInfo',
-              },
-              {
-                title: '自定义报告',
-                urlEnd: 'CustomReportInfo',
-              },
-              {
-                title: '报告详情',
-                urlEnd: 'CustomReportDetail',
-              },
-              {
-                title: '预算统计',
-                urlEnd: 'BudgetStatistic',
-              },
-              {
-                title: '考勤统计',
-                urlEnd: 'AttendanceStatistic',
-              },
-              {
-                title: '信委会议案上会审批',
-                urlEnd: 'XwhExamine',
-              },
-              {
-                title: '项目明细',
-                urlEnd: 'ProjectStatisticsInfo',
-              },
-              {
-                title: '知识产权列表',
-                urlEnd: 'IntelProperty',
-              },
-              {
-                title: '获奖荣誉列表',
-                urlEnd: 'AwardHonor',
-              },
-              {
-                title: '信创合同信息列表',
-                urlEnd: 'InnovationContract',
-              },
-              {
-                title: '信创合同信息编辑',
-                urlEnd: 'InnovationContractEdit',
-              },
-              {
-                title: '信创合同信息查看',
-                urlEnd: 'InnovationContractView',
-              },
-              {
-                title: '人员评价',
-                urlEnd: 'MutualEvaluation',
-              },
-              {
-                title: '人员评价统计',
-                urlEnd: 'MutualEvaluationSituation',
-              },
-              {
-                title: '预算管理',
-                urlEnd: 'BudgetInput',
-              },
-              {
-                title: '预算结转',
-                urlEnd: 'BudgetCarryover',
-              },
-              {
-                title: '预算填报',
-                urlEnd: 'BudgetSubmit',
-              },
-              {
-                title: '预算详情',
-                urlEnd: 'BudgetDetail',
-              },
+              ...specialMenus,
             ];
-            urlEndArr.forEach(x => {
-              if (item.includes('/pms/manage/' + x.urlEnd)) {
+            urlArr.forEach(x => {
+              if (item.includes(x.url)) {
                 url = item;
-                title = x.title;
+                title = get(x, 'title[0].text', '');
               }
             });
             if (item.includes('/pms/manage/HomePage')) {

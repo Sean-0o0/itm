@@ -1010,4 +1010,16 @@ export default [
     url: '/projectManage/queryUnifiedProjectInitProcess',
     dis: '查询统一立项流程',
   },
+  {
+    code: '',
+    key: 'queryOperateStatistics',
+    url: '/projectManage/queryOperateStatistics',
+    dis: '查询埋点的操作统计',
+  },
+  {
+    code: '',
+    key: 'queryOperateDetail',
+    url: '/projectManage/queryOperateDetail',
+    dis: '查询埋点的操作详情',
+  },
 ];

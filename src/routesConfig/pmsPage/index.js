@@ -468,4 +468,14 @@ exports.routes = [
     path: `${prefix}/IteProcessInitiate`,
     component: './pmsPage/IteProcessInitiate',
   },
+  {
+    // 页面埋点统计
+    path: `${prefix}/PageLogStatistic/:params`,
+    component: './pmsPage/PageLogStatistic',
+  },
+  {
+    // 页面埋点统计
+    path: `${prefix}/PageLogStatistic`,
+    component: './pmsPage/PageLogStatistic',
+  },
 ];

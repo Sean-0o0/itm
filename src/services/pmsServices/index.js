@@ -176,6 +176,8 @@ const {
     queryBudgetProjectDetail,
     queryMemberRevaluationByORG,
     queryUnifiedProjectInitProcess,
+    queryOperateStatistics,
+    queryOperateDetail,
   },
 } = api;
 
@@ -1892,6 +1894,26 @@ export async function QueryMemberRevaluationByORG(payload) {
 export async function QueryUnifiedProjectInitProcess(payload) {
   const option = {
     url: queryUnifiedProjectInitProcess,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 查询埋点的操作统计
+export async function QueryOperateStatistics(payload) {
+  const option = {
+    url: queryOperateStatistics,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 查询埋点的操作详情
+export async function QueryOperateDetail(payload) {
+  const option = {
+    url: queryOperateDetail,
     method: 'post',
     data: payload,
   };
