@@ -77,6 +77,7 @@ const NonCapitalBudget = (props) => {
                 partObj={{ '已执行金额': projectData.executedMoney ?? '-' }}
                 remainingObj={{ '可执行金额': projectData.canExecuteMoney ?? '-'  }}
                 totalObj={{ '总金额': projectData.totalMoney ?? '-'  }}
+                rate={projectData.executeRate!==undefined?Number(projectData.executeRate)*100:'-'}
               ></ExecutionProgress>
             </div>
 
@@ -85,6 +86,7 @@ const NonCapitalBudget = (props) => {
                 partObj={{ '已立项金额': projectData.approvalMoney ?? '-'  }}
                 remainingObj={{ '可立项金额': projectData.canApprovalMoney ?? '-'  }}
                 totalObj={{ '总金额': projectData.totalMoney ?? '-'  }}
+                rate={projectData.approvalRate!==undefined?Number(projectData.approvalRate)*100:'-'}
               >
               </ExecutionProgress>
             </div>

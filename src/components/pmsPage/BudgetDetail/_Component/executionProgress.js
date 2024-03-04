@@ -9,7 +9,7 @@ import { calculatePercentage } from '../budgetUtils'
  */
 const ExecutionProgress = (props) => {
 
-  const { partObj, remainingObj, totalObj } = props
+  const { partObj, remainingObj, totalObj, rate = '-' } = props
 
   return (
     <div className="Component_ExecutionProgress">
@@ -49,7 +49,7 @@ const ExecutionProgress = (props) => {
       <div className="Component_ExecutionProgress_ProcessBar">
         <div
           className="Component_ExecutionProgress_ProcessBar_partProcess"
-          style={{ width: '100%' }}
+          style={{ width: rate === '-' ? 0 : (rate <= 100 ? (rate >= 0 ? rate + '%': 0) : '100%') }}
         ></div>
         <div className="Component_ExecutionProgress_ProcessBar_allProcess" ></div>
       </div>
@@ -59,7 +59,7 @@ const ExecutionProgress = (props) => {
       <div className="Component_ExecutionProgress_BottomBar">
         <NormalItem
           title='执行率'
-          value={calculatePercentage(Object.values(partObj), Object.values(totalObj))}
+          value={rate === '-' ? '-' : rate + '%'}
           statisticalFont={true}
         >
         </NormalItem>

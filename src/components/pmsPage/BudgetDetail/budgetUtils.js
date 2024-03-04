@@ -7,9 +7,11 @@ import * as Lodash from 'lodash'
  * @returns 
  */
 export function calculatePercentage(num1, num2) {
+  // console.log("🚀 ~ calculatePercentage ~ num1, num2:", num1, num2)
   if (isNaN(num1) || isNaN(num2)) return '-';
   const part = Number(num1);
   const total = Number(num2);
+  if(total === 0) return '-';
   const percentage = Math.floor((part / total) * 100);
   if(isNaN(percentage)) return '-';
   return percentage + '%';
