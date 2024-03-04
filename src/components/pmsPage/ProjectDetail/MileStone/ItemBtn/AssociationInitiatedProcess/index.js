@@ -42,7 +42,7 @@ export default Form.create()(function AssociationInitiatedProcess(props) {
   const constData = {
     glfs: [
       { title: '系统中发起的流程', value: 1 },
-      { title: 'OA中发起的流程', value: 2 },
+      // { title: 'OA中发起的流程', value: 2 },
     ],
   };
 

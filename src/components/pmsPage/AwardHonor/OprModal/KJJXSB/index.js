@@ -78,7 +78,7 @@ export default function KJJXSB(props) {
     if (res.code === 1) {
       const { result } = res
       const obj = JSON.parse(result)
-      setCollapseInfo(obj[0])
+      setCollapseInfo(obj[0] || {})
       setIsLoading(false)
     }
   }
