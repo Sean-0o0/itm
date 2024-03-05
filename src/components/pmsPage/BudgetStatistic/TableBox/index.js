@@ -30,11 +30,15 @@ const TableBox = props => {
     activeKey,
     spinningData,
     orgData = [],
+    sortInfo = {},
+    searchData = {},
   } = dataProps;
   const {
-    setFilterData = () => { },
-    queryTableData = () => { },
-    setSpinningData = () => { },
+    setFilterData = () => {},
+    queryTableData = () => {},
+    setSpinningData = () => {},
+    setSortInfo = () => {},
+    setSearchData = () => {},
   } = funcProps;
   const [drawerData, setDrawerData] = useState({
     data: [],
@@ -67,28 +71,30 @@ const TableBox = props => {
       width: '18%',
       ellipsis: true,
       render: (text, record, extra) => {
-        return <Tooltip title={text} placement="topLeft">
-          <Link
-            style={{ color: '#3361ff' }}
-            to={{
-              pathname: `/pms/manage/BudgetDetail/${EncryptBase64(
-                JSON.stringify({
-                  fromKey: activeKey,
-                  budgetID: record.YSID,
+        return (
+          <Tooltip title={text} placement="topLeft">
+            <Link
+              style={{ color: '#3361ff' }}
+              to={{
+                pathname: `/pms/manage/BudgetDetail/${EncryptBase64(
+                  JSON.stringify({
+                    fromKey: activeKey,
+                    budgetID: record.YSID,
+                    routes: [{ name: '预算统计', pathname: location.pathname }],
+                  }),
+                )}`,
+                state: {
                   routes: [{ name: '预算统计', pathname: location.pathname }],
-                }),
-              )}`,
-              state: {
-                routes: [{ name: '预算统计', pathname: location.pathname }],
-              },
-            }}
-            className="table-link-strong"
-          >
-            {text}
-          </Link>
-          {/* <span style={{ cursor: 'default' }}>{text}</span> */}
-        </Tooltip>
-      }
+                },
+              }}
+              className="table-link-strong"
+            >
+              {text}
+            </Link>
+            {/* <span style={{ cursor: 'default' }}>{text}</span> */}
+          </Tooltip>
+        );
+      },
     },
     {
       title: '负责人',
@@ -125,6 +131,7 @@ const TableBox = props => {
       key: 'ZTZ',
       ellipsis: true,
       sorter: true,
+      sortOrder: sortInfo.columnKey === 'ZTZ' ? sortInfo.order : undefined,
       sortDirections: ['descend', 'ascend'],
       render: txt => <span style={{ marginRight: 20 }}>{getAmountFormat(txt)}</span>,
     },
@@ -136,6 +143,7 @@ const TableBox = props => {
       key: 'SHHBNZF',
       ellipsis: true,
       sorter: true,
+      sortOrder: sortInfo.columnKey === 'SHHBNZF' ? sortInfo.order : undefined,
       sortDirections: ['descend', 'ascend'],
       render: txt => <span style={{ marginRight: 20 }}>{getAmountFormat(txt)}</span>,
     },
@@ -147,6 +155,7 @@ const TableBox = props => {
       key: 'YSZXJE',
       ellipsis: true,
       sorter: true,
+      sortOrder: sortInfo.columnKey === 'YSZXJE' ? sortInfo.order : undefined,
       sortDirections: ['descend', 'ascend'],
       render: txt => (
         <span style={{ marginRight: 20 }}>
@@ -162,6 +171,7 @@ const TableBox = props => {
       key: 'YSZXL',
       ellipsis: true,
       sorter: true,
+      sortOrder: sortInfo.columnKey === 'YSZXL' ? sortInfo.order : undefined,
       sortDirections: ['descend', 'ascend'],
       render: txt => (
         <span style={{ marginRight: 20 }}>{!allowExport && txt === '-1' ? '***' : txt + '%'}</span>
@@ -175,6 +185,7 @@ const TableBox = props => {
       key: 'HTJE',
       ellipsis: true,
       sorter: true,
+      sortOrder: sortInfo.columnKey === 'HTJE' ? sortInfo.order : undefined,
       sortDirections: ['descend', 'ascend'],
       render: txt => (
         <span style={{ marginRight: 20 }}>
@@ -190,6 +201,7 @@ const TableBox = props => {
       key: 'SJXMS',
       ellipsis: true,
       sorter: true,
+      sortOrder: sortInfo.columnKey === 'SJXMS' ? sortInfo.order : undefined,
       sortDirections: ['descend', 'ascend'],
       render: (txt, row) => (
         <a
@@ -211,28 +223,30 @@ const TableBox = props => {
       width: '12%',
       ellipsis: true,
       render: (text, record, extra) => {
-        return <Tooltip title={text} placement="topLeft">
-          <Link
-            style={{ color: '#3361ff' }}
-            to={{
-              pathname: `/pms/manage/BudgetDetail/${EncryptBase64(
-                JSON.stringify({
-                  fromKey: activeKey,
-                  budgetID: record.YSID,
+        return (
+          <Tooltip title={text} placement="topLeft">
+            <Link
+              style={{ color: '#3361ff' }}
+              to={{
+                pathname: `/pms/manage/BudgetDetail/${EncryptBase64(
+                  JSON.stringify({
+                    fromKey: activeKey,
+                    budgetID: record.YSID,
+                    routes: [{ name: '预算统计', pathname: location.pathname }],
+                  }),
+                )}`,
+                state: {
                   routes: [{ name: '预算统计', pathname: location.pathname }],
-                }),
-              )}`,
-              state: {
-                routes: [{ name: '预算统计', pathname: location.pathname }],
-              },
-            }}
-            className="table-link-strong"
-          >
-            {text}
-          </Link>
-          {/* <span style={{ cursor: 'default' }}>{text}</span> */}
-        </Tooltip>
-      }
+                },
+              }}
+              className="table-link-strong"
+            >
+              {text}
+            </Link>
+            {/* <span style={{ cursor: 'default' }}>{text}</span> */}
+          </Tooltip>
+        );
+      },
     },
     {
       title: '负责人',
@@ -269,6 +283,7 @@ const TableBox = props => {
       key: 'ZYS',
       ellipsis: true,
       sorter: true,
+      sortOrder: sortInfo.columnKey === 'ZYS' ? sortInfo.order : undefined,
       sortDirections: ['descend', 'ascend'],
       render: txt => <span style={{ marginRight: 20 }}>{getAmountFormat(txt)}</span>,
     },
@@ -280,6 +295,7 @@ const TableBox = props => {
       key: 'KZXYS',
       ellipsis: true,
       sorter: true,
+      sortOrder: sortInfo.columnKey === 'KZXYS' ? sortInfo.order : undefined,
       sortDirections: ['descend', 'ascend'],
       render: txt => <span style={{ marginRight: 20 }}>{getAmountFormat(txt)}</span>,
     },
@@ -291,6 +307,7 @@ const TableBox = props => {
       key: 'ZBYZXYS',
       ellipsis: true,
       sorter: true,
+      sortOrder: sortInfo.columnKey === 'ZBYZXYS' ? sortInfo.order : undefined,
       sortDirections: ['descend', 'ascend'],
       render: txt => (
         <span style={{ marginRight: 20 }}>
@@ -306,6 +323,7 @@ const TableBox = props => {
       key: 'FZBYZXYS',
       ellipsis: true,
       sorter: true,
+      sortOrder: sortInfo.columnKey === 'FZBYZXYS' ? sortInfo.order : undefined,
       sortDirections: ['descend', 'ascend'],
       render: txt => (
         <span style={{ marginRight: 20 }}>
@@ -321,6 +339,7 @@ const TableBox = props => {
       key: 'RLYZXYS',
       ellipsis: true,
       sorter: true,
+      sortOrder: sortInfo.columnKey === 'RLYZXYS' ? sortInfo.order : undefined,
       sortDirections: ['descend', 'ascend'],
       render: txt => (
         <span style={{ marginRight: 20 }}>
@@ -336,6 +355,7 @@ const TableBox = props => {
       key: 'ZZXYS',
       ellipsis: true,
       sorter: true,
+      sortOrder: sortInfo.columnKey === 'ZZXYS' ? sortInfo.order : undefined,
       sortDirections: ['descend', 'ascend'],
       render: txt => (
         <span style={{ marginRight: 20 }}>
@@ -351,6 +371,7 @@ const TableBox = props => {
       key: 'ZXL',
       ellipsis: true,
       sorter: true,
+      sortOrder: sortInfo.columnKey === 'ZXL' ? sortInfo.order : undefined,
       sortDirections: ['descend', 'ascend'],
       render: txt => (
         <span style={{ marginRight: 20 }}>{!allowExport && txt === '-1' ? '***' : txt + '%'}</span>
@@ -364,6 +385,7 @@ const TableBox = props => {
       key: 'SJXMS',
       ellipsis: true,
       sorter: true,
+      sortOrder: sortInfo.columnKey === 'SJXMS' ? sortInfo.order : undefined,
       sortDirections: ['descend', 'ascend'],
       render: (txt, row) => (
         <a
@@ -419,10 +441,6 @@ const TableBox = props => {
       ...p,
       year: moment(),
       yearOpen: false,
-      budgetCategory: undefined,
-      budgetPrj: undefined,
-      org: undefined,
-      director: undefined,
     }));
   };
 
@@ -437,40 +455,32 @@ const TableBox = props => {
     // console.log('handleTableChange', pagination, filters, sorter, extra);
     const { current = 1, pageSize = 20 } = pagination;
     // getTableData({ current, pageSize });
+    setSortInfo(sorter);
     if (sorter.order !== undefined) {
       if (sorter.order === 'ascend') {
         queryTableData({
           current,
           pageSize,
           sort: sorter.field + ' ASC',
-          budgetCategory:
-            filterData.budgetCategory !== undefined ? Number(filterData.budgetCategory) : undefined,
-          budgetId: filterData.budgetPrj !== undefined ? Number(filterData.budgetPrj) : undefined,
-          org: filterData.org !== undefined ? Number(filterData.org) : undefined,
-          director: filterData.director,
+          ...searchData,
+          yearNum: searchData.year?.year(),
         });
       } else {
         queryTableData({
           current,
           pageSize,
           sort: sorter.field + ' DESC',
-          budgetCategory:
-            filterData.budgetCategory !== undefined ? Number(filterData.budgetCategory) : undefined,
-          budgetId: filterData.budgetPrj !== undefined ? Number(filterData.budgetPrj) : undefined,
-          org: filterData.org !== undefined ? Number(filterData.org) : undefined,
-          director: filterData.director,
+          ...searchData,
+          yearNum: searchData.year?.year(),
         });
       }
     } else {
       queryTableData({
         current,
         pageSize,
-        budgetCategory:
-          filterData.budgetCategory !== undefined ? Number(filterData.budgetCategory) : undefined,
-        budgetId: filterData.budgetPrj !== undefined ? Number(filterData.budgetPrj) : undefined,
-        org: filterData.org !== undefined ? Number(filterData.org) : undefined,
-        director: filterData.director,
         sort: '',
+        ...searchData,
+        yearNum: searchData.year?.year(),
       });
     }
     return;
@@ -478,7 +488,7 @@ const TableBox = props => {
 
   const handleBudgetPrjChange = (v, txt, node) => {
     // console.log("🚀 ~ file: index.js:189 ~ handleBudgetPrjChange ~ v, txt, node:", v, txt, node)
-    setFilterData(p => ({ ...p, budgetPrj: v }));
+    setFilterData(p => ({ ...p, budgetId: v === undefined ? undefined : Number(v) }));
   };
 
   const drawerColumns = [
@@ -657,7 +667,7 @@ const TableBox = props => {
           // console.log(ysxmArr);
           setFilterData(p => ({
             ...p,
-            budgetPrj: undefined,
+            budgetId: undefined,
             budgetPrjSlt: ysxmArr,
           }));
           setSpinningData(p => ({
@@ -708,7 +718,7 @@ const TableBox = props => {
               treeData={filterData.budgetPrjSlt}
               placeholder="请选择"
               onChange={handleBudgetPrjChange}
-              value={filterData.budgetPrj}
+              value={filterData.budgetId}
               treeDefaultExpandAll
               disabled={spinningData.sltDisabled}
             />
@@ -740,18 +750,19 @@ const TableBox = props => {
           <Button
             className="btn-search"
             type="primary"
-            onClick={() =>
-              queryTableData({
-                budgetCategory:
-                  filterData.budgetCategory !== undefined
-                    ? Number(filterData.budgetCategory)
-                    : undefined,
-                budgetId:
-                  filterData.budgetPrj !== undefined ? Number(filterData.budgetPrj) : undefined,
-                org: filterData.org !== undefined ? Number(filterData.org) : undefined,
-                director: filterData.director,
-              })
-            }
+            onClick={() => {
+              setSortInfo({
+                sort: undefined,
+                columnKey: '',
+              });
+              queryTableData(
+                {
+                  ...filterData,
+                  yearNum: filterData.year?.year(),
+                },
+                setSearchData,
+              );
+            }}
           >
             查询
           </Button>
@@ -775,7 +786,9 @@ const TableBox = props => {
                 treeData={orgData}
                 value={filterData.org}
                 placeholder="请选择"
-                onChange={v => setFilterData(p => ({ ...p, org: v }))}
+                onChange={v =>
+                  setFilterData(p => ({ ...p, org: v === undefined ? undefined : Number(v) }))
+                }
                 treeDefaultExpandAll
                 open={orgOpen}
                 onDropdownVisibleChange={v => setOrgOpen(v)}
@@ -796,7 +809,12 @@ const TableBox = props => {
                   }
                   showSearch
                   allowClear
-                  onChange={v => setFilterData(p => ({ ...p, budgetCategory: v }))}
+                  onChange={v =>
+                    setFilterData(p => ({
+                      ...p,
+                      budgetCategory: v === undefined ? undefined : Number(v),
+                    }))
+                  }
                   value={filterData.budgetCategory}
                   placeholder="请选择"
                 >
@@ -830,8 +848,8 @@ const TableBox = props => {
                 ? { height: 'calc(100% - 109px)' }
                 : { height: 'calc(100% - 174px)' }
               : filterFold
-                ? { height: 'calc(100% - 129px)' }
-                : { height: 'calc(100% - 194px)' }
+              ? { height: 'calc(100% - 129px)' }
+              : { height: 'calc(100% - 194px)' }
           }
         >
           <Table

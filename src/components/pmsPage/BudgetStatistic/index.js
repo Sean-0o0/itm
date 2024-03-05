@@ -19,19 +19,19 @@ export default function BudgetStatistic(props) {
     current: 1,
     pageSize: 20,
     total: 0,
+    sort: '',
   });
   const [filterData, setFilterData] = useState({
     year: moment(),
     yearOpen: false,
     budgetCategory: undefined,
     budgetCategorySlt: [],
-    budgetPrj: undefined,
+    budgetId: undefined,
     budgetPrjSlt: [],
     org: undefined,
     director: undefined,
   }); //筛选栏数据
   const [activeKey, setActiveKey] = useState('ZB');
-  const [curSorter, setCurSorter] = useState(''); //排序
   const [spinningData, setSpinningData] = useState({
     spinning: false,
     tip: '加载中',
@@ -40,6 +40,11 @@ export default function BudgetStatistic(props) {
   const [allowExport, setAllowExport] = useState(false); //是否允许导出
   let CUR_USER_ID = String(JSON.parse(sessionStorage.getItem('user')).id);
   const [orgData, setOrgData] = useState([]); //部门下拉框数据
+  const [sortInfo, setSortInfo] = useState({
+    sort: undefined,
+    columnKey: '',
+  }); //用于查询后清空排序状态
+  const [searchData, setSearchData] = useState({ year: moment() }); //点查询后的顶部筛选数据
 
   useLayoutEffect(() => {
     if (tab === undefined) {
@@ -47,7 +52,10 @@ export default function BudgetStatistic(props) {
       getBudgetPrjSlt(activeKey);
       getUserRole();
       getOrgData();
+      setSortInfo({ sort: undefined, columnKey: '' });
+      setSearchData({ year: moment() });
     }
+    return () => {};
   }, []);
 
   useLayoutEffect(() => {
@@ -55,6 +63,8 @@ export default function BudgetStatistic(props) {
       let CUR_USER_NAME = JSON.parse(sessionStorage.getItem('user'))?.name;
       setActiveKey(tab);
       setFilterData(p => ({ ...p, director: CUR_USER_NAME }));
+      setSearchData(p => ({ ...p, director: CUR_USER_NAME }));
+      setSortInfo({ sort: undefined, columnKey: '' });
       queryTableData({ budgetType: tab, director: CUR_USER_NAME });
       getBudgetPrjSlt(tab);
       getUserRole();
@@ -118,16 +128,21 @@ export default function BudgetStatistic(props) {
       });
   };
 
-  const queryTableData = ({
-    budgetType = activeKey,
-    current = 1,
-    pageSize = 20,
-    sort = curSorter,
-    budgetCategory,
-    budgetId,
-    org,
-    director,
-  }) => {
+  const queryTableData = (
+    {
+      budgetType = activeKey,
+      current = 1,
+      pageSize = 20,
+      sort = '',
+      budgetCategory,
+      budgetId,
+      org,
+      director,
+      year = moment(),
+      yearNum = moment().year(),
+    },
+    setSearchData = () => {},
+  ) => {
     setSpinningData(p => ({
       tip: '加载中',
       spinning: true,
@@ -139,13 +154,13 @@ export default function BudgetStatistic(props) {
       budgetType,
       org,
       director,
+      year: yearNum,
       current,
       pageSize,
       paging: 1,
       queryType: 'YSTJ',
       sort,
       total: -1,
-      year: filterData.year?.year(),
     })
       .then(res => {
         if (res?.success) {
@@ -157,7 +172,13 @@ export default function BudgetStatistic(props) {
             total: res.totalrows,
             data: JSON.parse(res.budgetInfo),
           }));
-          setCurSorter(sort);
+          setSearchData({
+            budgetCategory,
+            budgetId,
+            org,
+            director,
+            year,
+          });
           setSpinningData(p => ({
             ...p,
             spinning: false,
@@ -239,15 +260,18 @@ export default function BudgetStatistic(props) {
   const handleTabsChange = key => {
     setFilterData(p => ({
       ...p,
+      year: moment(),
       budgetCategory: undefined,
-      budgetPrj: undefined,
+      budgetId: undefined,
       org: undefined,
       director: undefined,
     }));
-    queryTableData({ budgetType: key, budgetCategory: undefined, budgetId: undefined });
+    queryTableData({ budgetType: key });
     getBudgetPrjSlt(key);
     // console.log('🚀 ~ file: index.js:146 ~ handleTabsChange ~ key:', key);
     setActiveKey(key);
+    setSortInfo({ sort: undefined, columnKey: '' });
+    setSearchData({ year: moment() });
   };
 
   return (
@@ -270,8 +294,17 @@ export default function BudgetStatistic(props) {
           </Tabs>
         </div>
         <TableBox
-          dataProps={{ tableData, filterData, allowExport, activeKey, spinningData, orgData }}
-          funcProps={{ setFilterData, queryTableData, setSpinningData }}
+          dataProps={{
+            tableData,
+            filterData,
+            allowExport,
+            activeKey,
+            spinningData,
+            orgData,
+            sortInfo,
+            searchData,
+          }}
+          funcProps={{ setFilterData, queryTableData, setSpinningData, setSortInfo, setSearchData }}
         />
       </Spin>
     </div>
