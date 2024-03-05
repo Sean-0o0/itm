@@ -441,6 +441,10 @@ const TableBox = props => {
       ...p,
       year: moment(),
       yearOpen: false,
+      budgetCategory: undefined,
+      budgetPrj: undefined,
+      org: undefined,
+      director: undefined,
     }));
   };
 
