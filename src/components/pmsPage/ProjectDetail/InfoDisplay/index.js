@@ -389,22 +389,23 @@ export default function InfoDisplay(props) {
 
   //合同其他明细
   const getHtqtmx = (data = []) => {
-    const handleClick = htbh => {
+    //跳转合同信息查看页，先注释了，到时要，得确定下oahtxxid是否取对
+    const handleClick = id => {
       history.push({
         pathname:
           '/pms/manage/InnovationContractView/' +
           EncryptBase64(
             JSON.stringify({
-              htbh,
+              id,
               routes,
             }),
           ),
       });
     };
     let node = null;
-    if (invCData.length === 1)
+    if (data.length === 1)
       node = (
-        <a style={{ color: '#3361ff' }} onClick={() => handleClick(invCData[0].HTBH)}>
+        <a style={{ color: '#3361ff' }} onClick={() => handleClick(data[0].HTID)}>
           查看详情
         </a>
       );
@@ -421,7 +422,7 @@ export default function InfoDisplay(props) {
                   className="item"
                   key={x.HTMC + x.HTID}
                   style={{ maxWidth: 385, color: '#3361ff' }}
-                  onClick={() => handleClick(x.HTBH)}
+                  onClick={() => handleClick(x.HTID)}
                 >
                   {x.HTMC}
                 </div>
@@ -769,7 +770,7 @@ export default function InfoDisplay(props) {
                     </Popover>
                   </div>
                 )}
-                {grayTest.XCHT && invCData.length > 0 && getHtqtmx(invCData)}
+                {/* {grayTest.XCHT && invCData.length > 0 && getHtqtmx(invCData)} */}
               </div>
             </div>
           )

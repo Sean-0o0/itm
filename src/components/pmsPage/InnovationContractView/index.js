@@ -69,7 +69,7 @@ export default connect(({ global }) => ({
     if (params !== '') {
       let obj = JSON.parse(DecryptBase64(params));
       // console.log('🚀 ~ file: index.js:100 ~ useEffect ~ obj:', obj);
-      queryDetailData(obj.htbh, setData, setTableData, setIsSpinning, setSltData);
+      queryDetailData(obj.id, setData, setTableData, setIsSpinning, setSltData);
       const routesArr = [...obj.routes, { name: '普通合同信息查看', pathname: location.pathname }];
       setRoutes(routesArr);
     }

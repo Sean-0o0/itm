@@ -13,7 +13,7 @@ import { EncryptBase64 } from '../../../Common/Encrypt';
 
 //查询详情数据
 const queryDetailData = (
-  contractCode, //合同编号
+  id, //原本合同编号，后来改成了id
   setData,
   setTableData,
   setIsSpinning,
@@ -23,7 +23,7 @@ const queryDetailData = (
   setIsSpinning(true);
   //知识产权信息
   QueryXCContractInfo({
-    contractCode, //合同编号
+    id, //原本合同编号，后来改成了id
     current: 1,
     pageSize: 999,
     paging: -1,

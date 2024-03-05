@@ -330,7 +330,11 @@ export default connect(({ global }) => ({
                     supplement: !p.supplement,
                   })),
               })}
-              {roleTxt.includes('信创管理员') && Number(userBasicInfo.id) !== Number(data.JBRID) ? (
+              {/* 管理员但非经办人 、经办人但非项目经理 */}
+              {(roleTxt.includes('信创管理员') &&
+                Number(userBasicInfo.id) !== Number(data.JBRID)) ||
+              (Number(userBasicInfo.id) === Number(data.JBRID) &&
+                Number(userBasicInfo.id) !== Number(data.XMJL)) ? (
                 [
                   {
                     label: '关联项目',
