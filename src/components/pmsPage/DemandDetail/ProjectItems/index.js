@@ -107,7 +107,7 @@ export default function ProjectItems(props) {
         message.info('请先上传简历', 1);
         return;
       }
-      
+
       window.location.href = `/#/pms/manage/ResumeDistribution/${EncryptBase64(
         JSON.stringify({
           // JLXX: JLXX2,
@@ -241,7 +241,7 @@ export default function ProjectItems(props) {
 
   const tablePopover = (data, columns) => {
     return (
-      <div className="table-box">
+      <div className="table-box" style={{ width: 580 }}>
         <Table columns={columns} rowKey={'id'} dataSource={data} size="middle" pagination={false} />
       </div>
     );

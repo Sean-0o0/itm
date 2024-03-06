@@ -198,7 +198,7 @@ export default function InfoDisplay(props) {
   );
   const tablePopover = (data, columns) => {
     return (
-      <div className="table-box">
+      <div className="table-box" style={{ width: 580 }}>
         <Table columns={columns} rowKey={'id'} dataSource={data} size="middle" pagination={false} />
       </div>
     );
