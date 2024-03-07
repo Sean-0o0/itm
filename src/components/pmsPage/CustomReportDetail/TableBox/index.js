@@ -538,7 +538,9 @@ const TableBox = props => {
                 window.dispatchEvent(new Event('resize', { bubbles: true, composed: true })); //处理行高不对齐的bug
                 // setTableLoading(false);
               }, 200);
-              if (Number(record['TXRID' + record.ID]) === LOGIN_USER_ID || isAdministrator) {
+
+              if (Number(record['TXRID' + record.ID]) === 0) {
+              } else if (Number(record['TXRID' + record.ID]) === LOGIN_USER_ID || isAdministrator) {
                 setEditingIndex(record.ID);
               } else {
                 message.info('只有管理员、填写人可以编辑该行', 1);

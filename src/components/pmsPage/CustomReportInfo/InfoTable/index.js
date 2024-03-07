@@ -191,25 +191,25 @@ export default function InfoTable(props) {
         </div>
       ),
     },
-    {
-      title: '操作',
-      dataIndex: 'OPRT',
-      width: isAdministrator ? '10%' : 0,
-      // width: '10%',
-      align: 'center',
-      key: 'OPRT',
-      ellipsis: true,
-      render: (txt, row) => (
-        <Fragment>
-          <a style={{ color: '#3361ff' }} onClick={() => handleEditCusRep(row)}>
-            修改
-          </a>
-          <Popconfirm title={`确定删除吗?`} onConfirm={() => handleDelete(row.ID)}>
-            <a style={{ color: '#3361ff', marginLeft: 6 }}>删除</a>
-          </Popconfirm>
-        </Fragment>
-      ),
-    },
+    // {
+    //   title: '操作',
+    //   dataIndex: 'OPRT',
+    //   width: isAdministrator ? '10%' : 0,
+    //   // width: '10%',
+    //   align: 'center',
+    //   key: 'OPRT',
+    //   ellipsis: true,
+    //   render: (txt, row) => (
+    //     <Fragment>
+    //       <a style={{ color: '#3361ff' }} onClick={() => handleEditCusRep(row)}>
+    //         修改
+    //       </a>
+    //       <Popconfirm title={`确定删除吗?`} onConfirm={() => handleDelete(row.ID)}>
+    //         <a style={{ color: '#3361ff', marginLeft: 6 }}>删除</a>
+    //       </Popconfirm>
+    //     </Fragment>
+    //   ),
+    // },
   ];
 
   const handleEditCusRep = row => {
