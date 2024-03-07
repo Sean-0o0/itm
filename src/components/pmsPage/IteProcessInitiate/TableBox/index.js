@@ -296,8 +296,8 @@ export default function TableBox(props) {
             pageSizeOptions: ['20', '40', '50', '100'],
             showSizeChanger: true,
             hideOnSinglePage: false,
-            showTotal: t => `共 ${tableData.data.length} 条数据`,
-            total: tableData.data.length,
+            showTotal: t => `共 ${tableData.total} 条数据`,
+            total: tableData.total,
           }}
         />
       </div>
