@@ -29,7 +29,7 @@ const TableBox = props => {
   } = dataProps;
   const { setEdited, setTableData, setTableLoading, setMonthData, getData } = funcProps;
   const [isSaved, setIsSaved] = useState(false);
-  const [editing, setEditing] = useState(false); //编辑状态
+  const [editing, setEditing] = useState(true); //编辑状态
   const [editingIndex, setEditingIndex] = useState(-1); //编辑
   const [editData, setEditData] = useState([]); //编辑数据
   const [dltData, setDltData] = useState([]); //删除行id
@@ -174,7 +174,7 @@ const TableBox = props => {
                       if (res?.code === 1) {
                         getData(Number(bgid), Number(monthData.format('YYYYMM')));
                         setIsSaved(true);
-                        setEditing(false);
+                        // setEditing(false);
                         setEditingIndex(-1);
                         setDltData([]);
                         setTableLoading(false);
@@ -188,7 +188,7 @@ const TableBox = props => {
                 } else {
                   getData(Number(bgid), Number(monthData.format('YYYYMM')));
                   setIsSaved(true);
-                  setEditing(false);
+                  // setEditing(false);
                   setEditingIndex(-1);
                   setDltData([]);
                   setTableLoading(false);
@@ -206,7 +206,7 @@ const TableBox = props => {
               if (res?.code === 1) {
                 getData(Number(bgid), Number(monthData.format('YYYYMM')));
                 setIsSaved(true);
-                setEditing(false);
+                // setEditing(false);
                 setEditingIndex(-1);
                 setDltData([]);
                 setTableLoading(false);
@@ -633,7 +633,7 @@ const TableBox = props => {
             style={{ margin: '0 10px', width: '110px', marginRight: 'auto' }}
           />
           <div className="console-btn-submit">
-            {editing ? (
+            {/* {editing ? (
               <>
                 <span style={{ fontSize: '12px', fontFamily: 'PingFangSC-Regular,PingFang SC' }}>
                   （点击指定行进行编辑）
@@ -665,6 +665,24 @@ const TableBox = props => {
                   </Popconfirm>
                 </Fragment>
               )
+            )} */}
+            <span style={{ fontSize: '12px', fontFamily: 'PingFangSC-Regular,PingFang SC' }}>
+              （点击指定行进行编辑）
+            </span>
+            <Popconfirm title="确定要保存吗？" onConfirm={handleSubmit}>
+              <Button>保存</Button>
+            </Popconfirm>
+            {tableData.data.length > 0 && (
+              <Fragment>
+                {isAdministrator && !isFinish && (
+                  <Popconfirm title="该操作无法撤回，是否完成填写?" onConfirm={handleFinish}>
+                    <Button style={{ marginLeft: '8px' }}>完成</Button>
+                  </Popconfirm>
+                )}
+                <Popconfirm title="确定要导出吗?" onConfirm={handleExport}>
+                  <Button style={{ marginLeft: '8px' }}>导出</Button>
+                </Popconfirm>
+              </Fragment>
             )}
             {isFinish && <img className="img-finish" src={iconCompleted} alt="" />}
           </div>
