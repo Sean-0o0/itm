@@ -109,17 +109,11 @@ export default function CustomReportDetail(props) {
                   //分类字段（合并）
                   ...filteredArr,
                   //关联项目
-                  {
-                    ZDMC: '关联项目',
-                    ZDLX: '3', //非分类、非填写
-                    QZZD: 'GLXM',
-                  },
-                  //填写人
-                  {
-                    ZDMC: '填写人',
-                    ZDLX: '3', //非分类、非填写
-                    QZZD: 'TXR',
-                  },
+                  // {
+                  //   ZDMC: '关联项目',
+                  //   ZDLX: '3', //非分类、非填写
+                  //   QZZD: 'GLXM',
+                  // },
                   //上月字段
                   ...(tableArrLast.length === 0 ? [] : otherArr).map(x => ({
                     ZDMC: x.ZDMC + '(上期)',
@@ -129,25 +123,31 @@ export default function CustomReportDetail(props) {
                   //本月填写字段
                   ...otherArr,
                   //固定字段
+                  // {
+                  //   ZDMC: '计划上线时间',
+                  //   ZDLX: '3', //非分类、非填写
+                  //   QZZD: 'JHSXSJ',
+                  // },
+                  // {
+                  //   ZDMC: '项目负责人',
+                  //   ZDLX: '3', //非分类、非填写
+                  //   QZZD: 'XMFZR',
+                  // },
+                  // {
+                  //   ZDMC: '项目阶段',
+                  //   ZDLX: '3', //非分类、非填写
+                  //   QZZD: 'XMJD',
+                  // },
+                  // {
+                  //   ZDMC: '进度(%)',
+                  //   ZDLX: '3', //非分类、非填写
+                  //   QZZD: 'JD',
+                  // },
+                  //填写人
                   {
-                    ZDMC: '计划上线时间',
+                    ZDMC: '填写人',
                     ZDLX: '3', //非分类、非填写
-                    QZZD: 'JHSXSJ',
-                  },
-                  {
-                    ZDMC: '项目负责人',
-                    ZDLX: '3', //非分类、非填写
-                    QZZD: 'XMFZR',
-                  },
-                  {
-                    ZDMC: '项目阶段',
-                    ZDLX: '3', //非分类、非填写
-                    QZZD: 'XMJD',
-                  },
-                  {
-                    ZDMC: '进度(%)',
-                    ZDLX: '3', //非分类、非填写
-                    QZZD: 'JD',
+                    QZZD: 'TXR',
                   },
                 ];
                 console.log('🚀 ~ finalColumns:', finalColumns);

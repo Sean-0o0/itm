@@ -50,7 +50,7 @@ const EditableCell = props => {
     return (
       <Form.Item style={{ margin: 0 }}>
         {formdecorate.getFieldDecorator(dataIndex + record['ID'], {
-          rules: [{ max: 1000, message: `${title}长度不能超过1000` }],
+          rules: [{ max: 500, message: `${title}长度不能超过500` }],
           initialValue: record[dataIndex + record['ID']]?.replace(/<br>/g, '\n'),
         })(
           <TextArea
@@ -58,6 +58,7 @@ const EditableCell = props => {
             onPressEnter={save}
             onBlur={save}
             onChange={e => setEdited(true)}
+            maxLength={500}
             autoSize={{
               minRows: 1,
               maxRows: 8,
@@ -85,6 +86,8 @@ const EditableCell = props => {
       case 'JHSXSJ':
         return rec === '' ? '' : moment(rec).format('YYYY-MM-DD');
       case 'TXR':
+        //管理员特殊处理
+        if (String(record['TXRID' + record.ID]) === '0') return '';
         return String(record['TXRID' + record.ID]) === LOGIN_USER_ID ? (
           <div className="current-login-user">
             <div className="blue-point"></div>

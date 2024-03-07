@@ -372,52 +372,52 @@ class PresetTable extends React.Component {
       },
     };
     const _this = this;
-    if (columns.filter(item => item.title === '关联项目').length === 0) {
-      columns.push({
-        title: '关联项目',
-        dataIndex: 'GLXM',
-        width: '15%',
-        // editable: true,
-        // ellipsis: true,
-        ZDLX: '1',
-        render(text, record, index) {
-          return (<Select filterOption={(input, option) =>
-              option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
-                          showSearch allowClear style={{width: '100%'}} value={record['GLXM' + record.ID]}
-                          defaultValue={record['GLXM' + record.ID]}
-                          onChange={(e) => _this.ZDLXChange(e, record, index, 'GLXM')}>
-              {prjNameData.map((x, i) => (
-                <Option key={i} value={x.XMID}>
-                  {x.XMMC}
-                </Option>
-              ))}
-            </Select>
-          )
-        }
-      })
-    }
-    if (columns.filter(item => item.title === '填写人').length === 0) {
-      columns.push({
-        title: '填写人',
-        dataIndex: 'TXR',
-        // ellipsis: true,
-        ZDLX: '1',
-        render(text, record, index) {
-          return (<Select filterOption={(input, option) =>
-              option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
-                          showSearch allowClear style={{width: '100%'}} value={record['TXR' + record.ID]}
-                          defaultValue={record['TXR' + record.ID]}
-                          onChange={(e) => _this.ZDLXChange(e, record, index, 'TXR')}>
-              {staffData.map((x, i) => (
-                <Option key={i} value={x.id}>
-                  {x.name}
-                </Option>
-              ))}
-            </Select>
-          )
-        }
-      })
-    }
+    // if (columns.filter(item => item.title === '关联项目').length === 0) {
+    //   columns.push({
+    //     title: '关联项目',
+    //     dataIndex: 'GLXM',
+    //     width: '15%',
+    //     // editable: true,
+    //     // ellipsis: true,
+    //     ZDLX: '1',
+    //     render(text, record, index) {
+    //       return (<Select filterOption={(input, option) =>
+    //           option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+    //                       showSearch allowClear style={{width: '100%'}} value={record['GLXM' + record.ID]}
+    //                       defaultValue={record['GLXM' + record.ID]}
+    //                       onChange={(e) => _this.ZDLXChange(e, record, index, 'GLXM')}>
+    //           {prjNameData.map((x, i) => (
+    //             <Option key={i} value={x.XMID}>
+    //               {x.XMMC}
+    //             </Option>
+    //           ))}
+    //         </Select>
+    //       )
+    //     }
+    //   })
+    // }
+    // if (columns.filter(item => item.title === '填写人').length === 0) {
+    //   columns.push({
+    //     title: '填写人',
+    //     dataIndex: 'TXR',
+    //     // ellipsis: true,
+    //     ZDLX: '1',
+    //     render(text, record, index) {
+    //       return (<Select filterOption={(input, option) =>
+    //           option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+    //                       showSearch allowClear style={{width: '100%'}} value={record['TXR' + record.ID]}
+    //                       defaultValue={record['TXR' + record.ID]}
+    //                       onChange={(e) => _this.ZDLXChange(e, record, index, 'TXR')}>
+    //           {staffData.map((x, i) => (
+    //             <Option key={i} value={x.id}>
+    //               {x.name}
+    //             </Option>
+    //           ))}
+    //         </Select>
+    //       )
+    //     }
+    //   })
+    // }
     ;
     if (columns.filter(item => item.title === '操作').length === 0) {
       columns.push({

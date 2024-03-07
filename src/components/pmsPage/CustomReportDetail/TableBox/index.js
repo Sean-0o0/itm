@@ -9,6 +9,7 @@ import {
 import iconCompleted from '../../../../assets/projectDetail/icon_completed.png';
 import moment from 'moment';
 import * as XLSX from 'xlsx';
+import HandleAddModal from '../HandleAddModal';
 
 const { MonthPicker } = DatePicker;
 
@@ -18,7 +19,7 @@ const TableBox = props => {
     bgmc,
     bgid,
     tableData = {},
-    columnsData,
+    columnsData = [],
     tableLoading,
     edited,
     monthData,
@@ -33,10 +34,14 @@ const TableBox = props => {
   const [editData, setEditData] = useState([]); //编辑数据
   const [dltData, setDltData] = useState([]); //删除行id
   let LOGIN_USER_ID = Number(JSON.parse(sessionStorage.getItem('user'))?.id);
+  const [addModalData, setAddModalData] = useState({
+    visible: false,
+    data: {},
+  }); //新增行弹窗
 
-  //管理员、填写人可以编辑
-  const allowEdit =
-    tableData.data.map(x => x['TXRID' + x.ID]).includes(String(LOGIN_USER_ID)) || isAdministrator;
+  //管理员、填写人可以编辑 - 后边改了不做限制
+  const allowEdit = true;
+  // tableData.data.map(x => x['TXRID' + x.ID]).includes(String(LOGIN_USER_ID)) || isAdministrator;
 
   //表格跨行合并
   const getRowSpanCount = (data, key, target, bool = false) => {
@@ -282,39 +287,39 @@ const TableBox = props => {
             //分类字段（合并）
             ...filteredArr,
             //关联项目
-            {
-              ZDMC: '关联项目',
-              ZDLX: '3', //非分类、非填写
-              QZZD: 'GLXM',
-            },
+            // {
+            //   ZDMC: '关联项目',
+            //   ZDLX: '3', //非分类、非填写
+            //   QZZD: 'GLXM',
+            // },
+            //本月填写字段
+            ...otherArr,
+            //固定字段
+            // {
+            //   ZDMC: '计划上线时间',
+            //   ZDLX: '3', //非分类、非填写
+            //   QZZD: 'JHSXSJ',
+            // },
+            // {
+            //   ZDMC: '项目负责人',
+            //   ZDLX: '3', //非分类、非填写
+            //   QZZD: 'XMFZR',
+            // },
+            // {
+            //   ZDMC: '项目阶段',
+            //   ZDLX: '3', //非分类、非填写
+            //   QZZD: 'XMJD',
+            // },
+            // {
+            //   ZDMC: '进度(%)',
+            //   ZDLX: '3', //非分类、非填写
+            //   QZZD: 'JD',
+            // },
             //填写人
             {
               ZDMC: '填写人',
               ZDLX: '3', //非分类、非填写
               QZZD: 'TXR',
-            },
-            //本月填写字段
-            ...otherArr,
-            //固定字段
-            {
-              ZDMC: '计划上线时间',
-              ZDLX: '3', //非分类、非填写
-              QZZD: 'JHSXSJ',
-            },
-            {
-              ZDMC: '项目负责人',
-              ZDLX: '3', //非分类、非填写
-              QZZD: 'XMFZR',
-            },
-            {
-              ZDMC: '项目阶段',
-              ZDLX: '3', //非分类、非填写
-              QZZD: 'XMJD',
-            },
-            {
-              ZDMC: '进度(%)',
-              ZDLX: '3', //非分类、非填写
-              QZZD: 'JD',
             },
           ];
           console.log('🚀 ~ 导出 finalColumns:', finalColumns);
@@ -366,8 +371,8 @@ const TableBox = props => {
             title: x.ZDMC,
             dataIndex: x.QZZD,
             key: x.QZZD,
-            width: x.ZDMC?.length * 25,
-            fixed: true,
+            width: x.ZDMC === '四大技术提升工程' ? 120 : x.ZDMC?.length * 25,
+            // fixed: true,
             ellipsis: true,
             borderLeft: true, //左边框
             render: (value, row, index) => {
@@ -412,7 +417,7 @@ const TableBox = props => {
             title: x.ZDMC,
             dataIndex: x.QZZD,
             key: x.QZZD,
-            width: 300,
+            width: 215,
             // fixed: true,
             editable: true,
             ellipsis: true,
@@ -442,12 +447,10 @@ const TableBox = props => {
         dataIndex: 'OPRT',
         key: 'OPRT',
         align: 'center',
-        width: 80,
-        // fixed: 'right',
+        width: 100,
         borderLeft: true, //左边框
         render: (txt, row, index) => {
-          // if (Number(row['TXRID' + row.ID]) === LOGIN_USER_ID || isAdministrator)
-          if (isAdministrator)
+          if (isAdministrator) {
             return (
               <div>
                 {dltData.findIndex(x => x.ID === row.ID) !== -1 ? (
@@ -455,13 +458,52 @@ const TableBox = props => {
                     撤销删除
                   </a>
                 ) : (
-                  <Popconfirm title="确定要删除吗?" onConfirm={() => handleDelete(row)}>
-                    <a style={{ color: '#3361ff' }}>删除</a>
-                  </Popconfirm>
+                  <Fragment>
+                    <a
+                      style={{ color: '#3361ff', marginRight: 6 }}
+                      onClick={() =>
+                        setAddModalData({
+                          visible: true,
+                          data: { ...row, fieldCount: tableData.customColumns.length - 5 },
+                        })
+                      }
+                    >
+                      新增
+                    </a>
+                    <Popconfirm title="确定要删除吗?" onConfirm={() => handleDelete(row)}>
+                      <a style={{ color: '#3361ff' }}>删除</a>
+                    </Popconfirm>
+                  </Fragment>
                 )}
               </div>
             );
-          return '';
+          } else {
+            const obj = {
+              children: txt,
+              props: {},
+            };
+            obj.children = (
+              <a
+                style={{ color: '#3361ff', marginRight: 6 }}
+                onClick={() =>
+                  setAddModalData({
+                    visible: true,
+                    data: { ...row, fieldCount: tableData.customColumns.length - 5 },
+                  })
+                }
+              >
+                新增
+              </a>
+            );
+            obj.props.rowSpan = getRowSpanCount(
+              tableData.data,
+              // columnsData.find(x => x.ZDLX === '1')?.QZZD,  //先暂时写死下边这个
+              columnsData.find(x => x.ZDMC === '建设任务')?.QZZD,
+              index,
+              true,
+            );
+            return obj;
+          }
         },
       });
     }
@@ -490,6 +532,19 @@ const TableBox = props => {
           borderleft: col.borderLeft || false,
           isadministrator: isAdministrator,
           settabledata: setTableData,
+          onClick: () => {
+            if (editing && col.key !== 'OPRT') {
+              setTimeout(() => {
+                window.dispatchEvent(new Event('resize', { bubbles: true, composed: true })); //处理行高不对齐的bug
+                // setTableLoading(false);
+              }, 200);
+              if (Number(record['TXRID' + record.ID]) === LOGIN_USER_ID || isAdministrator) {
+                setEditingIndex(record.ID);
+              } else {
+                message.info('只有管理员、填写人可以编辑该行', 1);
+              }
+            }
+          },
         };
       },
     };
@@ -586,8 +641,8 @@ const TableBox = props => {
                 <Button onClick={handleEditCancel} style={{ marginRight: '8px' }}>
                   取消
                 </Button>
-                <Popconfirm title="确定要保存吗？" onConfirm={handleSubmit} disabled={!edited}>
-                  <Button disabled={!edited}>保存</Button>
+                <Popconfirm title="确定要保存吗？" onConfirm={handleSubmit}>
+                  <Button>保存</Button>
                 </Popconfirm>
               </>
             ) : (
@@ -616,23 +671,23 @@ const TableBox = props => {
         </div>
         <div className="table-content">
           <Table
-            onRow={record => {
-              return {
-                onClick: () => {
-                  if (editing) {
-                    setTimeout(() => {
-                      window.dispatchEvent(new Event('resize', { bubbles: true, composed: true })); //处理行高不对齐的bug
-                      // setTableLoading(false);
-                    }, 200);
-                    if (Number(record['TXRID' + record.ID]) === LOGIN_USER_ID || isAdministrator) {
-                      setEditingIndex(record.ID);
-                    } else {
-                      message.info('只有管理员、填写人可以编辑该行', 1);
-                    }
-                  }
-                },
-              };
-            }}
+            // onRow={record => {
+            //   return {
+            //     onClick: () => {
+            //       if (editing) {
+            //         setTimeout(() => {
+            //           window.dispatchEvent(new Event('resize', { bubbles: true, composed: true })); //处理行高不对齐的bug
+            //           // setTableLoading(false);
+            //         }, 200);
+            //         if (Number(record['TXRID' + record.ID]) === LOGIN_USER_ID || isAdministrator) {
+            //           setEditingIndex(record.ID);
+            //         } else {
+            //           // message.info('只有管理员、填写人可以编辑该行', 1);
+            //         }
+            //       }
+            //     },
+            //   };
+            // }}
             // loading={tableLoading}
             columns={columns}
             components={components}
@@ -641,12 +696,31 @@ const TableBox = props => {
             dataSource={tableData.data}
             scroll={{
               y: 'calc(100vh - 253px)',
-              x: tableData.tableWidth || 'auto', //若不设置固定宽度且包含fixed，safari浏览器 表格列会不对齐
+              // x: tableData.tableWidth || 'auto', //若不设置固定宽度且包含fixed，safari浏览器 表格列会不对齐
             }}
             pagination={false}
             bordered
           />
         </div>
+        <HandleAddModal
+          visible={addModalData.visible}
+          setVisible={v => setAddModalData(p => ({ ...p, visible: v }))}
+          tableColumns={columnsData
+            .filter(x => x.ZDLX === '2')
+            .map(x => ({
+              title: x.ZDMC,
+              dataIndex: x.QZZD,
+              key: x.QZZD,
+              width: 200,
+              editable: true,
+              ellipsis: true,
+            }))}
+          data={addModalData.data}
+          topData={columnsData
+            .filter(x => x.ZDLX === '1')
+            .map(x => ({ title: x.ZDMC, dataIndex: x.QZZD }))}
+          refresh={() => getData(Number(bgid), Number(monthData.format('YYYYMM')))}
+        />
       </div>
     </>
   );

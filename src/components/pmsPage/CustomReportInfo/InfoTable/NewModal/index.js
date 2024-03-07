@@ -122,10 +122,10 @@ function OprtModal(props) {
       newzdArr = zdArr.filter(item => item.includes("ZD"));
       console.log("zdArrzdArr", newzdArr)
       //console.log("2222-sss",item['TXR'+ item.ID])
-      if (!item['TXR' + item.ID] || item['TXR' + item.ID] === undefined) {
-        fieldName = "填写人";
-        fieldFlag = true;
-      }
+      // if (!item['TXR' + item.ID] || item['TXR' + item.ID] === undefined) {
+      //   fieldName = "填写人";
+      //   fieldFlag = true;
+      // }
       newzdArr.map((zd, ind) => {
         // 真实字段名-去除id
         let index = zd.indexOf("Z");//获取第一个"Z"的位置
@@ -152,7 +152,7 @@ function OprtModal(props) {
         }
       })
       tab['GLXM'] = item['GLXM' + item.ID] || '-1';
-      tab['TXR'] = item['TXR' + item.ID] || '-1';
+      tab['TXR'] = String(JSON.parse(sessionStorage.getItem('user'))?.id) || '-1';
       tableArr.push(tab)
     })
     //console.log("tableArrtableArr",tableArr)

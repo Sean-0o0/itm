@@ -384,58 +384,58 @@ class PresetTable extends React.Component {
       },
     };
     const _this = this;
-    if (columns.filter(item => item.dataIndex === 'TXR').length === 0) {
-      columns.push({
-        title: '关联项目',
-        dataIndex: 'GLXM',
-        // width: '15%',
-        // editable: true,
-        // ellipsis: true,
-        ZDLX: '1',
-        render(text, record, index) {
-          return (<Select filterOption={(input, option) =>
-              option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
-                          showSearch allowClear style={{width: '100%'}} value={record['GLXM' + record.ID]}
-                          defaultValue={record['GLXM' + record.ID]}
-                          onChange={(e) => _this.ZDLXChange(e, record, index, 'GLXM')}>
-              {prjNameData.map((x, i) => (
-                <Option key={i} value={x.XMID}>
-                  {x.XMMC}
-                </Option>
-              ))}
-            </Select>
-          )
-        }
-      })
-    }
-    if (columns.filter(item => item.dataIndex === 'TXR').length === 0) {
-      columns.push({
-        title: <span style={{color: '#606266', fontWeight: 500}}><span style={{
-          fontFamily: 'SimSun, sans-serif',
-          color: '#f5222d',
-          marginRight: '4px',
-          lineHeight: 1
-        }}>*</span>填写人</span>,
-        dataIndex: 'TXR',
-        // ellipsis: true,
-        width: '100px',
-        ZDLX: '1',
-        render(text, record, index) {
-          return (<Select filterOption={(input, option) =>
-              option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
-                          showSearch allowClear style={{width: '100%'}} value={record['TXR' + record.ID]}
-                          defaultValue={record['TXR' + record.ID]}
-                          onChange={(e) => _this.ZDLXChange(e, record, index, 'TXR')}>
-              {staffData.map((x, i) => (
-                <Option key={i} value={x.id}>
-                  {x.name}
-                </Option>
-              ))}
-            </Select>
-          )
-        }
-      })
-    }
+    // if (columns.filter(item => item.dataIndex === 'TXR').length === 0) {
+    //   columns.push({
+    //     title: '关联项目',
+    //     dataIndex: 'GLXM',
+    //     // width: '15%',
+    //     // editable: true,
+    //     // ellipsis: true,
+    //     ZDLX: '1',
+    //     render(text, record, index) {
+    //       return (<Select filterOption={(input, option) =>
+    //           option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+    //                       showSearch allowClear style={{width: '100%'}} value={record['GLXM' + record.ID]}
+    //                       defaultValue={record['GLXM' + record.ID]}
+    //                       onChange={(e) => _this.ZDLXChange(e, record, index, 'GLXM')}>
+    //           {prjNameData.map((x, i) => (
+    //             <Option key={i} value={x.XMID}>
+    //               {x.XMMC}
+    //             </Option>
+    //           ))}
+    //         </Select>
+    //       )
+    //     }
+    //   })
+    // }
+    // if (columns.filter(item => item.dataIndex === 'TXR').length === 0) {
+    //   columns.push({
+    //     title: <span style={{color: '#606266', fontWeight: 500}}><span style={{
+    //       fontFamily: 'SimSun, sans-serif',
+    //       color: '#f5222d',
+    //       marginRight: '4px',
+    //       lineHeight: 1
+    //     }}>*</span>填写人</span>,
+    //     dataIndex: 'TXR',
+    //     // ellipsis: true,
+    //     width: '100px',
+    //     ZDLX: '1',
+    //     render(text, record, index) {
+    //       return (<Select filterOption={(input, option) =>
+    //           option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+    //                       showSearch allowClear style={{width: '100%'}} value={record['TXR' + record.ID]}
+    //                       defaultValue={record['TXR' + record.ID]}
+    //                       onChange={(e) => _this.ZDLXChange(e, record, index, 'TXR')}>
+    //           {staffData.map((x, i) => (
+    //             <Option key={i} value={x.id}>
+    //               {x.name}
+    //             </Option>
+    //           ))}
+    //         </Select>
+    //       )
+    //     }
+    //   })
+    // }
     if (columns.filter(item => item.dataIndex === 'operation').length === 0) {
       columns.push({
         title: '操作',
