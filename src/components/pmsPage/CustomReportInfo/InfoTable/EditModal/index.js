@@ -266,7 +266,7 @@ function OprtModal(props) {
         }
       })
       tab['GLXM'] = item['GLXM' + item.ID] || '-1';
-      tab['TXR'] = String(JSON.parse(sessionStorage.getItem('user'))?.id) || '-1';
+      tab['TXR'] = item['TXR' + item.ID] || '0';
       tab['YF'] = item['YF' + item.ID] || moment(new Date(), 'YYYYMM').format('YYYYMM');//当月
       tab['GXZT'] = item['GXZT' + item.ID] || '1';
       tab['SYJL'] = item['SYJL' + item.ID] || '-1';
