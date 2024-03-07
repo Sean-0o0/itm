@@ -470,9 +470,11 @@ const TableBox = props => {
                     >
                       新增
                     </a>
-                    <Popconfirm title="确定要删除吗?" onConfirm={() => handleDelete(row)}>
-                      <a style={{ color: '#3361ff' }}>删除</a>
-                    </Popconfirm>
+                    {Number(row['TXRID' + row.ID]) !== 0 && (
+                      <Popconfirm title="确定要删除吗?" onConfirm={() => handleDelete(row)}>
+                        <a style={{ color: '#3361ff' }}>删除</a>
+                      </Popconfirm>
+                    )}
                   </Fragment>
                 )}
               </div>
@@ -532,6 +534,8 @@ const TableBox = props => {
           borderleft: col.borderLeft || false,
           isadministrator: isAdministrator,
           settabledata: setTableData,
+          issaved: isSaved,
+          setissaved: setIsSaved,
           onClick: () => {
             if (editing && col.key !== 'OPRT') {
               setTimeout(() => {

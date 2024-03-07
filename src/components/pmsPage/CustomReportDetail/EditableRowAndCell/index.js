@@ -33,8 +33,15 @@ const EditableCell = props => {
     formdecorate,
     isadministrator,
     settabledata,
+    issaved,
+    setissaved,
     ...restProps
   } = props;
+
+  useEffect(() => {
+    if (editingindex === record.ID && issaved) setEdited(false);
+    return () => {};
+  }, [issaved, editingindex, record.ID]);
 
   const save = e => {
     formdecorate.validateFields([e.currentTarget.id], (error, values) => {
@@ -57,7 +64,10 @@ const EditableCell = props => {
             ref={targetNode}
             onPressEnter={save}
             onBlur={save}
-            onChange={e => setEdited(true)}
+            onChange={e => {
+              setEdited(true);
+              setissaved(false); //改动过置为false
+            }}
             maxLength={500}
             autoSize={{
               minRows: 1,
@@ -103,7 +113,7 @@ const EditableCell = props => {
   return (
     <>
       <td style={borderleft ? { borderLeft: '1px solid #e8e8e8' } : {}} {...restProps}>
-        {edited && editing && (
+        {edited && !issaved && (
           <img
             className="edited-img"
             src={require('../../../../image/pms/WeeklyReportDetail/edited.png')}

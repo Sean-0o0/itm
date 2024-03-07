@@ -185,7 +185,8 @@ export default function InfoTable(props) {
             // checkedChildren="开启填写"
             // unCheckedChildren="关闭填写"
             onChange={checked => handleSwitch(row.ID, checked)}
-            disabled={!isAdministrator}
+            // disabled={!isAdministrator}
+            disabled={true}
           />
           {/* {txt === '1' ? <span>开启填写</span> : <span>关闭填写</span>} */}
         </div>
