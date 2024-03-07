@@ -6137,6 +6137,30 @@
               color: #3361ff;
             }
           }
+          & > .red-tag {
+            border: 1px solid #c4c7f7;
+            background-color: #ebecf9;
+            &:hover {
+              font-weight: bold;
+              color: #757cf7;
+            }
+          }
+          & > .purple-tag {
+            border: 1px solid #f5d6d3;
+            background-color: #f8f3f3;
+            &:hover {
+              font-weight: bold;
+              color: #f0978c;
+            }
+          }
+          & > .yellow-tag {
+            border: 1px solid #f6deb3;
+            background-color: #f8f4ed;
+            &:hover {
+              font-weight: bold;
+              color: #f1a740;
+            }
+          }
         }
       }
     }
@@ -6590,6 +6614,42 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
         &:focus {
           border-color: #3361ff;
           box-shadow: 0 0 0 2px #3361ff33;
+        }
+      }
+    }
+  }
+}
+
+//项目列表 - 标签颜色调整
+.project-info-box {
+  & > .info-table {
+    .project-info-table-box {
+      .ant-table {
+        .prj-tags {
+          & > .red-tag {
+            border: 1px solid #c4c7f7;
+            background-color: #ebecf9;
+            &:hover {
+              font-weight: bold;
+              color: #757cf7;
+            }
+          }
+          & > .purple-tag {
+            border: 1px solid #f5d6d3;
+            background-color: #f8f3f3;
+            &:hover {
+              font-weight: bold;
+              color: #f0978c;
+            }
+          }
+          & > .yellow-tag {
+            border: 1px solid #f6deb3;
+            background-color: #f8f4ed;
+            &:hover {
+              font-weight: bold;
+              color: #f1a740;
+            }
+          }
         }
       }
     }
@@ -26005,7 +26065,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
               .ant-select-selection__rendered {
                 margin-right: 66px;
               }
-          
+
               .ant-select-selection__clear,
               .ant-select-arrow {
                 right: 36px;

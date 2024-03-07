@@ -106,6 +106,19 @@ export default function InfoTable(props) {
     getTableData({}); //刷新数据
   };
 
+  const getTagClassName = (tagTxt = '') => {
+    if (tagTxt.includes('迭代')) return 'yellow-tag';
+    else if (tagTxt.includes('集合')) return 'purple-tag';
+    else if (tagTxt.includes('专班')) return 'red-tag';
+    else return '';
+  };
+  const getTagTxtColor = (tagTxt = '') => {
+    if (tagTxt.includes('迭代')) return '#F1A740';
+    else if (tagTxt.includes('集合')) return '#F0978C';
+    else if (tagTxt.includes('专班')) return '#757CF7';
+    else return '#3361ff';
+  };
+
   //列配置
   const columns = [
     {
@@ -264,9 +277,9 @@ export default function InfoTable(props) {
                 {getTagData(text, row.projectLabelId)
                   ?.slice(0, 1)
                   .map(x => (
-                    <div key={x.id} className="tag-item">
+                    <div key={x.id} className={'tag-item ' + getTagClassName(x.name)}>
                       <Link
-                        style={{ color: '#3361ff' }}
+                        style={{ color: getTagTxtColor(x.name) }}
                         to={{
                           pathname: `/pms/manage/labelDetail/${EncryptBase64(
                             JSON.stringify({
@@ -277,7 +290,7 @@ export default function InfoTable(props) {
                             routes: [{ name: '项目列表', pathname: location.pathname }],
                           },
                         }}
-                        className="table-link-strong"
+                        // className="table-link-strong"
                       >
                         {x.name}
                       </Link>
@@ -291,9 +304,9 @@ export default function InfoTable(props) {
                         {getTagData(text, row.projectLabelId)
                           ?.slice(1)
                           .map(x => (
-                            <div key={x.id} className="tag-item">
+                            <div key={x.id} className={'tag-item ' + getTagClassName(x.name)}>
                               <Link
-                                style={{ color: '#3361ff' }}
+                                style={{ color: getTagTxtColor(x.name) }}
                                 to={{
                                   pathname: `/pms/manage/labelDetail/${EncryptBase64(
                                     JSON.stringify({
@@ -304,7 +317,7 @@ export default function InfoTable(props) {
                                     routes: [{ name: '项目列表', pathname: location.pathname }],
                                   },
                                 }}
-                                className="table-link-strong"
+                                // className="table-link-strong"
                               >
                                 {x.name}
                               </Link>
