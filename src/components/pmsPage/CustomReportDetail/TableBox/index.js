@@ -5,11 +5,18 @@ import {
   EditCustomReport,
   CompleteReport,
   QueryCustomReportContent,
+  ExportCustomReportToExcel,
 } from '../../../../services/pmsServices';
 import iconCompleted from '../../../../assets/projectDetail/icon_completed.png';
 import moment from 'moment';
 import * as XLSX from 'xlsx';
 import HandleAddModal from '../HandleAddModal';
+import config from '../../../../utils/config';
+import axios from 'axios';
+const { api } = config;
+const {
+  pmsServices: { exportCustomReportToExcel },
+} = api;
 
 const { MonthPicker } = DatePicker;
 
@@ -255,111 +262,33 @@ const TableBox = props => {
 
   //导出
   const handleExport = () => {
-    QueryCustomReportContent({
-      current: 1,
-      pageSize: 20,
-      paging: -1,
-      queryType: 'DC',
-      reportID: Number(bgid),
-      sort: '',
-      total: -1,
-      month: Number(monthData.format('YYYYMM')),
+    axios({
+      method: 'POST',
+      url: exportCustomReportToExcel,
+      responseType: 'blob',
+      data: {
+        current: 1,
+        pageSize: 20,
+        paging: -1,
+        queryType: 'DC',
+        reportID: Number(bgid),
+        sort: '',
+        total: -1,
+        month: Number(monthData.format('YYYYMM')),
+      },
     })
       .then(res => {
-        if (res?.success) {
-          let tableArr = JSON.parse(res.nrxx);
-          let columnsArr = JSON.parse(res.zdxx);
-          console.log('🚀 ~ 本月', tableArr, columnsArr);
-          let filteredArr = columnsArr.filter(item => item.ZDLX === '1'); //分类字段信息
-          let otherArr = columnsArr.filter(item => item.ZDLX !== '1'); //填写字段信息
-          tableArr = tableArr.map(obj => {
-            const newObj = { ID: obj.ID };
-            for (const key in obj) {
-              if (key !== 'ID') {
-                newObj[key + obj.ID] = obj[key] === 'undefined' ? '' : obj[key];
-              }
-            }
-            return newObj;
-          });
-          console.log('🚀 ~ 导出 tableArr:', tableArr);
-          //排列顺序 - 分类字段（合并） - 关联项目 - 填写人 - 上月字段 - 本月填写字段 - 固定字段
-          let finalColumns = [
-            //分类字段（合并）
-            ...filteredArr,
-            //关联项目
-            // {
-            //   ZDMC: '关联项目',
-            //   ZDLX: '3', //非分类、非填写
-            //   QZZD: 'GLXM',
-            // },
-            //本月填写字段
-            ...otherArr,
-            //固定字段
-            // {
-            //   ZDMC: '计划上线时间',
-            //   ZDLX: '3', //非分类、非填写
-            //   QZZD: 'JHSXSJ',
-            // },
-            // {
-            //   ZDMC: '项目负责人',
-            //   ZDLX: '3', //非分类、非填写
-            //   QZZD: 'XMFZR',
-            // },
-            // {
-            //   ZDMC: '项目阶段',
-            //   ZDLX: '3', //非分类、非填写
-            //   QZZD: 'XMJD',
-            // },
-            // {
-            //   ZDMC: '进度(%)',
-            //   ZDLX: '3', //非分类、非填写
-            //   QZZD: 'JD',
-            // },
-            //填写人
-            {
-              ZDMC: '填写人',
-              ZDLX: '3', //非分类、非填写
-              QZZD: 'TXR',
-            },
-          ];
-          console.log('🚀 ~ 导出 finalColumns:', finalColumns);
-          let dataIndexArr = finalColumns.map(item => item.QZZD);
-          let finalArr = [];
-          tableArr.forEach(obj => {
-            let temp = {};
-            dataIndexArr.forEach(dataIndex => {
-              let title = finalColumns.find(item => item.QZZD === dataIndex)?.ZDMC;
-              temp[title] = obj[dataIndex + obj.ID];
-              delete obj[dataIndex];
-            });
-            finalArr.push(temp);
-          });
-          console.log('🚀 ~ file: index.js:330 ~ handleExport ~ finalArr:', finalArr);
-          exportExcelFile(finalArr, 'Sheet1', bgmc + '.xlsx');
-          setTableLoading(false);
-        }
+        const href = URL.createObjectURL(res.data);
+        const a = document.createElement('a');
+        a.download = bgmc + '.xlsx';
+        a.href = href;
+        a.click();
+        console.log('🚀 ~ handleExport ~ res:', res);
       })
       .catch(error => {
         console.error('🚀 ~ 导出失败:', error);
         message.error('导出失败', 1);
       });
-  };
-
-  /**
-   * 导出 excel 文件
-   * @param array JSON 数组
-   * @param sheetName 第一张表名
-   * @param fileName 文件名
-   */
-  const exportExcelFile = (array = [], sheetName = 'Sheet1', fileName = 'example.xlsx') => {
-    const jsonWorkSheet = XLSX.utils.json_to_sheet(array);
-    const workBook = {
-      SheetNames: [sheetName],
-      Sheets: {
-        [sheetName]: jsonWorkSheet,
-      },
-    };
-    return XLSX.writeFile(workBook, fileName);
   };
 
   //列配置 - 排列顺序 - 分类字段（合并） - 关联项目 - 填写人 - 上月字段 - 本月填写字段 - 固定字段

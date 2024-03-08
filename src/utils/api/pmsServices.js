@@ -1034,4 +1034,10 @@ export default [
     url: '/projectManage/queryOperateDetail',
     dis: '查询埋点的操作详情',
   },
+  {
+    code: '',
+    key: 'exportCustomReportToExcel',
+    url: '/projectManage/exportCustomReportToExcel',
+    dis: '自定义报告导出',
+  },
 ];

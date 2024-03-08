@@ -180,6 +180,7 @@ const {
     queryIteContractInfoList,
     queryOperateStatistics,
     queryOperateDetail,
+    exportCustomReportToExcel,
   },
 } = api;
 
@@ -1936,6 +1937,16 @@ export async function QueryOperateStatistics(payload) {
 export async function QueryOperateDetail(payload) {
   const option = {
     url: queryOperateDetail,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 自定义报告导出
+export async function ExportCustomReportToExcel(payload) {
+  const option = {
+    url: exportCustomReportToExcel,
     method: 'post',
     data: payload,
   };
