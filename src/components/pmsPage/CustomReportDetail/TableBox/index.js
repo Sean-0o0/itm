@@ -680,11 +680,11 @@ const TableBox = props => {
             </Popconfirm>
             {tableData.data.length > 0 && (
               <Fragment>
-                {isAdministrator && !isFinish && (
+                {/* {isAdministrator && !isFinish && (
                   <Popconfirm title="该操作无法撤回，是否完成填写?" onConfirm={handleFinish}>
                     <Button style={{ marginLeft: '8px' }}>完成</Button>
                   </Popconfirm>
-                )}
+                )} */}
                 <Popconfirm title="确定要导出吗?" onConfirm={handleExport}>
                   <Button style={{ marginLeft: '8px' }}>导出</Button>
                 </Popconfirm>
