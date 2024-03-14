@@ -862,6 +862,7 @@ export default connect(({ global = {} }) => ({
       visible,
       onCancel,
       onOk,
+      confirmLoading: isSpinning,
     };
 
     //弹窗标题

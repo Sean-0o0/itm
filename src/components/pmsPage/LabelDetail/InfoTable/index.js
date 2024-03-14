@@ -52,7 +52,7 @@ class InfoTable extends Component {
     // console.log("cccc-jjjj")
     window.location.href = `/#/pms/manage/ProjectDetail/${EncryptBase64(
       JSON.stringify({
-        routes,
+        routes: this.props.routes,
         xmid: id,
       }),
     )}`;
