@@ -22,3 +22,4 @@
 # jslingui
 src/locales/_build
 src/locales/**/*.js
+/.idea

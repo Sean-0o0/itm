@@ -66,7 +66,8 @@ export default {
     '/api': {
       // target: 'http://218.66.59.169:41621',
       // target: 'http://192.25.105.121:8011',
-      target: 'http://192.168.4.159:6011',
+      // target: 'http://192.168.4.159:6011',
+      target: 'http://192.168.4.159:6018',
       // target: 'http://192.168.4.175:8011',
       changeOrigin: true,
       pathRewrite: { '^/api': '/api' }
