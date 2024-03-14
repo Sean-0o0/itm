@@ -1,30 +1,33 @@
-import React, {Fragment, useState, useEffect, Component} from 'react';
-import {connect} from 'dva';
+import React, { Fragment, useState, useEffect, Component } from 'react';
+import { connect } from 'dva';
 import MemberInfoTab from '../../../components/pmsPage/MemberInfo/index';
-import {DecryptBase64} from '../../../components/Common/Encrypt';
+import { DecryptBase64 } from '../../../components/Common/Encrypt';
 
 const MemberInfo = props => {
   const [params, setParams] = useState({}); //路径参数
   const {
-    location: {query = {}},
+    location: { query = {} },
     match: {
-      params: {params: encryptParams = ''},
+      params: { params: encryptParams = '' },
     },
   } = props;
   useEffect(() => {
     if (props.match.params.params !== undefined) {
-      console.log("JSON.parse(DecryptBase64(encryptParams))", JSON.parse(DecryptBase64(encryptParams)))
+      // console.log(
+      //   'JSON.parse(DecryptBase64(encryptParams))',
+      //   JSON.parse(DecryptBase64(encryptParams)),
+      // );
       setParams(JSON.parse(DecryptBase64(encryptParams)));
     }
-    return () => {
-    };
+    return () => { };
   }, [props]);
   return (
     <Fragment>
-      <MemberInfoTab dictionary={props.dictionary} params={params}></MemberInfoTab>
+      <MemberInfoTab dictionary={props.dictionary} params={params} {...props}></MemberInfoTab>
     </Fragment>
   );
 };
-export default connect(({global}) => ({
+export default connect(({ global }) => ({
   dictionary: global.dictionary,
+  roleData: global.roleData,
 }))(MemberInfo);

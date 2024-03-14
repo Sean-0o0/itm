@@ -31,6 +31,7 @@ import SoftwarePaymentWHT from './SoftwarePaymentWHT';
 import AssociationInitiatedProcess from './AssociationInitiatedProcess';
 import SoftwarePaymentYHT from './SoftwarePaymentYHT';
 import AssociationOAContract from './AssociationOAContract';
+import ProjectApprovalApplicate from './ProjectApprovalApplicate'
 
 const { api } = config;
 const { confirm } = Modal;
@@ -108,6 +109,7 @@ class ItemBtn extends React.Component {
     rjfysplcyhtModalVisible: false, //软件费用审批流程-有合同
     glOAhtModalVisible: false, //关联OA合同弹窗
     glOAhtData: {}, //关联OA合同弹窗所需数据
+    projectApprovalApplicateModalVisible: false    //项目立项申请弹窗
   };
   // timer = null;
 
@@ -1206,6 +1208,12 @@ class ItemBtn extends React.Component {
           value: Number(item.xmid),
         },
       ]);
+      if (item.sxmc === '项目立项申请') {
+        this.setState({
+          projectApprovalApplicateModalVisible: true,
+        });
+        return;
+      }
       if (item.sxmc === '软件费用审批流程-有合同') {
         // params = this.getParams('TLC_LCFQ', 'TLC_LCFQ_SUBMIT_RJGMHT', [
         //   {
@@ -1858,8 +1866,9 @@ class ItemBtn extends React.Component {
       rjfysplcyhtModalVisible,
       glOAhtModalVisible,
       glOAhtData,
+      projectApprovalApplicateModalVisible
     } = this.state;
-    const { item, xmmc, xmbh, isHwSltPrj, auth = {} } = this.props;
+    const { item, xmmc, xmbh, isHwSltPrj, auth = {}, prjBasic } = this.props;
     // console.log('🚀 ~ file: index.js:1005 ~ ItemBtn ~ render ~ item:', item);
 
     //文档上传、修改弹窗
@@ -2261,6 +2270,16 @@ class ItemBtn extends React.Component {
           setVisible={v => this.setState({ glOAhtModalVisible: v })}
           htData={{ ...glOAhtData, xmid: Number(item.xmid) }}
           refresh={this.props.refresh}
+        />
+
+        {/* 项目立项申请——弹窗 */}
+        <ProjectApprovalApplicate
+          visible={projectApprovalApplicateModalVisible}
+          setVisible={v => this.setState({ projectApprovalApplicateModalVisible: v })}
+          prjBasic={prjBasic}
+          refresh={this.props.refresh}
+          xmbh={xmbh}
+          currentXmid={Number(item.xmid)}
         />
 
         <iframe src={src} id="Iframe" style={{ display: 'none' }} />

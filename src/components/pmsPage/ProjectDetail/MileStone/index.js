@@ -268,6 +268,7 @@ export default function MileStone(props) {
                   isFXMJL: (prjBasic.FXMJL?.split(',') || []).includes(String(LOGIN_USER_INFO.id)),
                 }}
                 routes={routes}
+                prjBasic={prjBasic}
               />
             </div>
           ))}

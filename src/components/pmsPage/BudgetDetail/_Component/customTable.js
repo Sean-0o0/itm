@@ -112,7 +112,7 @@ const CustomTable = props => {
             hardwareCloudResourcesConfigure: obj.YJYZYPZ, //硬件云资源配置
             hardwareStorageConfiguration: obj.YJCCPZ, //硬件存储配置
           };
-          console.log('资本的数据', obj, formatBudgetResult);
+          // console.log('资本的数据', obj, formatBudgetResult);
           setProjectData(formatBudgetResult);
           break;
         case 'FZB':
@@ -136,7 +136,7 @@ const CustomTable = props => {
             canApprovalMoney: obj.KLXYS, //可立项金额
             approvalRate: obj.LXL, //立项率
           };
-          console.log('非资本的数据', obj, formatBudgetResult);
+          // console.log('非资本的数据', obj, formatBudgetResult);
           setProjectData(formatBudgetResult);
           break;
         case 'KY':
@@ -164,7 +164,7 @@ const CustomTable = props => {
             canApprovalMoney: obj.SYYS, //可立项金额
             approvalRate: obj.LXL, //立项率
           };
-          console.log('科研的数据', obj, formatBudgetResult);
+          // console.log('科研的数据', obj, formatBudgetResult);
           setProjectData(formatBudgetResult);
           break;
       }

@@ -181,6 +181,8 @@ const {
     queryOperateStatistics,
     queryOperateDetail,
     exportCustomReportToExcel,
+    queryProjectApplicationFlow,
+    operateVoidProjectApplication,
   },
 } = api;
 
@@ -1943,10 +1945,31 @@ export async function QueryOperateDetail(payload) {
   return request(option);
 }
 
+
 // 自定义报告导出
 export async function ExportCustomReportToExcel(payload) {
   const option = {
     url: exportCustomReportToExcel,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+/** 查询项目历史发起未作废的项目立项流程 */
+export async function QueryProjectApplicationFlow(payload) {
+  const option = {
+    url: queryProjectApplicationFlow,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+/** 作废项目立项流程 */
+export async function OperateVoidProjectApplication(payload) {
+  const option = {
+    url: operateVoidProjectApplication,
     method: 'post',
     data: payload,
   };

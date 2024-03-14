@@ -1040,4 +1040,16 @@ export default [
     url: '/projectManage/exportCustomReportToExcel',
     dis: '自定义报告导出',
   },
+  {
+    code: '',
+    key: 'queryProjectApplicationFlow',
+    url: '/ZSZQ/v1/queryProjectApplicationFlow',
+    dis: '查询项目历史发起未作废的项目立项流程',
+  },
+  {
+    code: '',
+    key: 'operateVoidProjectApplication',
+    url: '/ZSZQ/v1/operateVoidProjectApplication',
+    dis: '作废项目立项流程',
+  },
 ];

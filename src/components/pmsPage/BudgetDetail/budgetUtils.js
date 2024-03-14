@@ -89,7 +89,7 @@ export const tagGenerator = (stringTagArr, dictionaryTagArr, boolTagArr) => {
       const dictionary = item[0]
       const dictionaryId = item[1]
       const dictionaryName = item[2]
-      console.log('dictionaryName', dictionaryName, dictionaryId)
+      // console.log('dictionaryName', dictionaryName, dictionaryId)
       if (!Lodash.isEmpty(dictionaryId) && dictionaryId.includes('!')) {
         const formatDictionaryId = removeMarkHandle(dictionaryId)
 
