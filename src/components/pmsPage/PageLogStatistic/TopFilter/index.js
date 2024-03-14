@@ -38,7 +38,7 @@ export default function TopFilter(props) {
                   ...p,
                   dateRange: dates,
                   startTime: Number(dates[0].format('YYYYMMDD')),
-                  endTime: Number(dates[0].format('YYYYMMDD')),
+                  endTime: Number(dates[1].format('YYYYMMDD')),
                 }));
               else
                 setFilterData(p => ({

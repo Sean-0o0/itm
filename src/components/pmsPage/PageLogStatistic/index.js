@@ -36,7 +36,19 @@ export default connect(({ global = {} }) => ({
         .format('YYYYMMDD'),
     ),
   }); //顶部筛选栏数据
-  const [searchData, setSearchData] = useState({}); //点过查询后的筛选栏数据
+  const [searchData, setSearchData] = useState({
+    dateRange: [moment().startOf('month'), moment().endOf('month')],
+    startTime: Number(
+      moment()
+        .startOf('month')
+        .format('YYYYMMDD'),
+    ),
+    endTime: Number(
+      moment()
+        .endOf('month')
+        .format('YYYYMMDD'),
+    ),
+  }); //点过查询后的筛选栏数据
   const [orgData, setOrgData] = useState([]); //部门下拉框数据
   const [sortInfo, setSortInfo] = useState({
     sort: undefined,
@@ -181,6 +193,7 @@ export default connect(({ global = {} }) => ({
           getTableData={(v = {}) => getTableData({ ...v, ...searchData })}
           sortInfo={sortInfo}
           setSortInfo={setSortInfo}
+          searchData={searchData}
         />
       </Spin>
     </div>

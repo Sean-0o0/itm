@@ -7,7 +7,7 @@ import { CreateOperateHyperLink, QueryOperateDetail } from '../../../../services
 import BridgeModel from '../../../Common/BasicModal/BridgeModel';
 
 export default function TableBox(props) {
-  const { tableData = {}, getTableData, userBasicInfo = {}, sortInfo = {}, setSortInfo } = props;
+  const { tableData = {}, getTableData, searchData = {}, sortInfo = {}, setSortInfo } = props;
 
   const location = useLocation();
 
@@ -138,6 +138,8 @@ export default function TableBox(props) {
         pageName: row.CZYM,
         operatorID: Number(row.CZRID),
         operateType: row.CZLX,
+        startTime: searchData.startTime,
+        endTime: searchData.endTime,
       });
       setCzmxData(JSON.parse(res.result));
       setCzmxLoading(false);

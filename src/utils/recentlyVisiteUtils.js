@@ -22,10 +22,12 @@ const RecentlyVisiteUtils = {
         };
         let itemName = getPageName(itemUrl);
         let curName = getPageName(url);
-        // console.log('🚀 ~ getNameAndUrl ~ itemName, curName:', itemName, curName);
         if (tempItem.menu && tempItem.url !== url) {
           this.getNameAndUrl(url, tempItem.menu.item || []);
-        } else if (itemName === curName) {
+        } else if (
+          itemUrl === url ||
+          (itemName !== null && curName !== null && itemName === curName)
+        ) {
           menuName = tempItem;
         }
       });
@@ -50,7 +52,6 @@ const RecentlyVisiteUtils = {
     menuTree = menuTree.concat(specialMenus);
     const tempObj = this.getNameAndUrl(`${plocPath + search}`, menuTree) || {};
     tempName = lodash.get(tempObj, 'title[0].text', '');
-    // console.log('🚀 ~ saveRecentlyVisiteUtils ~ tempObj:', tempObj, menuTree);
     const ip = localStorage.getItem('userIP') ? localStorage.getItem('userIP') : '';
     if (tempName) {
       const params = {
@@ -62,7 +63,6 @@ const RecentlyVisiteUtils = {
         ip,
         ptlx,
       };
-      // console.log('🚀 ~ saveRecentlyVisiteUtils ~ params:', params);
       fetchOperationLog(params);
     }
     if (tempIndex >= 0) {
@@ -111,12 +111,12 @@ const specialMenus = [
   {
     // 部门人员情况
     title: [{ text: '部门人员情况' }],
-    url: '/pms/manage/DepartmentOverview',
+    url: '/pms/manage/departmentOverview',
   },
   {
     // 项目建设情况
     title: [{ text: '项目建设情况' }],
-    url: '/pms/manage/ProjectBuilding',
+    url: '/pms/manage/projectBuilding',
   },
   {
     // 需求详情

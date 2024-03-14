@@ -41,6 +41,7 @@ export default connect(({ global }) => ({
         sort: '',
         total: -1,
         role: roleTxt,
+        handleStatus: 1,
       })
         .then(res => {
           if (res?.success) {
