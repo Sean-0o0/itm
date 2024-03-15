@@ -114,8 +114,8 @@ export default function InfoTable(props) {
   };
   const getTagTxtColor = (tagTxt = '') => {
     if (tagTxt.includes('迭代')) return '#F1A740';
-    else if (tagTxt.includes('集合')) return '#F0978C';
-    else if (tagTxt.includes('专班')) return '#757CF7';
+    else if (tagTxt.includes('集合')) return '#757CF7';
+    else if (tagTxt.includes('专班')) return '#F0978C';
     else return '#3361ff';
   };
 
