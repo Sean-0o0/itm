@@ -52,7 +52,6 @@ const ProjectInfoContent = (props) => {
             <Col span={24}>
               <Form.Item label="请示报告内容" labelCol={{ span: 4 }} wrapperCol={{ span: 20 }}>
                 {getFieldDecorator('qsbgnr', {
-                  initialValue: '<p></p>',
                   rules: [
                     {
                       required: true,
