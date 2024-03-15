@@ -183,6 +183,7 @@ const {
     exportCustomReportToExcel,
     queryProjectApplicationFlow,
     operateVoidProjectApplication,
+    queryProjectStatusList,
   },
 } = api;
 
@@ -1960,6 +1961,16 @@ export async function ExportCustomReportToExcel(payload) {
 export async function QueryProjectApplicationFlow(payload) {
   const option = {
     url: queryProjectApplicationFlow,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 查询项目情况
+export async function QueryProjectStatusList(payload) {
+  const option = {
+    url: queryProjectStatusList,
     method: 'post',
     data: payload,
   };

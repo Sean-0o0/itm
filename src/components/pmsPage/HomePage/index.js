@@ -1,5 +1,5 @@
 import { Carousel, message, Spin } from 'antd';
-import React, { Fragment, useEffect, useState } from 'react';
+import React, { Fragment, useCallback, useEffect, useState } from 'react';
 import {
   QueryBudgetOverviewInfo,
   QueryMemberOverviewInfo,
@@ -14,6 +14,7 @@ import {
   QueryProjectTracking,
   QueryProjectDraft,
   QueryWeekday,
+  QueryProjectStatusList,
 } from '../../../services/pmsServices';
 import CptBudgetCard from './CptBudgetCard';
 import GuideCard from './GuideCard';
@@ -28,6 +29,15 @@ import moment from 'moment';
 import AnalyzeRepsCard from './AnalyzeRepsCard';
 import PrjTracking from './PrjTracking';
 import SystemNotice from './SystemNotice';
+import PrjDynamic from './PrjDynamic';
+import PrjSituation from './PrjSituation';
+import {
+  FetchQueryOrganizationInfo,
+  FetchQueryProjectLabel,
+} from '../../../services/projectManage';
+import { setParentSelectableFalse } from '../../../utils/pmsPublicUtils';
+import TreeUtils from '../../../utils/treeUtils';
+import { get, debounce as debounceFn } from 'lodash';
 
 //金额格式化
 const getAmountFormat = value => {
@@ -38,7 +48,7 @@ export { getAmountFormat };
 export default function HomePage(props) {
   const { cacheLifecycles, dictionary, roleData = {} } = props;
   let LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
-  const [leftWidth, setLeftWidth] = useState('65.48%'); //左侧功能块宽度
+  const [leftWidth, setLeftWidth] = useState('71.405%'); //左侧功能块宽度
   const [itemWidth, setItemWidth] = useState('32%'); //待办、项目每小块宽度
   const [userRole, setUserRole] = useState(''); //用户角色
   const [overviewInfo, setOverviewInfo] = useState({}); //项目概览
@@ -88,6 +98,19 @@ export default function HomePage(props) {
     ZSCQ: false, //知识产权、获奖荣誉
   }); //灰度测试
   const [popLoading, setPopLoading] = useState(false); //浮窗数据加载状态 - 待办
+  const [dynamicData, setDynamicData] = useState({
+    data: [],
+    current: 1,
+    pageSize: 5,
+    total: -1,
+  }); //项目动态
+  const [labelData, setLabelData] = useState([]); //标签数据
+  const [orgData, setOrgData] = useState([]); //部门数据
+  const [prjSituationData, setPrjSituationData] = useState({
+    loading: false,
+    data: [],
+    total: -1,
+  }); //项目情况数据
   var s = 0;
   var e = 0;
 
@@ -247,6 +270,23 @@ export default function HomePage(props) {
           sort: '',
           total: -1,
         });
+        //标签
+        const labelPromise = FetchQueryProjectLabel({});
+        //部门
+        const orgPromise = FetchQueryOrganizationInfo({
+          type: 'ZZJG',
+        });
+        //项目情况
+        const prjSitutaionPromise = QueryProjectStatusList({
+          current: 1,
+          pageSize: 9,
+          paging: -1,
+          sort: '',
+          total: -1,
+          role: ROLE,
+          startYear: year,
+          endYear: year,
+        });
 
         const PROMISE = [
           budgetPromise,
@@ -257,9 +297,9 @@ export default function HomePage(props) {
           overviewPromise2,
           rptPromise,
           trackingPromise,
-          // processPromise,
-          // teamPromise,
-          // supplierPromise,
+          labelPromise,
+          orgPromise,
+          prjSitutaionPromise,
         ];
         if (['二级部门领导', '普通人员'].includes(ROLE)) {
           //获取流程情况
@@ -305,6 +345,9 @@ export default function HomePage(props) {
           overviewRes2,
           rptRes,
           trackingRes,
+          labelRes,
+          orgRes,
+          prjSitutaionRes,
         ] = RESULT;
 
         const budgetResData = (await budgetRes) || {};
@@ -315,6 +358,9 @@ export default function HomePage(props) {
         const overviewResData2 = (await overviewRes2) || {};
         const rptResData = (await rptRes) || {};
         const trackingResData = (await trackingRes) || {};
+        const labelResData = (await labelRes) || {};
+        const orgResData = (await orgRes) || {};
+        const prjSituationResData = (await prjSitutaionRes) || {};
 
         if (budgetResData.success) {
           setBudgetData(JSON.parse(budgetResData.ysglxx)[0]);
@@ -322,23 +368,6 @@ export default function HomePage(props) {
         }
         if (prjResData.success) {
           let arr = JSON.parse(prjResData.result || '[]'); //项目草稿
-          // let arr = JSON.parse(prjResData.xmxx || '[]'); //项目信息
-          // arr?.forEach(item => {
-          //   let riskArr = []; //风险信息
-          //   let participantArr = []; //人员信息
-          //   JSON.parse(prjResData.fxxx || '[]').forEach(x => {
-          //     if (x.XMID === item.XMID) {
-          //       riskArr.push(x);
-          //     }
-          //   });
-          //   JSON.parse(prjResData.ryxx || '[]').forEach(x => {
-          //     if (x.XMID === item.XMID) {
-          //       participantArr.push(x);
-          //     }
-          //   });
-          //   item.riskData = [...riskArr];
-          //   item.participantData = [...participantArr];
-          // });
           setPrjInfo(p => [...arr]);
           setTotal(p => {
             return {
@@ -400,8 +429,44 @@ export default function HomePage(props) {
             };
           });
         }
+        if (labelResData.success) {
+          let labelTree = TreeUtils.toTreeData(JSON.parse(labelResData.record), {
+            keyName: 'ID',
+            pKeyName: 'FID',
+            titleName: 'BQMC',
+            normalizeTitleName: 'title',
+            normalizeKeyName: 'value',
+          });
+          labelTree = get(labelTree, '[0].children[0].children', []);
+          labelTree.forEach(x => setParentSelectableFalse(x));
+          // console.log('🚀 ~ handlePromiseAll ~ labelTree:', labelTree);
+          setLabelData(labelTree);
+        }
+        if (orgResData.success) {
+          let orgTree = TreeUtils.toTreeData(orgResData.record, {
+            keyName: 'orgId',
+            pKeyName: 'orgFid',
+            titleName: 'orgName',
+            normalizeTitleName: 'title',
+            normalizeKeyName: 'value',
+          });
+          orgTree = [get(orgTree, '[0].children[0].children[0].children[0]', {})];
+          // console.log('🚀 ~ orgTree ~ orgTree:', orgTree);
+          setOrgData(orgTree);
+        }
+        if (prjSituationResData.success) {
+          console.log(
+            '🚀 ~ handlePromiseAll ~ prjSituationResData:',
+            JSON.parse(prjSituationResData.result),
+          );
+          setPrjSituationData({
+            loading: false,
+            data: JSON.parse(prjSituationResData.result),
+            total: prjSituationResData.totalrows,
+          });
+        }
         if (['二级部门领导', '普通人员'].includes(ROLE)) {
-          const processResData = (await RESULT[8]) || {};
+          const processResData = (await RESULT[RESULT?.length - 1]) || {};
           if (processResData.success) {
             setProcessData(p => [...processResData.record]);
             setTotal(p => {
@@ -412,8 +477,8 @@ export default function HomePage(props) {
             });
           }
         } else {
-          const teamResData = (await RESULT[8]) || {};
-          const supplierResData = (await RESULT[9]) || {};
+          const teamResData = (await RESULT[RESULT?.length - 2]) || {};
+          const supplierResData = (await RESULT[RESULT?.length - 1]) || {};
           if (teamResData.success) {
             let arr = JSON.parse(teamResData.bmry).map(x => {
               return {
@@ -583,6 +648,63 @@ export default function HomePage(props) {
       });
   };
 
+  //项目情况 - 后续刷新数据
+  const getPrjSituation = useCallback(
+    debounceFn(
+      async ({
+        stage,
+        org,
+        tag,
+        projectManager,
+        projectName,
+        projectStatus,
+        startYear,
+        endYear,
+        role,
+      }) => {
+        try {
+          setPrjSituationData(p => ({
+            ...p,
+            loading: true,
+          }));
+          const params = {
+            stage: stage === undefined ? undefined : stage.map(x => x.id).join(',') || undefined,
+            org: org === undefined ? undefined : org.map(x => x.id).join(',') || undefined,
+            tag: tag === undefined ? undefined : tag.map(x => x.id).join(',') || undefined,
+            projectManager: projectManager === '' ? undefined : projectManager,
+            projectName: projectName === '' ? undefined : projectName,
+            projectStatus: projectStatus === undefined ? undefined : projectStatus,
+            startYear: startYear === undefined ? undefined : startYear?.year(),
+            endYear: startYear === undefined ? undefined : endYear?.year(),
+            role,
+            current: 1,
+            pageSize: 9,
+            paging: -1,
+            sort: '',
+            total: -1,
+          };
+          const res = await QueryProjectStatusList(params);
+          if (res.success) {
+            setPrjSituationData({
+              loading: false,
+              data: JSON.parse(res.result),
+              total: res.totalrows,
+            });
+          }
+        } catch (e) {
+          console.error('项目数据获取失败', e);
+          message.error('项目数据获取失败', 1);
+          setPrjSituationData(p => ({
+            ...p,
+            loading: false,
+          }));
+        }
+      },
+      800,
+    ),
+    [],
+  );
+
   //获取报表数据 - 后续刷新数据
   const getCusRepData = (cxlx = 'WD', pageSize = '3', flag = true, col = '') => {
     col === '' && setIsLoading(true);
@@ -678,32 +800,21 @@ export default function HomePage(props) {
   const resizeUpdate = e => {
     const fn = () => {
       let w = e.target.innerWidth; //屏幕宽度
-      if (w < 1500) {
-        setLeftWidth('65.48%');
-      } else if (w < 1650) {
-        setLeftWidth('67%');
-      } else if (w < 1850) {
-        setLeftWidth('70%');
-      } else if (w < 2200) {
+      //每个块于1440下254.33+边距16，约271
+      if (w < 1710) {
+        setLeftWidth('71.405%');
+      } else if (w < 1981) {
+        setLeftWidth('72%');
+      } else if (w < 2252) {
         setLeftWidth('74%');
-      } else if (w < 2350) {
-        setLeftWidth('77%');
-      } else if (w < 2500) {
+      } else if (w < 2523) {
+        setLeftWidth('76%');
+      } else if (w < 2794) {
+        setLeftWidth('78%');
+      } else if (w < 3165) {
         setLeftWidth('79%');
-      } else if (w < 2650) {
+      } else if (w < 3437) {
         setLeftWidth('80%');
-      } else if (w < 2800) {
-        setLeftWidth('81%');
-      } else if (w < 2950) {
-        setLeftWidth('82%');
-      } else if (w < 3100) {
-        setLeftWidth('84%');
-      } else if (w < 3250) {
-        setLeftWidth('84%');
-      } else if (w < 3400) {
-        setLeftWidth('84%');
-      } else if (w < 3550) {
-        setLeftWidth('85%');
       } else {
         setLeftWidth('86%');
       }
@@ -767,7 +878,7 @@ export default function HomePage(props) {
                 time={moment(overviewInfo?.ysgxsj).format('YYYY-MM-DD')}
               />
             )}
-            <AnalyzeRepsCard
+            {/* <AnalyzeRepsCard
               getCusRepData={getCusRepData}
               stateProps={{
                 showExtendsWD,
@@ -775,7 +886,7 @@ export default function HomePage(props) {
                 cusRepDataWD,
                 isLoading,
               }}
-            />
+            /> */}
             <ProjectCard
               itemWidth={itemWidth}
               getAfterItem={getAfterItem}
@@ -790,20 +901,14 @@ export default function HomePage(props) {
               setPlacement={setPlacement}
               toDoData={toDoData}
             />
-            {/*项目跟踪*/}
-            <PrjTracking
-              dictionary={dictionary}
-              getTrackingData={getTrackingData}
-              stateProps={{
-                total,
-                params,
-                setParams,
-                trackingData,
-                isTrackingSpinning,
-                setIsTrackingSpinning,
-                showExtends,
-                setShowExtends,
-              }}
+            <PrjSituation
+              itemWidth={itemWidth}
+              getAfterItem={getAfterItem}
+              prjSituationData={prjSituationData}
+              setPrjSituationData={setPrjSituationData}
+              sltorData={{ label: labelData, org: orgData }}
+              currentYear={statisticYearData.currentYear}
+              getPrjSituation={getPrjSituation}
             />
           </div>
           <div className="col-right">
@@ -826,6 +931,7 @@ export default function HomePage(props) {
               getToDoData={getToDoData}
               popLoading={popLoading}
             />
+            {/* <PrjDynamic dynamicData={dynamicData} setDynamicData={setDynamicData} /> */}
             {['二级部门领导', '普通人员'].includes(userRole) ? (
               <Fragment>
                 <CptBudgetCard
@@ -850,6 +956,15 @@ export default function HomePage(props) {
                 ) : null}
               </Fragment>
             )}
+            <AnalyzeRepsCard
+              getCusRepData={getCusRepData}
+              stateProps={{
+                showExtendsWD,
+                totalWD,
+                cusRepDataWD,
+                isLoading,
+              }}
+            />
           </div>
         </div>
       </div>

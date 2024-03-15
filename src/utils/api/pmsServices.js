@@ -1052,4 +1052,10 @@ export default [
     url: '/ZSZQ/v1/operateVoidProjectApplication',
     dis: '作废项目立项流程',
   },
+  {
+    code: '',
+    key: 'queryProjectStatusList',
+    url: '/projectManage/queryProjectStatusList',
+    dis: '查询项目情况',
+  },
 ];

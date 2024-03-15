@@ -42,11 +42,7 @@ export default function AnalyzeRepsCard(props) {
     ProjectCollect({ ...payload })
       .then(res => {
         if (res?.success) {
-          if (showExtendsWD) {
-            getCusRepData('WD', 99999, true, 'collection');
-          } else {
-            getCusRepData('WD', 3, true, 'collection');
-          }
+          getCusRepData('WD', 3, true, 'collection');
           message.success(info);
         }
       })
@@ -133,7 +129,7 @@ export default function AnalyzeRepsCard(props) {
                 </div>
               ) : (
                 <div className="rep-infos-foot" onClick={() => handleExtendsWD(false)}>
-                  展开
+                  更多
                   {isLoading ? <Icon type="loading" /> : <i className="iconfont icon-down" />}
                 </div>
               ))}
