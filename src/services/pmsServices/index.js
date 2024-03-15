@@ -184,6 +184,8 @@ const {
     queryProjectApplicationFlow,
     operateVoidProjectApplication,
     queryProjectStatusList,
+    queryProjectProgressList,
+    queryMilestoneStageInfo,
   },
 } = api;
 
@@ -1981,6 +1983,26 @@ export async function QueryProjectStatusList(payload) {
 export async function OperateVoidProjectApplication(payload) {
   const option = {
     url: operateVoidProjectApplication,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+/** 查询项目进展（动态） */
+export async function QueryProjectProgressList(payload) {
+  const option = {
+    url: queryProjectProgressList,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+/** 查询里程碑阶段信息 */
+export async function QueryMilestoneStageInfo(payload) {
+  const option = {
+    url: queryMilestoneStageInfo,
     method: 'post',
     data: payload,
   };
