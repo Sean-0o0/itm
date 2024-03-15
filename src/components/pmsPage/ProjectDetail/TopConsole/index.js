@@ -964,7 +964,7 @@ export default function TopConsole(props) {
           )}
           {getTags(prjBasic.XMBQ, prjBasic.XMBQID)}
           {/* 1已完结2未完结 */}
-          {grayTest.DDMK && prjBasic.WJZT === '1' && (
+          {prjBasic.WJZT === '1' && (
             <img src={iconCompleted} className="icon-completed" alt="图片：已完结" />
           )}
           {!ysspHide && (allowEdit() || String(LOGIN_USER_INFO.id) === '0') && (
