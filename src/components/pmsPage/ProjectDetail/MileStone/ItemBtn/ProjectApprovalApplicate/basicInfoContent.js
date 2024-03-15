@@ -8,8 +8,8 @@ import { } from '../../../../../../services/pmsServices';
 
 /**
  * 基本信息
- * @param {*} props 
- * @returns 
+ * @param {*} props
+ * @returns
  */
 const BasicInfoContent = (props) => {
 
@@ -52,7 +52,7 @@ const BasicInfoContent = (props) => {
           <Row>
             {getInputDisabled('部门', userBasicInfo.orgname, labelCol, wrapperCol)}
 
-            {getDatePicker('报告日期', 'bgrq', undefined, labelCol, wrapperCol)}
+            {getDatePicker('报告日期', 'bgrq', moment(new Date()), labelCol, wrapperCol)}
           </Row>
 
           <Row>
