@@ -1,0 +1,159 @@
+// readMe:
+// 诸如 antd的通用表格样式  project-info-table-box  和  表格内部的标签样式  prj-tags  CV了很多遍   这几个代码又臭又长
+// 旧的不管  新的我就从这边引用类名
+// 比如原本大量重复的代码的类名为   project-info-table-box
+// 此处就改为 .common_project-info-table-box
+
+// 1.antd通用table表格样式（内置了表格列的项目标签样式）   CV自project-info-table-box
+.common_project-info-table-box {
+
+  .antd-table-adaptation();
+
+  // 此处额外加的，好像是代码被覆盖
+  .ant-pagination-item-active {
+    &:focus {
+      color: #fff !important;
+    }
+
+    a {
+      color: #fff !important;
+    }
+  }
+
+
+  // 表格统一样式————CV
+  flex-grow: 1;
+  overflow-y: auto;
+  margin-bottom: 10px;
+
+  &::-webkit-scrollbar {
+    width: 8px;
+    background-color: #ffffff;
+    border-radius: 4px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: #d8d8d8;
+    border-radius: 4px;
+  }
+
+  //表格内链接移入加粗样式
+  .table-link-strong {
+    width: 100%;
+    display: block;
+    color: #3361ff !important;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+
+    &:hover {
+      font-weight: bold;
+    }
+  }
+
+  .ant-table {
+    .table-switch-desc {
+      width: 100%;
+
+      .ant-switch-checked {
+        background-color: #3361ff;
+      }
+
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+
+      &>span {
+        margin-left: 8px;
+      }
+    }
+
+    td {
+      padding: 9.17px;
+      font-size: 14px;
+      font-family: Roboto-Regular, Roboto, PingFangSC-Regular, PingFang SC;
+      font-weight: 400;
+      color: #303133;
+    }
+
+    th {
+      padding: 9.17px;
+      font-size: 14px;
+      background-color: #f5f7fa;
+      font-family: PingFangSC-Medium, PingFang SC;
+      font-weight: bold;
+      color: #606266;
+    }
+
+    .ant-table-body {
+
+      // min-height: 560px;
+      table {
+        border: 1px solid #e8e8e8;
+      }
+    }
+
+    .ant-table-scroll .ant-table-header {
+      margin-bottom: -16.5px !important; //表格表头底部边框
+      background-color: #f5f7fa;
+    }
+
+    .ant-table-placeholder {
+      border: 0;
+
+      .ant-empty-description {
+        font-size: 14px;
+      }
+    }
+
+    .ant-table-thead {
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
+
+
+  }
+
+
+
+  // antd表格内部的项目标签样式 
+  .prj-tags {
+    width: 100%;
+    color: #606266;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
+    .tag-item {
+      font-size: 12px;
+      border: 1px solid rgba(51, 97, 255, 0.3);
+      border-radius: 4px;
+      background-color: #3363ff14;
+      padding: 1px 8px 2px 8px;
+      margin-right: 8px;
+      max-width: 38%;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
+      line-height: initial;
+      color: #3361ff;
+      flex-shrink: 0;
+      cursor: pointer;
+
+      a {
+        color: #3361ff;
+      }
+
+      &:hover {
+        color: #3361ff;
+        font-weight: bold;
+      }
+
+      &:last-child {
+        margin-right: 0;
+      }
+    }
+  }
+}

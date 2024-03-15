@@ -1070,4 +1070,16 @@ export default [
     url: '/projectManage/queryMemberSelectList',
     dis: '查询人员选择下拉框的数据（大部分操作窗口下拉框适用）',
   },
+  {
+    code: '',
+    key: 'queryProjectProgressList',
+    url: '/projectManage/queryProjectProgressList',
+    dis: '作废项目立项流程',
+  },
+  {
+    code: '',
+    key: 'queryMilestoneStageInfo',
+    url: '/projectManage/queryMilestoneStageInfo',
+    dis: '查询里程碑阶段信息',
+  },
 ];

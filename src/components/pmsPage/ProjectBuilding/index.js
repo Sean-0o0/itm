@@ -9,6 +9,7 @@ import {
   QueryUserRole,
 } from '../../../services/pmsServices';
 import ProjectDynamics from './ProjectDynamics';
+import ProjectQueryTable from './ProjectQueryTable';
 import moment from 'moment';
 import StatisticYear from '../SupplierSituation/StatisticYear';
 
@@ -409,7 +410,8 @@ class ProjectBuilding extends Component {
   };
 
   render() {
-    const { routes, defaultYear } = this.props;
+    const { routes, defaultYear, dictionary } = this.props;
+
     const {
       role = '',
       orgid = '',
@@ -517,31 +519,34 @@ class ProjectBuilding extends Component {
             </div>
           )}
           {radioKeys === '项目动态' && (
-            <ProjectDynamics
-              //项目动态信息-付款信息
-              routes={routes}
-              prjDynamicsFKInfo={prjDynamicsFKInfo}
-              totalrowsFK={totalrowsFK}
-              //项目动态信息-合同信息
-              prjDynamicsHTInfo={prjDynamicsHTInfo}
-              totalrowsHT={totalrowsHT}
-              //项目动态信息-立项信息
-              prjDynamicsLXInfo={prjDynamicsLXInfo}
-              totalrowsLX={totalrowsLX}
-              //项目动态信息-上线信息
-              prjDynamicsSXInfo={prjDynamicsSXInfo}
-              totalrowsSX={totalrowsSX}
-              //项目动态信息-完结信息
-              prjDynamicsWJInfo={prjDynamicsWJInfo}
-              totalrowsWJ={totalrowsWJ}
-              //项目动态信息-信委会信息
-              prjDynamicsXWHInfo={prjDynamicsXWHInfo}
-              totalrowsXWH={totalrowsXWH}
-              //项目动态信息-总办会信息
-              prjDynamicsZBHInfo={prjDynamicsZBHInfo}
-              totalrowsZBH={totalrowsZBH}
-              defaultYear={statisticYearData.currentYear}
+            <ProjectQueryTable
+              dictionary={dictionary}
             />
+            // <ProjectDynamics
+            //   //项目动态信息-付款信息
+            //   routes={routes}
+            //   prjDynamicsFKInfo={prjDynamicsFKInfo}
+            //   totalrowsFK={totalrowsFK}
+            //   //项目动态信息-合同信息
+            //   prjDynamicsHTInfo={prjDynamicsHTInfo}
+            //   totalrowsHT={totalrowsHT}
+            //   //项目动态信息-立项信息
+            //   prjDynamicsLXInfo={prjDynamicsLXInfo}
+            //   totalrowsLX={totalrowsLX}
+            //   //项目动态信息-上线信息
+            //   prjDynamicsSXInfo={prjDynamicsSXInfo}
+            //   totalrowsSX={totalrowsSX}
+            //   //项目动态信息-完结信息
+            //   prjDynamicsWJInfo={prjDynamicsWJInfo}
+            //   totalrowsWJ={totalrowsWJ}
+            //   //项目动态信息-信委会信息
+            //   prjDynamicsXWHInfo={prjDynamicsXWHInfo}
+            //   totalrowsXWH={totalrowsXWH}
+            //   //项目动态信息-总办会信息
+            //   prjDynamicsZBHInfo={prjDynamicsZBHInfo}
+            //   totalrowsZBH={totalrowsZBH}
+            //   defaultYear={statisticYearData.currentYear}
+            // />
           )}
           {radioKeys === '项目列表' && (
             <InfoTable
