@@ -174,10 +174,10 @@ export default connect(({ global }) => ({
           const mergedFormdata = {
             extinfo: {
               busdata: {
-                BGRQ: !Lodash.isEmpty(bgrq) ? bgrq.format('YYYYMMDD') : '', // 报告日期
+                BGRQ: Number(bgrq.format('YYYYMMDD')), // 报告日期
                 QSBGNR: qsbgnr,   //请示报告内容
                 YSLX: 1,          // 预算类型 字典YSLX 固定传1，不要显示
-                XMLX: xmlx,       // 2| 货物类(软硬件); 3| 服务类(人力); 1| 工程类
+                XMLX: String(xmlx),       // 2| 货物类(软硬件); 3| 服务类(人力); 1| 工程类
                 BM1: '',          //传空
                 BM2: '',          //传空
                 NGR1: '',         //传空
@@ -185,11 +185,11 @@ export default connect(({ global }) => ({
               }
             },
             filerela: gllcData.list?.map(x => x.id) || [], //关联文件id，数组形式，多个id用“,”隔开，比如[102, 102],
-            issend: sfzjss,  //是否直接送审
+            issend: Number(sfzjss),  //是否直接送审
             je: xmysje,      //项目预算金额
             loginname: userBasicInfo.userid,  //登录用户userid
             title: bt,       //标题
-            urgent: jjcd,    //紧急程度id
+            urgent: Number(jjcd),    //紧急程度id
             groupno: xmbh    //项目编号
           }
 
@@ -200,12 +200,8 @@ export default connect(({ global }) => ({
           };
 
           const queryParams = {
-            // czr: 0,
-            // objectclass: '合同签署流程',
             formdata: JSON.stringify(mergedFormdata),
-            // 附件数据
-            attachments: JSON.stringify(mergedFileArray),
-            // 流程数据
+            attachments: mergedFileArray,
             flowdata: JSON.stringify(flowdata),
           }
 
@@ -270,15 +266,15 @@ export default connect(({ global }) => ({
 
     /**清空弹窗数据 */
     const clearDataHandle = () => {
-      // resetFields()
-      setFieldsValue({
-        'bgrq': undefined,
-        'jjcd': undefined,
-        'sfzjss': undefined,
-        'bt': undefined,
-        'xmysje': undefined,
-        'qsbgnr': '<p></p>',
-      })
+      resetFields()
+      // setFieldsValue({
+      //   'bgrq': undefined,
+      //   'jjcd': undefined,
+      //   'sfzjss': undefined,
+      //   'bt': undefined,
+      //   'xmysje': undefined,
+      //   'qsbgnr': '<p></p>',
+      // })
       setXWHmotionData([])
       setXWHsummaryData([])
       setZBHmotionData([])
@@ -490,7 +486,7 @@ export default connect(({ global }) => ({
             <Button key="close" onClick={() => closeHandle()}>
               关闭
             </Button>,
-            <Button key="submit" type="primary" onClick={() => submitHandle()}>
+            <Button key="submit" type="primary" onClick={() => submitHandle()} loading={isSpinning}>
               确定
             </Button>,
           ]

@@ -52,7 +52,7 @@ const BasicInfoContent = (props) => {
           <Row>
             {getInputDisabled('部门', userBasicInfo.orgname, labelCol, wrapperCol)}
 
-            {getDatePicker('报告日期', 'bgrq', moment(new Date()), labelCol, wrapperCol)}
+            {getDatePicker('报告日期', 'bgrq', undefined, labelCol, wrapperCol)}
           </Row>
 
           <Row>
@@ -61,7 +61,7 @@ const BasicInfoContent = (props) => {
             {getRadio({
               label: '紧急程度',
               dataIndex: 'jjcd',
-              initialValue: 1,
+              initialValue: undefined,
               radioArr: urgencyDegreeArr,
               labelCol,
               wrapperCol
@@ -104,13 +104,13 @@ const BasicInfoContent = (props) => {
             {getRadio({
               label: '是否直接送审',
               dataIndex: 'sfzjss',
-              initialValue: 1,
+              initialValue: undefined,
               radioArr: isDirectTrialArr,
               labelCol,
               wrapperCol,
             })}
 
-            {getInput('标题', 'bt', '市场化约定转融资立项申请', labelCol / 2, 24 - labelCol / 2)}
+            {getInput('标题', 'bt', undefined, labelCol / 2, 24 - labelCol / 2)}
           </Row>
 
         </div>
