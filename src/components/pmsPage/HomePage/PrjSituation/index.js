@@ -111,7 +111,6 @@ export default connect(({ global }) => ({
       .then(res => {
         if (res.success) {
           getPrjSituation(filterParams);
-          setPrjSituationData(p => ({ ...p, loading: false }));
         }
       })
       .catch(e => {
@@ -788,8 +787,8 @@ export default connect(({ global }) => ({
             title={item.SFSC === 0 ? '确定收藏？' : '确定取消收藏？'}
             onConfirm={e => {
               e.stopPropagation();
-              handleProjectCollect(item.XMID, item.SFSC === 0 ? 'SCXM' : 'QXSC');
-            }}
+              handleProjectCollect(item.XMID, item.SFSC === 0 ? 'SCXM' : 'QXXM');
+            }} 
             onCancel={e => {
               e.stopPropagation();
             }}
