@@ -17,6 +17,7 @@ import BridgeModel from '../../../Common/BasicModal/BridgeModel';
 import { CreateOperateHyperLink, ProjectCollect } from '../../../../services/pmsServices';
 import EditProjectInfoModel from '../../EditProjectInfoModel';
 import iconCompleted from '../../../../assets/projectDetail/icon_completed.png';
+import iconTerminated from '../../../../assets/projectDetail/icon_terminated.png'
 import PaymentModal from './PaymentModal';
 import SinglePaymentModal from '../../HomePage/ShortcutCard/SinglePaymentModal';
 
@@ -844,7 +845,7 @@ export default function TopConsole(props) {
           <div className="prj-name">
             {prjBasic.XMMC &&
               prjBasic.XMMC +
-                (iterationYear.currentYear && isDDXM ? ` -${iterationYear.currentYear}` : '')}
+              (iterationYear.currentYear && isDDXM ? ` -${iterationYear.currentYear}` : '')}
           </div>
         ) : (
           <div className="prj-name">{prjBasic?.XMMC}</div>
@@ -963,10 +964,13 @@ export default function TopConsole(props) {
             </Fragment>
           )}
           {getTags(prjBasic.XMBQ, prjBasic.XMBQID)}
-          {/* 1已完结2未完结 */}
+          {/* 1已完结2未完结 5已终止 */}
           {prjBasic.WJZT === '1' && (
             <img src={iconCompleted} className="icon-completed" alt="图片：已完结" />
           )}
+          {prjBasic.WJZT === '5' &&
+            <img src={iconTerminated} className="icon-completed" alt="图片：已终止" />
+          }
           {!ysspHide && (allowEdit() || String(LOGIN_USER_INFO.id) === '0') && (
             <Button className="btn-edit" onClick={handleEditPrjInfo}>
               编辑
@@ -986,6 +990,11 @@ export default function TopConsole(props) {
         {prjBasic.XMJL}
         <span className="create-time">创建时间：</span>
         {prjBasic.CJRQ ? moment(prjBasic.CJRQ).format('YYYY-MM-DD') : null}
+
+        {prjBasic.ZZSM && <span className="project-terminationt-statement">项目终止说明：</span>}
+        {prjBasic.ZZSM &&
+          <span className="project-terminationt-statement-content" title={prjBasic.ZZSM}>{prjBasic.ZZSM}</span>
+        }
         {isDDXM && iterationYear.dropdown?.length > 0 && (
           <div className="iteration-year">
             迭代年份：

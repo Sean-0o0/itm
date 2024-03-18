@@ -18,6 +18,7 @@ import ScatterFlowers from './ScatterFlowers';
 import PrjFinishModal from './PrjFinishModal';
 import OpenValuationModal from '../../MutualEvaluation/OpenValuationModal';
 import { connect } from 'dva';
+import ProjectAbortModal from './ProjectAbortModal';
 
 export default connect(({ global = {} }) => ({
   authorities: global.authorities,
@@ -39,7 +40,7 @@ export default connect(({ global = {} }) => ({
   } = dataProps;
 
   const { prjBasic = {}, member = [], contrastArr = [] } = prjData;
-
+  // console.log('xxxxxxxxxxxxxxxxxx', prjBasic)
   const {
     getPrjDtlData,
     setIsSpinning,
@@ -56,7 +57,8 @@ export default connect(({ global = {} }) => ({
     intelProperty: false,
     awardHonor: false,
     prjFinish: false, //项目完结
-    pjztgl: false, //评价状态管理弹窗
+    pjztgl: false, //评价状态管理弹窗,
+    projectAbort: false, //是否展示项目终止弹窗
   }); //弹窗显隐
 
   const [hasEvaluationData, setHasEvaluationData] = useState(false); // 评价列表是否有数据
@@ -162,6 +164,11 @@ export default connect(({ global = {} }) => ({
   //项目完结
   const handlePrjFinish = (id = -1) => {
     setModalVisible(p => ({ ...p, prjFinish: true }));
+  };
+
+  /** 打开项目终止弹窗 */
+  const openProjectAbortModal = () => {
+    setModalVisible(val => ({ ...val, projectAbort: true }));
   };
 
   //完结撒花
@@ -521,6 +528,14 @@ export default connect(({ global = {} }) => ({
               fn: () => handlePrjFinish(xmid),
             })}
 
+          {is_XMJL_FXMJL &&
+          prjBasic.WJZT !== '5' && // 完结状态 ==='5'   代表   “已终止”
+            getShortcutItem({
+              imgTxt: 'terminateHandle',
+              txt: '项目终止',
+              fn: () => openProjectAbortModal(),
+            })}
+
           {authorities.RYPJ?.includes('OpenEvaluation') &&
             getShortcutItem({
               imgTxt: 'mutualEvaluation',
@@ -680,6 +695,7 @@ export default connect(({ global = {} }) => ({
           refresh: handlePrjFinishRefresh,
         }}
       />
+
       <OpenValuationModal
         visible={modalVisible.pjztgl}
         setVisible={v => setModalVisible(p => ({ ...p, pjztgl: v }))}
@@ -692,6 +708,16 @@ export default connect(({ global = {} }) => ({
         projectManager={isGLY.rypj ? undefined : Number(LOGIN_USER_INFO.id)}
         projectName={prjBasic.XMMC}
       />
+
+      {modalVisible.projectAbort && (
+        <ProjectAbortModal
+          modalVisible={modalVisible}
+          setModalVisible={setModalVisible}
+          getPrjDtlData={getPrjDtlData}
+          prjBasic={prjBasic}
+          xmid={xmid}
+        />
+      )}
     </div>
   );
 });

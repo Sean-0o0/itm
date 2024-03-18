@@ -31,7 +31,7 @@ import SoftwarePaymentWHT from './SoftwarePaymentWHT';
 import AssociationInitiatedProcess from './AssociationInitiatedProcess';
 import SoftwarePaymentYHT from './SoftwarePaymentYHT';
 import AssociationOAContract from './AssociationOAContract';
-import ProjectApprovalApplicate from './ProjectApprovalApplicate'
+import ProjectApprovalApplicate from './ProjectApprovalApplicate';
 
 const { api } = config;
 const { confirm } = Modal;
@@ -109,7 +109,7 @@ class ItemBtn extends React.Component {
     rjfysplcyhtModalVisible: false, //软件费用审批流程-有合同
     glOAhtModalVisible: false, //关联OA合同弹窗
     glOAhtData: {}, //关联OA合同弹窗所需数据
-    projectApprovalApplicateModalVisible: false    //项目立项申请弹窗
+    projectApprovalApplicateModalVisible: false, //项目立项申请弹窗
   };
   // timer = null;
 
@@ -1866,7 +1866,7 @@ class ItemBtn extends React.Component {
       rjfysplcyhtModalVisible,
       glOAhtModalVisible,
       glOAhtData,
-      projectApprovalApplicateModalVisible
+      projectApprovalApplicateModalVisible,
     } = this.state;
     const { item, xmmc, xmbh, isHwSltPrj, auth = {}, prjBasic } = this.props;
     // console.log('🚀 ~ file: index.js:1005 ~ ItemBtn ~ render ~ item:', item);
@@ -2273,14 +2273,16 @@ class ItemBtn extends React.Component {
         />
 
         {/* 项目立项申请——弹窗 */}
-        <ProjectApprovalApplicate
-          visible={projectApprovalApplicateModalVisible}
-          setVisible={v => this.setState({ projectApprovalApplicateModalVisible: v })}
-          prjBasic={prjBasic}
-          refresh={this.props.refresh}
-          xmbh={xmbh}
-          currentXmid={Number(item.xmid)}
-        />
+        {projectApprovalApplicateModalVisible && (
+          <ProjectApprovalApplicate
+            visible={projectApprovalApplicateModalVisible}
+            setVisible={v => this.setState({ projectApprovalApplicateModalVisible: v })}
+            prjBasic={prjBasic}
+            refresh={this.props.refresh}
+            xmbh={xmbh}
+            currentXmid={Number(item.xmid)}
+          />
+        )}
 
         <iframe src={src} id="Iframe" style={{ display: 'none' }} />
       </>

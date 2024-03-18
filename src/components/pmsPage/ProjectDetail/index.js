@@ -4,6 +4,9 @@ import MileStone from './MileStone';
 import PrjMember from './PrjMember';
 import PrjMessage from './PrjMessage';
 import TopConsole from './TopConsole';
+import PaymentStatus from './PaymentStatus';
+import ProgressStatistics from './ProgressStatistics';
+
 import {
   FetchQueryLifecycleStuff,
   FetchQueryLiftcycleMilestone,
@@ -1426,6 +1429,12 @@ export default connect(({ global = {} }) => ({
             )}
           </div>
           <div className="col-right">
+            {/* <PaymentStatus
+
+            /> */}
+            {/* <ProgressStatistics
+
+            /> */}
             <ShortcutCard
               dataProps={{
                 prjData,
