@@ -55,7 +55,7 @@ function PersonnelArrangementModal(props) {
       getPcryData();
       getZHPC(Number(xqid), Number(fqrid));
     }
-    return () => {};
+    return () => { };
   }, [visible, xqid, fqrid, update, WBRYGW]);
 
   const getZHPC = (xqid, fqrid) => {
@@ -76,8 +76,8 @@ function PersonnelArrangementModal(props) {
               res.zyrole === '外包项目对接人'
                 ? res.zyrole
                 : String(LOGIN_USER_ID) === fqrid
-                ? '需求发起人'
-                : res.role,
+                  ? '需求发起人'
+                  : res.role,
             xqid,
           })
             .then(res => {
@@ -86,8 +86,8 @@ function PersonnelArrangementModal(props) {
                   JSON.parse(res.zhpc).length === 0
                     ? []
                     : JSON.parse(res.zhpc)[0].PCID === undefined
-                    ? []
-                    : JSON.parse(res.zhpc);
+                      ? []
+                      : JSON.parse(res.zhpc);
                 zhpcdata.forEach(x => {
                   x.GW = WBRYGW?.filter(y => y.ibm === x.GW)[0]?.note;
                 });

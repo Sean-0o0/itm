@@ -62,18 +62,10 @@ const AttachmentInfoContent = (props) => {
     try {
       const res = await QueryProjectFiles(queryPamras)
       if (res.code === 1) {
-        const arr = JSON.parse(res?.wdResult) || []
-
-        console.log('1.查询项目文档————JSON解析成功', arr)
-
-        if (!Lodash.isEmpty(arr) && arr.length !== 0) {
-
-          console.log('2.查询项目文档————数组不为空', arr)
-
-          arr?.forEach((item) => {
-
-            console.log('3.查询项目文档————forEach执行成功')
-
+        const arr = JSON.parse(res.wdResult)
+        if (!Lodash.isEmpty(arr)) {
+          // console.log('xxxxxxx查初始附件数据xxxxxx', arr)
+          arr.forEach((item) => {
             const { WDLX: fileType, WDID: fileId } = item
             switch (fileType) {
               case '信委会议案':
@@ -118,7 +110,6 @@ const AttachmentInfoContent = (props) => {
       }
     }
     catch (err) {
-      console.log('4.查询项目文档失败，错误原因是', err)
       message.error(`查询项目文档失败，${!err.success ? err.message : err.note}`, 3)
     }
   }

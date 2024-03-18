@@ -1066,18 +1066,6 @@ export default [
   },
   {
     code: '',
-    key: 'queryProjectSelectList',
-    url: '/projectManage/queryProjectSelectList',
-    dis: '查询项目选择下拉框的数据（大部分操作窗口下拉框适用）',
-  },
-  {
-    code: '',
-    key: 'queryMemberSelectList',
-    url: '/projectManage/queryMemberSelectList',
-    dis: '查询人员选择下拉框的数据（大部分操作窗口下拉框适用）',
-  },
-  {
-    code: '',
     key: 'queryProjectProgressList',
     url: '/projectManage/queryProjectProgressList',
     dis: '作废项目立项流程',
@@ -1087,5 +1075,29 @@ export default [
     key: 'queryMilestoneStageInfo',
     url: '/projectManage/queryMilestoneStageInfo',
     dis: '查询里程碑阶段信息',
+  },
+  {
+    code: '',
+    key: 'queryProjectProgressStatistics',
+    url: '/projectManage/queryProjectProgressStatistics',
+    dis: '项目详情查询项目进展统计',
+  },
+  {
+    code: '',
+    key: 'queryProjectPayments',
+    url: '/projectManage/queryProjectPayments',
+    dis: '项目详情查询项目付款情况',
+  },
+  {
+    code: '',
+    key: 'queryProjectSelectList',
+    url: '/projectManage/queryProjectSelectList',
+    dis: '查询项目选择下拉框的数据（大部分操作窗口下拉框适用）',
+  },
+  {
+    code: '',
+    key: 'queryMemberSelectList',
+    url: '/projectManage/queryMemberSelectList',
+    dis: '查询人员选择下拉框的数据（大部分操作窗口下拉框适用）',
   },
 ];

@@ -186,6 +186,8 @@ const {
     queryProjectStatusList,
     queryProjectProgressList,
     queryMilestoneStageInfo,
+    queryProjectProgressStatistics,
+    queryProjectPayments,
     queryProjectSelectList,
     queryMemberSelectList,
     queryProjectDynamicSection,
@@ -2016,6 +2018,26 @@ export async function QueryProjectProgressList(payload) {
 export async function QueryMilestoneStageInfo(payload) {
   const option = {
     url: queryMilestoneStageInfo,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+/** 项目详情查询项目进展统计 */
+export async function QueryProjectProgressStatistics(payload) {
+  const option = {
+    url: queryProjectProgressStatistics,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+/** 项目详情查询项目付款情况 */
+export async function QueryProjectPayments(payload) {
+  const option = {
+    url: queryProjectPayments,
     method: 'post',
     data: payload,
   };

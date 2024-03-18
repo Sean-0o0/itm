@@ -6,6 +6,7 @@ const EditableContext = React.createContext();
 const { RangePicker } = DatePicker;
 
 const EditableRow = Form.create()(({ form, index, ...props }) => {
+
   return (
     <EditableContext.Provider value={form}>
       <tr {...props} />
@@ -31,7 +32,7 @@ const EditableCell = props => {
   } = props;
 
   useEffect(() => {
-    return () => {};
+    return () => { };
   }, []);
 
   const save = e => {
