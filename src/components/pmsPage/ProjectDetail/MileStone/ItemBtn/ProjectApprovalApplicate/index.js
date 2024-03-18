@@ -142,7 +142,7 @@ export default connect(({ global }) => ({
             if (XWHsummaryData.length === 0) {
               message.warn('请上传"信委会会议纪要"附件！'); return;
             }
-            mergedFileArray = [...arr1, ...arr2]
+            mergedFileArray = [...mergedFileArray, ...arr1, ...arr2]
           }
           if (
             (getFieldValue('xmlx') === 1 && judgeMoneyHanlde(4000000) === true)
@@ -155,7 +155,7 @@ export default connect(({ global }) => ({
             if (ZBHsummaryData.length === 0) {
               message.warn('请上传"总办会会议纪要"附件！'); return;
             }
-            mergedFileArray = [...arr3, ...arr4]
+            mergedFileArray = [...mergedFileArray, ...arr3, ...arr4]
           }
 
 
@@ -216,7 +216,7 @@ export default connect(({ global }) => ({
 
             console.log('xxxxxxxx项目立项申请的结果xxxxxxxxxxx', res)
 
-            const { code = -1 } = result;
+            const { code = -1 } = res;
             if (code > 0) {
               setIsSpinning(false)
               setVisible(false);
