@@ -176,8 +176,8 @@ export default connect(({ global }) => ({
               busdata: {
                 BGRQ: String(bgrq.format('YYYYMMDD')), // 报告日期
                 QSBGNR: qsbgnr,   //请示报告内容
-                YSLX: '1',          // 预算类型 字典YSLX 固定传1，不要显示
-                XMLX: String(xmlx),       // 2| 货物类(软硬件); 3| 服务类(人力); 1| 工程类
+                // YSLX: '1',          // 预算类型 字典YSLX 固定传1，不要显示                    测试环境不能传，生产传
+                // XMLX: String(xmlx),       // 2| 货物类(软硬件); 3| 服务类(人力); 1| 工程类    测试环境不能传，生产传
                 BM1: '',          //传空
                 BM2: '',          //传空
                 NGR1: '',         //传空
