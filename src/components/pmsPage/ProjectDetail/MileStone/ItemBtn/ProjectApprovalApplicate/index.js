@@ -190,7 +190,7 @@ export default connect(({ global }) => ({
             loginname: userBasicInfo.userid,  //登录用户userid
             title: bt,       //标题
             urgent: Number(jjcd),    //紧急程度id
-            groupno: xmbh    //项目编号
+            groupno: String(xmbh)    //项目编号
           }
 
           //关联流程数据
@@ -200,6 +200,8 @@ export default connect(({ global }) => ({
           };
 
           const queryParams = {
+            czr: '0',
+            objectclass: '项目立项申请',
             formdata: JSON.stringify(mergedFormdata),
             attachments: mergedFileArray,
             flowdata: JSON.stringify(flowdata),
