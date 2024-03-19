@@ -5,7 +5,6 @@
     max-height: 80vh;
   }
 
-
   // 附件模板样式
   .ProjectApprovalApplicate_templateBox {
 
@@ -74,35 +73,35 @@
     }
   }
 
+}
 
-  // 表格操作列
-  .ProjectApprovalApplicate_opr-column {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
 
-    span {
-      color: #3361ff;
-      margin-right: 6px;
-      cursor: pointer;
+// 表格操作列
+.ProjectApprovalApplicate_opr-column {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
 
-      &:last-child {
-        margin-right: 0px;
-      }
+  span {
+    color: #3361ff;
+    margin-right: 6px;
+    cursor: pointer;
 
-      &:hover {
-        color: #3361ffaf;
-      }
+    &:last-child {
+      margin-right: 0px;
     }
 
-    i {
-      cursor: pointer;
-      font-size: 18px;
-      margin-top: 2px;
+    &:hover {
+      color: #3361ffaf;
     }
   }
 
+  i {
+    cursor: pointer;
+    font-size: 18px;
+    margin-top: 2px;
+  }
 }
 
 
@@ -138,6 +137,36 @@
 
   .redColor {
     color: #f5222d;
+  }
+
+  //表格滚动条
+  .row4 {
+
+    .ant-table-wrapper {
+      max-height: 50vh;
+      overflow-y: auto;
+
+      &::-webkit-scrollbar {
+        width: 9px;
+        height: 9px;
+        border-radius: 10px;
+        background-color: #F5F5F5;
+      }
+
+      &::-webkit-scrollbar-track {
+        background-color: #f5f5f5;
+      }
+
+      &::-webkit-scrollbar-thumb {
+        background-color: #ccc;
+        border-radius: 5px;
+      }
+
+      &::-webkit-scrollbar-thumb:hover {
+        background-color: #aaa;
+      }
+
+    }
   }
 
 }

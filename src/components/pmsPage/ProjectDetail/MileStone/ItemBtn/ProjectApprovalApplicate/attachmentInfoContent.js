@@ -4,7 +4,9 @@ import {
   Radio, Upload, Tooltip, Icon, Popconfirm, Checkbox,
 } from 'antd';
 import moment from 'moment';
-import { QueryDocTemplate } from '../../../../../../services/pmsServices';
+import { QueryDocTemplate, QueryProjectFiles } from '../../../../../../services/pmsServices';
+import Lodash from 'lodash'
+import { handleFileStrParse } from '../../../../IntelProperty/OprModal'
 
 /**
  * 附件信息
@@ -28,7 +30,8 @@ const AttachmentInfoContent = (props) => {
     ZBHsummaryData, setZBHsummaryData, //总办会会议纪要
     BQHYscannerData, setBQHYscannerData,//标前会议纪要扫描件
     ZBshoppingData, setZBshoppingData, //招标采购文件
-    otherUplodData, setOtherUplodData//其他附件
+    otherUplodData, setOtherUplodData, //其他附件,
+    currentXmid, // 当前项目ID
   } = dataObj
 
   const [isXWHmotionTurnRed, setIsXWHmotionTurnRed] = useState(false) //信委会议案——校验
@@ -48,6 +51,69 @@ const AttachmentInfoContent = (props) => {
 
   const labelCol = 8;
   const wrapperCol = 16;
+
+  /** 查初始附件数据 */
+  const queryInitialAttachmentHandle = async () => {
+    const queryPamras = {
+      paging: 1,
+      queryType: 'XMWD',
+      projectId: currentXmid
+    }
+    try {
+      const res = await QueryProjectFiles(queryPamras)
+      if (res.code === 1) {
+        const arr = JSON.parse(res.wdResult)
+        if (!Lodash.isEmpty(arr)) {
+          // console.log('xxxxxxx查初始附件数据xxxxxx', arr)
+          arr.forEach((item) => {
+            const { WDLX: fileType, WDID: fileId } = item
+            switch (fileType) {
+              case '信委会议案':
+                handleFileStrParse(item?.WDFJ, {
+                  objectName: 'TWD_XM',
+                  columnName: 'DFJ',
+                  id: fileId,
+                }).then(parsedData => {
+                  setXWHmotionData(parsedData || []);
+                })
+                break;
+              case '信委会会议纪要':
+                handleFileStrParse(item?.WDFJ, {
+                  objectName: 'TWD_XM',
+                  columnName: 'DFJ',
+                  id: fileId,
+                }).then(parsedData => {
+                  setXWHsummaryData(parsedData || []);
+                })
+                break;
+              case '总办会提案':
+                handleFileStrParse(item?.WDFJ, {
+                  objectName: 'TWD_XM',
+                  columnName: 'DFJ',
+                  id: fileId,
+                }).then(parsedData => {
+                  setZBHmotionData(parsedData || []);
+                })
+                break;
+              case '总办会会议纪要':
+                handleFileStrParse(item?.WDFJ, {
+                  objectName: 'TWD_XM',
+                  columnName: 'DFJ',
+                  id: fileId,
+                }).then(parsedData => {
+                  setZBHsummaryData(parsedData || []);
+                })
+                break;
+            }
+          })
+        }
+      }
+    }
+    catch (err) {
+      message.error(`查询项目文档失败，${!err.success ? err.message : err.note}`, 3)
+    }
+  }
+
 
   /** 查附件模板 */
   const queryDocTemplateHandle = async (fileTypeName, templateName) => {
@@ -72,6 +138,7 @@ const AttachmentInfoContent = (props) => {
   }
 
   useEffect(() => {
+    queryInitialAttachmentHandle()
     queryDocTemplateHandle('信委会议案', 'XWHmotionTemplate')
     queryDocTemplateHandle('信委会会议纪要', 'XWHsummaryTemplate')
     queryDocTemplateHandle('总办会提案', 'ZBHmotionTemplate')
@@ -82,10 +149,11 @@ const AttachmentInfoContent = (props) => {
   /** 多附件上传 */
   const getMultipleUpload = ({ label, labelCol, wrapperCol, fileList = [],
     setFileList, isTurnRed, setIsTurnRed }) => {
+
     const onUploadDownload = file => {
       if (!file.url) {
         let reader = new FileReader();
-        reader.readAsDataURL(file.originFileObj);
+        reader.readAsDataURL(file.originFileObj || file.blob);
         reader.onload = e => {
           var link = document.createElement('a');
           link.href = e.target.result;
@@ -101,6 +169,7 @@ const AttachmentInfoContent = (props) => {
         window.URL.revokeObjectURL(link.href);
       }
     };
+
     const onUploadChange = info => {
       let list = [...info.fileList]; //每次改变后的数据列表
       if (list.length > 0) {

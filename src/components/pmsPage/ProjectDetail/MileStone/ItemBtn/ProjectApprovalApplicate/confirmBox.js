@@ -151,7 +151,7 @@ const ConfirmBox = (props) => {
           <Popconfirm
             title={`确定作废吗?`}
             onConfirm={() => deleteHandle(record)}>
-            <span>作废</span>
+            <span >作废</span>
           </Popconfirm>
         </div>
       }
