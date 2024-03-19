@@ -11,10 +11,13 @@ import leaderTagRight from '../../../assets/homePage/leader-tag-right.png';
 import { QueryMemberInfo } from '../../../services/pmsServices';
 import { FetchQueryOrganizationInfo } from '../../../services/projectManage';
 import TreeUtils from '../../../utils/treeUtils';
+import { connect } from 'dva';
 const { Panel } = Collapse;
 
-export default function StaffInfo(props) {
-  const {} = props;
+export default connect(({ global }) => ({
+  dataAnonymization: global.dataAnonymization,
+}))(function StaffInfo(props) {
+  const { dataAnonymization } = props;
   const [isSpinning, setIsSpinning] = useState(false); //加载状态
   const [orgData, setOrgData] = useState([]); //部门数据
   const [staffData, setStaffData] = useState([]); //人员数据
@@ -144,7 +147,7 @@ export default function StaffInfo(props) {
               arr.push({
                 gw: '总经理助理',
                 id: '10704',
-                name: '钟政乐',
+                name: dataAnonymization ? '钟**' : '钟政乐',
                 orgId: '357', //原是运行保障三部"15505"
                 orgName: '信息技术运保部',
                 xb: '男',
@@ -155,11 +158,12 @@ export default function StaffInfo(props) {
             }
 
             item.members = parentArr;
+            // 非要就先写死
             if (item.value === '11168') {
               item.members?.unshift({
                 gw: '总经理',
                 id: '1852',
-                name: '黄玉锋',
+                name: dataAnonymization ? '黄**' : '黄玉锋',
                 orgId: '11168',
                 orgName: '信息技术开发部',
                 xb: '男',
@@ -198,9 +202,7 @@ export default function StaffInfo(props) {
         className="member-item"
         key={key}
         style={
-          post?.includes('经理') && !post?.includes('项目经理') && !post?.includes('产品经理')
-            ? { border: '1px solid rgba(51, 97, 255, 0.2)', borderRadius: '16px' }
-            : {}
+          topLeader ? { border: '1px solid rgba(51, 97, 255, 0.2)', borderRadius: '16px' } : {}
         }
       >
         <Link
@@ -218,7 +220,7 @@ export default function StaffInfo(props) {
           <div
             className="bottom"
             style={
-              post?.includes('经理') && !post?.includes('项目经理') && !post?.includes('产品经理')
+              topLeader
                 ? {
                     background: '#3363ff14',
                     borderRadius: '16px',
@@ -226,32 +228,15 @@ export default function StaffInfo(props) {
                 : {}
             }
           >
-            <div
-              className="bottom-left"
-              // style={
-              //   post?.includes('经理') && !post?.includes('项目经理') && !post?.includes('产品经理')
-              //     ? { border: '2px solid #fff' }
-              //     : {}
-              // }
-            >
+            <div className="bottom-left">
               <img src={gender === '男' ? avatarMale : avatarFemale} />
-              {post?.includes('经理') &&
-                !post?.includes('项目经理') &&
-                !post?.includes('产品经理') && (
-                  <div
-                    className="leader-tag"
-                    style={topLeader ? { backgroundColor: '#FFCD00' } : {}}
-                  >
-                    <img src={leaderTag} className="leader-tag-img" />
-                  </div>
-                )}
+              {topLeader && (
+                <div className="leader-tag" style={{ backgroundColor: '#FFCD00' }}>
+                  <img src={leaderTag} className="leader-tag-img" />
+                </div>
+              )}
             </div>
             <span>{name}</span>
-            {/* {post?.includes('经理') &&
-              !post?.includes('项目经理') &&
-              !post?.includes('产品经理') && (
-                <img src={leaderTagRight} className="leader-tag-right" />
-              )} */}
           </div>
         </Link>
       </div>
@@ -349,4 +334,4 @@ export default function StaffInfo(props) {
       </Spin>
     </div>
   );
-}
+});
