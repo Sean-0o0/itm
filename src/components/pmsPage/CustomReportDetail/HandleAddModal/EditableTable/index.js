@@ -26,6 +26,7 @@ const EditableCell = props => {
     getPrjData,
     getStaffData,
     tableColumns,
+    isSecondLeader,
     ...restProps
   } = props;
 
@@ -81,22 +82,27 @@ const EditableCell = props => {
               optionLabelProp="xmmc"
               optionFilterProp="title"
               allowClear
-              onChange={(v, node) => {
-                //二级部门领导可选部门下的所有员工。当关联项目的项目经理在数据范围权限下时，自动填充填写人，不在数据范围内时为空
-                if (
-                  sltdata.txr?.findIndex(x => String(x.id) === String(node?.props?.xmjl)) !== -1
-                ) {
-                  console.log('@@@在范围内');
-                  formdecorate.setFieldsValue({
-                    ['TXR' + record.ID]: String(node?.props?.xmjl),
-                  });
-                } else {
-                  console.log('@@@不在范围内');
-                  formdecorate.setFieldsValue({
-                    ['TXR' + record.ID]: undefined,
-                  });
-                }
-              }}
+              onChange={
+                isSecondLeader
+                  ? (v, node) => {
+                      //二级部门领导可选部门下的所有员工。当关联项目的项目经理在数据范围权限下时，自动填充填写人，不在数据范围内时为空
+                      if (
+                        sltdata.txr?.findIndex(x => String(x.id) === String(node?.props?.xmjl)) !==
+                        -1
+                      ) {
+                        console.log('@@@在范围内');
+                        formdecorate.setFieldsValue({
+                          ['TXR' + record.ID]: String(node?.props?.xmjl),
+                        });
+                      } else {
+                        console.log('@@@不在范围内');
+                        formdecorate.setFieldsValue({
+                          ['TXR' + record.ID]: undefined,
+                        });
+                      }
+                    }
+                  : () => {}
+              }
             >
               {sltdata.glxm.map(x => (
                 <Select.Option

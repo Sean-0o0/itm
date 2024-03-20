@@ -442,6 +442,7 @@ function HandleAddModal(props) {
           getPrjData,
           getStaffData,
           tableColumns,
+          isSecondLeader,
         };
       },
     };
