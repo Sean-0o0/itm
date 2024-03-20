@@ -35,6 +35,62 @@ const {
   pmsServices: { queryFileStream },
 } = api;
 
+/**
+ *  处理附件数据
+ * @param {*} fjStr 文件JSON数据
+ * @param {*} param1  livebos参数
+ * @returns 
+ */
+const handleFileStrParse = async (fjStr = '{}', { objectName, id, columnName }) => {
+  function convertBlobsToBase64(fileArray) {
+    return Promise.all(
+      fileArray.map((file, index) => {
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = function () {
+            const base64 = reader.result.split(',')[1];
+            const fileName = file.name;
+            resolve({
+              uid: Date.now() + '-' + index,
+              name: fileName,
+              status: 'done',
+              base64,
+              blob: file.blob,
+              url: '',
+            });
+          };
+          reader.onerror = function (error) {
+            reject(error);
+          };
+          reader.readAsDataURL(file.blob);
+        });
+      }),
+    );
+  }
+  const fjObj = JSON.parse(fjStr);
+  const fjPromiseArr =
+    fjObj.items?.map(x =>
+      axios({
+        method: 'POST',
+        url: queryFileStream,
+        responseType: 'blob',
+        data: {
+          objectName,
+          columnName,
+          id,
+          title: x[1],
+          extr: x[0],
+          type: '',
+        },
+      }),
+    ) || [];
+  const resArr = await Promise.all(fjPromiseArr);
+  return convertBlobsToBase64(
+    resArr.map(x => ({ name: JSON.parse(x?.config?.data || '{}').title, blob: x.data })),
+  );
+};
+
+export { handleFileStrParse };
 
 export default connect(({ global = {} }) => ({
   userBasicInfo: global.userBasicInfo,
@@ -246,57 +302,6 @@ export default connect(({ global = {} }) => ({
           message.error('部门信息获取失败', 1);
         });
     };
-
-    //处理附件数据
-    const handleFileStrParse = async (fjStr = '{}', { objectName, id, columnName }) => {
-      function convertBlobsToBase64(fileArray) {
-        return Promise.all(
-          fileArray.map((file, index) => {
-            return new Promise((resolve, reject) => {
-              const reader = new FileReader();
-              reader.onload = function () {
-                const base64 = reader.result.split(',')[1];
-                const fileName = file.name;
-                resolve({
-                  uid: Date.now() + '-' + index,
-                  name: fileName,
-                  status: 'done',
-                  base64,
-                  blob: file.blob,
-                  url: '',
-                });
-              };
-              reader.onerror = function (error) {
-                reject(error);
-              };
-              reader.readAsDataURL(file.blob);
-            });
-          }),
-        );
-      }
-      const fjObj = JSON.parse(fjStr);
-      const fjPromiseArr =
-        fjObj.items?.map(x =>
-          axios({
-            method: 'POST',
-            url: queryFileStream,
-            responseType: 'blob',
-            data: {
-              objectName,
-              columnName,
-              id,
-              title: x[1],
-              extr: x[0],
-              type: '',
-            },
-          }),
-        ) || [];
-      const resArr = await Promise.all(fjPromiseArr);
-      return convertBlobsToBase64(
-        resArr.map(x => ({ name: JSON.parse(x?.config?.data || '{}').title, blob: x.data })),
-      );
-    };
-
 
     /** 下载申报材料示例 */
     const QueryDocTemplateHandle = async () => {
