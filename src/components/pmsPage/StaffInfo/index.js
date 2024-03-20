@@ -196,13 +196,16 @@ export default connect(({ global }) => ({
     key = '',
     post = '--',
     topLeader = false,
+    bottomLeader = false,
   }) => {
     return (
       <div
         className="member-item"
         key={key}
         style={
-          topLeader ? { border: '1px solid rgba(51, 97, 255, 0.2)', borderRadius: '16px' } : {}
+          topLeader || bottomLeader
+            ? { border: '1px solid rgba(51, 97, 255, 0.2)', borderRadius: '16px' }
+            : {}
         }
       >
         <Link
@@ -220,7 +223,7 @@ export default connect(({ global }) => ({
           <div
             className="bottom"
             style={
-              topLeader
+              topLeader || bottomLeader
                 ? {
                     background: '#3363ff14',
                     borderRadius: '16px',
@@ -230,8 +233,8 @@ export default connect(({ global }) => ({
           >
             <div className="bottom-left">
               <img src={gender === '男' ? avatarMale : avatarFemale} />
-              {topLeader && (
-                <div className="leader-tag" style={{ backgroundColor: '#FFCD00' }}>
+              {(topLeader || bottomLeader) && (
+                <div className="leader-tag" style={topLeader ? { backgroundColor: '#FFCD00' } : {}}>
                   <img src={leaderTag} className="leader-tag-img" />
                 </div>
               )}
@@ -295,6 +298,10 @@ export default connect(({ global }) => ({
                         name: m.name || '--',
                         key: m.id,
                         post: m.gw,
+                        bottomLeader:
+                          m.gw?.includes('经理') &&
+                          !m.gw?.includes('项目经理') &&
+                          !m.gw?.includes('产品经理'),
                       }),
                     )}
                     {x.members?.length === 0 && (
