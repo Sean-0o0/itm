@@ -186,6 +186,8 @@ const {
     queryProjectStatusList,
     queryProjectProgressList,
     queryMilestoneStageInfo,
+    queryProjectSelectList,
+    queryMemberSelectList,
   },
 } = api;
 
@@ -2003,6 +2005,26 @@ export async function QueryProjectProgressList(payload) {
 export async function QueryMilestoneStageInfo(payload) {
   const option = {
     url: queryMilestoneStageInfo,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 查询项目选择下拉框的数据（大部分操作窗口下拉框适用）
+export async function QueryProjectSelectList(payload) {
+  const option = {
+    url: queryProjectSelectList,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 查询人员选择下拉框的数据（大部分操作窗口下拉框适用）
+export async function QueryMemberSelectList(payload) {
+  const option = {
+    url: queryMemberSelectList,
     method: 'post',
     data: payload,
   };

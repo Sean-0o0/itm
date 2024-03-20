@@ -1,15 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback, Fragment } from 'react';
-import { Button, Table, message, Modal, Popconfirm, Form, DatePicker, Select, Icon } from 'antd';
-import { EditableFormRow, EditableCell } from '../EditableRowAndCell';
-import {
-  EditCustomReport,
-  CompleteReport,
-  QueryCustomReportContent,
-  ExportCustomReportToExcel,
-} from '../../../../services/pmsServices';
-import iconCompleted from '../../../../assets/projectDetail/icon_completed.png';
+import { Button, Table, message, Popconfirm, Form, DatePicker, Icon } from 'antd';
+import { EditCustomReport } from '../../../../services/pmsServices';
 import moment from 'moment';
-import * as XLSX from 'xlsx';
 import HandleAddModal from '../HandleAddModal';
 import config from '../../../../utils/config';
 import axios from 'axios';
@@ -17,8 +9,6 @@ const { api } = config;
 const {
   pmsServices: { exportCustomReportToExcel },
 } = api;
-
-const { MonthPicker } = DatePicker;
 
 const TableBox = props => {
   const { form, dataProps = {}, funcProps = {} } = props;
@@ -28,27 +18,20 @@ const TableBox = props => {
     tableData = {},
     columnsData = [],
     tableLoading,
-    edited,
     monthData,
-    isAdministrator,
-    isFinish,
-    txzt,
+    activeKey,
+    roleData = {},
+    userBasicInfo = {},
   } = dataProps;
-  const { setEdited, setTableData, setTableLoading, setMonthData, getData } = funcProps;
-  const [isSaved, setIsSaved] = useState(false);
-  const [editing, setEditing] = useState(true); //编辑状态
-  const [editingIndex, setEditingIndex] = useState(-1); //编辑
-  const [editData, setEditData] = useState([]); //编辑数据
-  const [dltData, setDltData] = useState([]); //删除行id
-  let LOGIN_USER_ID = Number(JSON.parse(sessionStorage.getItem('user'))?.id);
+  const isGLY = roleData.zyrole === '自定义报告管理员';
+  const { setTableLoading, setMonthData, getData } = funcProps;
   const [addModalData, setAddModalData] = useState({
     visible: false,
     data: {},
+    dataArr: [],
   }); //新增行弹窗
-
-  //管理员、填写人可以编辑 - 后边改了不做限制
-  const allowEdit = true;
-  // tableData.data.map(x => x['TXRID' + x.ID]).includes(String(LOGIN_USER_ID)) || isAdministrator;
+  //编辑分类用的取值字段
+  const EDIT_FIELD = columnsData.find(x => x.ZDMC === '建设任务')?.QZZD;
 
   //表格跨行合并
   const getRowSpanCount = (data, key, target, bool = false) => {
@@ -80,184 +63,34 @@ const TableBox = props => {
     return arr[target];
   };
 
-  //表格数据保存
-  const handleTableSave = row => {
-    const newData = [...tableData.data];
-    const index = newData.findIndex(item => row.ID === item.ID); //🚀 定一个ID
-    const item = newData[index];
-    newData.splice(index, 1, {
-      ...item, //old row data
-      ...{ ...row, isEdited: true }, //new row data
-    });
-
-    let newEdit = [...editData];
-    let index2 = newEdit.findIndex(item => row.ID === item.ID); //🚀 定一个ID
-    if (index2 === -1) {
-      newEdit.push(row);
-    } else {
-      newEdit.splice(index2, 1, {
-        ...newEdit[index2], //old row data
-        ...row, //new row data
-      });
-    }
-    setEditData(p => [...newEdit]);
-    setEdited(true);
-    console.log('TableData', newData);
-    setTableData(p => ({
-      ...p,
-      data: [...newData],
-    }));
-  };
-
-  //提交保存
+  //提交
   const handleSubmit = () => {
     form.validateFields(err => {
       if (!err) {
         setTableLoading(true);
-        //过滤删除的数据
-        let editDataDelFilter = editData.filter(
-          x => dltData.findIndex(item => x.ID === item.ID) === -1,
-        );
-        const notNullStr = v => {
-          if (['', ' ', undefined, null].includes(v)) return 'undefined';
-          return v;
-        };
-        let submitTable = [];
-        editDataDelFilter.forEach(obj => {
-          const restoredObj = { ID: obj.ID };
-          for (const key in obj) {
-            if (key !== 'ID' && tableData.customColumns.includes(key.replace(obj.ID, ''))) {
-              const originalKey = key.replace(obj.ID, '');
-              if (originalKey === 'TXR') {
-                restoredObj[originalKey] = notNullStr(obj['TXRID' + obj.ID]);
-              } else if (originalKey === 'GLXM') {
-                restoredObj[originalKey] = notNullStr(obj['GLXMID' + obj.ID]);
-              } else {
-                restoredObj[originalKey] = notNullStr(obj[key]);
-              }
-            }
-          }
-          submitTable.push(restoredObj);
-        });
-        console.log('submitTable', submitTable);
-        let updateParams = {
-          fieldCount: tableData.customColumns.length - 5,
-          infoCount: submitTable.length,
-          operateType: 'UPDATE',
+        let params = {
+          fieldCount: 2,
+          infoCount: 1,
+          operateType: 'SUBMIT',
           reportId: Number(bgid),
-          reportInfo: JSON.stringify(submitTable),
+          reportInfo: JSON.stringify([
+            { YF: String(monthData.format('YYYYMM')), BM: String(userBasicInfo.orgid) },
+          ]),
         };
-        if (dltData.length !== 0) {
-          let deleteTable = [];
-          dltData.forEach(obj => {
-            const restoredObj = { ID: obj.ID };
-            for (const key in obj) {
-              if (key !== 'ID' && tableData.customColumns.includes(key.replace(obj.ID, ''))) {
-                const originalKey = key.replace(obj.ID, '');
-                if (originalKey === 'TXR') {
-                  restoredObj[originalKey] = notNullStr(obj['TXRID' + obj.ID]);
-                } else if (originalKey === 'GLXM') {
-                  restoredObj[originalKey] = notNullStr(obj['GLXMID' + obj.ID]);
-                } else {
-                  restoredObj[originalKey] = notNullStr(obj[key]);
-                }
-              }
+        EditCustomReport({ ...params })
+          .then(res => {
+            if (res?.code === 1) {
+              getData(Number(bgid), Number(monthData.format('YYYYMM')), activeKey);
+              setTableLoading(false);
+              message.success('提交成功', 1);
             }
-            deleteTable.push(restoredObj);
+          })
+          .catch(e => {
+            message.error('操作失败', 1);
+            setTableLoading(false);
           });
-          let deledtParams = {
-            fieldCount: tableData.customColumns.length - 5,
-            infoCount: deleteTable.length,
-            operateType: 'DELETE',
-            reportId: Number(bgid),
-            reportInfo: JSON.stringify(deleteTable),
-          };
-          EditCustomReport({ ...deledtParams })
-            .then(res => {
-              if (res?.code === 1) {
-                if (submitTable.length !== 0) {
-                  EditCustomReport({ ...updateParams })
-                    .then(res => {
-                      if (res?.code === 1) {
-                        getData(Number(bgid), Number(monthData.format('YYYYMM')));
-                        setIsSaved(true);
-                        // setEditing(false);
-                        setEditingIndex(-1);
-                        setDltData([]);
-                        setTableLoading(false);
-                        message.success('保存成功', 1);
-                      }
-                    })
-                    .catch(e => {
-                      message.error('操作失败', 1);
-                      setTableLoading(false);
-                    });
-                } else {
-                  getData(Number(bgid), Number(monthData.format('YYYYMM')));
-                  setIsSaved(true);
-                  // setEditing(false);
-                  setEditingIndex(-1);
-                  setDltData([]);
-                  setTableLoading(false);
-                  message.success('保存成功', 1);
-                }
-              }
-            })
-            .catch(e => {
-              message.error('操作失败', 1);
-              setTableLoading(false);
-            });
-        } else {
-          EditCustomReport({ ...updateParams })
-            .then(res => {
-              if (res?.code === 1) {
-                getData(Number(bgid), Number(monthData.format('YYYYMM')));
-                setIsSaved(true);
-                // setEditing(false);
-                setEditingIndex(-1);
-                setDltData([]);
-                setTableLoading(false);
-                message.success('保存成功', 1);
-              }
-            })
-            .catch(e => {
-              message.error('操作失败', 1);
-              setTableLoading(false);
-            });
-        }
       }
     });
-  };
-
-  //行删除、取消删除
-  const handleDelete = row => {
-    if (dltData.findIndex(item => row.ID === item.ID) === -1) {
-      setDltData(p => [...p, row]);
-      setEdited(true);
-    }
-  };
-  const handleDeleteCancel = row => {
-    setDltData(p => [...p.filter(x => x.ID !== row.ID)]);
-  };
-
-  //完成
-  const handleFinish = () => {
-    setTableLoading(true);
-    //完成
-    CompleteReport({
-      operateType: 'WJ',
-      reportId: Number(bgid),
-    })
-      .then(res => {
-        if (res?.success) {
-          getData(Number(bgid), Number(monthData.format('YYYYMM')));
-          message.success('操作成功', 1);
-        }
-      })
-      .catch(e => {
-        console.error('🚀完成', e);
-        message.error('操作失败', 1);
-      });
   };
 
   //导出
@@ -270,7 +103,7 @@ const TableBox = props => {
         current: 1,
         pageSize: 20,
         paging: -1,
-        queryType: 'DC',
+        queryType: activeKey + 'DC',
         reportID: Number(bgid),
         sort: '',
         total: -1,
@@ -283,12 +116,15 @@ const TableBox = props => {
         a.download = bgmc + '.xlsx';
         a.href = href;
         a.click();
-        console.log('🚀 ~ handleExport ~ res:', res);
       })
       .catch(error => {
         console.error('🚀 ~ 导出失败:', error);
         message.error('导出失败', 1);
       });
+  };
+
+  const handleValue = v => {
+    return ['-1', '', ' ', 'undefined', null].includes(v) ? '' : v;
   };
 
   //列配置 - 排列顺序 - 分类字段（合并） - 关联项目 - 填写人 - 上月字段 - 本月填写字段 - 固定字段
@@ -300,16 +136,16 @@ const TableBox = props => {
             title: x.ZDMC,
             dataIndex: x.QZZD,
             key: x.QZZD,
-            width: x.ZDMC === '四大技术提升工程' ? 120 : x.ZDMC?.length * 25,
+            width: x.ZDMC === '四大技术提升工程' ? 120 : x.ZDMC?.length * 20,
             // fixed: true,
-            ellipsis: true,
+            ellipsis: false,
             borderLeft: true, //左边框
             render: (value, row, index) => {
               const obj = {
                 children: value,
                 props: {},
               };
-              obj.props.rowSpan = getRowSpanCount(tableData.data, x.QZZD, index, true);
+              obj.props.rowSpan = getRowSpanCount(tableData.data, x.QZZD, index, false);
               return obj;
             },
           };
@@ -318,38 +154,48 @@ const TableBox = props => {
             title: x.ZDMC,
             dataIndex: x.QZZD,
             key: x.QZZD,
-            width: 200,
-            fixed: true,
-            ellipsis: true,
+            width: 140,
+            ellipsis: false,
             borderLeft: true, //左边框
-            render: (txt, row) => {
-              if (row['GXZT' + row.ID] === '2')
-                return (
-                  <div className="update-col">
-                    <span>{txt}</span>
-                    <div className="update-tag">已更新</div>
-                  </div>
-                );
-              return txt;
-            },
+            render: (txt, row) => handleValue(txt),
           };
         if (x.QZZD === 'TXR')
           return {
             title: x.ZDMC,
             dataIndex: x.QZZD,
             key: x.QZZD,
-            width: x.ZDMC?.length * 25,
-            ellipsis: true,
+            width: 70,
+            ellipsis: false,
+            render: txt => handleValue(txt),
+          };
+        if (x.ZDMC.includes('上月工作'))
+          return {
+            title: x.ZDMC + `（${monthData.month()}月）`,
+            dataIndex: x.QZZD,
+            key: x.QZZD,
+            width: 180,
+            ellipsis: false,
+            render: txt => handleValue(txt),
+          };
+        if (x.ZDMC.includes('当月工作'))
+          return {
+            title: x.ZDMC + `（${monthData.month() + 1}月）`,
+            dataIndex: x.QZZD,
+            key: x.QZZD,
+            width: 180,
+            ellipsis: false,
+            render: txt => handleValue(txt),
           };
         if (x.ZDLX === '2')
           return {
             title: x.ZDMC,
             dataIndex: x.QZZD,
             key: x.QZZD,
-            width: 215,
+            width: 80,
             // fixed: true,
-            editable: true,
-            ellipsis: true,
+            // editable: true,
+            ellipsis: false,
+            render: txt => handleValue(txt),
           };
         if (x.QZZD === 'JD')
           return {
@@ -357,7 +203,8 @@ const TableBox = props => {
             dataIndex: x.QZZD,
             key: x.QZZD,
             width: tableData.tableWidth < document.body.clientWidth - 296 ? undefined : 80,
-            ellipsis: true,
+            ellipsis: false,
+            render: txt => handleValue(txt),
           };
         return {
           title: x.ZDMC,
@@ -365,132 +212,61 @@ const TableBox = props => {
           key: x.QZZD,
           width: x.ZDMC?.length * 25,
           // fixed: true,
-          ellipsis: true,
+          ellipsis: false,
+          render: txt => handleValue(txt),
         };
       }),
     ];
-    //编辑才有操作列
-    if (editing) {
+    //部门月报才有编辑
+    if (activeKey === 'BMYB') {
       arr.push({
         title: '操作',
         dataIndex: 'OPRT',
         key: 'OPRT',
         align: 'center',
-        width: 100,
+        width: 60,
         borderLeft: true, //左边框
         render: (txt, row, index) => {
-          if (isAdministrator) {
-            return (
-              <div>
-                {dltData.findIndex(x => x.ID === row.ID) !== -1 ? (
-                  <a style={{ color: '#3361ff' }} onClick={() => handleDeleteCancel(row)}>
-                    撤销删除
-                  </a>
-                ) : (
-                  <Fragment>
-                    <a
-                      style={{ color: '#3361ff', marginRight: 6 }}
-                      onClick={() =>
-                        setAddModalData({
-                          visible: true,
-                          data: { ...row, fieldCount: tableData.customColumns.length - 5 },
-                        })
-                      }
-                    >
-                      新增
-                    </a>
-                    {Number(row['TXRID' + row.ID]) !== 0 && (
-                      <Popconfirm title="确定要删除吗?" onConfirm={() => handleDelete(row)}>
-                        <a style={{ color: '#3361ff' }}>删除</a>
-                      </Popconfirm>
-                    )}
-                  </Fragment>
-                )}
-              </div>
-            );
-          } else {
-            const obj = {
-              children: txt,
-              props: {},
-            };
-            obj.children = (
-              <a
-                style={{ color: '#3361ff', marginRight: 6 }}
-                onClick={() =>
-                  setAddModalData({
-                    visible: true,
-                    data: { ...row, fieldCount: tableData.customColumns.length - 5 },
-                  })
-                }
-              >
-                新增
-              </a>
-            );
-            obj.props.rowSpan = getRowSpanCount(
-              tableData.data,
-              // columnsData.find(x => x.ZDLX === '1')?.QZZD,  //先暂时写死下边这个
-              columnsData.find(x => x.ZDMC === '建设任务')?.QZZD,
-              index,
-              true,
-            );
-            return obj;
-          }
+          const obj = {
+            children: txt,
+            props: {},
+          };
+          obj.children = (
+            <a
+              style={{ color: '#3361ff', marginRight: 6 }}
+              onClick={() => {
+                let dataArr =
+                  tableData.data?.filter(
+                    x =>
+                      x.TXR !== 'undefined' &&
+                      x.TXRID !== '-1' &&
+                      (roleData.role === '二级部门领导'
+                        ? x[EDIT_FIELD] === row[EDIT_FIELD] //二级部门领导点击编辑时查看所有数据
+                        : x[EDIT_FIELD] === row[EDIT_FIELD] && //普通人员点击编辑时仅展示自己的数据
+                          String(x.TXRID) === String(userBasicInfo.id)),
+                  ) || [];
+                setAddModalData({
+                  visible: true,
+                  data: { ...row, fieldCount: tableData.customColumns.length - 5 },
+                  dataArr: dataArr,
+                });
+              }}
+            >
+              编辑
+            </a>
+          );
+          obj.props.rowSpan = getRowSpanCount(
+            tableData.data,
+            // columnsData.find(x => x.ZDLX === '1')?.QZZD,  //先暂时写死下边这个
+            EDIT_FIELD,
+            index,
+            false,
+          );
+          return obj;
         },
       });
     }
-    //不允许编辑的不显示上月信息
-    if (!allowEdit) {
-      arr = arr.filter(x => !x.title.includes('(上期)'));
-    }
     return arr;
-  };
-
-  const columns = tableColumns().map(col => {
-    return {
-      ...col,
-      onCell: record => {
-        return {
-          record,
-          title: col?.title?.props?.children || col?.title || '',
-          editable: col.editable,
-          dataIndex: col.dataIndex,
-          handleSave: handleTableSave,
-          key: col.key,
-          formdecorate: form,
-          editing: editing,
-          editingindex: editingIndex,
-          dltdata: dltData,
-          borderleft: col.borderLeft || false,
-          isadministrator: isAdministrator,
-          settabledata: setTableData,
-          issaved: isSaved,
-          setissaved: setIsSaved,
-          onClick: () => {
-            if (editing && col.key !== 'OPRT') {
-              setTimeout(() => {
-                window.dispatchEvent(new Event('resize', { bubbles: true, composed: true })); //处理行高不对齐的bug
-                // setTableLoading(false);
-              }, 200);
-
-              if (Number(record['TXRID' + record.ID]) === 0) {
-              } else if (Number(record['TXRID' + record.ID]) === LOGIN_USER_ID || isAdministrator) {
-                setEditingIndex(record.ID);
-              } else {
-                message.info('只有管理员、填写人可以编辑该行', 1);
-              }
-            }
-          },
-        };
-      },
-    };
-  });
-
-  //表格组件
-  const components = {
-    body: {
-      row: EditableFormRow,
-      cell: EditableCell,
-    },
   };
 
   //月份变化
@@ -509,47 +285,60 @@ const TableBox = props => {
       return;
     }
     setMonthData(time);
-    getData(Number(bgid), Number(time.format('YYYYMM')));
+    getData(Number(bgid), Number(time.format('YYYYMM')), activeKey);
   };
 
   //月份下拉框数据变化
   const handleDateChange = (d, ds) => {
     setMonthData(d);
-    getData(Number(bgid), Number(d.format('YYYYMM')));
+    getData(Number(bgid), Number(d.format('YYYYMM')), activeKey);
   };
 
-  //修改
-  const handleEdit = () => {
-    setEditing(true);
-    if (isAdministrator && tableData.data.length > 0) {
-      setEditingIndex(tableData.data[0].ID);
-    } else {
-      const arr = tableData.data.filter(x => Number(x['TXRID' + x.ID]) === LOGIN_USER_ID);
-      if (arr.length > 0) setEditingIndex(arr[0].ID);
-    }
-    // setTableLoading(true);
-    setTimeout(() => {
-      window.dispatchEvent(new Event('resize', { bubbles: true, composed: true })); //处理行高不对齐的bug
-      // setTableLoading(false);
-    }, 200);
+  const getColumnWidth = (x = {}) => {
+    const isSecondLeader = roleData.role === '二级部门领导';
+    if (x.QZZD === 'TXR') return isSecondLeader ? 120 : 80;
+    // else if (x.QZZD === 'GLXM') return isSecondLeader ? 260 : 180;
+    else if (x.QZZD === 'GLXM') return 260;
+    else if (x.ZDMC.includes('系统项目')) return 160;
+    else return undefined;
   };
 
-  const handleEditCancel = () => {
-    setEditing(false);
-    setEditingIndex(-1);
-    setTableData(p => ({
-      ...p,
-      data: p.origin,
-    }));
-    setEdited(false);
-    setIsSaved(true);
-    setDltData([]);
-  };
+  const tableColumnsForModal = columnsData
+    .filter(x => x.ZDLX !== '1')
+    .map(x => {
+      if (x.ZDMC.includes('上月工作'))
+        return {
+          title: x.ZDMC + `（${monthData.month()}月）`,
+          dataIndex: x.QZZD,
+          key: x.QZZD,
+          width: getColumnWidth(x),
+          editable: true,
+          ellipsis: true,
+        };
+      if (x.ZDMC.includes('当月工作'))
+        return {
+          title: x.ZDMC + `（${monthData.month() + 1}月）`,
+          dataIndex: x.QZZD,
+          key: x.QZZD,
+          width: getColumnWidth(x),
+          editable: true,
+          ellipsis: true,
+        };
+      return {
+        title: x.ZDMC,
+        dataIndex: x.QZZD,
+        key: x.QZZD,
+        width: getColumnWidth(x),
+        editable: true,
+        ellipsis: true,
+      };
+    });
 
   return (
     <>
-      <div className="table-box" style={{ height: 'calc(100vh - 123px)', marginTop: 0 }}>
+      <div className="table-box">
         <div className="table-console">
+          <span className="table-title">{bgmc}</span>
           <Button onClick={handleMonthChange.bind(this, 'current')} style={{ marginRight: '16px' }}>
             本月
           </Button>
@@ -561,96 +350,39 @@ const TableBox = props => {
               <Icon type="right" />
             </Button>
           </div>
-          <MonthPicker
+          <DatePicker.MonthPicker
             allowClear={false}
             value={monthData}
             onChange={handleDateChange}
             style={{ margin: '0 10px', width: '110px', marginRight: 'auto' }}
           />
           <div className="console-btn-submit">
-            {/* {editing ? (
-              <>
-                <span style={{ fontSize: '12px', fontFamily: 'PingFangSC-Regular,PingFang SC' }}>
-                  （点击指定行进行编辑）
-                </span>
-                <Button onClick={handleEditCancel} style={{ marginRight: '8px' }}>
-                  取消
+            <Button
+              onClick={() => getData(Number(bgid), Number(monthData.format('YYYYMM')), activeKey)}
+            >
+              刷新
+            </Button>
+            {roleData.role === '二级部门领导' && activeKey === 'BMYB' && tableData.data.length > 0 && (
+              <Popconfirm title="确定要提交吗？" onConfirm={handleSubmit}>
+                <Button type="primary" style={{ marginLeft: '8px' }}>
+                  提交
                 </Button>
-                <Popconfirm title="确定要保存吗？" onConfirm={handleSubmit}>
-                  <Button>保存</Button>
-                </Popconfirm>
-              </>
-            ) : (
-              tableData.data.length > 0 && (
-                <Fragment>
-                  {(!isFinish || isAdministrator) && (
-                    <Fragment>
-                      {((txzt && allowEdit) || isAdministrator) && (
-                        <Button onClick={handleEdit}>修改</Button>
-                      )}
-                      {isAdministrator && !isFinish && (
-                        <Popconfirm title="该操作无法撤回，是否完成填写?" onConfirm={handleFinish}>
-                          <Button style={{ marginLeft: '8px' }}>完成</Button>
-                        </Popconfirm>
-                      )}
-                    </Fragment>
-                  )}
-                  <Popconfirm title="确定要导出吗?" onConfirm={handleExport}>
-                    <Button style={{ marginLeft: '8px' }}>导出</Button>
-                  </Popconfirm>
-                </Fragment>
-              )
-            )} */}
-            <span style={{ fontSize: '12px', fontFamily: 'PingFangSC-Regular,PingFang SC' }}>
-              （点击指定行进行编辑）
-            </span>
-            <Popconfirm title="确定要保存吗？" onConfirm={handleSubmit}>
-              <Button>保存</Button>
-            </Popconfirm>
-            {tableData.data.length > 0 && (
+              </Popconfirm>
+            )}
+            {isGLY && activeKey === 'YBHZ' && tableData.data.length > 0 && (
               <Fragment>
-                {/* {isAdministrator && !isFinish && (
-                  <Popconfirm title="该操作无法撤回，是否完成填写?" onConfirm={handleFinish}>
-                    <Button style={{ marginLeft: '8px' }}>完成</Button>
-                  </Popconfirm>
-                )} */}
                 <Popconfirm title="确定要导出吗?" onConfirm={handleExport}>
                   <Button style={{ marginLeft: '8px' }}>导出</Button>
                 </Popconfirm>
               </Fragment>
             )}
-            {isFinish && <img className="img-finish" src={iconCompleted} alt="" />}
           </div>
         </div>
         <div className="table-content">
           <Table
-            // onRow={record => {
-            //   return {
-            //     onClick: () => {
-            //       if (editing) {
-            //         setTimeout(() => {
-            //           window.dispatchEvent(new Event('resize', { bubbles: true, composed: true })); //处理行高不对齐的bug
-            //           // setTableLoading(false);
-            //         }, 200);
-            //         if (Number(record['TXRID' + record.ID]) === LOGIN_USER_ID || isAdministrator) {
-            //           setEditingIndex(record.ID);
-            //         } else {
-            //           // message.info('只有管理员、填写人可以编辑该行', 1);
-            //         }
-            //       }
-            //     },
-            //   };
-            // }}
-            // loading={tableLoading}
-            columns={columns}
-            components={components}
+            columns={tableColumns()}
             rowKey={'ID'}
-            rowClassName={() => 'editable-row'}
             dataSource={tableData.data}
-            scroll={{
-              y: 'calc(100vh - 253px)',
-              // x: tableData.tableWidth || 'auto', //若不设置固定宽度且包含fixed，safari浏览器 表格列会不对齐
-            }}
             pagination={false}
             bordered
           />
@@ -658,21 +390,13 @@ const TableBox = props => {
         <HandleAddModal
           visible={addModalData.visible}
           setVisible={v => setAddModalData(p => ({ ...p, visible: v }))}
-          tableColumns={columnsData
-            .filter(x => x.ZDLX === '2')
-            .map(x => ({
-              title: x.ZDMC,
-              dataIndex: x.QZZD,
-              key: x.QZZD,
-              width: 200,
-              editable: true,
-              ellipsis: true,
-            }))}
+          tableColumns={tableColumnsForModal}
           data={addModalData.data}
           topData={columnsData
             .filter(x => x.ZDLX === '1')
             .map(x => ({ title: x.ZDMC, dataIndex: x.QZZD }))}
-          refresh={() => getData(Number(bgid), Number(monthData.format('YYYYMM')))}
+          dataArr={addModalData.dataArr}
+          refresh={() => getData(Number(bgid), Number(monthData.format('YYYYMM')), activeKey)}
         />
       </div>
     </>

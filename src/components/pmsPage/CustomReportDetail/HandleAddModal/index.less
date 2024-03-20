@@ -2,6 +2,9 @@
   .default-modal();
   .ant-modal .content-box {
     .antd-table-adaptation();
+    .ant-form-item-control {
+      line-height: unset;
+    }
     .top-info {
       color: #000000a6;
       font-size: 14px;
@@ -22,6 +25,56 @@
 
       &:hover {
         color: #3361ff;
+      }
+    }
+  }
+}
+
+.custom-report-detail-box {
+  .ant-spin-nested-loading {
+    height: 100%;
+    .ant-spin-container {
+      height: 100%;
+      .table-box {
+        .table-console {
+          .table-title {
+            font-weight: bold;
+            font-size: 16px;
+            color: #303133;
+            margin-right: 16px;
+          }
+          .ant-btn-primary {
+            .antd-btn-primary();
+          }
+        }
+        .table-content {
+          .antd-table-adaptation();
+          padding-right: 0;
+          margin-right: 24px;
+          overflow: hidden;
+          overflow-y: auto;
+          //max-height: 200px;
+          &::-webkit-scrollbar {
+            width: 10px;
+            background-color: #ffffff;
+            border-radius: 5px;
+          }
+          &::-webkit-scrollbar-thumb {
+            background-color: #dbdfe6;
+            border-radius: 5px;
+          }
+          
+          .ant-table td {
+            white-space: pre-wrap;
+          }
+
+          //移入状态取消
+          .ant-table-tbody
+            > tr:hover:not(.ant-table-expanded-row):not(.ant-table-row-selected)
+            > td {
+            background: #fff;
+          }
+        }
       }
     }
   }

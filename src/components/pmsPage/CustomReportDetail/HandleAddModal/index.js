@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   Modal,
   Form,
@@ -12,11 +12,17 @@ import {
   Icon,
   Popconfirm,
   Checkbox,
+  Tooltip,
 } from 'antd';
 import { EditableCell, EditableRow } from './EditableTable';
-import { EditCustomReport } from '../../../../services/pmsServices';
+import {
+  EditCustomReport,
+  QueryMemberSelectList,
+  QueryProjectSelectList,
+} from '../../../../services/pmsServices';
 import { connect } from 'dva';
 // import { OperateSupplierInfo } from '../../../../../services/pmsServices';
+import { debounce } from 'lodash';
 
 function HandleAddModal(props) {
   const {
@@ -28,6 +34,8 @@ function HandleAddModal(props) {
     refresh = () => {},
     topData = {},
     userBasicInfo = {},
+    dataArr = [],
+    roleData = {},
   } = props;
   const {
     validateFields,
@@ -36,22 +44,168 @@ function HandleAddModal(props) {
     getFieldDecorator,
     validateFieldsAndScroll,
   } = form;
-  const [tableData, setTableData] = useState([]); //联系人表格数据 - 处理后
+  const [tableData, setTableData] = useState([]); //表格数据
+  const [editData, setEditData] = useState([]); //编辑数据
+  const [delData, setDelData] = useState([]); //删除数据
   const [isSpinning, setIsSpinning] = useState(false);
+  const [sltData, setSltData] = useState({
+    glxm: [], //关联项目
+    txr: [], //填写人
+  }); //下拉框数据
+  const isSecondLeader = roleData.role === '二级部门领导';
 
   useEffect(() => {
     if (visible) {
-      const UUID = new Date().getTime();
-      setTableData([
-        tableColumns.reduce((obj = {}, item = {}) => {
-          obj.ID = UUID;
-          obj[item.key + UUID] = '';
-          return obj;
-        }, {}),
-      ]);
+      if (dataArr.length > 0) {
+        setTableData(
+          dataArr.map(obj => {
+            const newObj = { ID: obj.ID };
+            for (const key in obj) {
+              if (key !== 'ID') {
+                if (key === 'TXR') {
+                  if (isSecondLeader) {
+                    //可编辑
+                    newObj[key + obj.ID] =
+                      obj['TXRID'] === undefined || obj['TXRID'] === '-1'
+                        ? undefined
+                        : String(obj['TXRID']);
+                  } else {
+                    newObj[key] =
+                      obj['TXR'] === undefined || obj['TXR'] === '-1'
+                        ? undefined
+                        : String(obj['TXR']);
+                  }
+                } else if (key === 'GLXM') {
+                  // if (isSecondLeader) {
+                  //   //可编辑
+                  newObj[key + obj.ID] =
+                    obj['GLXMID'] === undefined || obj['GLXMID'] === '-1'
+                      ? undefined
+                      : String(obj['GLXMID']);
+                  // } else {
+                  //   newObj[key] =
+                  //     obj['GLXM'] === undefined || obj['GLXM'] === '-1'
+                  //       ? undefined
+                  //       : String(obj['GLXM']);
+                  // }
+                } else {
+                  newObj[key + obj.ID] =
+                    obj[key] === 'undefined' || obj[key] === '-1' ? '' : obj[key];
+                }
+              }
+            }
+            return newObj;
+          }),
+        );
+      } else {
+        //帮忙新增一条
+        const UUID = new Date().getTime();
+        setTableData([
+          tableColumns.reduce((obj = {}, item = {}) => {
+            obj.ID = UUID;
+            obj[item.key + UUID] = undefined;
+            if (item.key === 'TXR' && !isSecondLeader) {
+              obj.TXR = userBasicInfo.name;
+              obj['TXRID' + UUID] = String(userBasicInfo.id);
+            }
+            return obj;
+          }, {}),
+        ]);
+        setEditData([
+          tableColumns.reduce((obj = {}, item = {}) => {
+            obj.ID = UUID;
+            obj[item.key + UUID] = undefined;
+            if (item.key === 'TXR' && !isSecondLeader) {
+              obj.TXR = userBasicInfo.name;
+              obj['TXRID' + UUID] = String(userBasicInfo.id);
+            }
+            obj.isNew = true;
+            return obj;
+          }, {}),
+        ]);
+      }
+      setIsSpinning(true);
+      getPrjData();
+      if (isSecondLeader) {
+        getStaffData();
+      }
     }
     return () => {};
-  }, [visible, JSON.stringify(tableColumns)]);
+  }, [
+    visible,
+    JSON.stringify(dataArr),
+    isSecondLeader,
+    JSON.stringify(tableColumns),
+    JSON.stringify(userBasicInfo),
+  ]);
+
+  // useEffect(() => {
+  //   console.log('@@@', editData);
+  //   return () => {};
+  // }, [JSON.stringify(editData)]);
+
+  const getPrjData = useCallback(
+    debounce(async value => {
+      try {
+        setSltData(p => ({ ...p, loading: true }));
+        const res = await QueryProjectSelectList({
+          // projectManagerUnderOrg: isSecondLeader ? Number(userBasicInfo.orgid) : undefined,
+          projectOrManagerName: value,
+          current: 1,
+          pageSize: 9999, //暂定，不分页排不了序
+          paging: 1,
+          sort: isSecondLeader
+            ? `DECODE (ORGID,${userBasicInfo.orgid},1,2), XMNF DESC, ID DESC`
+            : `DECODE (XMJLID,${userBasicInfo.id},1,2), XMNF DESC, ID DESC`,
+          total: -1,
+        });
+        if (res.success) {
+          setSltData(p => ({
+            ...p,
+            glxm: JSON.parse(res.result)?.map(x => ({
+              ...x,
+              XMID: x.id,
+              XMMC: x.projectName,
+            })),
+            loading: false,
+          }));
+          setIsSpinning(false);
+        }
+      } catch (error) {
+        console.error('🚀关联项目下拉框数据', error);
+        message.error('关联项目下拉框数据获取失败', 1);
+        setIsSpinning(false);
+        setSltData(p => ({ ...p, loading: false }));
+      }
+    }, 500),
+    [JSON.stringify(roleData), JSON.stringify(userBasicInfo)],
+  );
+
+  const getStaffData = async name => {
+    try {
+      const res = await QueryMemberSelectList({
+        orgId: isSecondLeader ? Number(userBasicInfo.orgid) : undefined,
+        name,
+        current: 1,
+        pageSize: 100,
+        paging: -1,
+        sort: '',
+        total: -1,
+      });
+      if (res.success) {
+        setSltData(p => ({
+          ...p,
+          txr: JSON.parse(res.result),
+        }));
+        // console.log('🚀 ~ getStaffData ~ JSON.parse(res.result):', JSON.parse(res.result));
+      }
+    } catch (error) {
+      console.error('🚀填写人下拉框数据', error);
+      message.error('填写人下拉框数据获取失败', 1);
+      setIsSpinning(false);
+      setSltData(p => ({ ...p, loading: false }));
+    }
+  };
 
   //保存
   const handleOK = () => {
@@ -59,86 +213,176 @@ function HandleAddModal(props) {
       if (tableData.length === 0) {
         message.error('表格至少要有一条数据', 2);
       } else if (!err) {
-        console.log('🚀🚀🚀', tableData);
         setIsSpinning(true);
+        //过滤删除的数据
+        let editDataDelFilter = editData.filter(
+          x => delData.findIndex(item => x.ID === item.ID) === -1,
+        );
+        // console.log('🚀 ~ handleOK ~ editDataDelFilter:', editDataDelFilter);
         const notNullStr = v => {
           if (['', ' ', undefined, null].includes(v)) return 'undefined';
-          return v;
+          return String(v)?.replace(/\t/g, '');
         };
         let submitTable = [];
         let objData = { ...data };
         delete objData.fieldCount;
-        tableData.forEach((obj = {}) => {
-          const restoredObj = { ID: '-1' };
+        editDataDelFilter.forEach((obj = {}) => {
+          const restoredObj = { ID: obj.isNew ? '-1' : obj.ID };
           for (const key in { ...objData, ...obj }) {
-            if (key !== 'ID' && key in objData) {
-              const originalKey = key.replace(objData.ID, '');
-              if (originalKey === 'TXR') {
-                restoredObj[originalKey] = String(userBasicInfo.id);
-              } else if (originalKey === 'GLXM') {
-                restoredObj[originalKey] = notNullStr(objData['GLXMID' + objData.ID]);
-              } else {
-                restoredObj[originalKey] = notNullStr(objData[key]);
-              }
-            } else if (key !== 'ID' && key in obj) {
+            if (key !== 'ID' && key in obj) {
               const originalKey = key.replace(obj.ID, '');
-              restoredObj[originalKey] = notNullStr(obj[key]);
+              if (originalKey === 'TXR') {
+                restoredObj[originalKey] = isSecondLeader
+                  ? String(notNullStr(obj['TXR' + obj.ID]))
+                  : String(notNullStr(obj['TXRID' + obj.ID]));
+              } else if (originalKey === 'GLXM') {
+                // restoredObj[originalKey] = isSecondLeader
+                //   ? String(notNullStr(obj['GLXM' + obj.ID]))
+                //   : String(notNullStr(obj['GLXMID' + obj.ID]));
+                restoredObj[originalKey] = String(
+                  ['', ' ', undefined, null].includes(obj['GLXM' + obj.ID])
+                    ? -1
+                    : obj['GLXM' + obj.ID],
+                );
+              } else {
+                restoredObj[originalKey] = notNullStr(obj[key]);
+              }
+            } else if (key !== 'ID' && key in objData) {
+              const originalKey = key.replace(objData.ID, '');
+              restoredObj[originalKey] = notNullStr(objData[key]);
             }
           }
           submitTable.push(restoredObj);
         });
-        console.log('submitTable', submitTable);
-        const params = {
-          fieldCount: data.fieldCount,
+        console.log('🚀 ~ editDataDelFilter submitTable:', submitTable);
+        let updateParams = {
+          fieldCount: 5,
           infoCount: submitTable.length,
           operateType: 'UPDATE',
-          reportId: Number(data['BBID' + data.ID]),
+          reportId: Number(data['BBID']),
           reportInfo: JSON.stringify(submitTable),
         };
-        console.log('🚀 ~ handleOK ~ params:', params);
-        EditCustomReport(params)
-          .then(res => {
-            if (res?.code === 1) {
-              refresh();
-              handleCancel();
-              message.success('新增成功', 1);
-              setIsSpinning(false);
+        console.log('🚀 ~ handleOK ~ updateParams:', updateParams);
+        if (delData.length !== 0) {
+          let deleteTable = [];
+          let objData = { ...data };
+          delete objData.fieldCount;
+          delData.forEach((obj = {}) => {
+            const restoredObj = { ID: obj.isNew ? '-1' : obj.ID };
+            for (const key in { ...objData, ...obj }) {
+              if (key !== 'ID' && key in obj) {
+                const originalKey = key.replace(obj.ID, '');
+                if (originalKey === 'TXR') {
+                  restoredObj[originalKey] = isSecondLeader
+                    ? String(notNullStr(obj['TXR' + obj.ID]))
+                    : String(notNullStr(obj['TXRID' + obj.ID]));
+                } else if (originalKey === 'GLXM') {
+                  // restoredObj[originalKey] = isSecondLeader
+                  //   ? String(notNullStr(obj['GLXM' + obj.ID]))
+                  //   : String(notNullStr(obj['GLXMID' + obj.ID]));
+                  restoredObj[originalKey] = String(notNullStr(obj['GLXM' + obj.ID]));
+                } else {
+                  restoredObj[originalKey] = notNullStr(obj[key]);
+                }
+              } else if (key !== 'ID' && key in objData) {
+                const originalKey = key.replace(objData.ID, '');
+                restoredObj[originalKey] = notNullStr(objData[key]);
+              }
             }
-          })
-          .catch(e => {
-            message.error('操作失败', 1);
-            setIsSpinning(false);
+            deleteTable.push(restoredObj);
           });
+          console.log('🚀 ~ delData. .deleteTable:', deleteTable);
+          let deledtParams = {
+            fieldCount: 5,
+            infoCount: deleteTable.length,
+            operateType: 'DELETE',
+            reportId: Number(data['BBID']),
+            reportInfo: JSON.stringify(deleteTable),
+          };
+          EditCustomReport({ ...deledtParams })
+            .then(res => {
+              if (res?.code === 1) {
+                if (submitTable.length !== 0) {
+                  EditCustomReport({ ...updateParams })
+                    .then(res => {
+                      if (res?.code === 1) {
+                        refresh();
+                        handleCancel();
+                        message.success('操作成功', 1);
+                        setIsSpinning(false);
+                      }
+                    })
+                    .catch(e => {
+                      console.error('操作失败', e);
+                      message.error('操作失败', 1);
+                      setIsSpinning(false);
+                    });
+                } else {
+                  refresh();
+                  handleCancel();
+                  message.success('操作成功', 1);
+                  setIsSpinning(false);
+                }
+              }
+            })
+            .catch(e => {
+              console.error('操作失败', e);
+              message.error('操作失败', 1);
+              setIsSpinning(false);
+            });
+        } else {
+          EditCustomReport({ ...updateParams })
+            .then(res => {
+              if (res?.code === 1) {
+                refresh();
+                handleCancel();
+                message.success('操作成功', 1);
+                setIsSpinning(false);
+              }
+            })
+            .catch(e => {
+              console.error('操作失败', e);
+              message.error('操作失败', 1);
+              setIsSpinning(false);
+            });
+        }
       }
     });
   };
 
   //取消
   const handleCancel = () => {
-    resetFields();
-    const UUID = new Date().getTime();
-    setTableData([
-      tableColumns.reduce((obj = {}, item = {}) => {
-        obj.ID = UUID;
-        obj[item.key + UUID] = '';
-        return obj;
-      }, {}),
-    ]);
-    setIsSpinning(false);
     setVisible(false);
+    resetFields();
+    setEditData([]);
+    setDelData([]);
+    setIsSpinning(false);
   };
 
   //表格数据保存
   const handleTableSave = row => {
-    // console.log('🚀 ~ file: index.js:137 ~ handleTableSave ~ row:', row);
-    let newData = [...tableData];
-    const index = newData.findIndex(item => row.ID === item.ID);
-    const item = newData[index];
-    newData.splice(index, 1, {
-      ...item, //old row
-      ...row, //rew row
+    setEditData(p => {
+      let index = p.findIndex(item => row.ID === item.ID);
+      if (index !== -1) {
+        p.splice(index, 1, {
+          ...p[index], //old row
+          ...row, //new row
+        });
+      } else {
+        p.push(row);
+      }
+      return p;
     });
-    setTableData(newData);
+    setTableData(p => {
+      const index = p.findIndex(item => row.ID === item.ID);
+      if (index !== -1) {
+        p.splice(index, 1, {
+          ...p[index], //old row
+          ...row, //new row
+        });
+      }
+      return p;
+    });
   };
 
   const columns = [
@@ -155,6 +399,10 @@ function HandleAddModal(props) {
           title="确定要删除吗?"
           onConfirm={() => {
             setTableData(p => p.filter(x => x.ID !== record.ID));
+            setEditData(p => p.filter(x => x.ID !== record.ID));
+            if (dataArr.findIndex(x => x.ID === record.ID) !== -1) {
+              setDelData(p => [...p, record]);
+            }
           }}
         >
           <a style={{ color: '#3361ff' }}>删除</a>
@@ -162,7 +410,19 @@ function HandleAddModal(props) {
       ),
     },
   ].map(col => {
-    if (!col.editable) {
+    if (
+      // ((col.dataIndex === 'TXR' || col.dataIndex === 'GLXM') && !isSecondLeader) ||
+      (col.dataIndex === 'TXR' && !isSecondLeader) ||
+      !col.editable
+    ) {
+      col.editable = false;
+      // if (col.dataIndex === 'GLXM') {
+      //   col.render = txt => (
+      //     <Tooltip title={txt} placement="topLeft">
+      //       {txt}
+      //     </Tooltip>
+      //   );
+      // }
       return col;
     }
     return {
@@ -170,12 +430,18 @@ function HandleAddModal(props) {
       onCell: record => {
         return {
           record,
+          ...col,
           editable: col.editable,
           dataIndex: col.dataIndex,
           handleSave: handleTableSave,
           key: col.key,
           formdecorate: form,
-          title: col?.title || '',
+          sltdata: sltData,
+          setsltdata: setSltData,
+          label: col?.title,
+          getPrjData,
+          getStaffData,
+          tableColumns,
         };
       },
     };
@@ -192,7 +458,7 @@ function HandleAddModal(props) {
   return (
     <Modal
       wrapClassName="custom-report-detail-add-modal"
-      width={'900px'}
+      width={'1200px'}
       maskClosable={false}
       zIndex={103}
       maskStyle={{ backgroundColor: 'rgb(0 0 0 / 30%)' }}
@@ -206,14 +472,14 @@ function HandleAddModal(props) {
       confirmLoading={isSpinning}
     >
       <div className="body-title-box">
-        <strong>报告新增</strong>
+        <strong>报告内容编辑</strong>
       </div>
-      <Spin spinning={isSpinning}>
+      <Spin spinning={isSpinning} tip="加载中">
         <div className="content-box">
           {topData.map(x => (
-            <div className="top-info" key="x.title">
+            <div className="top-info" key={x.title}>
               <span>{x.title} ：</span>
-              {data[x.dataIndex + data.ID]}
+              {data[x.dataIndex]}
             </div>
           ))}
           <Table
@@ -222,10 +488,11 @@ function HandleAddModal(props) {
             rowKey={'ID'}
             rowClassName={() => 'editable-row'}
             dataSource={tableData}
-            scroll={tableData.length > 4 ? { y: 275, x: 'auto' } : { x: 'auto' }}
+            scroll={{ y: 420 }}
             pagination={false}
             size="middle"
           />
+
           <div
             className="table-add-row"
             onClick={() => {
@@ -234,7 +501,24 @@ function HandleAddModal(props) {
                 ...p,
                 tableColumns.reduce((obj = {}, item = {}) => {
                   obj.ID = UUID;
-                  obj[item.key + UUID] = '';
+                  obj[item.key + UUID] = undefined;
+                  if (item.key === 'TXR' && !isSecondLeader) {
+                    obj.TXR = userBasicInfo.name;
+                    obj['TXRID' + UUID] = String(userBasicInfo.id);
+                  }
+                  return obj;
+                }, {}),
+              ]);
+              setEditData(p => [
+                ...p,
+                tableColumns.reduce((obj = {}, item = {}) => {
+                  obj.ID = UUID;
+                  obj[item.key + UUID] = undefined;
+                  if (item.key === 'TXR' && !isSecondLeader) {
+                    obj.TXR = userBasicInfo.name;
+                    obj['TXRID' + UUID] = String(userBasicInfo.id);
+                  }
+                  obj.isNew = true;
                   return obj;
                 }, {}),
               ]);
@@ -242,7 +526,9 @@ function HandleAddModal(props) {
                 const table = document.querySelectorAll(
                   `.custom-report-detail-add-modal .ant-table-body`,
                 )[0];
-                table.scrollTop = table.scrollHeight;
+                if (table) {
+                  table.scrollTop = table.scrollHeight;
+                }
               }, 200);
             }}
           >
@@ -259,4 +545,5 @@ function HandleAddModal(props) {
 export default connect(({ global = {} }) => ({
   userBasicInfo: global.userBasicInfo,
   dictionary: global.dictionary,
+  roleData: global.roleData,
 }))(Form.create()(HandleAddModal));

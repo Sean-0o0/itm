@@ -82,7 +82,7 @@ export default function ShortcutCard(props) {
         {getShortcutItem(
           'bgck',
           '报告查看',
-          () => (window.location.href = '/#/pms/manage/WeeklyReportTable'),
+          () => (window.location.href = '/#/pms/manage/CustomReportInfo'),
         )}
       </div>
     );

@@ -1058,4 +1058,16 @@ export default [
     url: '/projectManage/queryProjectStatusList',
     dis: '查询项目情况',
   },
+  {
+    code: '',
+    key: 'queryProjectSelectList',
+    url: '/projectManage/queryProjectSelectList',
+    dis: '查询项目选择下拉框的数据（大部分操作窗口下拉框适用）',
+  },
+  {
+    code: '',
+    key: 'queryMemberSelectList',
+    url: '/projectManage/queryMemberSelectList',
+    dis: '查询人员选择下拉框的数据（大部分操作窗口下拉框适用）',
+  },
 ];
