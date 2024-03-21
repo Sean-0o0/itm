@@ -1042,6 +1042,12 @@ export default [
   },
   {
     code: '',
+    key: 'queryProjectDynamicSection',
+    url: '/projectManage/queryProjectDynamicSection',
+    dis: '查询项目动态看板',
+  },
+  {
+    code: '',
     key: 'queryProjectApplicationFlow',
     url: '/ZSZQ/v1/queryProjectApplicationFlow',
     dis: '查询项目历史发起未作废的项目立项流程',

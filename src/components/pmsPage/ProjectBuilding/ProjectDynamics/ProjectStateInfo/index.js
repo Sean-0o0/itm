@@ -1,123 +1,112 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import InfoTable from './InfoTable';
 import TopConsole from './TopConsole';
 import { Breadcrumb, message } from 'antd';
-import { QueryProjectDynamics } from '../../../../../services/pmsServices';
+import {
+  QueryProjectDynamicSection,
+  QueryProjectDynamics,
+} from '../../../../../services/pmsServices';
 import { Link } from 'react-router-dom';
 import moment from 'moment';
+import { connect } from 'dva';
+import { debounce } from 'lodash';
 
 const { Item } = Breadcrumb;
 
-export default function ProjectStatisticsInfo(props) {
-  const { cxlx, routes = [], defaultYear = moment().year() } = props;
-  const [tableData, setTableData] = useState([]); //表格数据-项目列表
+export default connect(({ global }) => ({
+  dictionary: global.dictionary,
+  userBasicInfo: global.userBasicInfo,
+  roleData: global.roleData,
+}))(function ProjectStatisticsInfo(props) {
+  const {
+    cxlx = '',
+    routes = [],
+    defaultYear = moment().year(),
+    roleData = [],
+    dictionary = {},
+  } = props;
+  const { XMJZ = [] } = dictionary;
+  const [tableData, setTableData] = useState({
+    data: [],
+    current: 1,
+    pageSize: 20,
+    total: 0,
+  }); //表格数据-项目列表
+  const [filterData, setFilterData] = useState([]);
+  const [sortInfo, setSortInfo] = useState({
+    sort: undefined,
+    columnKey: '',
+  }); //用于查询后清空排序状态
   const [tableLoading, setTableLoading] = useState(false); //表格加载状态
-  const [total, setTotal] = useState(0); //数据总数
-  const [curPage, setCurPage] = useState(1); //当前页码
-  const [curPageSize, setCurPageSize] = useState(20); //每页数量
-  const topConsoleRef = useRef(null);
-  const [queryType, setQueryType] = useState('XWH'); //
-  const [prjMnger, setPrjMnger] = useState(undefined); //项目经理
-  const [prjName, setPrjName] = useState(undefined); //项目名称
+  const [curStage, setCurStage] = useState(undefined); //当前tab项目阶段
+  const tabsData = XMJZ.filter(x => !['7', '10'].includes(x.ibm)); //项目阶段数据（设备采购、包件信息录入不查）
 
   useEffect(() => {
-    // console.log("1231231312",cxlx)
     if (cxlx !== '') {
-      setQueryType(cxlx);
-      getTableData(cxlx, defaultYear);
+      console.log("🚀 ~ useEffect ~ cxlx:", cxlx)
+      setCurStage(cxlx);
+      setFilterData({});
+      handleSearch({ stage: cxlx, startYear: defaultYear, endYear: defaultYear });
+      setSortInfo({
+        sort: undefined,
+        columnKey: '',
+      });
     }
     return () => {};
-  }, [cxlx, defaultYear]);
+  }, [cxlx, defaultYear, JSON.stringify(roleData)]);
 
   //获取表格数据
-  const getTableData = (queryType, year) => {
-    setCurPage(1);
-    setCurPageSize(20);
+  const handleSearch = ({
+    current = 1,
+    pageSize = 20,
+    stage = curStage,
+    projectManager,
+    projectName,
+    startYear = defaultYear,
+    endYear = defaultYear,
+    sort = '',
+  }) => {
     setTableLoading(true);
-    //信委会，总办会，项目立项，合同签署，上线，付款，完成
-    //ALL|查询全部；XWH|只查信委会过会；ZBH|只查总办会过会；XMLX|项目立项完成；HTQS|只查合同签署流程完成
-    const payload = {
-      current: 1,
-      // "manager": 0,
-      pageSize: 20,
+    QueryProjectDynamicSection({
+      stage,
+      projectManager: projectManager === '' ? undefined : projectManager,
+      projectName: projectName === '' ? undefined : projectName,
+      startYear,
+      endYear,
+      role: roleData.role,
+      queryType: 'DETAIL',
+      current,
+      pageSize,
       paging: 1,
-      // "projectID": 0,
-      queryType: queryType,
-      sort: '',
+      sort,
       total: -1,
-      totalrowsFK: -1,
-      totalrowsHT: -1,
-      totalrowsLX: -1,
-      totalrowsSX: -1,
-      totalrowsWJ: -1,
-      totalrowsXWH: -1,
-      totalrowsZBH: -1,
-      year: year ?? defaultYear
-    };
-    QueryProjectDynamics({
-      ...payload,
     })
       .then(res => {
-        const {
-          code = 0,
-          resultFK,
-          resultHT,
-          resultLX,
-          resultSX,
-          resultWJ,
-          resultXWH,
-          resultZBH,
-          totalrowsFK,
-          totalrowsHT,
-          totalrowsLX,
-          totalrowsSX,
-          totalrowsWJ,
-          totalrowsXWH,
-          totalrowsZBH,
-        } = res;
-        if (code > 0) {
-          if (queryType === 'XWH') {
-            setTableData([...JSON.parse(resultXWH)]);
-            setTotal(totalrowsXWH);
-          }
-          if (queryType === 'ZBH') {
-            setTableData([...JSON.parse(resultZBH)]);
-            setTotal(totalrowsZBH);
-          }
-          if (queryType === 'XMLX') {
-            setTableData([...JSON.parse(resultLX)]);
-            setTotal(totalrowsLX);
-          }
-          if (queryType === 'HTQS') {
-            setTableData([...JSON.parse(resultHT)]);
-            setTotal(totalrowsHT);
-          }
-          if (queryType === 'SXXM') {
-            setTableData([...JSON.parse(resultSX)]);
-            setTotal(totalrowsSX);
-          }
-          if (queryType === 'FKXM') {
-            setTableData([...JSON.parse(resultFK)]);
-            setTotal(totalrowsFK);
-          }
-          if (queryType === 'WJXM') {
-            setTableData([...JSON.parse(resultWJ)]);
-            setTotal(totalrowsWJ);
-          }
-          setTableLoading(false);
-        } else {
-          message.error(note);
+        if (res.success) {
+          let result = JSON.parse(res.result);
+          setTableData({
+            data: result,
+            current,
+            pageSize,
+            total: res.totalrows,
+          });
           setTableLoading(false);
         }
       })
-      .catch(err => {
-        message.error('查询项目动态失败');
+      .catch(e => {
+        message.error('表格数据获取失败');
         setTableLoading(false);
+        console.error('表格数据获取失败', e);
       });
   };
 
+  const handleSearchDebounce = useCallback(debounce(handleSearch, 800), [
+    curStage,
+    JSON.stringify(roleData),
+  ]);
+
   return (
-    <div className="project-statistics-info-box">
+    <div className="project-statistics-info-box prj-dynamic-state-info-box">
       <Breadcrumb separator=">" style={{ margin: '16px 24px 0 24px' }}>
         {routes?.map((item, index) => {
           const { name = item, pathname = '' } = item;
@@ -134,39 +123,23 @@ export default function ProjectStatisticsInfo(props) {
         })}
       </Breadcrumb>
       <TopConsole
-        setTableData={setTableData}
-        setTotal={setTotal}
-        setTableLoading={setTableLoading}
-        ref={topConsoleRef}
-        setCurPage={setCurPage}
-        setCurPageSize={setCurPageSize}
-        curPage={curPage}
-        curPageSize={curPageSize}
-        queryType={queryType}
-        setQueryType={setQueryType}
-        prjMnger={prjMnger}
-        setPrjMnger={setPrjMnger}
-        prjName={prjName}
-        setPrjName={setPrjName}
-        defaultYear={defaultYear}
+        filterData={filterData}
+        setFilterData={setFilterData}
+        handleSearch={handleSearchDebounce}
       />
       <InfoTable
         routes={routes}
         tableData={tableData}
         tableLoading={tableLoading}
-        getTableData={getTableData}
-        cxlx={cxlx}
-        total={total}
-        handleSearch={topConsoleRef?.current?.handleSearch}
-        curPage={curPage}
-        curPageSize={curPageSize}
-        queryType={queryType}
-        setQueryType={setQueryType}
-        prjMnger={prjMnger}
-        setPrjMnger={setPrjMnger}
-        prjName={prjName}
-        setPrjName={setPrjName}
+        handleSearch={handleSearch}
+        tabsData={tabsData}
+        setCurStage={setCurStage}
+        curStage={curStage}
+        setSortInfo={setSortInfo}
+        sortInfo={sortInfo}
+        filterData={filterData}
+        setFilterData={setFilterData}
       />
     </div>
   );
-}
+});

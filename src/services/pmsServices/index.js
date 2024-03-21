@@ -188,6 +188,7 @@ const {
     queryMilestoneStageInfo,
     queryProjectSelectList,
     queryMemberSelectList,
+    queryProjectDynamicSection,
   },
 } = api;
 
@@ -1975,6 +1976,16 @@ export async function QueryProjectApplicationFlow(payload) {
 export async function QueryProjectStatusList(payload) {
   const option = {
     url: queryProjectStatusList,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 查询项目动态看板
+export async function QueryProjectDynamicSection(payload) {
+  const option = {
+    url: queryProjectDynamicSection,
     method: 'post',
     data: payload,
   };

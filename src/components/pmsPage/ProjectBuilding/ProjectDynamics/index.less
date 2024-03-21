@@ -1,0 +1,338 @@
+//项目动态
+.info-prj-dynamics {
+  margin: 0 12px 16px 12px;
+
+  .ant-spin-container {
+    width: 100%;
+
+    .info-prj-dynamics-card-box {
+      .info-prj-dynamics-card {
+        .info-prj-dynamics-title {
+          position: relative;
+          padding-top: 27px;
+          z-index: 1;
+        }
+        .info-prj-dynamics-title-num {
+          color: #eef2ff;
+          font-size: 36px;
+          position: absolute;
+          font-weight: bold;
+          top: 12px;
+          left: 0px;
+        }
+      }
+
+      .filter-row {
+        margin: 22px 0;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        position: absolute;
+        width: calc(100% - 254px);
+        top: -65px;
+        left: 12px;
+        & > .filter-item {
+          flex-shrink: 0;
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          font-family: PingFangSC, PingFang SC;
+          font-weight: 400;
+          font-size: 14px;
+          color: #222222;
+          line-height: 20px;
+          transition: all 0.3s;
+          cursor: pointer;
+          max-width: 21%;
+
+          &:hover {
+            .icon-fill-down {
+              color: #3361ff;
+            }
+          }
+
+          .filter-icon {
+            width: 16px;
+            flex-shrink: 0;
+            margin-right: 6px;
+            color: #3361ff;
+          }
+          .icon-close {
+            flex-shrink: 0;
+            margin-left: 8px;
+            font-size: 14px;
+            color: #c0c4cc;
+            transition: all 0.3s;
+            &:hover {
+              color: #d70e19;
+              .icon-fill-down {
+                color: #c0c4cc;
+              }
+            }
+          }
+          .icon-fill-down {
+            flex-shrink: 0;
+            margin-left: 8px;
+            font-size: 14px;
+            color: #c0c4cc;
+            transition: all 0.3s;
+          }
+          .divide-line {
+            flex-shrink: 0;
+            width: 2px;
+            height: 8px;
+            background-color: #ebebeb;
+            margin: 0 8px;
+          }
+          span {
+            flex-grow: 1;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            white-space: nowrap;
+          }
+        }
+        & > .ant-input-affix-wrapper,
+        & > input {
+          width: 24%;
+          flex-shrink: 0;
+        }
+
+        & > .tabs-box {
+          flex-shrink: 0;
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          font-family: PingFangSC, PingFang SC;
+          font-weight: 400;
+          font-size: 14px;
+          color: #222222;
+          line-height: 20px;
+          transition: all 0.3s;
+          cursor: pointer;
+          max-width: 21%;
+          margin-right: 16px;
+
+          height: 40px;
+          line-height: 40px;
+          text-align: end;
+
+          .ant-radio-group-solid
+            .ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled) {
+            color: #3361ff;
+            background: rgba(51, 97, 255, 0.1);
+            border-color: #3361ff;
+
+            > span {
+              display: flex;
+            }
+
+            .iconfont {
+              padding-right: 4px;
+              color: #3361ff;
+              font-size: 18px;
+            }
+          }
+
+          .ant-radio-button .ant-radio-button-checked {
+            border-radius: 0px 4px 4px 0px;
+            border: 1px solid #3361ff;
+
+            > span {
+              display: flex;
+            }
+
+            .iconfont {
+              padding-right: 4px;
+              font-size: 18px;
+            }
+          }
+
+          .ant-radio-button-wrapper {
+            > span {
+              display: flex;
+            }
+
+            .iconfont {
+              padding-right: 4px;
+              font-size: 18px;
+            }
+          }
+
+          .ant-radio-button-wrapper:hover {
+            color: #3361ff;
+
+            .iconfont {
+              padding-right: 4px;
+              color: #3361ff;
+              font-size: 18px;
+            }
+          }
+        }
+      }
+
+      .info-prj-dynamics-content-row1 {
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+      }
+    }
+  }
+}
+
+//项目动态浮窗
+.prj-dynamic-filter-popover .ant-popover-inner-content {
+  display: flex;
+  background: #ffffff;
+  box-shadow: 0px 3px 6px -4px rgba(0, 0, 0, 0.12), 0px 6px 16px 0px rgba(0, 0, 0, 0.08),
+    0px 9px 28px 8px rgba(0, 0, 0, 0.05);
+  border-radius: 8px;
+  padding: 0;
+
+  .slt-list {
+    overflow: hidden;
+    overflow-y: auto;
+    max-height: 360px;
+    padding-right: 12px;
+    &::-webkit-scrollbar {
+      width: 6px;
+      background-color: #f0f2f5;
+      border-radius: 3px;
+    }
+    &::-webkit-scrollbar-thumb {
+      background-color: #dbdfe6;
+      border-radius: 3px;
+    }
+    & > .slt-item {
+      cursor: pointer;
+      padding: 8px 16px;
+      font-size: 14px;
+      font-family: PingFangSC-Regular, PingFang SC;
+      font-weight: 400;
+      color: #303133;
+      max-width: 300px;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      transition: all 0.3s;
+      &:hover {
+        background: #fafafb;
+        color: #3361ff;
+      }
+      .slt-item-icon {
+        width: 16px;
+        margin-right: 6px;
+        flex-shrink: 0;
+      }
+      .slt-item-txt {
+        flex-grow: 1;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+      }
+    }
+  }
+
+  .slt-form-box {
+    width: 310px;
+    max-height: 393px;
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+    overflow-y: auto;
+    padding-bottom: 0;
+    &::-webkit-scrollbar {
+      width: 6px;
+      background-color: #f0f2f5;
+      border-radius: 3px;
+    }
+    &::-webkit-scrollbar-thumb {
+      background-color: #dbdfe6;
+      border-radius: 3px;
+    }
+    & > .slt-form-item {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      // justify-content: center;
+      position: relative;
+      margin-bottom: 16px;
+
+      .item-label {
+        flex-shrink: 0;
+        width: 70px;
+        text-align: right;
+      }
+
+      .item-component {
+        flex-grow: 1;
+        overflow: hidden;
+      }
+
+      .item-year-picker {
+        width: 100px;
+        overflow: hidden;
+      }
+    }
+
+    .footer-btn {
+      position: sticky;
+      bottom: 0;
+      left: 0;
+      text-align: right;
+      background-color: #fff;
+      margin-top: -16px;
+      padding-top: 16px;
+      padding-bottom: 16px;
+      background: #fff;
+      z-index: 1;
+
+      .btn-cancel {
+        .antd-btn-default();
+        color: #3361ff;
+        border-color: #3361ff;
+        margin-right: 8px;
+      }
+
+      .btn-submit {
+        .antd-btn-primary();
+      }
+    }
+  }
+}
+
+//阶段项目列表
+.prj-dynamic-state-info-box {
+  .ant-tabs {
+    height: 100%;
+  }
+  .info-table .project-info-table-box .ant-table-pagination {
+    bottom: -1px;
+  }
+
+  & > .info-table .project-info-table-box .ant-table .prj-tags {
+    & > .red-tag {
+      border: 1px solid #f5d6d3;
+      background-color: #f8f3f3;
+      &:hover {
+        font-weight: bold;
+        color: #f0978c;
+      }
+    }
+    & > .purple-tag {
+      border: 1px solid #c4c7f7;
+      background-color: #ebecf9;
+      &:hover {
+        font-weight: bold;
+        color: #757cf7;
+      }
+    }
+    & > .yellow-tag {
+      border: 1px solid #f6deb3;
+      background-color: #f8f4ed;
+      &:hover {
+        font-weight: bold;
+        color: #f1a740;
+      }
+    }
+  }
+}

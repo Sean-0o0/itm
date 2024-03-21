@@ -8,34 +8,23 @@ import moment from 'moment';
 const { TabPane } = Tabs;
 
 export default function InfoTable(props) {
-  const [sortedInfo, setSortedInfo] = useState({}); //金额排序
-  const [src_fileAdd, setSrc_fileAdd] = useState({}); //项目信息修改弹窗显示
-  const [visible, setVisible] = useState(false); //类型弹窗显隐
   const {
     tableData,
     tableLoading,
-    getTableData,
-    // projectManager = -1,
-    queryType,
-    setQueryType,
-    total,
     handleSearch,
-    curPage,
-    curPageSize,
-    setPrjMnger,
-    setPrjName,
     routes,
+    tabsData = {},
+    curStage,
+    setCurStage,
+    filterData = {},
+    setFilterData,
+    sortInfo = { sort: undefined, columnKey: '' },
+    setSortInfo,
   } = props; //表格数据
   const location = useLocation();
-  // console.log("🚀 ~ file: index.js:15 ~ InfoTable ~ location:", location)
-
-  useEffect(() => {
-    return () => {};
-  }, [queryType, tableData]);
 
   //获取项目标签数据
   const getTagData = (tag, idtxt) => {
-    // console.log("🚀 ~ file: index.js:52 ~ getTagData ~ tag, idtxt:", tag, idtxt)
     let arr = [];
     let arr2 = [];
     if (
@@ -60,24 +49,41 @@ export default function InfoTable(props) {
         id: arr2[i],
       };
     });
-    // console.log('🚀 ~ file: index.js ~ line 73 ~ arr3 ~ arr3 ', arr3, arr, arr2);
     return arr3;
   };
 
   //表格操作后更新数据
-  const handleTableChange = (pagination, filters, sorter, extra) => {
-    console.log('handleTableChange', pagination, filters, sorter, extra);
+  const handleTableChange = (pagination = {}, _, sorter = {}) => {
     const { current = 1, pageSize = 20 } = pagination;
+    setSortInfo(sorter);
     if (sorter.order !== undefined) {
-      if (sorter.order === 'ascend') {
-        handleSearch(current, pageSize, queryType);
-      } else {
-        handleSearch(current, pageSize, queryType);
-      }
+      handleSearch({
+        current,
+        pageSize,
+        sort: sorter.field + (sorter.order === 'ascend' ? ' ASC' : ' DESC'),
+        ...filterData,
+      });
     } else {
-      handleSearch(current, pageSize, queryType);
+      handleSearch({
+        current,
+        pageSize,
+        ...filterData,
+      });
     }
     return;
+  };
+
+  const getTagClassName = (tagTxt = '') => {
+    if (tagTxt.includes('迭代')) return 'yellow-tag';
+    else if (tagTxt.includes('集合')) return 'purple-tag';
+    else if (tagTxt.includes('专班')) return 'red-tag';
+    else return '';
+  };
+  const getTagTxtColor = (tagTxt = '') => {
+    if (tagTxt.includes('迭代')) return '#F1A740';
+    else if (tagTxt.includes('集合')) return '#757CF7';
+    else if (tagTxt.includes('专班')) return '#F0978C';
+    else return '#3361ff';
   };
 
   //列配置
@@ -142,27 +148,21 @@ export default function InfoTable(props) {
     },
     {
       title: '阶段完成时间',
-      dataIndex: 'SJ',
-      width: '12%',
-      key: 'SJ',
+      dataIndex: 'ZXSJ',
+      width: '15%',
+      key: 'ZXSJ',
       ellipsis: true,
-      render: text => (
-        <Tooltip title={text} placement="topLeft">
-          <span style={{ cursor: 'default' }}>
-            {text ? moment(text, 'YYYY-MM-DD').format('YYYY-MM-DD') : '-'}
-          </span>
-        </Tooltip>
-      ),
+      render: text => text ?? '-',
     },
     {
       title: '项目进度',
       dataIndex: 'XMJD',
-      width: '12%',
+      width: '10%',
       align: 'right',
       key: 'XMJD',
       ellipsis: true,
-      // sorter: true,
-      // sortDirections: ['descend', 'ascend'],
+      sorter: true,
+      sortOrder: sortInfo.columnKey === 'XMJD' ? sortInfo.order : undefined,
       render: text => <span style={{ marginRight: 20 }}>{text}%</span>,
     },
     {
@@ -171,6 +171,8 @@ export default function InfoTable(props) {
       width: '12%',
       key: 'XMJE',
       ellipsis: true,
+      sorter: true,
+      sortOrder: sortInfo.columnKey === 'XMJE' ? sortInfo.order : undefined,
       render: text => (
         <Tooltip title={text} placement="topLeft">
           <span style={{ cursor: 'default' }}>{text}</span>
@@ -191,9 +193,9 @@ export default function InfoTable(props) {
                 {getTagData(text, row.XMBQID)
                   ?.slice(0, 2)
                   .map(x => (
-                    <div key={x.id} className="tag-item">
+                    <div key={x.id} className={'tag-item ' + getTagClassName(x.name)}>
                       <Link
-                        style={{ color: '#3361ff' }}
+                        style={{ color: getTagTxtColor(x.name) }}
                         to={{
                           pathname: `/pms/manage/labelDetail/${EncryptBase64(
                             JSON.stringify({
@@ -204,7 +206,6 @@ export default function InfoTable(props) {
                             routes,
                           },
                         }}
-                        className="table-link-strong"
                       >
                         {x.name}
                       </Link>
@@ -218,9 +219,9 @@ export default function InfoTable(props) {
                         {getTagData(text, row.XMBQID)
                           ?.slice(2)
                           .map(x => (
-                            <div key={x.id} className="tag-item">
+                            <div key={x.id} className={'tag-item ' + getTagClassName(x.name)}>
                               <Link
-                                style={{ color: '#3361ff' }}
+                                style={{ color: getTagTxtColor(x.name) }}
                                 to={{
                                   pathname: `/pms/manage/labelDetail/${EncryptBase64(
                                     JSON.stringify({
@@ -231,7 +232,6 @@ export default function InfoTable(props) {
                                     routes,
                                   },
                                 }}
-                                className="table-link-strong"
                               >
                                 {x.name}
                               </Link>
@@ -253,181 +253,42 @@ export default function InfoTable(props) {
   ];
 
   const handleTabsKeyChange = activeKey => {
-    console.log('activeKey', activeKey);
-    setQueryType(activeKey);
-    setPrjName(undefined); //项目名称
-    setPrjMnger(undefined); //项目经理
-    getTableData(activeKey);
+    setCurStage(activeKey);
+    setFilterData({});
+    handleSearch({ stage: activeKey });
+    setSortInfo({
+      sort: undefined,
+      columnKey: '',
+    });
   };
-
-  console.log('queryTypequeryType', queryType);
-  console.log('tabledata', tableData);
 
   return (
     <div className="info-table">
-      <Tabs type="card" activeKey={queryType} onChange={handleTabsKeyChange}>
-        {/*ALL|查询全部；XWH|只查信委会过会；ZBH|只查总办会过会；XMLX|项目立项完成；HTQS|只查合同签署流程完成*/}
-        <TabPane tab="信委会过会" key="XWH">
-          <div className="project-info-table-box">
-            <Table
-              loading={tableLoading}
-              columns={columns}
-              rowKey={'projectId'}
-              dataSource={tableData}
-              onChange={handleTableChange}
-              pagination={{
-                current: curPage,
-                pageSize: curPageSize,
-                defaultCurrent: 1,
-                pageSizeOptions: ['20', '40', '50', '100'],
-                showSizeChanger: true,
-                hideOnSinglePage: false,
-                showQuickJumper: true,
-                showTotal: t => `共 ${total} 条数据`,
-                total: total,
-              }}
-              // bordered
-            />
-          </div>
-        </TabPane>
-        <TabPane tab="总办会过会" key="ZBH">
-          <div className="project-info-table-box">
-            <Table
-              loading={tableLoading}
-              columns={columns}
-              rowKey={'projectId'}
-              dataSource={tableData}
-              onChange={handleTableChange}
-              pagination={{
-                current: curPage,
-                pageSize: curPageSize,
-                defaultCurrent: 1,
-                pageSizeOptions: ['20', '40', '50', '100'],
-                showSizeChanger: true,
-                hideOnSinglePage: false,
-                showQuickJumper: true,
-                showTotal: t => `共 ${total} 条数据`,
-                total: total,
-              }}
-              // bordered
-            />
-          </div>
-        </TabPane>
-        <TabPane tab="立项申请完成" key="XMLX">
-          <div className="project-info-table-box">
-            <Table
-              loading={tableLoading}
-              columns={columns}
-              rowKey={'projectId'}
-              dataSource={tableData}
-              onChange={handleTableChange}
-              pagination={{
-                current: curPage,
-                pageSize: curPageSize,
-                defaultCurrent: 1,
-                pageSizeOptions: ['20', '40', '50', '100'],
-                showSizeChanger: true,
-                hideOnSinglePage: false,
-                showQuickJumper: true,
-                showTotal: t => `共 ${total} 条数据`,
-                total: total,
-              }}
-              // bordered
-            />
-          </div>
-        </TabPane>
-        <TabPane tab="合同签署完成" key="HTQS">
-          <div className="project-info-table-box">
-            <Table
-              loading={tableLoading}
-              columns={columns}
-              rowKey={'projectId'}
-              dataSource={tableData}
-              onChange={handleTableChange}
-              pagination={{
-                current: curPage,
-                pageSize: curPageSize,
-                defaultCurrent: 1,
-                pageSizeOptions: ['20', '40', '50', '100'],
-                showSizeChanger: true,
-                hideOnSinglePage: false,
-                showQuickJumper: true,
-                showTotal: t => `共 ${total} 条数据`,
-                total: total,
-              }}
-              // bordered
-            />
-          </div>
-        </TabPane>
-        <TabPane tab="项目上线" key="SXXM">
-          <div className="project-info-table-box">
-            <Table
-              loading={tableLoading}
-              columns={columns}
-              rowKey={'projectId'}
-              dataSource={tableData}
-              onChange={handleTableChange}
-              pagination={{
-                current: curPage,
-                pageSize: curPageSize,
-                defaultCurrent: 1,
-                pageSizeOptions: ['20', '40', '50', '100'],
-                showSizeChanger: true,
-                hideOnSinglePage: false,
-                showQuickJumper: true,
-                showTotal: t => `共 ${total} 条数据`,
-                total: total,
-              }}
-              // bordered
-            />
-          </div>
-        </TabPane>
-        <TabPane tab="项目付款" key="FKXM">
-          <div className="project-info-table-box">
-            <Table
-              loading={tableLoading}
-              columns={columns}
-              rowKey={'projectId'}
-              dataSource={tableData}
-              onChange={handleTableChange}
-              pagination={{
-                current: curPage,
-                pageSize: curPageSize,
-                defaultCurrent: 1,
-                pageSizeOptions: ['20', '40', '50', '100'],
-                showSizeChanger: true,
-                hideOnSinglePage: false,
-                showQuickJumper: true,
-                showTotal: t => `共 ${total} 条数据`,
-                total: total,
-              }}
-              // bordered
-            />
-          </div>
-        </TabPane>
-        <TabPane tab="完成项目" key="WJXM">
-          <div className="project-info-table-box">
-            <Table
-              loading={tableLoading}
-              columns={columns}
-              rowKey={'projectId'}
-              dataSource={tableData}
-              onChange={handleTableChange}
-              pagination={{
-                current: curPage,
-                pageSize: curPageSize,
-                defaultCurrent: 1,
-                pageSizeOptions: ['20', '40', '50', '100'],
-                showSizeChanger: true,
-                hideOnSinglePage: false,
-                showQuickJumper: true,
-                showTotal: t => `共 ${total} 条数据`,
-                total: total,
-              }}
-              // bordered
-            />
-          </div>
-        </TabPane>
+      <Tabs type="card" activeKey={curStage} onChange={handleTabsKeyChange}>
+        {tabsData.map(x => (
+          <TabPane tab={x.note} key={x.ibm}>
+            <div className="project-info-table-box">
+              <Table
+                loading={tableLoading}
+                columns={columns}
+                rowKey={'ID'}
+                dataSource={tableData.data || []}
+                onChange={handleTableChange}
+                pagination={{
+                  current: tableData.current,
+                  pageSize: tableData.pageSize,
+                  pageSizeOptions: ['20', '40', '50', '100'],
+                  showSizeChanger: true,
+                  hideOnSinglePage: false,
+                  showQuickJumper: true,
+                  showTotal: t => `共 ${tableData.total} 条数据`,
+                  total: tableData.total,
+                }}
+                // bordered
+              />
+            </div>
+          </TabPane>
+        ))}
       </Tabs>
     </div>
   );

@@ -1,714 +1,660 @@
-import React, {Component, useState} from 'react'
-import {Empty, Spin, Tabs} from 'antd'
-import StaffTable from '../InfoTable/StaffTable'
-import moment from "moment";
-import {EncryptBase64} from "../../../Common/Encrypt";
-import {Link} from "react-router-dom";
-import {useLocation} from "react-router";
-import prj1 from '../../../../assets/projectBuilding/01.png'
-import prj2 from '../../../../assets/projectBuilding/02.png'
-import prj3 from '../../../../assets/projectBuilding/03.png'
-import prj4 from '../../../../assets/projectBuilding/04.png'
-import prj5 from '../../../../assets/projectBuilding/05.png'
-import prj6 from '../../../../assets/projectBuilding/06.png'
-import prj7 from '../../../../assets/projectBuilding/07.png'
+import React, { Fragment, useEffect, useState, useCallback } from 'react';
+import {
+  Empty,
+  Spin,
+  Input,
+  Tooltip,
+  Popover,
+  Tree,
+  TreeSelect,
+  Radio,
+  DatePicker,
+  Button,
+} from 'antd';
+import moment from 'moment';
+import { EncryptBase64 } from '../../../Common/Encrypt';
+import { Link } from 'react-router-dom';
+import { useLocation } from 'react-router';
+import iconLabel from '../../../../assets/homePage/icon_label.png';
+import iconOrg from '../../../../assets/homePage/icon_org.png';
+import iconFilter from '../../../../assets/homePage/icon_filter.png';
+import ProjectQueryTable from '../ProjectQueryTable';
+import { connect } from 'dva';
 
-const {TabPane} = Tabs;
-
-export default function ProjectDynamics(props) {
+export default connect(({ global }) => ({
+  dictionary: global.dictionary,
+  userBasicInfo: global.userBasicInfo,
+  roleData: global.roleData,
+}))(function ProjectDynamics(props) {
   const {
-    //项目动态信息-付款信息
-    prjDynamicsFKInfo = [],
-    totalrowsFK = 0,
-    //项目动态信息-合同信息
-    prjDynamicsHTInfo = [],
-    totalrowsHT = 0,
-    //项目动态信息-立项信息
-    prjDynamicsLXInfo = [],
-    totalrowsLX = 0,
-    //项目动态信息-上线信息
-    prjDynamicsSXInfo = [],
-    totalrowsSX = 0,
-    //项目动态信息-完结信息
-    prjDynamicsWJInfo = [],
-    totalrowsWJ = 0,
-    //项目动态信息-信委会信息
-    prjDynamicsXWHInfo = [],
-    totalrowsXWH = 0,
-    //项目动态信息-总办会信息
-    prjDynamicsZBHInfo = [],
-    totalrowsZBH = 0,
+    dataList = [],
     routes = [],
-    defaultYear = moment().year()
+    defaultYear = moment().year(),
+    roleData = {},
+    dictionary = {},
+    sltorData = { label: [], org: [] },
+    getPrjDynamicData,
   } = props;
+  const XMZT = [
+    { ibm: '1', note: '正常' },
+    { ibm: '2', note: '逾期' },
+  ];
+  const [orgData, setOrgData] = useState({
+    sltedItems: [],
+    open: false,
+  }); //部门
+  const [labelData, setLabelData] = useState({
+    sltedItems: [],
+    open: false,
+  }); //标签
+  const [moreData, setMoreData] = useState({
+    open: false,
+    //初始值、点筛选后 与外边一致
+    tag: [],
+    org: [],
+    projectName: undefined,
+    //另外维护
+    projectManager: undefined,
+    projectStatus: undefined,
+    startYear: moment(String(defaultYear)),
+    endYear: moment(String(defaultYear)),
+    startYearOpen: false,
+    endYearOpen: false,
+  }); //更多筛选
+  const [projectName, setPrjName] = useState(undefined); //项目名称
+  let filterParams = {
+    role: roleData.role,
+    ...moreData,
+    tag: labelData.sltedItems,
+    org: orgData.sltedItems,
+    projectName,
+  }; //筛选查询接口入参
+  const [curTab, setCurTab] = useState('1'); //当前tab，看板、列表
   const location = useLocation();
 
-  return (<div className='info-prj-dynamics'>
-    <Spin spinning={false} wrapperClassName="spin" tip="正在努力的加载中..." size="large">
-      <div className='info-prj-dynamics-card-box'>
-        {
-          // prjDynamicsXWHInfo.length > 0 &&
-          <div className='info-prj-dynamics-card'>
-            {
-              // prjDynamicsXWHInfo.length > 0 &&
-              <div className='info-prj-dynamics-title'>
-                <img src={prj1} className='prj-img' alt=''/>
-                <div className='info-prj-dynamics-title-left'>
-                  <div className='prj-name'>信委会过会</div>
-                  <div className='info-prj-dynamics-title-right'>
-                    <div className='info-prj-dynamics-title-right-box'>
-                      <div className='info-prj-dynamics-title-right-time'>
-                        今年：
-                        <div className='info-prj-dynamics-title-right-num'>
-                          {prjDynamicsXWHInfo[0]?.JNSL || 0}个
-                        </div>
-                      </div>
-                      <div style={{paddingLeft: '8px'}} className='info-prj-dynamics-title-right-time'>
-                        近一周：
-                        <div className='info-prj-dynamics-title-right-num'>
-                          {prjDynamicsXWHInfo[0]?.JYZSL || 0}个
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            }
-            <div className='info-prj-dynamics-content-box'>
-              {
-                prjDynamicsXWHInfo.length > 0 ? prjDynamicsXWHInfo.map(item => {
-                  return <Link
-                    // style={{ color: '#303133' }}
-                    to={{
-                      pathname: `/pms/manage/ProjectDetail/${EncryptBase64(
-                        JSON.stringify({
-                          xmid: item.XMID,
-                        }),
-                      )}`,
-                      state: {
-                        routes: routes,
-                      },
-                    }}
-                    className="table-link-strong"
-                  >
-                    <div className='info-prj-dynamics-content'>
-                      <div className='info-prj-dynamics-content-row1'>
-                        {item.XMMC}
-                      </div>
-                      <div className='info-prj-dynamics-content-row2'>
-                        <div className='info-prj-dynamics-content-row2-name'>
-                          <i className="iconfont icon-user"/>{item.XMJL}
-                        </div>
-                        <div className='info-prj-dynamics-content-row2-time'>
-                          <i
-                            className="iconfont icon-time"/>{item.SJ && moment(item.SJ, 'YYYY-MM-DD').format('YYYY-MM-DD')}
-                        </div>
-                      </div>
-                    </div>
-                  </Link>
-                }) : <Empty
-                  description="暂无数据"
-                  image={Empty.PRESENTED_IMAGE_SIMPLE}
-                  style={{
-                    width: '100%', display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    height: '100%'
-                  }}/>
-              }
+  useEffect(() => {
+    setMoreData(p => ({
+      ...p,
+      startYear: moment(String(defaultYear)),
+      endYear: moment(String(defaultYear)),
+    }));
+    return () => {};
+  }, [defaultYear]);
+
+  //部门
+  const getOrgBox = (curTab = '1') => {
+    //选中
+    const handleSlt = (keyArr = [], e) => {
+      // console.log("🚀 ~ handleSlt ~ keyArr:", keyArr, e)
+      // let sltedItem = { name: e.node?.props?.title, id: e.node?.props?.eventKey };
+      const data = e.checkedNodes?.map(x => ({ id: x.key, name: x.props?.title })) || [];
+      setOrgData(p => ({
+        ...p,
+        sltedItems: data,
+      }));
+      getPrjDynamicData({
+        ...filterParams,
+        org: data,
+      });
+    };
+    //树型节点
+    const renderTreeNodes = useCallback(
+      (data = []) =>
+        data.map(item => {
+          if (item.children?.length > 0) {
+            return (
+              <Tree.TreeNode title={item.title} key={item.value}>
+                {renderTreeNodes(item.children)}
+              </Tree.TreeNode>
+            );
+          }
+          return <Tree.TreeNode key={item.value} {...item} />;
+        }),
+      [],
+    );
+    //是否已选中
+    const isSlted = orgData.sltedItems.length > 0;
+    //清空
+    const handleClear = e => {
+      e?.stopPropagation();
+      setOrgData({ sltedItems: [], open: false });
+      getPrjDynamicData({
+        ...filterParams,
+        org: [],
+      });
+    };
+    //已选择文本
+    const sltedTitle = orgData.sltedItems.map(x => x.name).join('、');
+    if (curTab === '2') return '';
+    return (
+      <Popover
+        title={null}
+        placement="bottom"
+        trigger="click"
+        visible={orgData.open}
+        onVisibleChange={v => setOrgData(p => ({ ...p, open: v }))}
+        autoAdjustOverflow
+        content={
+          <Tree
+            // selectedKeys={orgData.sltedItems.map(x => x.id)}
+            // onSelect={handleSlt}
+            // defaultExpandedKeys={['11167', '357', '11168', '15681']}
+            defaultExpandAll
+            className="slt-list"
+            multiple
+            selectable={false}
+            checkable
+            checkedKeys={orgData.sltedItems.map(x => x.id)}
+            checkStrictly
+            onCheck={handleSlt}
+          >
+            {renderTreeNodes(sltorData.org)}
+          </Tree>
+        }
+        overlayClassName="prj-dynamic-filter-popover"
+      >
+        <div className="filter-item" key="部门">
+          <div className="divide-line"></div>
+          <img className="filter-icon" src={iconOrg} alt="部门" />
+          <span>
+            {isSlted ? (
+              <Tooltip title={sltedTitle} placement="topLeft">
+                {sltedTitle}
+              </Tooltip>
+            ) : (
+              '部门'
+            )}
+          </span>
+          {isSlted && <i className="iconfont icon-close" onClick={handleClear} />}
+          <i className="iconfont icon-fill-down" />
+          <div className="divide-line"></div>
+        </div>
+      </Popover>
+    );
+  };
+
+  //标签
+  const getLabelBox = (curTab = '1') => {
+    //选中
+    const handleSlt = (keyArr = [], e = {}) => {
+      // let sltedItem = { name: e.node?.props?.title, id: e.node?.props?.eventKey };
+      // // console.log('🚀 ~ handleSlt ~ keyArr = [], e = {}:', keyArr, e, sltedItem);
+      const data = e.checkedNodes?.map(x => ({ id: x.key, name: x.props?.title })) || [];
+      setLabelData(p => ({ ...p, sltedItems: data }));
+      getPrjDynamicData({
+        ...filterParams,
+        tag: data,
+      });
+    };
+    //树型节点
+    const renderTreeNodes = useCallback(
+      (data = []) =>
+        data.map(item => {
+          if (item.children?.length > 0) {
+            return (
+              <Tree.TreeNode title={item.title} key={item.value} selectable={false}>
+                {renderTreeNodes(item.children)}
+              </Tree.TreeNode>
+            );
+          }
+          return <Tree.TreeNode key={item.value} {...item} />;
+        }),
+      [],
+    );
+    //是否已选中
+    const isSlted = labelData.sltedItems.length > 0;
+    //清空
+    const handleClear = e => {
+      e?.stopPropagation();
+      setLabelData({ sltedItems: [], open: false });
+      getPrjDynamicData({
+        ...filterParams,
+        tag: [],
+      });
+    };
+    //标签数据有子节点的文本
+    const hasChildrenArr = sltorData.label?.filter(x => x.children?.length > 0).map(x => x.title);
+    //已选中的文本
+    const sltedTitle = labelData.sltedItems
+      .map(x => x.name)
+      .filter(x => !hasChildrenArr.includes(x))
+      .join('、');
+    if (curTab === '2') return '';
+    return (
+      <Popover
+        title={null}
+        placement="bottom"
+        trigger="click"
+        visible={labelData.open}
+        onVisibleChange={v => setLabelData(p => ({ ...p, open: v }))}
+        autoAdjustOverflow
+        content={
+          <Tree
+            // selectedKeys={labelData.sltedItems.map(x => x.id)}
+            // onSelect={handleSlt}
+            selectable={false}
+            className="slt-list"
+            defaultExpandAll
+            multiple
+            checkable
+            showCheckedStrategy="SHOW_CHILD"
+            checkedKeys={labelData.sltedItems.map(x => x.id)}
+            onCheck={handleSlt}
+          >
+            {renderTreeNodes(sltorData.label)}
+          </Tree>
+        }
+        overlayClassName="prj-dynamic-filter-popover"
+      >
+        <div className="filter-item" key="标签">
+          <img className="filter-icon" src={iconLabel} alt="标签" />
+          <span>
+            {isSlted ? (
+              <Tooltip title={sltedTitle} placement="topLeft">
+                {sltedTitle}
+              </Tooltip>
+            ) : (
+              '标签'
+            )}
+          </span>
+          {isSlted && <i className="iconfont icon-close" onClick={handleClear} />}
+          <i className="iconfont icon-fill-down" />
+          <div className="divide-line"></div>
+        </div>
+      </Popover>
+    );
+  };
+
+  //更多筛选
+  const getMoreBox = () => {
+    return (
+      <Popover
+        title={null}
+        placement="bottom"
+        trigger="click"
+        visible={moreData.open}
+        getPopupContainer={triggerNode => triggerNode.parentNode}
+        onVisibleChange={v => setMoreData(p => ({ ...p, open: v }))}
+        autoAdjustOverflow
+        content={
+          <div className="slt-form-box">
+            <div className="slt-form-item" key="部门名称">
+              <div className="item-label">部门名称：</div>
+              <TreeSelect
+                allowClear
+                showArrow
+                className="item-component"
+                showSearch
+                treeNodeFilterProp="title"
+                // dropdownClassName="newproject-treeselect"
+                multiple
+                treeCheckStrictly
+                treeCheckable
+                showCheckedStrategy="SHOW_ALL"
+                dropdownStyle={{ maxHeight: 300, overflow: 'auto' }}
+                treeData={sltorData.org}
+                placeholder="请选择"
+                onChange={(v = []) => {
+                  let arr = v.map(x => ({ id: x.value, name: x.label }));
+                  setMoreData(p => ({ ...p, org: arr }));
+                }}
+                // value={moreData.org.map(x => x.id)}
+                treeDefaultExpandAll
+              />
             </div>
-            {
-              prjDynamicsXWHInfo.length > 0 && <div className='info-prj-dynamics-footer'>
-                <Link
-                  style={{color: '#303133'}}
-                  to={{
-                    pathname: `/pms/manage/ProjectStateInfo/${EncryptBase64(
-                      JSON.stringify({
-                        cxlx: 'XWH',
-                        defaultYear,
-                      }),
-                    )}`,
-                    state: {
-                      routes: routes,
-                    },
-                  }}
-                  className="table-link-strong"
-                >
-                  查看详情<i class="iconfont icon-right"/>
-                </Link>
-              </div>
-            }
+            <div className="slt-form-item" key="项目名称">
+              <div className="item-label">项目名称：</div>
+              <Input
+                placeholder="请输入"
+                value={moreData.projectName}
+                // allowClear
+                className="item-component"
+                onChange={e => {
+                  e.persist();
+                  setMoreData(p => ({ ...p, projectName: e?.target?.value }));
+                  console.log(e?.target?.value);
+                }}
+              />
+            </div>
+            <div className="slt-form-item" key="人员名称">
+              <div className="item-label">人员名称：</div>
+              <Input
+                placeholder="请输入"
+                value={moreData.projectManager}
+                // allowClear
+                className="item-component"
+                onChange={e => {
+                  e.persist();
+                  console.log('🚀 ~ getMoreBox ~ e:', e);
+                  setMoreData(p => ({ ...p, projectManager: e?.target?.value }));
+                  console.log(e?.target?.value);
+                }}
+              />
+            </div>
+            <div className="slt-form-item" key="标签名称">
+              <div className="item-label">标签名称：</div>
+              <TreeSelect
+                allowClear
+                showArrow
+                className="item-component"
+                showSearch
+                treeNodeFilterProp="title"
+                dropdownClassName="newproject-treeselect"
+                multiple
+                treeCheckable
+                dropdownStyle={{ maxHeight: 300, overflow: 'auto' }}
+                treeData={sltorData.label}
+                placeholder="请选择"
+                onChange={(v = [], txt = []) => {
+                  let arr = v.map((x, i) => ({ id: x, name: txt[i] }));
+                  setMoreData(p => ({ ...p, tag: arr }));
+                }}
+                value={moreData.tag.map(x => x.id)}
+                treeDefaultExpandAll
+              />
+            </div>
+            <div className="slt-form-item" key="项目年份">
+              <div className="item-label">项目年份：</div>
+              <DatePicker
+                mode="year"
+                className="item-year-picker"
+                value={moreData.startYear}
+                open={moreData.startYearOpen}
+                placeholder="请选择"
+                format="YYYY"
+                allowClear={false}
+                // disabledDate={startValue => {
+                //   if (!startValue || !moreData.endYear) {
+                //     return false;
+                //   }
+                //   return startValue.valueOf() > moreData.endYear.valueOf();
+                // }}
+                onChange={v =>
+                  setMoreData(p => ({
+                    ...p,
+                    startYear: (p.endYear?.year() || 0) <= (v?.year() || 0) ? p.endYear : v,
+                    startYearOpen: false,
+                  }))
+                }
+                onOpenChange={v => setMoreData(p => ({ ...p, startYearOpen: v }))}
+                onPanelChange={v =>
+                  setMoreData(p => ({
+                    ...p,
+                    startYear: (p.endYear?.year() || 0) <= (v?.year() || 0) ? p.endYear : v,
+                    startYearOpen: false,
+                  }))
+                }
+              />
+              &nbsp;~&nbsp;
+              <DatePicker
+                mode="year"
+                className="item-year-picker"
+                value={moreData.endYear}
+                open={moreData.endYearOpen}
+                placeholder="请选择"
+                format="YYYY"
+                allowClear={false}
+                // disabledDate={endValue => {
+                //   if (!endValue || !moreData.startYear) {
+                //     return false;
+                //   }
+                //   return endValue.valueOf() <= moreData.startYear.valueOf();
+                // }}
+                onChange={v =>
+                  setMoreData(p => ({
+                    ...p,
+                    endYear: (p.startYear?.year() || 0) >= (v?.year() || 0) ? p.startYear : v,
+                    endYearOpen: false,
+                  }))
+                }
+                onOpenChange={v => setMoreData(p => ({ ...p, endYearOpen: v }))}
+                onPanelChange={v =>
+                  setMoreData(p => ({
+                    ...p,
+                    endYear: (p.startYear?.year() || 0) >= (v?.year() || 0) ? p.startYear : v,
+                    endYearOpen: false,
+                  }))
+                }
+              />
+            </div>
+            <div className="slt-form-item" key="项目状态">
+              <div className="item-label">项目状态：</div>
+              <Radio.Group
+                value={moreData.projectStatus}
+                onChange={e => {
+                  setMoreData(p => ({ ...p, projectStatus: e?.target?.value }));
+                }}
+              >
+                {XMZT.map(x => (
+                  <Radio
+                    key={x.ibm}
+                    value={x.ibm}
+                    onClick={() => {
+                      if (moreData.projectStatus === x.ibm) {
+                        setMoreData(p => ({ ...p, projectStatus: null }));
+                      }
+                    }}
+                  >
+                    {x.note}
+                  </Radio>
+                ))}
+              </Radio.Group>
+            </div>
+            <div className="footer-btn">
+              <Button
+                className="btn-cancel"
+                onClick={() => {
+                  setMoreData(p => ({
+                    ...p,
+                    tag: [],
+                    org: [],
+                    projectName: undefined,
+                    //另外维护
+                    projectManager: undefined,
+                    projectStatus: undefined,
+                    startYear: moment(String(defaultYear)),
+                    endYear: moment(String(defaultYear)),
+                    startYearOpen: false,
+                    endYearOpen: false,
+                  }));
+                }}
+              >
+                重置
+              </Button>
+              <Button
+                type="primary"
+                className="btn-submit"
+                onClick={() => {
+                  //点筛选后 与外边一致
+                  setLabelData(p => ({ ...p, sltedItems: moreData.tag }));
+                  setOrgData(p => ({ ...p, sltedItems: moreData.org }));
+                  setPrjName(moreData.projectName);
+                  setMoreData(p => ({ ...p, open: false }));
+                  getPrjDynamicData({
+                    ...filterParams,
+                    ...moreData,
+                  });
+                }}
+              >
+                筛选
+              </Button>
+            </div>
           </div>
         }
-        {
-          // prjDynamicsZBHInfo.length > 0 &&
-          <div className='info-prj-dynamics-card'>
-            {
-              // prjDynamicsZBHInfo.length > 0 &&
-              <div className='info-prj-dynamics-title'>
-                <img src={prj2} className='prj-img' alt=''/>
-                <div className='info-prj-dynamics-title-left'>
-                  <div className='prj-name'>总办会过会</div>
-                  <div className='info-prj-dynamics-title-right'>
-                    <div className='info-prj-dynamics-title-right-box'>
-                      <div className='info-prj-dynamics-title-right-time'>
-                        今年：
-                        <div className='info-prj-dynamics-title-right-num'>
-                          {prjDynamicsZBHInfo[0]?.JNSL || 0}个
-                        </div>
-                      </div>
-                      <div style={{paddingLeft: '8px'}} className='info-prj-dynamics-title-right-time'>
-                        近一周：
-                        <div className='info-prj-dynamics-title-right-num'>
-                          {prjDynamicsZBHInfo[0]?.JYZSL || 0}个
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            }
-            <div className='info-prj-dynamics-content-box'>
-              {
-                prjDynamicsZBHInfo.length > 0 ? prjDynamicsZBHInfo.map(item => {
-                  return <Link
-                    // style={{ color: '#303133' }}
-                    to={{
-                      pathname: `/pms/manage/ProjectDetail/${EncryptBase64(
-                        JSON.stringify({
-                          xmid: item.XMID,
-                        }),
-                      )}`,
-                      state: {
-                        routes: routes,
-                      },
-                    }}
-                    className="table-link-strong"
-                  >
-                    <div className='info-prj-dynamics-content'>
-                      <div className='info-prj-dynamics-content-row1'>
-                        {item.XMMC}
-                      </div>
-                      <div className='info-prj-dynamics-content-row2'>
-                        <div className='info-prj-dynamics-content-row2-name'>
-                          <i className="iconfont icon-user"/>{item.XMJL}
-                        </div>
-                        <div className='info-prj-dynamics-content-row2-time'>
-                          <i
-                            className="iconfont icon-time"/>{item.SJ && moment(item.SJ, 'YYYY-MM-DD').format('YYYY-MM-DD')}
-                        </div>
-                      </div>
-                    </div>
-                  </Link>
-                }) : <Empty
-                  description="暂无数据"
-                  image={Empty.PRESENTED_IMAGE_SIMPLE}
-                  style={{
-                    width: '100%', display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    height: '100%'
-                  }}/>
-              }
-            </div>
-            {
-              prjDynamicsZBHInfo.length > 0 && <div className='info-prj-dynamics-footer'>
-                <Link
-                  style={{color: '#303133'}}
-                  to={{
-                    pathname: `/pms/manage/ProjectStateInfo/${EncryptBase64(
-                      JSON.stringify({
-                        cxlx: 'ZBH',
-                        defaultYear,
-                      }),
-                    )}`,
-                    state: {
-                      routes: routes,
-                    },
-                  }}
-                  className="table-link-strong"
-                >
-                  查看详情<i class="iconfont icon-right"/>
-                </Link>
-              </div>
-            }
-          </div>
-        }
-        {
-          // prjDynamicsLXInfo.length > 0 &&
-          <div className='info-prj-dynamics-card'>
-            {
-              // prjDynamicsLXInfo.length > 0 &&
-              <div className='info-prj-dynamics-title'>
-                <img src={prj3} className='prj-img' alt=''/>
-                <div className='info-prj-dynamics-title-left'>
-                  <div className='prj-name'>项目立项</div>
-                  <div className='info-prj-dynamics-title-right'>
-                    <div className='info-prj-dynamics-title-right-box'>
-                      <div className='info-prj-dynamics-title-right-time'>
-                        今年：
-                        <div className='info-prj-dynamics-title-right-num'>
-                          {prjDynamicsLXInfo[0]?.JNSL || 0}个
-                        </div>
-                      </div>
-                      <div style={{paddingLeft: '8px'}} className='info-prj-dynamics-title-right-time'>
-                        近一周：
-                        <div className='info-prj-dynamics-title-right-num'>
-                          {prjDynamicsLXInfo[0]?.JYZSL || 0}个
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            }
-            <div className='info-prj-dynamics-content-box'>
-              {
-                prjDynamicsLXInfo.length > 0 ? prjDynamicsLXInfo.map(item => {
-                  return <Link
-                    // style={{ color: '#303133' }}
-                    to={{
-                      pathname: `/pms/manage/ProjectDetail/${EncryptBase64(
-                        JSON.stringify({
-                          xmid: item.XMID,
-                        }),
-                      )}`,
-                      state: {
-                        routes: routes,
-                      },
-                    }}
-                    className="table-link-strong"
-                  >
-                    <div className='info-prj-dynamics-content'>
-                      <div className='info-prj-dynamics-content-row1'>
-                        {item.XMMC}
-                      </div>
-                      <div className='info-prj-dynamics-content-row2'>
-                        <div className='info-prj-dynamics-content-row2-name'>
-                          <i className="iconfont icon-user"/>{item.XMJL}
-                        </div>
-                        <div className='info-prj-dynamics-content-row2-time'>
-                          <i
-                            className="iconfont icon-time"/>{item.SJ && moment(item.SJ, 'YYYY-MM-DD').format('YYYY-MM-DD')}
-                        </div>
-                      </div>
-                    </div>
-                  </Link>
-                }) : <Empty
-                  description="暂无数据"
-                  image={Empty.PRESENTED_IMAGE_SIMPLE}
-                  style={{
-                    width: '100%', display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    height: '100%'
-                  }}/>
-              }
-            </div>
-            {
-              prjDynamicsLXInfo.length > 0 && <div className='info-prj-dynamics-footer'>
-                <Link
-                  style={{color: '#303133'}}
-                  to={{
-                    pathname: `/pms/manage/ProjectStateInfo/${EncryptBase64(
-                      JSON.stringify({
-                        cxlx: 'XMLX',
-                        defaultYear,
-                      }),
-                    )}`,
-                    state: {
-                      routes: routes,
-                    },
-                  }}
-                  className="table-link-strong"
-                >
-                  查看详情<i class="iconfont icon-right"/>
-                </Link>
-              </div>
-            }
-          </div>
-        }
-        {
-          // prjDynamicsHTInfo.length > 0 &&
-          <div className='info-prj-dynamics-card'>
-            {
-              // prjDynamicsHTInfo.length > 0 &&
-              <div className='info-prj-dynamics-title'>
-                <img src={prj4} className='prj-img' alt=''/>
-                <div className='info-prj-dynamics-title-left'>
-                  <div className='prj-name'>合同签署完成</div>
-                  <div className='info-prj-dynamics-title-right'>
-                    <div className='info-prj-dynamics-title-right-box'>
-                      <div className='info-prj-dynamics-title-right-time'>
-                        今年：
-                        <div className='info-prj-dynamics-title-right-num'>
-                          {prjDynamicsHTInfo[0]?.JNSL || 0}个
-                        </div>
-                      </div>
-                      <div style={{paddingLeft: '8px'}} className='info-prj-dynamics-title-right-time'>
-                        近一周：
-                        <div className='info-prj-dynamics-title-right-num'>
-                          {prjDynamicsHTInfo[0]?.JYZSL || 0}个
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            }
-            <div className='info-prj-dynamics-content-box'>
-              {
-                prjDynamicsHTInfo.length > 0 ? prjDynamicsHTInfo.map(item => {
-                  return <Link
-                    // style={{ color: '#303133' }}
-                    to={{
-                      pathname: `/pms/manage/ProjectDetail/${EncryptBase64(
-                        JSON.stringify({
-                          xmid: item.XMID,
-                        }),
-                      )}`,
-                      state: {
-                        routes: routes,
-                      },
-                    }}
-                    className="table-link-strong"
-                  >
-                    <div className='info-prj-dynamics-content'>
-                      <div className='info-prj-dynamics-content-row1'>
-                        {item.XMMC}
-                      </div>
-                      <div className='info-prj-dynamics-content-row2'>
-                        <div className='info-prj-dynamics-content-row2-name'>
-                          <i className="iconfont icon-user"/>{item.XMJL}
-                        </div>
-                        <div className='info-prj-dynamics-content-row2-time'>
-                          <i
-                            className="iconfont icon-time"/>{item.SJ && moment(item.SJ, 'YYYY-MM-DD').format('YYYY-MM-DD')}
-                        </div>
-                      </div>
-                    </div>
-                  </Link>
-                }) : <Empty
-                  description="暂无数据"
-                  image={Empty.PRESENTED_IMAGE_SIMPLE}
-                  style={{
-                    width: '100%', display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    height: '100%'
-                  }}/>
-              }
-            </div>
-            {
-              prjDynamicsHTInfo.length > 0 &&
-              <div className='info-prj-dynamics-footer'>
-                <Link
-                  style={{color: '#303133'}}
-                  to={{
-                    pathname: `/pms/manage/ProjectStateInfo/${EncryptBase64(
-                      JSON.stringify({
-                        cxlx: 'HTQS',
-                        defaultYear,
-                      }),
-                    )}`,
-                    state: {
-                      routes: routes,
-                    },
-                  }}
-                  className="table-link-strong"
-                >
-                  查看详情<i class="iconfont icon-right"/>
-                </Link>
-              </div>
-            }
-          </div>
-        }
-        {
-          // prjDynamicsSXInfo.length > 0 &&
-          <div className='info-prj-dynamics-card'>
-            {
-              // prjDynamicsSXInfo.length > 0 &&
-              <div className='info-prj-dynamics-title'>
-                <img src={prj5} className='prj-img' alt=''/>
-                <div className='info-prj-dynamics-title-left'>
-                  <div className='prj-name'>项目上线</div>
-                  <div className='info-prj-dynamics-title-right'>
-                    <div className='info-prj-dynamics-title-right-box'>
-                      <div className='info-prj-dynamics-title-right-time'>
-                        今年：
-                        <div className='info-prj-dynamics-title-right-num'>
-                          {prjDynamicsSXInfo[0]?.JNSL || 0}个
-                        </div>
-                      </div>
-                      <div style={{paddingLeft: '8px'}} className='info-prj-dynamics-title-right-time'>
-                        近一周：
-                        <div className='info-prj-dynamics-title-right-num'>
-                          {prjDynamicsSXInfo[0]?.JYZSL || 0}个
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            }
-            <div className='info-prj-dynamics-content-box'>
-              {
-                prjDynamicsSXInfo.length > 0 ? prjDynamicsSXInfo.map(item => {
-                  return <Link
-                    // style={{ color: '#303133' }}
-                    to={{
-                      pathname: `/pms/manage/ProjectDetail/${EncryptBase64(
-                        JSON.stringify({
-                          xmid: item.XMID,
-                        }),
-                      )}`,
-                      state: {
-                        routes: routes,
-                      },
-                    }}
-                    className="table-link-strong"
-                  >
-                    <div className='info-prj-dynamics-content'>
-                      <div className='info-prj-dynamics-content-row1'>
-                        {item.XMMC}
-                      </div>
-                      <div className='info-prj-dynamics-content-row2'>
-                        <div className='info-prj-dynamics-content-row2-name'>
-                          <i className="iconfont icon-user"/>{item.XMJL}
-                        </div>
-                        <div className='info-prj-dynamics-content-row2-time'>
-                          <i
-                            className="iconfont icon-time"/>{item.SJ && moment(item.SJ, 'YYYY-MM-DD').format('YYYY-MM-DD')}
-                        </div>
-                      </div>
-                    </div>
-                  </Link>
-                }) : <Empty
-                  description="暂无数据"
-                  image={Empty.PRESENTED_IMAGE_SIMPLE}
-                  style={{
-                    width: '100%', display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    height: '100%'
-                  }}/>
-              }
-            </div>
-            {
-              prjDynamicsHTInfo.length > 0 &&
-              <div className='info-prj-dynamics-footer'>
-                <Link
-                  style={{color: '#303133'}}
-                  to={{
-                    pathname: `/pms/manage/ProjectStateInfo/${EncryptBase64(
-                      JSON.stringify({
-                        cxlx: 'SXXM',
-                        defaultYear,
-                      }),
-                    )}`,
-                    state: {
-                      routes: routes,
-                    },
-                  }}
-                  className="table-link-strong"
-                >
-                  查看详情<i class="iconfont icon-right"/>
-                </Link>
-              </div>
-            }
-          </div>
-        }
-        {
-          // prjDynamicsFKInfo.length > 0 &&
-          <div className='info-prj-dynamics-card'>
-            {
-              // prjDynamicsFKInfo.length > 0 &&
-              <div className='info-prj-dynamics-title'>
-                <img src={prj6} className='prj-img' alt=''/>
-                <div className='info-prj-dynamics-title-left'>
-                  <div className='prj-name'>项目付款</div>
-                  <div className='info-prj-dynamics-title-right'>
-                    <div className='info-prj-dynamics-title-right-box'>
-                      <div className='info-prj-dynamics-title-right-time'>
-                        今年：
-                        <div className='info-prj-dynamics-title-right-num'>
-                          {prjDynamicsFKInfo[0]?.JNSL || 0}个
-                        </div>
-                      </div>
-                      <div style={{paddingLeft: '8px'}} className='info-prj-dynamics-title-right-time'>
-                        近一周：
-                        <div className='info-prj-dynamics-title-right-num'>
-                          {prjDynamicsFKInfo[0]?.JYZSL || 0}个
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            }
-            <div className='info-prj-dynamics-content-box'>
-              {
-                prjDynamicsFKInfo.length > 0 ? prjDynamicsFKInfo.map(item => {
-                  return <Link
-                    // style={{ color: '#303133' }}
-                    to={{
-                      pathname: `/pms/manage/ProjectDetail/${EncryptBase64(
-                        JSON.stringify({
-                          xmid: item.XMID,
-                        }),
-                      )}`,
-                      state: {
-                        routes: routes,
-                      },
-                    }}
-                    className="table-link-strong"
-                  >
-                    <div className='info-prj-dynamics-content'>
-                      <div className='info-prj-dynamics-content-row1'>
-                        {item.XMMC}
-                      </div>
-                      <div className='info-prj-dynamics-content-row2'>
-                        <div className='info-prj-dynamics-content-row2-name'>
-                          <i className="iconfont icon-user"/>{item.XMJL}
-                        </div>
-                        <div className='info-prj-dynamics-content-row2-time'>
-                          <i
-                            className="iconfont icon-time"/>{item.SJ && moment(item.SJ, 'YYYY-MM-DD').format('YYYY-MM-DD')}
-                        </div>
-                      </div>
-                    </div>
-                  </Link>
-                }) : <Empty
-                  description="暂无数据"
-                  image={Empty.PRESENTED_IMAGE_SIMPLE}
-                  style={{
-                    width: '100%', display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    height: '100%'
-                  }}/>
-              }
-            </div>
-            {
-              prjDynamicsHTInfo.length > 0 &&
-              <div className='info-prj-dynamics-footer'>
-                <Link
-                  style={{color: '#303133'}}
-                  to={{
-                    pathname: `/pms/manage/ProjectStateInfo/${EncryptBase64(
-                      JSON.stringify({
-                        cxlx: 'FKXM',
-                        defaultYear,
-                      }),
-                    )}`,
-                    state: {
-                      routes: routes,
-                    },
-                  }}
-                  className="table-link-strong"
-                >
-                  查看详情<i class="iconfont icon-right"/>
-                </Link>
-              </div>
-            }
-          </div>
-        }
-        {
-          // prjDynamicsWJInfo.length > 0 &&
-          <div className='info-prj-dynamics-card'>
-            {
-              // prjDynamicsWJInfo.length > 0 &&
-              <div className='info-prj-dynamics-title'>
-                <img src={prj7} className='prj-img' alt=''/>
-                <div className='info-prj-dynamics-title-left'>
-                  <div className='prj-name'>项目完结</div>
-                  <div className='info-prj-dynamics-title-right'>
-                    <div className='info-prj-dynamics-title-right-box'>
-                      <div className='info-prj-dynamics-title-right-time'>
-                        今年：
-                        <div className='info-prj-dynamics-title-right-num'>
-                          {prjDynamicsWJInfo[0]?.JNSL || 0}个
-                        </div>
-                      </div>
-                      <div style={{paddingLeft: '8px'}} className='info-prj-dynamics-title-right-time'>
-                        近一周：
-                        <div className='info-prj-dynamics-title-right-num'>
-                          {prjDynamicsWJInfo[0]?.JYZSL || 0}个
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            }
-            <div className='info-prj-dynamics-content-box'>
-              {
-                prjDynamicsWJInfo.length > 0 ? prjDynamicsWJInfo.map(item => {
-                  return <Link
-                    // style={{ color: '#303133' }}
-                    to={{
-                      pathname: `/pms/manage/ProjectDetail/${EncryptBase64(
-                        JSON.stringify({
-                          xmid: item.XMID,
-                        }),
-                      )}`,
-                      state: {
-                        routes: routes,
-                      },
-                    }}
-                    className="table-link-strong"
-                  >
-                    <div className='info-prj-dynamics-content'>
-                      <div className='info-prj-dynamics-content-row1'>
-                        {item.XMMC}
-                      </div>
-                      <div className='info-prj-dynamics-content-row2'>
-                        <div className='info-prj-dynamics-content-row2-name'>
-                          <i className="iconfont icon-user"/>{item.XMJL}
-                        </div>
-                        <div className='info-prj-dynamics-content-row2-time'>
-                          <i
-                            className="iconfont icon-time"/>{item.SJ && moment(item.SJ, 'YYYY-MM-DD').format('YYYY-MM-DD')}
-                        </div>
-                      </div>
-                    </div>
-                  </Link>
-                }) : <Empty
-                  description="暂无数据"
-                  image={Empty.PRESENTED_IMAGE_SIMPLE}
-                  style={{
-                    width: '100%', display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    height: '100%'
-                  }}/>
-              }
-            </div>
-            {
-              prjDynamicsHTInfo.length > 0 &&
-              <div className='info-prj-dynamics-footer'>
-                <Link
-                  style={{color: '#303133'}}
-                  to={{
-                    pathname: `/pms/manage/ProjectStateInfo/${EncryptBase64(
-                      JSON.stringify({
-                        cxlx: 'WJXM',
-                        defaultYear,
-                      }),
-                    )}`,
-                    state: {
-                      routes: routes,
-                    },
-                  }}
-                  className="table-link-strong"
-                >
-                  查看详情<i class="iconfont icon-right"/>
-                </Link>
-              </div>
-            }
-          </div>
-        }
+        overlayClassName="prj-dynamic-filter-popover"
+      >
+        <div
+          className="filter-item"
+          key="更多筛选"
+          onClick={() => {
+            //初始值 与外边一致
+            setMoreData(p => ({
+              ...p,
+              tag: labelData.sltedItems,
+              org: orgData.sltedItems,
+              projectName,
+            }));
+          }}
+        >
+          <img className="filter-icon" src={iconFilter} alt="更多筛选" />
+          更多筛选
+          <div className="divide-line"></div>
+        </div>
+      </Popover>
+    );
+  };
+
+  //画板、列表
+  const getTabsBox = () => {
+    return (
+      <div className="tabs-box">
+        <Radio.Group value={curTab} buttonStyle="solid" onChange={e => setCurTab(e.target.value)}>
+          <Radio.Button value="1" key="1">
+            <i className="iconfont icon-workbench" />
+            看板
+          </Radio.Button>
+          <Radio.Button value="2" key="2">
+            <i className="iconfont icon-xmlb" />
+            列表
+          </Radio.Button>
+        </Radio.Group>
       </div>
-    </Spin>
-  </div>);
-}
+    );
+  };
+
+  //展示子块
+  const getDynamicCard = ({ title = '-', value = '-', children = [] }, index = '-') => {
+    return (
+      <div className="info-prj-dynamics-card" key={value}>
+        <div className="info-prj-dynamics-title">
+          <div className="info-prj-dynamics-title-num">{index < 10 ? '0' + index : index}</div>
+          <div className="info-prj-dynamics-title-left">
+            <div className="prj-name">{title}</div>
+            <div className="info-prj-dynamics-title-right">
+              <div className="info-prj-dynamics-title-right-box">
+                <div className="info-prj-dynamics-title-right-time">
+                  今年：
+                  <div className="info-prj-dynamics-title-right-num">
+                    {children[0]?.JNZX ?? 0}个
+                  </div>
+                </div>
+                <div style={{ paddingLeft: '8px' }} className="info-prj-dynamics-title-right-time">
+                  近一周：
+                  <div className="info-prj-dynamics-title-right-num">
+                    {children[0]?.BZZX ?? 0}个
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="info-prj-dynamics-content-box">
+          {children.length > 0 ? (
+            children.map(item => {
+              return (
+                <Link
+                  to={{
+                    pathname: `/pms/manage/ProjectDetail/${EncryptBase64(
+                      JSON.stringify({
+                        xmid: item.XMID,
+                        routes: routes,
+                      }),
+                    )}`,
+                  }}
+                  className="table-link-strong"
+                >
+                  <div className="info-prj-dynamics-content">
+                    <div className="info-prj-dynamics-content-row1">
+                      <Tooltip title={item.XMMC} placement="topLeft">
+                        {item.XMMC}
+                      </Tooltip>
+                    </div>
+                    <div className="info-prj-dynamics-content-row2">
+                      <div className="info-prj-dynamics-content-row2-name">
+                        <i className="iconfont icon-user" />
+                        {item.XMJL}
+                      </div>
+                      <div className="info-prj-dynamics-content-row2-time">
+                        <i className="iconfont icon-time" />
+                        {item.ZXSJ}
+                      </div>
+                    </div>
+                  </div>
+                </Link>
+              );
+            })
+          ) : (
+            <Empty
+              description="暂无数据"
+              image={Empty.PRESENTED_IMAGE_SIMPLE}
+              style={{
+                width: '100%',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                height: '100%',
+              }}
+            />
+          )}
+        </div>
+        {children.length > 0 && (
+          <div className="info-prj-dynamics-footer">
+            <Link
+              style={{ color: '#303133' }}
+              to={{
+                pathname: `/pms/manage/ProjectStateInfo/${EncryptBase64(
+                  JSON.stringify({
+                    cxlx: value,
+                    defaultYear,
+                  }),
+                )}`,
+                state: {
+                  routes: routes,
+                },
+              }}
+              className="table-link-strong"
+            >
+              查看详情
+              <i class="iconfont icon-right" />
+            </Link>
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  return (
+    <div className="info-prj-dynamics">
+      <Spin spinning={false} wrapperClassName="spin" tip="正在努力的加载中..." size="large">
+        <div className="info-prj-dynamics-card-box">
+          <div className="filter-row">
+            {/* 画板、列表 */}
+            {getTabsBox()}
+            {/* 部门 */}
+            {getOrgBox(curTab)}
+            {/* 标签 */}
+            {getLabelBox(curTab)}
+            {/* 更多筛选 */}
+            {curTab === '1' && getMoreBox()}
+            {curTab === '1' && (
+              <Input
+                placeholder="请输入项目名称"
+                value={projectName}
+                // allowClear
+                onChange={e => {
+                  setPrjName(e?.target?.value);
+                  getPrjDynamicData({
+                    ...filterParams,
+                    projectName: e?.target?.value,
+                  });
+                }}
+              />
+            )}
+          </div>
+          {curTab === '1' && dataList.map((x, i) => getDynamicCard(x, i + 1))}
+          {curTab === '2' && <ProjectQueryTable dictionary={dictionary} />}
+        </div>
+      </Spin>
+    </div>
+  );
+});

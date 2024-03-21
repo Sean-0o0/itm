@@ -1,17 +1,24 @@
-import React, { Component } from 'react';
+import React, { Component, useCallback } from 'react';
 import TopConsole from './TopConsole';
 import Overview from './Overview';
 import InfoTable from './InfoTable';
 import { message, Spin, Radio } from 'antd';
 import {
-  QueryProjectDynamics,
+  QueryProjectDynamicSection,
   QueryProjectGeneralInfo,
   QueryUserRole,
 } from '../../../services/pmsServices';
 import ProjectDynamics from './ProjectDynamics';
-import ProjectQueryTable from './ProjectQueryTable';
 import moment from 'moment';
 import StatisticYear from '../SupplierSituation/StatisticYear';
+import { connect } from 'dva';
+import { setParentSelectableFalse } from '../../../utils/pmsPublicUtils';
+import TreeUtils from '../../../utils/treeUtils';
+import {
+  FetchQueryProjectLabel,
+  FetchQueryOrganizationInfo,
+} from '../../../services/projectManage';
+import { get, debounce } from 'lodash';
 
 class ProjectBuilding extends Component {
   state = {
@@ -63,37 +70,24 @@ class ProjectBuilding extends Component {
       total: -1,
     },
     radioKeys: '项目列表',
-    //项目动态信息-付款信息
-    prjDynamicsFKInfo: [],
-    totalrowsFK: 0,
-    //项目动态信息-合同信息
-    prjDynamicsHTInfo: [],
-    totalrowsHT: 0,
-    //项目动态信息-立项信息
-    prjDynamicsLXInfo: [],
-    totalrowsLX: 0,
-    //项目动态信息-上线信息
-    prjDynamicsSXInfo: [],
-    totalrowsSX: 0,
-    //项目动态信息-完结信息
-    prjDynamicsWJInfo: [],
-    totalrowsWJ: 0,
-    //项目动态信息-信委会信息
-    prjDynamicsXWHInfo: [],
-    totalrowsXWH: 0,
-    //项目动态信息-总办会信息
-    prjDynamicsZBHInfo: [],
-    totalrowsZBH: 0,
     statisticYearData: {
       currentYear: undefined,
       dropdown: [],
     },
+    dynamicData: [],
+    labelData: [],
+    orgData: [],
   };
 
   componentDidMount() {
     this.state.radioKeys === '项目列表' && this.fetchRole(this.state.statisticYearData.currentYear);
-    this.state.radioKeys === '项目动态' &&
-      this.queryProjectDynamics(this.state.statisticYearData.currentYear);
+    if (this.state.radioKeys === '项目动态') {
+      this.getSltData();
+      this.getPrjDynamicData({
+        startYear: moment(String(this.state.statisticYearData.currentYear)),
+        endYear: moment(String(this.state.statisticYearData.currentYear)),
+      });
+    }
     this.setState({
       statisticYearData: {
         ...this.state.statisticYearData,
@@ -222,88 +216,102 @@ class ProjectBuilding extends Component {
       });
   };
 
-  queryProjectDynamics = year => {
-    this.setState({
-      loading: true,
-    });
-    const payload = {
-      current: 1,
-      // "manager": 0,
-      pageSize: 5,
-      paging: 1,
-      // "projectID": 0,
-      queryType: 'ALL',
-      sort: '',
-      total: -1,
-      totalrowsFK: -1,
-      totalrowsHT: -1,
-      totalrowsLX: -1,
-      totalrowsSX: -1,
-      totalrowsWJ: -1,
-      totalrowsXWH: -1,
-      totalrowsZBH: -1,
-      year: year ?? this.state.statisticYearData.currentYear ?? moment().year(),
-    };
-    QueryProjectDynamics({
-      ...payload,
-    })
-      .then(res => {
-        const {
-          code = 0,
-          resultFK,
-          resultHT,
-          resultLX,
-          resultSX,
-          resultWJ,
-          resultXWH,
-          resultZBH,
-          totalrowsFK,
-          totalrowsHT,
-          totalrowsLX,
-          totalrowsSX,
-          totalrowsWJ,
-          totalrowsXWH,
-          totalrowsZBH,
-        } = res;
-        if (code > 0) {
-          this.setState({
-            loading: false,
-            //项目动态信息-付款信息
-            prjDynamicsFKInfo: JSON.parse(resultFK),
-            totalrowsFK: totalrowsFK,
-            //项目动态信息-合同信息
-            prjDynamicsHTInfo: JSON.parse(resultHT),
-            totalrowsHT: totalrowsHT,
-            //项目动态信息-立项信息
-            prjDynamicsLXInfo: JSON.parse(resultLX),
-            totalrowsLX: totalrowsLX,
-            //项目动态信息-上线信息
-            prjDynamicsSXInfo: JSON.parse(resultSX),
-            totalrowsSX: totalrowsSX,
-            //项目动态信息-完结信息
-            prjDynamicsWJInfo: JSON.parse(resultWJ),
-            totalrowsWJ: totalrowsWJ,
-            //项目动态信息-信委会信息
-            prjDynamicsXWHInfo: JSON.parse(resultXWH),
-            totalrowsXWH: totalrowsXWH,
-            //项目动态信息-总办会信息
-            prjDynamicsZBHInfo: JSON.parse(resultZBH),
-            totalrowsZBH: totalrowsZBH,
-          });
-        } else {
-          message.error(note);
-          this.setState({
-            loading: false,
-          });
-        }
-      })
-      .catch(err => {
-        message.error('查询项目动态失败');
-        this.setState({
-          loading: false,
-        });
+  getSltData = async () => {
+    try {
+      this.setState({ loading: true });
+      //标签
+      const labelPromise = FetchQueryProjectLabel({ type: undefined });
+      //部门
+      const orgPromise = FetchQueryOrganizationInfo({
+        type: 'ZZJG',
       });
+      const [labelRes, orgRes] = await Promise.all([labelPromise, orgPromise]);
+      if (labelRes.success) {
+        let labelTree = TreeUtils.toTreeData(JSON.parse(labelRes.record), {
+          keyName: 'ID',
+          pKeyName: 'FID',
+          titleName: 'BQMC',
+          normalizeTitleName: 'title',
+          normalizeKeyName: 'value',
+        });
+        labelTree = get(labelTree, '[0].children[0].children', []);
+        labelTree.forEach(x => setParentSelectableFalse(x));
+        this.setState({
+          labelData: labelTree,
+        });
+      }
+      if (orgRes.success) {
+        let orgTree = TreeUtils.toTreeData(orgRes.record, {
+          keyName: 'orgId',
+          pKeyName: 'orgFid',
+          titleName: 'orgName',
+          normalizeTitleName: 'title',
+          normalizeKeyName: 'value',
+        });
+        orgTree = get(orgTree, '[0].children', []);
+        this.setState({
+          orgData: orgTree,
+        });
+      }
+      // this.setState({ loading: false });
+    } catch (error) {
+      this.setState({
+        loading: false,
+      });
+      console.error('下拉框数据获取失败', error);
+      message.error('下拉框数据获取失败', 1);
+    }
   };
+
+  getPrjDynamicData = debounce(
+    ({ stage, org, tag, projectManager, projectName, projectStatus, startYear, endYear }) => {
+      this.setState({
+        loading: true,
+      });
+      QueryProjectDynamicSection({
+        stage: stage === undefined ? undefined : stage.map(x => x.id).join(',') || undefined,
+        org: org === undefined ? undefined : org.map(x => x.id).join(',') || undefined,
+        tag: tag === undefined ? undefined : tag.map(x => x.id).join(';') || undefined,
+        projectManager: projectManager === '' ? undefined : projectManager,
+        projectName: projectName === '' ? undefined : projectName,
+        projectStatus: projectStatus === undefined ? undefined : projectStatus,
+        startYear: startYear === undefined ? undefined : startYear?.year(),
+        endYear: startYear === undefined ? undefined : endYear?.year(),
+        role: this.props.roleData.role,
+        queryType: 'ALL',
+        current: 1,
+        pageSize: 9,
+        paging: -1,
+        sort: '',
+        total: -1,
+      })
+        .then(res => {
+          if (res.success) {
+            let result = JSON.parse(res.result);
+            // console.log('🚀 ~ ProjectBuilding ~ result:', result, this.props.dictionary?.XMJZ);
+            const xmjzData = this.props.dictionary?.XMJZ?.filter(x => !['7', '10'].includes(x.ibm)); //项目阶段数据（设备采购、包件信息录入不查）
+            const data = xmjzData.map(x => ({
+              value: x.ibm,
+              title: x.note,
+              children: result.filter(r => String(r.XMJZ) === String(x.ibm)),
+            }));
+            console.log('🚀 ~ ProjectBuilding ~ data ~ data:', data);
+            this.setState({
+              loading: false,
+              dynamicData: data,
+            });
+          }
+        })
+        .catch(e => {
+          this.setState({
+            loading: false,
+          });
+          console.error('项目动态数据获取失败', e);
+          message.error('项目动态数据获取失败', 1);
+        });
+    },
+    800,
+  );
 
   handleData = (fxxx, ryxx, jrxz) => {
     const zy = {
@@ -406,7 +414,13 @@ class ProjectBuilding extends Component {
       radioKeys,
     });
     radioKeys === '项目列表' && this.fetchRole();
-    radioKeys === '项目动态' && this.queryProjectDynamics();
+    if (radioKeys === '项目动态') {
+      this.getSltData();
+      this.getPrjDynamicData({
+        startYear: moment(String(this.state.statisticYearData.currentYear)),
+        endYear: moment(String(this.state.statisticYearData.currentYear)),
+      });
+    }
   };
 
   render() {
@@ -421,28 +435,10 @@ class ProjectBuilding extends Component {
       xmxx = [],
       loading,
       radioKeys = '项目列表',
-      //项目动态信息-付款信息
-      prjDynamicsFKInfo = [],
-      totalrowsFK = 0,
-      //项目动态信息-合同信息
-      prjDynamicsHTInfo = [],
-      totalrowsHT = 0,
-      //项目动态信息-立项信息
-      prjDynamicsLXInfo = [],
-      totalrowsLX = 0,
-      //项目动态信息-上线信息
-      prjDynamicsSXInfo = [],
-      totalrowsSX = 0,
-      //项目动态信息-完结信息
-      prjDynamicsWJInfo = [],
-      totalrowsWJ = 0,
-      //项目动态信息-信委会信息
-      prjDynamicsXWHInfo = [],
-      totalrowsXWH = 0,
-      //项目动态信息-总办会信息
-      prjDynamicsZBHInfo = [],
-      totalrowsZBH = 0,
       statisticYearData = {},
+      dynamicData = [],
+      labelData = [],
+      orgData = [],
     } = this.state;
 
     return (
@@ -467,7 +463,13 @@ class ProjectBuilding extends Component {
                     },
                     () => {
                       radioKeys === '项目列表' && this.fetchRole(year);
-                      radioKeys === '项目动态' && this.queryProjectDynamics(year);
+                      if (radioKeys === '项目动态') {
+                        this.getSltData();
+                        this.getPrjDynamicData({
+                          startYear: moment(String(year)),
+                          endYear: moment(String(year)),
+                        });
+                      }
                     },
                   )
                 }
@@ -519,34 +521,14 @@ class ProjectBuilding extends Component {
             </div>
           )}
           {radioKeys === '项目动态' && (
-            <ProjectQueryTable
-              dictionary={dictionary}
+            <ProjectDynamics
+              //项目动态信息-付款信息
+              routes={routes}
+              defaultYear={statisticYearData.currentYear}
+              dataList={dynamicData}
+              getPrjDynamicData={this.getPrjDynamicData}
+              sltorData={{ label: labelData, org: orgData }}
             />
-            // <ProjectDynamics
-            //   //项目动态信息-付款信息
-            //   routes={routes}
-            //   prjDynamicsFKInfo={prjDynamicsFKInfo}
-            //   totalrowsFK={totalrowsFK}
-            //   //项目动态信息-合同信息
-            //   prjDynamicsHTInfo={prjDynamicsHTInfo}
-            //   totalrowsHT={totalrowsHT}
-            //   //项目动态信息-立项信息
-            //   prjDynamicsLXInfo={prjDynamicsLXInfo}
-            //   totalrowsLX={totalrowsLX}
-            //   //项目动态信息-上线信息
-            //   prjDynamicsSXInfo={prjDynamicsSXInfo}
-            //   totalrowsSX={totalrowsSX}
-            //   //项目动态信息-完结信息
-            //   prjDynamicsWJInfo={prjDynamicsWJInfo}
-            //   totalrowsWJ={totalrowsWJ}
-            //   //项目动态信息-信委会信息
-            //   prjDynamicsXWHInfo={prjDynamicsXWHInfo}
-            //   totalrowsXWH={totalrowsXWH}
-            //   //项目动态信息-总办会信息
-            //   prjDynamicsZBHInfo={prjDynamicsZBHInfo}
-            //   totalrowsZBH={totalrowsZBH}
-            //   defaultYear={statisticYearData.currentYear}
-            // />
           )}
           {radioKeys === '项目列表' && (
             <InfoTable
@@ -567,4 +549,8 @@ class ProjectBuilding extends Component {
   }
 }
 
-export default ProjectBuilding;
+export default connect(({ global }) => ({
+  dictionary: global.dictionary,
+  userBasicInfo: global.userBasicInfo,
+  roleData: global.roleData,
+}))(ProjectBuilding);
