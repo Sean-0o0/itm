@@ -1429,11 +1429,7 @@ export default connect(({ global = {} }) => ({
             )}
           </div>
           <div className="col-right">
-            {/* <ProgressStatistics
-              xmid={xmid}
-              isSpinning={isSpinning}
-              setIsSpinning={setIsSpinning}
-            /> */}
+            <ProgressStatistics xmid={xmid} isSpinning={isSpinning} setIsSpinning={setIsSpinning} />
             <PaymentStatus
               xmid={xmid}
               prjData={prjData}
