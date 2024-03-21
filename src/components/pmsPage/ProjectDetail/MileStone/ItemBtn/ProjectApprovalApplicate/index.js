@@ -461,7 +461,6 @@ export default connect(({ global }) => ({
     }
 
 
-
     return (
       <Modal
         wrapClassName='software-payment-wht-modal ProjectApprovalApplicate'
@@ -469,7 +468,7 @@ export default connect(({ global }) => ({
         maskClosable={false}
         style={{ top: 10 }}
         maskStyle={{ backgroundColor: 'rgb(0 0 0 / 30%)' }}
-        zIndex={100}
+        zIndex={2517}
         title={null}
         visible={visible}
         onCancel={closeHandle}

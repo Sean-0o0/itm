@@ -1429,12 +1429,17 @@ export default connect(({ global = {} }) => ({
             )}
           </div>
           <div className="col-right">
-            {/* <PaymentStatus
-
-            /> */}
             {/* <ProgressStatistics
-
+              xmid={xmid}
+              isSpinning={isSpinning}
+              setIsSpinning={setIsSpinning}
             /> */}
+            <PaymentStatus
+              xmid={xmid}
+              prjData={prjData}
+              isSpinning={isSpinning}
+              setIsSpinning={setIsSpinning}
+            />
             <ShortcutCard
               dataProps={{
                 prjData,

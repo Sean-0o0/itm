@@ -40,7 +40,7 @@ export default connect(({ global = {} }) => ({
   } = dataProps;
 
   const { prjBasic = {}, member = [], contrastArr = [] } = prjData;
-  // console.log('xxxxxxxxxxxxxxxxxx', prjBasic)
+  // console.log('xxxxxxxxxxxxxxxxxxprjBasic', prjBasic, )
   const {
     getPrjDtlData,
     setIsSpinning,
@@ -478,6 +478,7 @@ export default connect(({ global = {} }) => ({
     <div className="shortcut-card-box">
       <div className="top-title">快捷入口</div>
       {isSinglePayment ? (
+        // 单费用页面
         <div className="content">
           {is_XMJL_FXMJL &&
             prjBasic.WJZT !== '1' &&
@@ -486,8 +487,17 @@ export default connect(({ global = {} }) => ({
               txt: '项目完结',
               fn: () => handlePrjFinish(xmid),
             })}
+
+          {is_XMJL_FXMJL &&
+          prjBasic.WJZT !== '5' && // 完结状态 ==='5'   代表   “已终止”
+            getShortcutItem({
+              imgTxt: 'terminateHandle',
+              txt: '项目终止',
+              fn: () => openProjectAbortModal(),
+            })}
         </div>
       ) : (
+        //其他页面
         <div className="content">
           {is_XMJL_FXMJL &&
             getShortcutItem({

@@ -538,7 +538,7 @@ export default connect(({ global }) => ({
       });
   };
 
-  //打开lb流程详情弹窗
+  //打开livebos流程详情弹窗
   const openLCXQModal = (item = {}) => {
     if (item.kzzd !== '') {
       setLcxqModalData({
@@ -590,7 +590,7 @@ export default connect(({ global }) => ({
 
   //按钮点击
   const handleToDo = item => {
-    // console.log('handleToDo', item);
+    // console.log('handleToDo点击了按钮', item);
     switch (item?.sxmc) {
       //跳转livebos页面
       case '月报填写':
@@ -671,6 +671,8 @@ export default connect(({ global }) => ({
         return jumpToBudgetInput(item);
       case 'OA合同信息落地确认':
         return jumpToInnovationContractEdit(item);
+      case '项目终止流程待处理':
+        return openLCXQModal(item);
 
       //暂不处理
       case '外包人员录用信息提交':
