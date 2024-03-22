@@ -317,6 +317,7 @@ class ItemBtn extends React.Component {
       isMember = false,
       isMnger = false,
       isFXMJL = false,
+      isEnd = false,
     } = this.props.auth;
     const allAuth = () => {
       if (done)
@@ -370,7 +371,11 @@ class ItemBtn extends React.Component {
         );
       return '';
     };
-    if (isMnger) {
+
+    if (isEnd) {
+      //终止了，不能操作
+      return onlyCk();
+    } else if (isMnger) {
       return allAuth();
     } else if (isMember || isFXMJL) {
       if (done) return onlyCk();
@@ -382,6 +387,8 @@ class ItemBtn extends React.Component {
 
   //信息录入修改
   getXxlrxg = (done, item) => {
+    //权限控制
+    const { isEnd = false } = this.props.auth || {};
     const xxlrxg = (item, type = '') => {
       let params = {};
       if (type === 'MOD') {
@@ -506,9 +513,12 @@ class ItemBtn extends React.Component {
                       {x.htbt}
                     </div>
                   </Tooltip>
-                  <div className="opr-btn" onClick={() => htxxxg(x.htxxid)}>
-                    修改
-                  </div>
+                  {/* 终止了，不能操作 */}
+                  {!isEnd && (
+                    <div className="opr-btn" onClick={() => htxxxg(x.htxxid)}>
+                      修改
+                    </div>
+                  )}
                 </div>
               ))}
               {this.state.rjhtxxData.list.length === 0 && (
@@ -538,16 +548,19 @@ class ItemBtn extends React.Component {
                 查看
               </div>
             </Popover>
-            <Popover
-              placement="bottom"
-              title={null}
-              content={reoprMoreContent}
-              overlayClassName="btn-more-content-popover"
-            >
-              <div className="reopr-more">
-                <i className="iconfont icon-more2" />
-              </div>
-            </Popover>
+            {/* 终止了，不能操作 */}
+            {!isEnd && (
+              <Popover
+                placement="bottom"
+                title={null}
+                content={reoprMoreContent}
+                overlayClassName="btn-more-content-popover"
+              >
+                <div className="reopr-more">
+                  <i className="iconfont icon-more2" />
+                </div>
+              </Popover>
+            )}
           </div>
         );
       }
@@ -559,6 +572,8 @@ class ItemBtn extends React.Component {
         </div>
       );
     }
+    //终止了，不能操作
+    if (isEnd) return '';
     return (
       <div className="opr-btn" onClick={() => xxlrxg(item)}>
         录入
@@ -568,6 +583,10 @@ class ItemBtn extends React.Component {
 
   //硬件中标信息录入、合同信息录入
   getYjxxlr = (done, item, isBid = true) => {
+    //权限控制
+    const { isEnd = false } = this.props.auth || {};
+    //终止了，不能操作
+    if (isEnd) return '';
     const lrxg = (item, isBid = true, type) => {
       if (isBid)
         this.setState({
@@ -738,6 +757,8 @@ class ItemBtn extends React.Component {
   };
 
   getHtxxlr = (done, item) => {
+    //权限控制
+    const { isEnd = false } = this.props.auth || {};
     //录入
     const htxxlr = () => {
       message.info('请先在OA中进行合同录入，后在系统中进行确认即可', 2);
@@ -835,9 +856,12 @@ class ItemBtn extends React.Component {
                     {x.htbt}
                   </div>
                 </Tooltip>
-                <div className="opr-btn" onClick={() => htxxxg(x)}>
-                  修改
-                </div>
+                {/* 终止了，不能操作 */}
+                {!isEnd && (
+                  <div className="opr-btn" onClick={() => htxxxg(x)}>
+                    修改
+                  </div>
+                )}
               </div>
             ))}
             {this.state.rjhtxxData.list.length === 0 && (
@@ -867,19 +891,23 @@ class ItemBtn extends React.Component {
               查看
             </div>
           </Popover>
-          <Popover
-            placement="bottom"
-            title={null}
-            content={reoprMoreContent}
-            overlayClassName="btn-more-content-popover"
-          >
-            <div className="reopr-more">
-              <i className="iconfont icon-more2" />
-            </div>
-          </Popover>
+          {!isEnd && (
+            <Popover
+              placement="bottom"
+              title={null}
+              content={reoprMoreContent}
+              overlayClassName="btn-more-content-popover"
+            >
+              <div className="reopr-more">
+                <i className="iconfont icon-more2" />
+              </div>
+            </Popover>
+          )}
         </div>
       );
     }
+    //终止了，不能操作
+    if (isEnd) return '';
     return (
       <div className="opr-btn" onClick={htxxlr}>
         录入
@@ -888,6 +916,10 @@ class ItemBtn extends React.Component {
   };
   //迭代合同信息录入
   getDdhtxxlr = (done, item) => {
+    //权限控制
+    const { isEnd = false } = this.props.auth || {};
+    //终止了，不能操作
+    if (isEnd) return '';
     const xxlrxg = (item, type = 'ADD') => {
       this.setState({
         ddhtxxlr: {
@@ -915,6 +947,10 @@ class ItemBtn extends React.Component {
 
   //询比结果录入
   getXbjglr = (done, item) => {
+    //权限控制
+    const { isEnd = false } = this.props.auth || {};
+    //终止了，不能操作
+    if (isEnd) return '';
     const lrxg = (item, type) => {
       this.setState({
         xbjglrModalVisible: true,
@@ -931,6 +967,10 @@ class ItemBtn extends React.Component {
 
   //员工评价开启
   getCz = (done, item) => {
+    //权限控制
+    const { isEnd = false } = this.props.auth || {};
+    //终止了，不能操作
+    if (isEnd) return '';
     const ygpj = item => {
       let params = this.getParams('View_XMRYPF', 'View_XMRYPF_OPENCOMMENT', [
         {
@@ -1563,7 +1603,8 @@ class ItemBtn extends React.Component {
       );
     };
     //权限控制
-    const { isLeader = false, isMember = false, isMnger = false } = this.props.auth;
+    const { isLeader = false, isMember = false, isMnger = false, isEnd = false } =
+      this.props.auth || {};
     if (isLeader && !isMnger) {
       return (
         <div className="opr-more">
@@ -1609,19 +1650,23 @@ class ItemBtn extends React.Component {
               查看
             </div>
           )}
-          <Popover
-            placement="bottom"
-            title={null}
-            content={reoprMoreCotent}
-            overlayClassName="btn-more-content-popover"
-          >
-            <div className="reopr-more">
-              <i className="iconfont icon-more2" />
-            </div>
-          </Popover>
+          {/* 终止了，不能操作 */}
+          {!isEnd && (
+            <Popover
+              placement="bottom"
+              title={null}
+              content={reoprMoreCotent}
+              overlayClassName="btn-more-content-popover"
+            >
+              <div className="reopr-more">
+                <i className="iconfont icon-more2" />
+              </div>
+            </Popover>
+          )}
         </div>
       );
-
+    //终止了，不能操作
+    if (isEnd) return '';
     if (item.sxmc === '迭代合同签署流程')
       return (
         <Popover
@@ -1645,7 +1690,7 @@ class ItemBtn extends React.Component {
     name,
     done,
     item,
-    { isLeader = false, isMember = false, isMnger = false, isFXMJL = false },
+    { isLeader = false, isMember = false, isMnger = false, isFXMJL = false, isEnd = false },
   ) => {
     const that = this;
     //！！！ 后边新增事项配置时，注意配置完整

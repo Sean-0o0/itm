@@ -17,7 +17,7 @@ import BridgeModel from '../../../Common/BasicModal/BridgeModel';
 import { CreateOperateHyperLink, ProjectCollect } from '../../../../services/pmsServices';
 import EditProjectInfoModel from '../../EditProjectInfoModel';
 import iconCompleted from '../../../../assets/projectDetail/icon_completed.png';
-import iconTerminated from '../../../../assets/projectDetail/icon_terminated.png'
+import iconTerminated from '../../../../assets/projectDetail/icon_terminated.png';
 import PaymentModal from './PaymentModal';
 import SinglePaymentModal from '../../HomePage/ShortcutCard/SinglePaymentModal';
 
@@ -40,6 +40,7 @@ export default function TopConsole(props) {
     isAdmin = false,
     ysspHide = false,
     isSinglePayment = false,
+    isEnd = false,
   } = props;
   const [fileAddVisible, setFileAddVisible] = useState(false); //项目信息修改弹窗显示
   const [src_fileAdd, setSrc_fileAdd] = useState({}); //项目信息修改弹窗显示
@@ -845,7 +846,7 @@ export default function TopConsole(props) {
           <div className="prj-name">
             {prjBasic.XMMC &&
               prjBasic.XMMC +
-              (iterationYear.currentYear && isDDXM ? ` -${iterationYear.currentYear}` : '')}
+                (iterationYear.currentYear && isDDXM ? ` -${iterationYear.currentYear}` : '')}
           </div>
         ) : (
           <div className="prj-name">{prjBasic?.XMMC}</div>
@@ -968,21 +969,24 @@ export default function TopConsole(props) {
           {prjBasic.WJZT === '1' && (
             <img src={iconCompleted} className="icon-completed" alt="图片：已完结" />
           )}
-          {prjBasic.WJZT === '5' &&
+          {prjBasic.WJZT === '5' && (
             <img src={iconTerminated} className="icon-completed" alt="图片：已终止" />
-          }
-          {!ysspHide && (allowEdit() || String(LOGIN_USER_INFO.id) === '0') && (
+          )}
+          {!isEnd && !ysspHide && (allowEdit() || String(LOGIN_USER_INFO.id) === '0') && (
             <Button className="btn-edit" onClick={handleEditPrjInfo}>
               编辑
             </Button>
           )}
-          {!isSinglePayment && !ysspHide && (allowEdit() || String(LOGIN_USER_INFO.id) === '0') && (
-            <Dropdown overlay={btnMoreContent()} overlayClassName="tc-btn-more-content-dropdown">
-              <Button className="btn-more">
-                <i className="iconfont icon-more" />
-              </Button>
-            </Dropdown>
-          )}
+          {!isEnd &&
+            !isSinglePayment &&
+            !ysspHide &&
+            (allowEdit() || String(LOGIN_USER_INFO.id) === '0') && (
+              <Dropdown overlay={btnMoreContent()} overlayClassName="tc-btn-more-content-dropdown">
+                <Button className="btn-more">
+                  <i className="iconfont icon-more" />
+                </Button>
+              </Dropdown>
+            )}
         </div>
       </div>
       <div className="mnger-time">
@@ -992,9 +996,11 @@ export default function TopConsole(props) {
         {prjBasic.CJRQ ? moment(prjBasic.CJRQ).format('YYYY-MM-DD') : null}
 
         {prjBasic.ZZSM && <span className="project-terminationt-statement">项目终止说明：</span>}
-        {prjBasic.ZZSM &&
-          <span className="project-terminationt-statement-content" title={prjBasic.ZZSM}>{prjBasic.ZZSM}</span>
-        }
+        {prjBasic.ZZSM && (
+          <span className="project-terminationt-statement-content" title={prjBasic.ZZSM}>
+            {prjBasic.ZZSM}
+          </span>
+        )}
         {isDDXM && iterationYear.dropdown?.length > 0 && (
           <div className="iteration-year">
             迭代年份：

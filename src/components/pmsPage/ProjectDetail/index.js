@@ -124,6 +124,7 @@ export default connect(({ global = {} }) => ({
   const [openNewIteContent, setOpenNewIteContent] = useState(false); //（转为自研迭代项目后）打开新增升级内容弹窗
   const ysspHide = String(prjData.prjBasic?.XMZT) === '5'; //预算审批的情况 隐藏 里程碑、项目跟踪、快捷方式、编辑及更多按钮
   const isSinglePayment = String(prjData.prjBasic?.XMLX).includes('单费用付款'); //是否单费用付款项目 项目人员、项目节点、项目跟踪模块不展示。右上角的更多按钮也不展示
+  const isEnd = String(prjData.prjBasic?.WJZT) === '5'; //项目已终止（完结状态为5）的项目详情不能再进行操作
   // var s = 0;
   // var e = 0;
 
@@ -350,7 +351,6 @@ export default connect(({ global = {} }) => ({
                 DQZT: getDqztField(m.CQLX).find(f => f.ibm === m[getDqztField(m.CQLX, true)])?.note,
               })),
           }));
-          // console.log('🚀 ~ file: index.js:321 ~ handlePromiseAll ~ topic:', award, topic);
         }
         prjBasic.ZBFS = CGFS?.filter(x => x.ibm === prjBasic.ZBFS)[0]?.note;
         prjBasic.XMLX = JSON.parse(xmlxData.xmlxRecord)
@@ -379,7 +379,6 @@ export default connect(({ global = {} }) => ({
           ...x,
           payment: p(infoData.fkxxRecord).filter(y => y.HTID === x.ID),
         }));
-        // console.log("🚀 ~ contrastArr:", contrastArr)
         let obj = {
           prjBasic,
           member,
@@ -594,7 +593,6 @@ export default connect(({ global = {} }) => ({
           const isKYYS = XMJBXX.YSLX === '科研预算';
           setShowSCDD((isPrjExist && isNotCplHard) || isKYYS);
           setPrjData(p => ({ ...p, glddxmData: [...JSON.parse(itrListData.result)] }));
-          // console.log('🚀 ~ isPrjExist , isNotCplHard:', isPrjExist, isNotCplHard);
         }
 
         if (
@@ -715,7 +713,6 @@ export default connect(({ global = {} }) => ({
             })) || {};
           if (subPrjRes.success) {
             let subPrjArr = JSON.parse(subPrjRes.result);
-            // console.log('🚀 ~ file: index.js:464 ~ handlePromiseAll ~ subPrjArr:', subPrjArr);
             setPrjData(p => ({
               ...p,
               subPrjData: subPrjArr,
@@ -1146,7 +1143,6 @@ export default connect(({ global = {} }) => ({
         queryType: 'XQ',
       });
       if (atdCalendarResult.success) {
-        // console.log('🚀 ~ atdCalendarResult:', JSON.parse(atdCalendarResult.result));
         const atdCalendarArr = JSON.parse(atdCalendarResult.result);
         const attendanceDaysArr = atdCalendarArr
           .filter(x => x.KQLX === 3 && Number(x.XMMC) === Number(xmid))
@@ -1304,7 +1300,6 @@ export default connect(({ global = {} }) => ({
       });
       if (subPrjRes.success) {
         let subPrjArr = JSON.parse(subPrjRes.result);
-        // console.log('🚀 ~ file: index.js:464 ~ handlePromiseAll ~ subPrjArr:', subPrjArr);
         setPrjData(p => ({
           ...p,
           subPrjData: subPrjArr,
@@ -1343,6 +1338,7 @@ export default connect(({ global = {} }) => ({
           isAdmin={userBasicInfo.id === '0'} //项目编辑，管理员可以编辑所有项目，子项目的项目立项里程碑信息，也对管理员开放编辑
           ysspHide={ysspHide}
           isSinglePayment={isSinglePayment}
+          isEnd={isEnd}
         />
         <div className="detail-row">
           <div className="col-left">
@@ -1354,9 +1350,10 @@ export default connect(({ global = {} }) => ({
                 getIterationCtn={getIterationCtn}
                 openNewIteContent={openNewIteContent}
                 ysspHide={ysspHide}
+                isEnd={isEnd}
               />
             )}
-            {isDDXMFK && !ysspHide && (
+            {isDDXMFK && !ysspHide && !isEnd && (
               <IterationPayment
                 prjData={prjData}
                 xmid={xmid}
@@ -1399,6 +1396,7 @@ export default connect(({ global = {} }) => ({
               ysspHide={ysspHide}
               isSinglePayment={isSinglePayment}
               routes={routes}
+              isEnd={isEnd}
             />
             <PrjTracking
               xmid={xmid}
@@ -1407,6 +1405,7 @@ export default connect(({ global = {} }) => ({
               isLeader={isLeader}
               dictionary={dictionary}
               ysspHide={ysspHide}
+              isEnd={isEnd}
               isSinglePayment={isSinglePayment}
             />
             <InfoDisplay
@@ -1450,6 +1449,7 @@ export default connect(({ global = {} }) => ({
                 allStaffData,
                 ysspHide,
                 isSinglePayment,
+                isEnd,
               }}
               funcProps={{
                 getPrjDtlData,

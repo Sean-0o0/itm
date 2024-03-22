@@ -12,6 +12,7 @@ export default function IterationContent(props) {
     getIterationCtn,
     openNewIteContent = false,
     ysspHide = false,
+    isEnd = false,
   } = props;
   const { iterationCtn = [], prjBasic = {} } = prjData;
   const [dataShow, setDataShow] = useState([]); //展示用
@@ -140,7 +141,7 @@ export default function IterationContent(props) {
         <div className="item-title">
           <div className="title-left">
             {getDate(date)}
-            {is_XMJL_FXMJL && !ysspHide && (
+            {is_XMJL_FXMJL && !ysspHide && !isEnd && (
               <i className="iconfont icon-edit" onClick={handleEdit} />
             )}
           </div>
@@ -173,8 +174,8 @@ export default function IterationContent(props) {
       setDataShow([...iterationCtn.slice(0, getColNum(itemWidth) * 2)]);
     }
   };
-  //当非项目经理且无数据时隐藏、预算审批中隐藏
-  if (iterationCtn.length === 0 && (!is_XMJL_FXMJL || ysspHide)) return null;
+  //当无数据且非项目经理 或 预算审批 或 项目终止时隐藏整块
+  if (iterationCtn.length === 0 && (!is_XMJL_FXMJL || ysspHide || isEnd)) return null;
   return (
     <div className="iteration-content-box">
       <OprtModal
@@ -185,7 +186,7 @@ export default function IterationContent(props) {
       />
       <div className="top-title">
         项目迭代内容
-        {is_XMJL_FXMJL && !ysspHide && (
+        {is_XMJL_FXMJL && !ysspHide && !isEnd && (
           <span
             onClick={() =>
               setModalData({

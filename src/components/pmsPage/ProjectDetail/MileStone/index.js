@@ -21,6 +21,7 @@ export default function MileStone(props) {
     ysspHide = false,
     isSinglePayment = false,
     routes = [],
+    isEnd = false,
   } = props;
   const {
     currentStep,
@@ -266,6 +267,7 @@ export default function MileStone(props) {
                   })(),
                   isMnger: String(prjBasic.XMJLID) === String(LOGIN_USER_INFO.id),
                   isFXMJL: (prjBasic.FXMJL?.split(',') || []).includes(String(LOGIN_USER_INFO.id)),
+                  isEnd, //项目终止
                 }}
                 routes={routes}
                 prjBasic={prjBasic}

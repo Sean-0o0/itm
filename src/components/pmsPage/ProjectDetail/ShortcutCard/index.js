@@ -37,6 +37,7 @@ export default connect(({ global = {} }) => ({
     allStaffData = [], //用于判断 验收报告 事项是否已完成
     ysspHide = false,
     isSinglePayment = false, //单费用付款项目
+    isEnd = false,
   } = dataProps;
 
   const { prjBasic = {}, member = [], contrastArr = [] } = prjData;
@@ -436,6 +437,7 @@ export default connect(({ global = {} }) => ({
       console.log(
         '权限控制：是否显示快捷入口: ' + '\n非项目成员：' + !isMember(),
         '\n预算审批隐藏：' + ysspHide,
+        '\n项目终止隐藏：' + isEnd,
         '\n知识产权获奖荣誉：' + is_XMJL_FXMJL,
         '\n考勤：' + showKQXX,
         '\n生成迭代：' + (is_XMJL_FXMJL && showSCDD),
@@ -457,6 +459,7 @@ export default connect(({ global = {} }) => ({
   if (
     !isMember() ||
     ysspHide ||
+    isEnd ||
     !(
       is_XMJL_FXMJL ||
       showKQXX ||
