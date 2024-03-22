@@ -289,13 +289,15 @@ class ProjectBuilding extends Component {
           if (res.success) {
             let result = JSON.parse(res.result);
             // console.log('🚀 ~ ProjectBuilding ~ result:', result, this.props.dictionary?.XMJZ);
-            const xmjzData = this.props.dictionary?.XMJZ?.filter(x => !['7', '10'].includes(x.ibm)); //项目阶段数据（设备采购、包件信息录入不查）
+            const xmjzData = this.props.dictionary?.XMJZ?.filter(
+              x => !['7', '10'].includes(x.ibm),
+            ).sort((a, b) => Number(a.ibm) - Number(b.ibm)); //项目阶段数据（设备采购、包件信息录入不查）
             const data = xmjzData.map(x => ({
               value: x.ibm,
               title: x.note,
               children: result.filter(r => String(r.XMJZ) === String(x.ibm)),
             }));
-            console.log('🚀 ~ ProjectBuilding ~ data ~ data:', data);
+            // console.log('🚀 ~ ProjectBuilding ~ data ~ data:', data);
             this.setState({
               loading: false,
               dynamicData: data,

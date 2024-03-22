@@ -10,6 +10,7 @@ import {
   Radio,
   DatePicker,
   Button,
+  Select,
 } from 'antd';
 import moment from 'moment';
 import { EncryptBase64 } from '../../../Common/Encrypt';
@@ -38,6 +39,8 @@ export default connect(({ global }) => ({
   const XMZT = [
     { ibm: '1', note: '正常' },
     { ibm: '2', note: '逾期' },
+    { ibm: '3', note: '完结' },
+    { ibm: '4', note: '终止' },
   ];
   const [orgData, setOrgData] = useState({
     sltedItems: [],
@@ -70,6 +73,7 @@ export default connect(({ global }) => ({
     projectName,
   }; //筛选查询接口入参
   const [curTab, setCurTab] = useState('1'); //当前tab，看板、列表
+  const [curStage, setCurStage] = useState(undefined); //当前tab项目阶段
   const location = useLocation();
 
   useEffect(() => {
@@ -298,7 +302,9 @@ export default connect(({ global }) => ({
                   let arr = v.map(x => ({ id: x.value, name: x.label }));
                   setMoreData(p => ({ ...p, org: arr }));
                 }}
-                // value={moreData.org.map(x => x.id)}
+                value={moreData.org.map(x => ({
+                  value: x.id,
+                }))}
                 treeDefaultExpandAll
               />
             </div>
@@ -419,26 +425,23 @@ export default connect(({ global }) => ({
             </div>
             <div className="slt-form-item" key="项目状态">
               <div className="item-label">项目状态：</div>
-              <Radio.Group
+              <Select
                 value={moreData.projectStatus}
-                onChange={e => {
-                  setMoreData(p => ({ ...p, projectStatus: e?.target?.value }));
+                className="item-component"
+                placeholder="请选择"
+                onChange={v => {
+                  setMoreData(p => ({
+                    ...p,
+                    projectStatus: v,
+                  }));
                 }}
               >
                 {XMZT.map(x => (
-                  <Radio
-                    key={x.ibm}
-                    value={x.ibm}
-                    onClick={() => {
-                      if (moreData.projectStatus === x.ibm) {
-                        setMoreData(p => ({ ...p, projectStatus: null }));
-                      }
-                    }}
-                  >
+                  <Select.Option key={x.ibm} title={x.note} value={x.ibm}>
                     {x.note}
-                  </Radio>
+                  </Select.Option>
                 ))}
-              </Radio.Group>
+              </Select>
             </div>
             <div className="footer-btn">
               <Button
@@ -508,7 +511,14 @@ export default connect(({ global }) => ({
   const getTabsBox = () => {
     return (
       <div className="tabs-box">
-        <Radio.Group value={curTab} buttonStyle="solid" onChange={e => setCurTab(e.target.value)}>
+        <Radio.Group
+          value={curTab}
+          buttonStyle="solid"
+          onChange={e => {
+            setCurStage(undefined);
+            setCurTab(e.target.value);
+          }}
+        >
           <Radio.Button value="1" key="1">
             <i className="iconfont icon-workbench" />
             看板
@@ -598,25 +608,15 @@ export default connect(({ global }) => ({
           )}
         </div>
         {children.length > 0 && (
-          <div className="info-prj-dynamics-footer">
-            <Link
-              style={{ color: '#303133' }}
-              to={{
-                pathname: `/pms/manage/ProjectStateInfo/${EncryptBase64(
-                  JSON.stringify({
-                    cxlx: value,
-                    defaultYear,
-                  }),
-                )}`,
-                state: {
-                  routes: routes,
-                },
-              }}
-              className="table-link-strong"
-            >
-              查看详情
-              <i class="iconfont icon-right" />
-            </Link>
+          <div
+            className="info-prj-dynamics-footer"
+            onClick={() => {
+              setCurStage(title);
+              setCurTab('2');
+            }}
+          >
+            查看详情
+            <i class="iconfont icon-right" />
           </div>
         )}
       </div>
@@ -652,7 +652,9 @@ export default connect(({ global }) => ({
             )}
           </div>
           {curTab === '1' && dataList.map((x, i) => getDynamicCard(x, i + 1))}
-          {curTab === '2' && <ProjectQueryTable dictionary={dictionary} />}
+          {curTab === '2' && (
+            <ProjectQueryTable dictionary={dictionary} curStage={curStage} roleData={roleData} />
+          )}
         </div>
       </Spin>
     </div>

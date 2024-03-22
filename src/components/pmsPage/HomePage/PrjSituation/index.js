@@ -9,7 +9,6 @@ import {
   Popconfirm,
   Popover,
   Progress,
-  Radio,
   Select,
   Spin,
   Tooltip,
@@ -48,6 +47,8 @@ export default connect(({ global }) => ({
   const XMZT = [
     { ibm: '1', note: '正常' },
     { ibm: '2', note: '逾期' },
+    { ibm: '3', note: '完结' },
+    { ibm: '4', note: '终止' },
   ];
   const [stageData, setStageData] = useState({
     sltedItems: [],
@@ -159,7 +160,7 @@ export default connect(({ global }) => ({
         autoAdjustOverflow
         content={
           <div className="slt-list">
-            {XMJZ.map(x => (
+            {XMJZ.sort((a, b) => Number(a.ibm) - Number(b.ibm)).map(x => (
               <div
                 onClick={() => handleSlt({ name: x.note, id: x.ibm })}
                 id={x.ibm}
@@ -255,6 +256,7 @@ export default connect(({ global }) => ({
             multiple
             selectable={false}
             checkable
+            checkStrictly
             checkedKeys={orgData.sltedItems.map(x => x.id)}
             onCheck={handleSlt}
           >
@@ -403,7 +405,7 @@ export default connect(({ global }) => ({
                   }));
                 }}
               >
-                {XMJZ.map(x => (
+                {XMJZ.sort((a, b) => Number(a.ibm) - Number(b.ibm)).map(x => (
                   <Select.Option key={x.ibm} title={x.note} value={x.ibm}>
                     {x.note}
                   </Select.Option>
@@ -421,15 +423,16 @@ export default connect(({ global }) => ({
                 // dropdownClassName="newproject-treeselect"
                 multiple
                 treeCheckable
+                treeCheckStrictly
                 showCheckedStrategy="SHOW_ALL"
                 dropdownStyle={{ maxHeight: 300, overflow: 'auto' }}
                 treeData={sltorData.org}
                 placeholder="请选择"
                 onChange={(v = [], txt = []) => {
-                  let arr = v.map((x, i) => ({ id: x, name: txt[i] }));
+                  let arr = v.map((x, i) => ({ id: x.value, name: x.label }));
                   setMoreData(p => ({ ...p, org: arr }));
                 }}
-                value={moreData.org.map(x => x.id)}
+                value={moreData.org.map(x => ({ value: x.id }))}
                 treeDefaultExpandAll
               />
             </div>
@@ -549,26 +552,23 @@ export default connect(({ global }) => ({
             </div>
             <div className="slt-form-item" key="项目状态">
               <div className="item-label">项目状态：</div>
-              <Radio.Group
+              <Select
                 value={moreData.projectStatus}
-                onChange={e => {
-                  setMoreData(p => ({ ...p, projectStatus: e?.target?.value }));
+                className="item-component"
+                placeholder="请选择"
+                onChange={v => {
+                  setMoreData(p => ({
+                    ...p,
+                    projectStatus: v,
+                  }));
                 }}
               >
                 {XMZT.map(x => (
-                  <Radio
-                    key={x.ibm}
-                    value={x.ibm}
-                    onClick={() => {
-                      if (moreData.projectStatus === x.ibm) {
-                        setMoreData(p => ({ ...p, projectStatus: null }));
-                      }
-                    }}
-                  >
+                  <Select.Option key={x.ibm} title={x.note} value={x.ibm}>
                     {x.note}
-                  </Radio>
+                  </Select.Option>
                 ))}
-              </Radio.Group>
+              </Select>
             </div>
             <div className="footer-btn">
               <Button
@@ -761,6 +761,10 @@ export default connect(({ global }) => ({
     }
     //有风险
     const haveRisk = item.XMFX?.length > 0;
+    //终止
+    const isEnd = String(item.WJZT) === '5';
+    //完结
+    const isComplete = String(item.WJZT) === '1';
     //是否显示红色，逾期或有风险
     const isRed = haveRisk || isLate;
 
@@ -788,7 +792,7 @@ export default connect(({ global }) => ({
             onConfirm={e => {
               e.stopPropagation();
               handleProjectCollect(item.XMID, item.SFSC === 0 ? 'SCXM' : 'QXXM');
-            }} 
+            }}
             onCancel={e => {
               e.stopPropagation();
             }}
@@ -934,7 +938,9 @@ export default connect(({ global }) => ({
           )}
           {!haveRisk && !isLate && (
             <Fragment>
-              <div className="status-item">正常</div>
+              <div className={isEnd ? 'status-item-red' : 'status-item'}>
+                {isEnd ? '终止' : isComplete ? '完结' : '正常'}
+              </div>
               <div className="status-txt">
                 当前进展：
                 <Tooltip

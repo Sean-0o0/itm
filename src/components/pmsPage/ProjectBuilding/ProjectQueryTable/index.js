@@ -14,12 +14,12 @@ import Lodash from 'lodash'
  */
 const ProjectQueryTable = (props) => {
 
-  const { form, dictionary } = props
+  const { form, dictionary = {}, curStage, roleData = {} } = props
 
-  const { XMJZTJSX = [], //事项名称
+  const { XMJZ = [], //事项名称
   } = dictionary
 
-  const { getFieldDecorator, getFieldsValue, validateFields, resetFields } = form;
+  const { getFieldDecorator, getFieldsValue, validateFields, resetFields, setFieldsValue } = form;
 
   /** 表格数据 */
   const [tableData, setTableData] = useState([])
@@ -90,9 +90,10 @@ const ProjectQueryTable = (props) => {
       current: curPageNum,
       pageSize: pageSize,
       paging: 1,
+      role: roleData.role,
       ...values,
-      startTime: !Lodash.isEmpty(finishTime) ? finishTime[0].format('YYYYMMDD') : '',   //开始日期
-      endTime: !Lodash.isEmpty(finishTime) ? finishTime[1].format('YYYYMMDD') : '',     //结束日期
+      startTime: !Lodash.isEmpty(finishTime) ? Number(finishTime[0].format('YYYYMMDD')) : '',   //开始日期
+      endTime: !Lodash.isEmpty(finishTime) ? Number(finishTime[1].format('YYYYMMDD')) : '',     //结束日期
       tag: label.join(';'),
       ...extraParams
     }
@@ -189,9 +190,11 @@ const ProjectQueryTable = (props) => {
   }, [])
 
   useEffect(() => {
+    setFieldsValue({
+      matter: curStage
+    });
     queryHandle()
-  }, [curPageNum, pageSize])
-
+  }, [curPageNum, pageSize, curStage, JSON.stringify(roleData)])
 
 
   return (
@@ -295,7 +298,7 @@ const ProjectQueryTable = (props) => {
                     allowClear
                     placeholder="请选择"
                   >
-                    {XMJZTJSX.map((item, index) => (
+                    {XMJZ.sort((a, b) => Number(a.ibm) - Number(b.ibm)).map((item, index) => (
                       <Select.Option key={item.ibm} value={item.note}>
                         {item.note}
                       </Select.Option>
