@@ -15,6 +15,7 @@ export default function TableBox(props) {
     sortInfo = {},
     setSortInfo,
     initiateXmid = -1,
+    setIsModalShow
   } = props;
   const [lbModal, setLbModal] = useState({
     visibleState: 'xmlxsq',
@@ -29,7 +30,7 @@ export default function TableBox(props) {
   const location = useLocation();
 
   useEffect(() => {
-    return () => {};
+    return () => { };
   }, [JSON.stringify(tableData.data)]);
 
   //表配置
@@ -158,7 +159,10 @@ export default function TableBox(props) {
     <Menu>
       <Menu.Item onClick={() => openLbModal('信委会议案流程', 'xwh')}>信委会议案流程发起</Menu.Item>
       <Menu.Item onClick={() => openLbModal('总办会流程', 'zbh')}>总办会流程发起</Menu.Item>
-      <Menu.Item onClick={() => openLbModal('项目立项申请流程', 'xmlxsq')}>
+      {/* <Menu.Item onClick={() => openLbModal('项目立项申请流程', 'xmlxsq')}>
+        项目立项申请流程发起
+      </Menu.Item> */}
+      <Menu.Item onClick={() => setIsModalShow({ projectApprovalApplicate: true })}>
         项目立项申请流程发起
       </Menu.Item>
     </Menu>

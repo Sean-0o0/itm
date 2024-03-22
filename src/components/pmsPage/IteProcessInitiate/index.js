@@ -5,6 +5,8 @@ import TopFilter from './TopFilter';
 import TableBox from './TableBox';
 import { QueryUnifiedProjectInitProcess } from '../../../services/pmsServices';
 import { connect } from 'dva';
+import ProjectApprovalApplicate from './ProjectApprovalApplicate'
+
 
 export default connect(({ global = {} }) => ({
   userBasicInfo: global.userBasicInfo,
@@ -26,6 +28,12 @@ export default connect(({ global = {} }) => ({
     columnKey: '',
   });
   const [initiateXmid, setInitiateXmid] = useState(-1); //发起用的项目ID
+
+  const [isModalShow, setIsModalShow] = useState({
+    projectApprovalApplicate: false, //项目立项申请
+  })
+
+  const [projectCode, setProjectCode] = useState('')
 
   useEffect(() => {
     getTableData({});
@@ -50,7 +58,7 @@ export default connect(({ global = {} }) => ({
   //查询
   const getTableData = (
     { current = 1, pageSize = 20, sort = '', title, year },
-    successCallback = () => {},
+    successCallback = () => { },
   ) => {
     setIsSpinning(true);
     QueryUnifiedProjectInitProcess({
@@ -66,6 +74,7 @@ export default connect(({ global = {} }) => ({
       .then(res => {
         if (res.success) {
           const data = JSON.parse(res.result);
+          // console.log('xxxxxxx数据xxxxxxxx', res, data)
           setTableData({
             data,
             current,
@@ -74,6 +83,7 @@ export default connect(({ global = {} }) => ({
             total: res.totalrows,
           });
           setInitiateXmid(res.projectId);
+          setProjectCode(res.projectCode);
           successCallback();
           setIsSpinning(false);
         }
@@ -111,9 +121,23 @@ export default connect(({ global = {} }) => ({
           userBasicInfo={userBasicInfo}
           getTableData={getTableData}
           sortInfo={sortInfo}
+          setIsModalShow={setIsModalShow}
           setSortInfo={setSortInfo}
           initiateXmid={initiateXmid}
         />
+
+        {/* 项目立项申请——弹窗 */}
+        {isModalShow.projectApprovalApplicate && (
+          <ProjectApprovalApplicate
+            visible={isModalShow.projectApprovalApplicate}
+            setVisible={val => setIsModalShow({ projectApprovalApplicate: val })}
+            xmbh={projectCode}
+            currentXmid={Number(initiateXmid)}
+            getTableData={getTableData}
+            tableData={tableData}
+          />
+        )}
+
       </Spin>
     </div>
   );
