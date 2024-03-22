@@ -32,6 +32,8 @@ const TableBox = props => {
   }); //新增行弹窗
   //编辑分类用的取值字段
   const EDIT_FIELD = columnsData.find(x => x.ZDMC === '建设任务')?.QZZD;
+  const isBGHZR =
+    ((JSON.parse(roleData.testRole || '{}')?.ALLROLE ?? '') + (roleData.role ?? '')).includes('报告汇总人');
 
   //表格跨行合并
   const getRowSpanCount = (data, key, target, bool = false) => {
@@ -240,8 +242,8 @@ const TableBox = props => {
                     x =>
                       x.TXR !== 'undefined' &&
                       x.TXRID !== '-1' &&
-                      (roleData.role === '二级部门领导'
-                        ? x[EDIT_FIELD] === row[EDIT_FIELD] //二级部门领导点击编辑时查看所有数据
+                      (isBGHZR
+                        ? x[EDIT_FIELD] === row[EDIT_FIELD] //bghzr点击编辑时查看所有数据
                         : x[EDIT_FIELD] === row[EDIT_FIELD] && //普通人员点击编辑时仅展示自己的数据
                           String(x.TXRID) === String(userBasicInfo.id)),
                   ) || [];
@@ -295,9 +297,8 @@ const TableBox = props => {
   };
 
   const getColumnWidth = (x = {}) => {
-    const isSecondLeader = roleData.role === '二级部门领导';
-    if (x.QZZD === 'TXR') return isSecondLeader ? 120 : 80;
-    // else if (x.QZZD === 'GLXM') return isSecondLeader ? 260 : 180;
+    if (x.QZZD === 'TXR') return isBGHZR ? 120 : 80;
+    // else if (x.QZZD === 'GLXM') return isBGHZR ? 260 : 180;
     else if (x.QZZD === 'GLXM') return 260;
     else if (x.ZDMC.includes('系统项目')) return 160;
     else return undefined;
@@ -362,7 +363,7 @@ const TableBox = props => {
             >
               刷新
             </Button>
-            {roleData.role === '二级部门领导' && activeKey === 'BMYB' && tableData.data.length > 0 && (
+            {isBGHZR && activeKey === 'BMYB' && tableData.data.length > 0 && (
               <Popconfirm title="确定要提交吗？" onConfirm={handleSubmit}>
                 <Button type="primary" style={{ marginLeft: '8px' }}>
                   提交

@@ -52,7 +52,8 @@ function HandleAddModal(props) {
     glxm: [], //关联项目
     txr: [], //填写人
   }); //下拉框数据
-  const isSecondLeader = roleData.role === '二级部门领导';
+  const isBGHZR =
+    ((JSON.parse(roleData.testRole || '{}')?.ALLROLE ?? '') + (roleData.role ?? '')).includes('报告汇总人');
 
   useEffect(() => {
     if (visible) {
@@ -63,7 +64,7 @@ function HandleAddModal(props) {
             for (const key in obj) {
               if (key !== 'ID') {
                 if (key === 'TXR') {
-                  if (isSecondLeader) {
+                  if (isBGHZR) {
                     //可编辑
                     newObj[key + obj.ID] =
                       obj['TXRID'] === undefined || obj['TXRID'] === '-1'
@@ -76,7 +77,7 @@ function HandleAddModal(props) {
                         : String(obj['TXR']);
                   }
                 } else if (key === 'GLXM') {
-                  // if (isSecondLeader) {
+                  // if (isBGHZR) {
                   //   //可编辑
                   newObj[key + obj.ID] =
                     obj['GLXMID'] === undefined || obj['GLXMID'] === '-1'
@@ -104,7 +105,7 @@ function HandleAddModal(props) {
           tableColumns.reduce((obj = {}, item = {}) => {
             obj.ID = UUID;
             obj[item.key + UUID] = undefined;
-            if (item.key === 'TXR' && !isSecondLeader) {
+            if (item.key === 'TXR' && !isBGHZR) {
               obj.TXR = userBasicInfo.name;
               obj['TXRID' + UUID] = String(userBasicInfo.id);
             }
@@ -115,7 +116,7 @@ function HandleAddModal(props) {
           tableColumns.reduce((obj = {}, item = {}) => {
             obj.ID = UUID;
             obj[item.key + UUID] = undefined;
-            if (item.key === 'TXR' && !isSecondLeader) {
+            if (item.key === 'TXR' && !isBGHZR) {
               obj.TXR = userBasicInfo.name;
               obj['TXRID' + UUID] = String(userBasicInfo.id);
             }
@@ -126,7 +127,7 @@ function HandleAddModal(props) {
       }
       setIsSpinning(true);
       getPrjData();
-      if (isSecondLeader) {
+      if (isBGHZR) {
         getStaffData();
       }
     }
@@ -134,7 +135,7 @@ function HandleAddModal(props) {
   }, [
     visible,
     JSON.stringify(dataArr),
-    isSecondLeader,
+    isBGHZR,
     JSON.stringify(tableColumns),
     JSON.stringify(userBasicInfo),
   ]);
@@ -149,12 +150,12 @@ function HandleAddModal(props) {
       try {
         setSltData(p => ({ ...p, loading: true }));
         const res = await QueryProjectSelectList({
-          // projectManagerUnderOrg: isSecondLeader ? Number(userBasicInfo.orgid) : undefined,
+          // projectManagerUnderOrg: isBGHZR ? Number(userBasicInfo.orgid) : undefined,
           projectOrManagerName: value,
           current: 1,
           pageSize: 9999, //暂定，不分页排不了序
           paging: 1,
-          sort: isSecondLeader
+          sort: isBGHZR
             ? `DECODE (ORGID,${userBasicInfo.orgid},1,2), XMNF DESC, ID DESC`
             : `DECODE (XMJLID,${userBasicInfo.id},1,2), XMNF DESC, ID DESC`,
           total: -1,
@@ -184,7 +185,7 @@ function HandleAddModal(props) {
   const getStaffData = async name => {
     try {
       const res = await QueryMemberSelectList({
-        orgId: isSecondLeader ? Number(userBasicInfo.orgid) : undefined,
+        orgId: isBGHZR ? Number(userBasicInfo.orgid) : undefined,
         name,
         current: 1,
         pageSize: 100,
@@ -232,11 +233,11 @@ function HandleAddModal(props) {
             if (key !== 'ID' && key in obj) {
               const originalKey = key.replace(obj.ID, '');
               if (originalKey === 'TXR') {
-                restoredObj[originalKey] = isSecondLeader
+                restoredObj[originalKey] = isBGHZR
                   ? String(notNullStr(obj['TXR' + obj.ID]))
                   : String(notNullStr(obj['TXRID' + obj.ID]));
               } else if (originalKey === 'GLXM') {
-                // restoredObj[originalKey] = isSecondLeader
+                // restoredObj[originalKey] = isBGHZR
                 //   ? String(notNullStr(obj['GLXM' + obj.ID]))
                 //   : String(notNullStr(obj['GLXMID' + obj.ID]));
                 restoredObj[originalKey] = String(
@@ -273,11 +274,11 @@ function HandleAddModal(props) {
               if (key !== 'ID' && key in obj) {
                 const originalKey = key.replace(obj.ID, '');
                 if (originalKey === 'TXR') {
-                  restoredObj[originalKey] = isSecondLeader
+                  restoredObj[originalKey] = isBGHZR
                     ? String(notNullStr(obj['TXR' + obj.ID]))
                     : String(notNullStr(obj['TXRID' + obj.ID]));
                 } else if (originalKey === 'GLXM') {
-                  // restoredObj[originalKey] = isSecondLeader
+                  // restoredObj[originalKey] = isBGHZR
                   //   ? String(notNullStr(obj['GLXM' + obj.ID]))
                   //   : String(notNullStr(obj['GLXMID' + obj.ID]));
                   restoredObj[originalKey] = String(notNullStr(obj['GLXM' + obj.ID]));
@@ -411,8 +412,8 @@ function HandleAddModal(props) {
     },
   ].map(col => {
     if (
-      // ((col.dataIndex === 'TXR' || col.dataIndex === 'GLXM') && !isSecondLeader) ||
-      (col.dataIndex === 'TXR' && !isSecondLeader) ||
+      // ((col.dataIndex === 'TXR' || col.dataIndex === 'GLXM') && !isBGHZR) ||
+      (col.dataIndex === 'TXR' && !isBGHZR) ||
       !col.editable
     ) {
       col.editable = false;
@@ -442,7 +443,7 @@ function HandleAddModal(props) {
           getPrjData,
           getStaffData,
           tableColumns,
-          isSecondLeader,
+          isBGHZR,
         };
       },
     };
@@ -503,7 +504,7 @@ function HandleAddModal(props) {
                 tableColumns.reduce((obj = {}, item = {}) => {
                   obj.ID = UUID;
                   obj[item.key + UUID] = undefined;
-                  if (item.key === 'TXR' && !isSecondLeader) {
+                  if (item.key === 'TXR' && !isBGHZR) {
                     obj.TXR = userBasicInfo.name;
                     obj['TXRID' + UUID] = String(userBasicInfo.id);
                   }
@@ -515,7 +516,7 @@ function HandleAddModal(props) {
                 tableColumns.reduce((obj = {}, item = {}) => {
                   obj.ID = UUID;
                   obj[item.key + UUID] = undefined;
-                  if (item.key === 'TXR' && !isSecondLeader) {
+                  if (item.key === 'TXR' && !isBGHZR) {
                     obj.TXR = userBasicInfo.name;
                     obj['TXRID' + UUID] = String(userBasicInfo.id);
                   }

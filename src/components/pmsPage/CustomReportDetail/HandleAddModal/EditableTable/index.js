@@ -26,16 +26,11 @@ const EditableCell = props => {
     getPrjData,
     getStaffData,
     tableColumns,
-    isSecondLeader,
+    isBGHZR,
     ...restProps
   } = props;
 
   const save = e => {
-    console.log(
-      '🚀 ~ formdecorate:',
-      tableColumns.map(x => x.dataIndex + record.ID),
-      record,
-    );
     formdecorate.validateFields(
       tableColumns.map(x => x.dataIndex + record.ID),
       (error, values) => {
@@ -83,7 +78,7 @@ const EditableCell = props => {
               optionFilterProp="title"
               allowClear
               onChange={
-                isSecondLeader
+                isBGHZR
                   ? (v, node) => {
                       //二级部门领导可选部门下的所有员工。当关联项目的项目经理在数据范围权限下时，自动填充填写人，不在数据范围内时为空
                       if (
