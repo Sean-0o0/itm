@@ -118,7 +118,7 @@
 
 
 
-  // antd表格内部的项目标签样式 
+  // antd表格内部的项目标签样式
   .prj-tags {
     width: 100%;
     color: #606266;
@@ -180,5 +180,37 @@
         color: #f1a740;
       }
     }
+  }
+}
+
+// 1.页面最顶部tab样式
+.common_top-console {
+  height: 55px;
+  background-color: white;
+  box-shadow: 0px 0px 8px 0px rgba(0, 0, 0, 0.08);
+  padding: 0 24px;
+  .font-size-16();
+  font-family: PingFangSC-Regular;
+  color: #303133;
+
+  .ant-tabs-nav .ant-tabs-tab {
+    color: #666;
+
+    &:hover {
+      color: rgba(102, 102, 102, 0.7);
+    }
+  }
+
+  .ant-tabs-nav .ant-tabs-tab-active {
+    color: #3361ff !important;
+    font-weight: bold;
+
+    &:hover {
+      color: #3363ffc7 !important;
+    }
+  }
+
+  .ant-tabs-ink-bar {
+    background-color: #3361ff;
   }
 }
