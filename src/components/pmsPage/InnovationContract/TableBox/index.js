@@ -231,7 +231,9 @@ const TableBox = props => {
             <span onClick={() => setTransferData({ visible: true, curRowId: row.HTID })}>转办</span>
           </div>
         ) : (
-          ''
+          <div className="opr-column">
+            <span onClick={() => handleView(row)}>查看</span>
+          </div>
         ),
     },
   ];
@@ -321,12 +323,29 @@ const TableBox = props => {
     );
   };
 
-  //修改
+  //编辑
   const handleEdit = (row = {}) => {
     if (row.HTID !== undefined) {
       history.push({
         pathname:
           '/pms/manage/InnovationContractEdit/' +
+          EncryptBase64(
+            JSON.stringify({
+              id: row.HTID,
+              routes: [{ name: '合同列表', pathname: location.pathname }],
+              timeStamp: new Date().getTime(),
+            }),
+          ),
+      });
+    }
+  };
+
+  //查看
+  const handleView = (row = {}) => {
+    if (row.HTID !== undefined) {
+      history.push({
+        pathname:
+          '/pms/manage/InnovationContractView/' +
           EncryptBase64(
             JSON.stringify({
               id: row.HTID,
