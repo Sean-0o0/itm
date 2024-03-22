@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom';
 import { EncryptBase64 } from '../../../Common/Encrypt';
 
 export default function CptBudgetCard(props) {
-  const { isVertical = false, userRole, budgetData = {}, time } = props;
+  const { isVertical = false, userRole, budgetData = {}, time, defaultYear } = props;
   const location = useLocation();
 
   const getNewBgItem = (title = '--', update = '--', top = {}, bottom = {}) => {
@@ -88,7 +88,12 @@ export default function CptBudgetCard(props) {
             <span>
               <Link
                 to={{
-                  pathname: `/pms/manage/BudgetExcute`,
+                  pathname: `/pms/manage/BudgetExcute/${EncryptBase64(
+                    JSON.stringify({
+                      defaultYear,
+                      routes: [{ name: '个人工作台', pathname: location.pathname }],
+                    }),
+                  )}`,
                   state: {
                     routes: [{ name: '个人工作台', pathname: location.pathname }],
                   },

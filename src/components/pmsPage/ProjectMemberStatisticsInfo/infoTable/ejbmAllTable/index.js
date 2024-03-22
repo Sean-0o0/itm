@@ -464,7 +464,7 @@ export default function EjbmAllTable(props) {
                               }),
                             )}`,
                             state: {
-                              routes: [{ name: '统计分析', pathname: location.pathname }],
+                              routes: [{ name: '项目统计', pathname: location.pathname }],
                             },
                           }}
                           className="table-link-strong-staffname"
@@ -491,7 +491,7 @@ export default function EjbmAllTable(props) {
                           }),
                         )}`,
                         state: {
-                          routes: [{ name: '统计分析', pathname: location.pathname }],
+                          routes: [{ name: '项目统计', pathname: location.pathname }],
                         },
                       }}
                       className="table-link-strong"
@@ -520,33 +520,6 @@ export default function EjbmAllTable(props) {
                           style={{ height: '240px' }}
                           theme=""
                         />
-                        {/*{*/}
-                        {/*  footerVisableLD === item.USERID &&*/}
-                        {/*  <div className="info-table-content-box-footer">*/}
-                        {/*    <Link*/}
-                        {/*      style={{color: '#3361ff',justifyContent: 'center',display: 'flex',width: '100%'}}*/}
-                        {/*      to={{*/}
-                        {/*        pathname: `/pms/manage/ProjectStatisticsInfo/${EncryptBase64(*/}
-                        {/*          JSON.stringify({*/}
-                        {/*            cxlx: 'RY',*/}
-                        {/*            memberID: item.USERID,*/}
-                        {/*          }),*/}
-                        {/*        )}`,*/}
-                        {/*        state: {*/}
-                        {/*          routes: [{name: '统计分析', pathname: location.pathname}],*/}
-                        {/*        },*/}
-                        {/*      }}*/}
-                        {/*      className="table-link-strong"*/}
-                        {/*    >*/}
-                        {/*      <div className="info-table-content-box-footer-left" style={{width:'100%'}}>*/}
-                        {/*        <span className="info-table-content-box-footer-left-span">项目明细</span>*/}
-                        {/*      </div>*/}
-                        {/*    </Link>*/}
-                        {/*    /!*<div className="info-table-content-box-footer-right">*!/*/}
-                        {/*    /!*  <span className="info-table-content-box-footer-left-span" onClick={() =>toDetail(item)}>部门详情</span>*!/*/}
-                        {/*    /!*</div>*!/*/}
-                        {/*  </div>*/}
-                        {/*}*/}
                       </div>
                     </Link>
                   </div>
@@ -604,7 +577,7 @@ export default function EjbmAllTable(props) {
                             }),
                           )}`,
                           state: {
-                            routes: [{ name: '统计分析', pathname: location.pathname }],
+                            routes: [{ name: '项目统计', pathname: location.pathname }],
                           },
                         }}
                         className="table-link-strong"
@@ -631,7 +604,7 @@ export default function EjbmAllTable(props) {
                                 }),
                               )}`,
                               state: {
-                                routes: [{ name: '统计分析', pathname: location.pathname }],
+                                routes: [{ name: '项目统计', pathname: location.pathname }],
                               },
                             }}
                             className="table-link-strong"
@@ -701,7 +674,7 @@ export default function EjbmAllTable(props) {
                               }),
                             )}`,
                             state: {
-                              routes: [{ name: '统计分析', pathname: location.pathname }],
+                              routes: [{ name: '项目统计', pathname: location.pathname }],
                             },
                           }}
                           className="table-link-strong"
@@ -728,7 +701,7 @@ export default function EjbmAllTable(props) {
                           }),
                         )}`,
                         state: {
-                          routes: [{ name: '统计分析', pathname: location.pathname }],
+                          routes: [{ name: '项目统计', pathname: location.pathname }],
                         },
                       }}
                       className="table-link-strong"
@@ -757,33 +730,6 @@ export default function EjbmAllTable(props) {
                           style={{ height: '240px' }}
                           theme=""
                         />
-                        {/*{*/}
-                        {/*  footerVisableLD === item.USERID &&*/}
-                        {/*  <div className="info-table-content-box-footer">*/}
-                        {/*    <Link*/}
-                        {/*      style={{color: '#3361ff',justifyContent: 'center',display: 'flex',width: '100%'}}*/}
-                        {/*      to={{*/}
-                        {/*        pathname: `/pms/manage/ProjectStatisticsInfo/${EncryptBase64(*/}
-                        {/*          JSON.stringify({*/}
-                        {/*            cxlx: 'RY',*/}
-                        {/*            memberID: item.USERID,*/}
-                        {/*          }),*/}
-                        {/*        )}`,*/}
-                        {/*        state: {*/}
-                        {/*          routes: [{name: '统计分析', pathname: location.pathname}],*/}
-                        {/*        },*/}
-                        {/*      }}*/}
-                        {/*      className="table-link-strong"*/}
-                        {/*    >*/}
-                        {/*      <div className="info-table-content-box-footer-left" style={{width:'100%'}}>*/}
-                        {/*        <span className="info-table-content-box-footer-left-span">项目明细</span>*/}
-                        {/*      </div>*/}
-                        {/*    </Link>*/}
-                        {/*    /!*<div className="info-table-content-box-footer-right">*!/*/}
-                        {/*    /!*  <span className="info-table-content-box-footer-left-span" onClick={() =>toDetail(item)}>部门详情</span>*!/*/}
-                        {/*    /!*</div>*!/*/}
-                        {/*  </div>*/}
-                        {/*}*/}
                       </div>
                     </Link>
                   </div>
@@ -841,7 +787,7 @@ export default function EjbmAllTable(props) {
                             }),
                           )}`,
                           state: {
-                            routes: [{ name: '统计分析', pathname: location.pathname }],
+                            routes: [{ name: '项目统计', pathname: location.pathname }],
                           },
                         }}
                         className="table-link-strong"
@@ -868,7 +814,7 @@ export default function EjbmAllTable(props) {
                                 }),
                               )}`,
                               state: {
-                                routes: [{ name: '统计分析', pathname: location.pathname }],
+                                routes: [{ name: '项目统计', pathname: location.pathname }],
                               },
                             }}
                             className="table-link-strong"

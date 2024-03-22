@@ -252,7 +252,7 @@ export default function MemberAllTable(props) {
                             }),
                           )}`,
                           state: {
-                            routes: [{name: '统计分析', pathname: location.pathname}],
+                            routes: [{name: '项目统计', pathname: location.pathname}],
                           },
                         }}
                         className="table-link-strong-staffname"
@@ -274,7 +274,7 @@ export default function MemberAllTable(props) {
                         }),
                       )}`,
                       state: {
-                        routes: [{name: '统计分析', pathname: location.pathname}],
+                        routes: [{name: '项目统计', pathname: location.pathname}],
                       },
                     }}
                     className="table-link-strong"

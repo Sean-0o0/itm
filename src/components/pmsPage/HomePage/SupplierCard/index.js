@@ -2,9 +2,10 @@ import React, { useEffect, useState, useRef } from 'react';
 import * as echarts from 'echarts';
 import { useLocation } from 'react-router';
 import { Link } from 'react-router-dom';
+import { EncryptBase64 } from '../../../Common/Encrypt';
 
 export default function SupplierCard(props) {
-  const { supplierData, time } = props;
+  const { supplierData = [], time, defaultYear } = props;
   const radarChartRef = useRef(null);
   const location = useLocation();
   //防抖定时器
@@ -132,7 +133,12 @@ export default function SupplierCard(props) {
         <span>
           <Link
             to={{
-              pathname: `/pms/manage/SupplierSituation`,
+              pathname: `/pms/manage/SupplierSituation/${EncryptBase64(
+                JSON.stringify({
+                  defaultYear,
+                  routes: [{ name: '个人工作台', pathname: location.pathname }],
+                }),
+              )}`,
               state: {
                 routes: [{ name: '个人工作台', pathname: location.pathname }],
               },

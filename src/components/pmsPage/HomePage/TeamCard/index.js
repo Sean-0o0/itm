@@ -2,9 +2,10 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useLocation } from 'react-router';
 import { Link } from 'react-router-dom';
 import * as echarts from 'echarts';
+import { EncryptBase64 } from '../../../Common/Encrypt';
 
 export default function TeamCard(props) {
-  const { teamData } = props;
+  const { teamData = [], defaultYear } = props;
   const location = useLocation();
   const pieChartRef = useRef(null);
 
@@ -59,7 +60,7 @@ export default function TeamCard(props) {
               show: false,
               position: 'center',
               formatter: params => {
-                return `{a|${params.name}}\n{b|${getValue(params.name)}}`;ff
+                return `{a|${params.name}}\n{b|${getValue(params.name)}}`;
               },
               color: 'black',
               fontFamily: 'PingFangSC-Regular, PingFang SC',
@@ -125,7 +126,12 @@ export default function TeamCard(props) {
         <span>
           <Link
             to={{
-              pathname: `/pms/manage/departmentOverview`,
+              pathname: `/pms/manage/departmentOverview/${EncryptBase64(
+                JSON.stringify({
+                  defaultYear,
+                  routes: [{ name: '个人工作台', pathname: location.pathname }],
+                }),
+              )}`,
               state: {
                 routes: [{ name: '个人工作台', pathname: location.pathname }],
               },

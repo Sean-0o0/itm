@@ -337,7 +337,7 @@ export default function YjbmAllTable(props) {
                           }),
                         )}`,
                         state: {
-                          routes: [{ name: '统计分析', pathname: location.pathname }],
+                          routes: [{ name: '项目统计', pathname: location.pathname }],
                         },
                       }}
                       className="table-link-strong"
@@ -364,7 +364,7 @@ export default function YjbmAllTable(props) {
                               }),
                             )}`,
                             state: {
-                              routes: [{ name: '统计分析', pathname: location.pathname }],
+                              routes: [{ name: '项目统计', pathname: location.pathname }],
                             },
                           }}
                           className="table-link-strong"

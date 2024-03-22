@@ -876,17 +876,9 @@ export default function HomePage(props) {
                 userRole={userRole}
                 budgetData={budgetData}
                 time={moment(overviewInfo?.ysgxsj).format('YYYY-MM-DD')}
+                defaultYear={statisticYearData.currentYear}
               />
             )}
-            {/* <AnalyzeRepsCard
-              getCusRepData={getCusRepData}
-              stateProps={{
-                showExtendsWD,
-                totalWD,
-                cusRepDataWD,
-                isLoading,
-              }}
-            /> */}
             <ProjectCard
               itemWidth={itemWidth}
               getAfterItem={getAfterItem}
@@ -942,16 +934,18 @@ export default function HomePage(props) {
                   userRole={userRole}
                   budgetData={budgetData}
                   time={moment(overviewInfo?.ysgxsj).format('YYYY-MM-DD')}
+                  defaultYear={statisticYearData.currentYear}
                 />
                 <ProcessCard processData={processData} total={total.process} />
               </Fragment>
             ) : (
               <Fragment>
-                <TeamCard teamData={teamData} />
+                <TeamCard teamData={teamData} defaultYear={statisticYearData.currentYear} />
                 {supplierData.item?.length > 1 ? (
                   <SupplierCard
                     supplierData={supplierData}
                     time={moment(overviewInfo?.gysgxsj).format('YYYY-MM-DD')}
+                    defaultYear={statisticYearData.currentYear}
                   />
                 ) : null}
               </Fragment>

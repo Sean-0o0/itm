@@ -186,7 +186,7 @@ export default function IterationPayment(props) {
         const rjfyspwht = () => {
           setLbModal(p => ({
             ...p,
-            title: '软件费用审批无合同流程' + '发起',
+            title: '软件费用审批流程-无合同' + '发起',
             rjfyspwht: true,
             fkjhId: item.id,
           }));
@@ -251,7 +251,7 @@ export default function IterationPayment(props) {
               </div>
             )}
             <div className="item" onClick={rjfyspwht} key="软件费用审批无合同流程">
-              软件费用审批无合同流程
+              软件费用审批流程-无合同
             </div>
           </div>
         );

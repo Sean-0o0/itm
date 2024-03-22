@@ -360,23 +360,23 @@ export default function TopConsole(props) {
         <SubMenu title={<span style={{ marginLeft: 20 }}>流程补录</span>}>
           <Menu.Item onClick={() => openLbModal('信委会附件', 'xwhfj')}>信委会附件</Menu.Item>
           <Menu.Item onClick={() => openLbModal('总办会流程', 'zbh')}>总办会流程</Menu.Item>
-          <Menu.Item onClick={() => openLbModal('项目立项申请流程', 'xmlxsq')}>
-            项目立项申请流程
+          <Menu.Item onClick={() => openLbModal('项目立项申请', 'xmlxsq')}>
+            项目立项申请
           </Menu.Item>
           <Menu.Item onClick={() => openLbModal('软件合同签署流程', 'rjhtqs')}>
             软件合同签署流程
           </Menu.Item>
-          <Menu.Item onClick={() => openLbModal('软件费用审批-有合同流程', 'rjfyspyht')}>
-            软件费用审批-有合同流程
+          <Menu.Item onClick={() => openLbModal('软件费用审批流程-有合同', 'rjfyspyht')}>
+            软件费用审批流程-有合同
           </Menu.Item>
-          <Menu.Item onClick={() => openLbModal('软件费用审批-无合同流程', 'rjfyspwht')}>
-            软件费用审批-无合同流程
+          <Menu.Item onClick={() => openLbModal('软件费用审批流程-无合同', 'rjfyspwht')}>
+            软件费用审批流程-无合同
           </Menu.Item>
-          <Menu.Item onClick={() => openLbModal('设备采购-有合同流程', 'sbcgyht')}>
-            设备采购-有合同流程
+          <Menu.Item onClick={() => openLbModal('设备采购有合同', 'sbcgyht')}>
+            设备采购有合同
           </Menu.Item>
-          <Menu.Item onClick={() => openLbModal('设备采购-无合同流程', 'sbcgwht')}>
-            设备采购-无合同流程
+          <Menu.Item onClick={() => openLbModal('设备采购无合同', 'sbcgwht')}>
+            设备采购无合同
           </Menu.Item>
           <Menu.Item onClick={() => openLbModal('其他流程', 'qt')}>其他流程</Menu.Item>
         </SubMenu>
