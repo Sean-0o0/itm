@@ -1,10 +1,11 @@
 .ProjectBuilding_ProjectQueryTable {
 
-  height: 59vh;
+  // height: 57vh; //
+  min-height: 57vh;
   background-color: #fff;
   box-shadow: 0 4px 4px 0 rgba(20, 38, 98, 0.04);
   border-radius: 8px;
-  margin: 0px 24px;
+  margin: 0px 24px 24px 24px;
   padding: 8px 24px;
 
   //搜索栏
@@ -41,8 +42,28 @@
     }
   }
 
+  // 表格高度
   .common_project-info-table-box {
-    height: 300px !important;
+    // height: 300px !important; 
+  }
+
+  //树形选择器多选加箭头
+  .label-selector-arrow {
+    position: absolute;
+    top: 50%;
+    right: 14px;
+    margin-top: -6px;
+    color: rgba(0, 0, 0, 0.25);
+    font-size: 12px;
+    line-height: 1;
+    cursor: pointer;
+    transition: all 0.3s;
+    pointer-events: none;
+  }
+
+  //树形选择器旋转图标
+  .selector-rotate {
+    transform: rotate(-180deg);
   }
 
 

@@ -359,14 +359,13 @@ const ProjectQueryTable = (props) => {
                       open={labelOpen}
                       onDropdownVisibleChange={v => setLabelOpen(v)}
                     />
-                    {/* <Icon
+                    <Icon
                       type="down"
-                      style={{ color: 'red' }}
                       className={'label-selector-arrow' + (labelOpen ? ' selector-rotate' : '')}
                       onClick={() => {
                         setLabelOpen(p => !p);
                       }}
-                    /> */}
+                    />
                   </>
                 )}
               </Form.Item>
