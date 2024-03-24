@@ -24,6 +24,7 @@ export default connect(({ global = {} }) => ({
   authorities: global.authorities,
 }))(function ShortcutCard(props) {
   const { dataProps = {}, funcProps = {}, authorities = {} } = props;
+  const AUTH = authorities.XMXQ || []; //权限点控制
   const {
     xmid,
     ZYXMKQLX = [],
@@ -438,19 +439,15 @@ export default connect(({ global = {} }) => ({
         '权限控制：是否显示快捷入口: ' + '\n非项目成员：' + !isMember(),
         '\n预算审批隐藏：' + ysspHide,
         '\n项目终止隐藏：' + isEnd,
-        '\n知识产权获奖荣誉：' + is_XMJL_FXMJL,
-        '\n考勤：' + showKQXX,
-        '\n生成迭代：' + (is_XMJL_FXMJL && showSCDD),
-        '\n完结：' + (is_XMJL_FXMJL && prjBasic.WJZT !== '1'),
-        // '\n人员互评：' +
-        //   (grayTest.DDMK &&
-        //     Number(prjBasic.SFBHZXM || 0) <= 0 &&
-        //     isForbiddenLeader === false &&
-        //     ((is_XMJL_FXMJL &&
-        //       (hasEvaluationData === true || authorities.RYPJ?.includes('OpenEvaluation'))) ||
-        //       (isProjectMember === true && hasEvaluationData === true))),
+        '\n知识产权：' + (is_XMJL_FXMJL && AUTH.includes('intellectualProperty')),
+        '\n获奖荣誉：' + (is_XMJL_FXMJL && AUTH.includes('awardsAndHonors')),
+        '\n考勤：' + (showKQXX && AUTH.includes('attendanceRegistration')),
+        '\n生成迭代：' + (is_XMJL_FXMJL && showSCDD && AUTH.includes('generateIteration')),
+        '\n完结：' + (is_XMJL_FXMJL && prjBasic.WJZT !== '1' && AUTH.includes('projectFinish')),
+        '\n终止：' +
+          (is_XMJL_FXMJL && prjBasic.WJZT !== '5' && AUTH.includes('projectTermination')),
         '\n评价管理：' + authorities.RYPJ?.includes('OpenEvaluation'),
-        '\n转为迭代：' + (is_XMJL_FXMJL && showZWDD),
+        '\n转为迭代：' + (is_XMJL_FXMJL && showZWDD && AUTH.includes('turnIteration')),
       );
     return () => {};
   }, [JSON.stringify(member)]);
@@ -461,18 +458,14 @@ export default connect(({ global = {} }) => ({
     ysspHide ||
     isEnd ||
     !(
-      is_XMJL_FXMJL ||
-      showKQXX ||
-      (is_XMJL_FXMJL && showSCDD) ||
-      (is_XMJL_FXMJL && prjBasic.WJZT !== '1') ||
-      // (grayTest.DDMK &&
-      //   Number(prjBasic.SFBHZXM || 0) <= 0 &&
-      //   isForbiddenLeader === false &&
-      //   ((is_XMJL_FXMJL &&
-      //     (hasEvaluationData === true || authorities.RYPJ?.includes('OpenEvaluation'))) ||
-      //     (isProjectMember === true && hasEvaluationData === true))) ||
+      (is_XMJL_FXMJL && AUTH.includes('intellectualProperty')) ||
+      (is_XMJL_FXMJL && AUTH.includes('awardsAndHonors')) ||
+      (showKQXX && AUTH.includes('attendanceRegistration')) ||
+      (is_XMJL_FXMJL && showSCDD && AUTH.includes('generateIteration')) ||
+      (is_XMJL_FXMJL && prjBasic.WJZT !== '1' && AUTH.includes('projectFinish')) ||
+      (is_XMJL_FXMJL && prjBasic.WJZT !== '5' && AUTH.includes('projectTermination')) ||
       authorities.RYPJ?.includes('OpenEvaluation') ||
-      (grayTest.DDMK && is_XMJL_FXMJL && showZWDD)
+      (is_XMJL_FXMJL && showZWDD && AUTH.includes('turnIteration'))
     )
   )
     return null;
@@ -485,6 +478,7 @@ export default connect(({ global = {} }) => ({
         <div className="content">
           {is_XMJL_FXMJL &&
             prjBasic.WJZT !== '1' &&
+            AUTH.includes('projectFinish') &&
             getShortcutItem({
               imgTxt: 'xmwj',
               txt: '项目完结',
@@ -493,6 +487,7 @@ export default connect(({ global = {} }) => ({
 
           {is_XMJL_FXMJL &&
           prjBasic.WJZT !== '5' && // 完结状态 ==='5'   代表   “已终止”
+            AUTH.includes('projectTermination') &&
             getShortcutItem({
               imgTxt: 'terminateHandle',
               txt: '项目终止',
@@ -503,6 +498,7 @@ export default connect(({ global = {} }) => ({
         //其他页面
         <div className="content">
           {is_XMJL_FXMJL &&
+            AUTH.includes('intellectualProperty') &&
             getShortcutItem({
               imgTxt: 'zscq',
               txt: '知识产权',
@@ -511,6 +507,7 @@ export default connect(({ global = {} }) => ({
             })}
 
           {is_XMJL_FXMJL &&
+            AUTH.includes('awardsAndHonors') &&
             getShortcutItem({
               imgTxt: 'hjry',
               txt: '获奖荣誉',
@@ -519,6 +516,7 @@ export default connect(({ global = {} }) => ({
             })}
 
           {showKQXX &&
+            AUTH.includes('attendanceRegistration') &&
             getShortcutItem({
               imgTxt: 'kqdj',
               txt: '考勤登记',
@@ -527,6 +525,7 @@ export default connect(({ global = {} }) => ({
 
           {is_XMJL_FXMJL &&
             showSCDD &&
+            AUTH.includes('generateIteration') &&
             getShortcutItem({
               imgTxt: 'scdd',
               txt: '生成迭代',
@@ -535,6 +534,7 @@ export default connect(({ global = {} }) => ({
 
           {is_XMJL_FXMJL &&
             prjBasic.WJZT !== '1' &&
+            AUTH.includes('projectFinish') &&
             getShortcutItem({
               imgTxt: 'xmwj',
               txt: '项目完结',
@@ -543,6 +543,7 @@ export default connect(({ global = {} }) => ({
 
           {is_XMJL_FXMJL &&
           prjBasic.WJZT !== '5' && // 完结状态 ==='5'   代表   “已终止”
+            AUTH.includes('projectTermination') &&
             getShortcutItem({
               imgTxt: 'terminateHandle',
               txt: '项目终止',
@@ -560,6 +561,7 @@ export default connect(({ global = {} }) => ({
 
           {is_XMJL_FXMJL &&
             showZWDD &&
+            AUTH.includes('turnIteration') &&
             getShortcutItem({
               imgTxt: 'kqdj',
               txt: '转为迭代',
