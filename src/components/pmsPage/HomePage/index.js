@@ -46,7 +46,7 @@ const getAmountFormat = value => {
 };
 export { getAmountFormat };
 export default function HomePage(props) {
-  const { cacheLifecycles, dictionary, roleData = {} } = props;
+  const { cacheLifecycles, dictionary, roleData = {}, authorities = {} } = props;
   let LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
   const [leftWidth, setLeftWidth] = useState('71.405%'); //左侧功能块宽度
   const [itemWidth, setItemWidth] = useState('32%'); //待办、项目每小块宽度
@@ -868,6 +868,7 @@ export default function HomePage(props) {
               handleCurYearChange={handleCurYearChange}
               getToDoData={getToDoData}
               popLoading={popLoading}
+              AUTH={authorities.GRGZT}
             />
             {!['二级部门领导', '普通人员'].includes(userRole) && (
               <CptBudgetCard
@@ -877,6 +878,7 @@ export default function HomePage(props) {
                 budgetData={budgetData}
                 time={moment(overviewInfo?.ysgxsj).format('YYYY-MM-DD')}
                 defaultYear={statisticYearData.currentYear}
+                AUTH={authorities.GRGZT}
               />
             )}
             <ProjectCard
@@ -909,6 +911,7 @@ export default function HomePage(props) {
               noticeData={noticeData}
               setNoticeData={setNoticeData}
               isGLY={isGLY.hjry}
+              AUTH={authorities.GRGZT}
             />
             <ShortcutCard
               userRole={userRole}
@@ -922,6 +925,7 @@ export default function HomePage(props) {
               toDoDataNum={total.todo}
               getToDoData={getToDoData}
               popLoading={popLoading}
+              AUTH={authorities.GRGZT}
             />
             {/* <PrjDynamic dynamicData={dynamicData} setDynamicData={setDynamicData} /> */}
             {['二级部门领导', '普通人员'].includes(userRole) ? (
@@ -935,6 +939,7 @@ export default function HomePage(props) {
                   budgetData={budgetData}
                   time={moment(overviewInfo?.ysgxsj).format('YYYY-MM-DD')}
                   defaultYear={statisticYearData.currentYear}
+                  AUTH={authorities.GRGZT}
                 />
                 <ProcessCard processData={processData} total={total.process} />
               </Fragment>

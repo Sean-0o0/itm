@@ -16,6 +16,7 @@ export default function ShortcutCard(props) {
     reflush,
     getToDoData,
     popLoading,
+    AUTH = [], //权限点控制
   } = props;
   const [fileAddVisible, setFileAddVisible] = useState(false); //项目信息修改弹窗显示
   const [src_fileAdd, setSrc_fileAdd] = useState({}); //项目信息修改弹窗显示
@@ -52,16 +53,17 @@ export default function ShortcutCard(props) {
     if (userRole === '普通人员')
       return (
         <div className="shortcut-box">
-          {getShortcutItem('xjxm', '新建项目', () => {
-            setVisible(true);
-            // setFileAddVisible(true)
-          })}
-          {getShortcutItem('bgtx', '报告填写', () => jumpToLBPage('ZBYBTX'))}
+          {AUTH.includes('quickEntranceNewProject') &&
+            getShortcutItem('xjxm', '新建项目', () => {
+              setVisible(true);
+            })}
+          {AUTH.includes('quickEntranceReportFilling') &&
+            getShortcutItem('bgtx', '报告填写', () => jumpToLBPage('ZBYBTX'))}
         </div>
       );
     return (
       <div className="shortcut-box">
-        {userRole === '二级部门领导' && (
+        {AUTH.includes('quickEntranceMessage') && userRole === '二级部门领导' && (
           <OverviewCard
             componentType="shortcut"
             toDoData={toDoData}
@@ -72,18 +74,21 @@ export default function ShortcutCard(props) {
             popLoading={popLoading}
           />
         )}
-        {getShortcutItem('xjxm', '新建项目', () => {
-          setVisible(true);
-          // setFileAddVisible(true)
-        })}
-        {userRole !== '二级部门领导' &&
+        {AUTH.includes('quickEntranceNewProject') &&
+          getShortcutItem('xjxm', '新建项目', () => {
+            setVisible(true);
+          })}
+        {AUTH.includes('quickEntranceMotionApproval') &&
+          userRole !== '二级部门领导' &&
           getShortcutItem('yian', '议案审批', () => jumpToLBPage('V_XWHYALC_LDSP'))}
-        {getShortcutItem('ysck', '预算查看', () => jumpToLBPage('YSTJ'))}
-        {getShortcutItem(
-          'bgck',
-          '报告查看',
-          () => (window.location.href = '/#/pms/manage/CustomReportInfo'),
-        )}
+        {AUTH.includes('quickEntranceBudegetView') &&
+          getShortcutItem('ysck', '预算查看', () => jumpToLBPage('YSTJ'))}
+        {AUTH.includes('quickEntranceReport') &&
+          getShortcutItem(
+            'bgck',
+            '报告查看',
+            () => (window.location.href = '/#/pms/manage/CustomReportInfo'),
+          )}
       </div>
     );
   };
@@ -108,18 +113,6 @@ export default function ShortcutCard(props) {
   const handleFileAddSuccess = () => {
     closeFileAddModal();
     getPrjInfo(userRole); //刷新数据
-  };
-
-  //新建项目弹窗参数
-  const fileAddModalProps = {
-    isAllWindow: 1,
-    // defaultFullScreen: true,
-    title: '新建项目',
-    width: '1000px',
-    height: '700px',
-    style: { top: '10px' },
-    visible: fileAddVisible,
-    footer: null,
   };
 
   return (

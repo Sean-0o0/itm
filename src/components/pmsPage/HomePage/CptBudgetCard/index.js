@@ -6,10 +6,11 @@ import { Link } from 'react-router-dom';
 import { EncryptBase64 } from '../../../Common/Encrypt';
 
 export default function CptBudgetCard(props) {
-  const { isVertical = false, userRole, budgetData = {}, time, defaultYear } = props;
+  //AUTH 权限点控制
+  const { isVertical = false, userRole, budgetData = {}, time, defaultYear, AUTH = [] } = props;
   const location = useLocation();
 
-  const getNewBgItem = (title = '--', update = '--', top = {}, bottom = {}) => {
+  const getNewBgItem = (title = '--', update = '--', top = {}, bottom = {}, auth = false) => {
     const getProgress = (
       rateLabel,
       executedLabel,
@@ -67,24 +68,28 @@ export default function CptBudgetCard(props) {
           {title}
           <div className="update">{update}&nbsp;更新</div>
           {['普通人员', '二级部门领导'].includes(userRole) ? (
-            <span>
-              <Link
-                to={{
-                  pathname: `/pms/manage/BudgetStatistic/${EncryptBase64(
-                    JSON.stringify({
-                      tab: title === '资本性预算' ? 'ZB' : 'FZB',
-                    }),
-                  )}`,
-                  state: {
-                    routes: [{ name: '个人工作台', pathname: location.pathname }],
-                  },
-                }}
-              >
-                详情
-                <i className="iconfont icon-right" />
-              </Link>
-            </span>
-          ) : (
+            auth ? (
+              <span>
+                <Link
+                  to={{
+                    pathname: `/pms/manage/BudgetStatistic/${EncryptBase64(
+                      JSON.stringify({
+                        tab: title === '资本性预算' ? 'ZB' : 'FZB',
+                      }),
+                    )}`,
+                    state: {
+                      routes: [{ name: '个人工作台', pathname: location.pathname }],
+                    },
+                  }}
+                >
+                  详情
+                  <i className="iconfont icon-right" />
+                </Link>
+              </span>
+            ) : (
+              ''
+            )
+          ) : auth ? (
             <span>
               <Link
                 to={{
@@ -103,6 +108,8 @@ export default function CptBudgetCard(props) {
                 <i className="iconfont icon-right" />
               </Link>
             </span>
+          ) : (
+            ''
           )}
         </div>
         {getProgress('执行率', '已执行预算', '可执行预算', top)}
@@ -118,12 +125,14 @@ export default function CptBudgetCard(props) {
         time,
         { rate: budgetData.ZBRJWCL, executed: budgetData.ZBRJWCZ, executable: budgetData.ZBRJMBZ },
         { rate: budgetData.ZBYSLXL, executed: budgetData.ZBYSLXZ, executable: budgetData.ZBYSZYS },
+        AUTH.includes('capitalBudgetDetail'),
       )}
       {getNewBgItem(
         '非资本性预算',
         time,
         { rate: budgetData.FZBWCL, executed: budgetData.FZBWCZ, executable: budgetData.FZBMBZ },
         { rate: budgetData.FZBLXL, executed: budgetData.FZBLXZ, executable: budgetData.FZBZYS },
+        AUTH.includes('nonCapitalBudgetDetail'),
       )}
     </div>
   );

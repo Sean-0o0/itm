@@ -5,4 +5,5 @@ import HomePageTab from '../../../components/pmsPage/HomePage';
 export default connect(({ global }) => ({
   dictionary: global.dictionary,
   roleData: global.roleData,
+  authorities: global.authorities,
 }))(HomePageTab);

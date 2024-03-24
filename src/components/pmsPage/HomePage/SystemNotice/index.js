@@ -9,7 +9,8 @@ import { useHistory } from 'react-router-dom';
 import { EncryptBase64 } from '../../../Common/Encrypt';
 
 export default function SystemNotice(props) {
-  const { noticeData = [], setNoticeData, isGLY } = props;
+  //AUTH 权限点控制
+  const { noticeData = [], setNoticeData, isGLY, AUTH = [] } = props;
   const [modalVisible, setModalVisible] = useState(false); //弹窗需要
   const [hjryData, setHjryData] = useState({
     visible: false, //显隐
@@ -92,10 +93,12 @@ export default function SystemNotice(props) {
     <div className="system-notice-card-box">
       <div className="home-card-title-box" style={{ marginBottom: 9 }}>
         <div>系统公告</div>
-        <span onClick={() => setModalVisible(true)}>
-          全部
-          <i className="iconfont icon-right" />
-        </span>
+        {AUTH.includes('announcementEntry') && (
+          <span onClick={() => setModalVisible(true)}>
+            全部
+            <i className="iconfont icon-right" />
+          </span>
+        )}
       </div>
       {/* 获奖荣誉 */}
       <OprModal

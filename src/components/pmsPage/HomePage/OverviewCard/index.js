@@ -40,6 +40,7 @@ export default connect(({ global }) => ({
     dataAnonymization,
     getToDoData,
     popLoading,
+    AUTH = [], //权限点控制
   } = props;
   let LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
   const location = useLocation();
@@ -1077,17 +1078,20 @@ export default connect(({ global }) => ({
               addNum: overviewInfo?.xmjrxz,
               unit: '项',
               width: '22%',
-              linkTo: {
-                pathname: `/pms/manage/projectBuilding/${EncryptBase64(
-                  JSON.stringify({
-                    defaultYear: statisticYearData.currentYear,
-                    routes: [{ name: '个人工作台', pathname: location.pathname }],
-                  }),
-                )}`,
-                state: {
-                  routes: [{ name: '个人工作台', pathname: location.pathname }],
-                },
-              },
+              more: AUTH.includes('projectCount'),
+              linkTo: AUTH.includes('projectCount')
+                ? {
+                    pathname: `/pms/manage/projectBuilding/${EncryptBase64(
+                      JSON.stringify({
+                        defaultYear: statisticYearData.currentYear,
+                        routes: [{ name: '个人工作台', pathname: location.pathname }],
+                      }),
+                    )}`,
+                    state: {
+                      routes: [{ name: '个人工作台', pathname: location.pathname }],
+                    },
+                  }
+                : false,
             })}
             {getOverviewItem({
               title: '部门队伍数量',
@@ -1096,17 +1100,20 @@ export default connect(({ global }) => ({
               addNum: overviewInfo?.ryjrxz,
               unit: '人',
               width: '22%',
-              linkTo: {
-                pathname: `/pms/manage/departmentOverview/${EncryptBase64(
-                  JSON.stringify({
-                    defaultYear: statisticYearData.currentYear,
-                    routes: [{ name: '个人工作台', pathname: location.pathname }],
-                  }),
-                )}`,
-                state: {
-                  routes: [{ name: '个人工作台', pathname: location.pathname }],
-                },
-              },
+              more: AUTH.includes('memberCount'),
+              linkTo: AUTH.includes('memberCount')
+                ? {
+                    pathname: `/pms/manage/departmentOverview/${EncryptBase64(
+                      JSON.stringify({
+                        defaultYear: statisticYearData.currentYear,
+                        routes: [{ name: '个人工作台', pathname: location.pathname }],
+                      }),
+                    )}`,
+                    state: {
+                      routes: [{ name: '个人工作台', pathname: location.pathname }],
+                    },
+                  }
+                : false,
             })}
             {getOverviewItem({
               title: '预算执行金额(万元)/执行率',
@@ -1116,17 +1123,20 @@ export default connect(({ global }) => ({
               addNum: overviewInfo?.ysjrxz,
               unit: '万元',
               width: '34%',
-              linkTo: {
-                pathname: `/pms/manage/BudgetExcute/${EncryptBase64(
-                  JSON.stringify({
-                    defaultYear: statisticYearData.currentYear,
-                    routes: [{ name: '个人工作台', pathname: location.pathname }],
-                  }),
-                )}`,
-                state: {
-                  routes: [{ name: '个人工作台', pathname: location.pathname }],
-                },
-              },
+              more: AUTH.includes('budgetStatistics'),
+              linkTo: AUTH.includes('budgetStatistics')
+                ? {
+                    pathname: `/pms/manage/BudgetExcute/${EncryptBase64(
+                      JSON.stringify({
+                        defaultYear: statisticYearData.currentYear,
+                        routes: [{ name: '个人工作台', pathname: location.pathname }],
+                      }),
+                    )}`,
+                    state: {
+                      routes: [{ name: '个人工作台', pathname: location.pathname }],
+                    },
+                  }
+                : false,
             })}
             {getOverviewItem({
               title: '供应商数量',
@@ -1135,17 +1145,20 @@ export default connect(({ global }) => ({
               addNum: overviewInfo?.gysjrxz,
               unit: '家',
               width: '22%',
-              linkTo: {
-                pathname: `/pms/manage/SupplierSituation/${EncryptBase64(
-                  JSON.stringify({
-                    defaultYear: statisticYearData.currentYear,
-                    routes: [{ name: '个人工作台', pathname: location.pathname }],
-                  }),
-                )}`,
-                state: {
-                  routes: [{ name: '个人工作台', pathname: location.pathname }],
-                },
-              },
+              more: AUTH.includes('supplierCount'),
+              linkTo: AUTH.includes('supplierCount')
+                ? {
+                    pathname: `/pms/manage/SupplierSituation/${EncryptBase64(
+                      JSON.stringify({
+                        defaultYear: statisticYearData.currentYear,
+                        routes: [{ name: '个人工作台', pathname: location.pathname }],
+                      }),
+                    )}`,
+                    state: {
+                      routes: [{ name: '个人工作台', pathname: location.pathname }],
+                    },
+                  }
+                : false,
             })}
           </div>
         ) : (
