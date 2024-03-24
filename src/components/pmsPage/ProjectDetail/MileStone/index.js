@@ -550,7 +550,7 @@ export default function MileStone(props) {
           <div className="overall-rate">
             <img src={overallRateImg} alt="" />
             <span>事项完成度：</span>
-            <span className="rate">{prjBasic.XMJD}%</span>
+            <span className="rate">{prjBasic.SXWCD}</span>
           </div>
         </div>
         {getBottomBox()}
@@ -572,7 +572,7 @@ export default function MileStone(props) {
         <div className="overall-rate">
           <img src={overallRateImg} alt="" />
           <span>事项完成度：</span>
-          <span className="rate">{prjBasic.XMJD}%</span>
+          <span className="rate">{prjBasic.SXWCD}</span>
         </div>
       </div>
       <div className="middle-box">
