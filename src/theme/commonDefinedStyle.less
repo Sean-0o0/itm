@@ -156,25 +156,30 @@
       }
     }
 
-    & > .red-tag {
+    &>.red-tag {
       border: 1px solid #f5d6d3;
       background-color: #f8f3f3;
+
       &:hover {
         font-weight: bold;
         color: #f0978c;
       }
     }
-    & > .purple-tag {
+
+    &>.purple-tag {
       border: 1px solid #c4c7f7;
       background-color: #ebecf9;
+
       &:hover {
         font-weight: bold;
         color: #757cf7;
       }
     }
-    & > .yellow-tag {
+
+    &>.yellow-tag {
       border: 1px solid #f6deb3;
       background-color: #f8f4ed;
+
       &:hover {
         font-weight: bold;
         color: #f1a740;
@@ -213,4 +218,96 @@
   .ant-tabs-ink-bar {
     background-color: #3361ff;
   }
+}
+
+// 搜索栏覆盖antd高度样式
+.common_filterBar {
+
+  // 取消<Form.Item>下边距
+  .ant-form-item {
+    margin-bottom: 5px;
+  }
+
+  .ant-form-item-label {
+    line-height: 44px;
+  }
+
+  .ant-select-selection {
+    height: 33px;
+  }
+
+  // rangePicker内部input的height
+  .ant-calendar-picker-input {
+    height: 33px;
+  }
+
+  //其他一些几乎不会变的样式
+
+  .common_btnGroup {
+    padding-top: 5px;
+
+    .common_primaryBtn {
+      margin-left: auto;
+    }
+
+    .common_defaultBtn {
+      margin-left: 8px;
+    }
+  }
+
+
+  //展开、收起
+  .filter-fold,
+  .filter-unfold {
+    color: #3361ff;
+    cursor: pointer;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    height: 33px;
+    padding-top: 10px;
+
+    i {
+      margin-left: 8px;
+      font-size: 1em;
+    }
+
+    &:hover {
+      color: #3363ffaf;
+    }
+  }
+}
+
+// 主要样式——蓝色——按钮
+.common_primaryBtn {
+  background-color: #3361ff !important;
+  border-color: unset !important;
+  box-shadow: none !important;
+  color: #fff !important;
+
+  &:hover {
+    background-color: #3361ffaf !important;
+    border-color: unset !important;
+  }
+
+  &:focus {
+    background-color: #3361ff !important;
+  }
+}
+
+// 默认样式——白色——按钮
+.common_defaultBtn {
+  box-shadow: none !important;
+
+  &:hover {
+    color: #3361ffaf !important;
+    border-color: #3361ffaf !important;
+  }
+
+}
+
+//处理某些页面按钮focus的时候，文字是蓝色的 联合类名，类名本身就叫 “.blue-dark-theme .ant-btn-primary:focus”
+.blue-dark-theme .ant-btn-primary:focus {
+  color: #fff !important;
 }

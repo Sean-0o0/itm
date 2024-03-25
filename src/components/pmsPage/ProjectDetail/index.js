@@ -1468,18 +1468,6 @@ export default connect(({ global = {} }) => ({
             )}
           </div>
           <div className="col-right">
-            <ProgressStatistics
-              isSpinning={isSpinning}
-              overdueData={overdueData}
-              riskData={riskData}
-            />
-
-            <PaymentStatus
-              xmid={xmid}
-              prjData={prjData}
-              isSpinning={isSpinning}
-              setIsSpinning={setIsSpinning}
-            />
             <ShortcutCard
               dataProps={{
                 prjData,
@@ -1504,6 +1492,20 @@ export default connect(({ global = {} }) => ({
                 setOpenNewIteContent,
               }}
             />
+
+            <ProgressStatistics
+              isSpinning={isSpinning}
+              overdueData={overdueData}
+              riskData={riskData}
+            />
+
+            <PaymentStatus
+              xmid={xmid}
+              prjData={prjData}
+              isSpinning={isSpinning}
+              setIsSpinning={setIsSpinning}
+            />
+
             <PrjMember
               routes={routes}
               prjData={prjData}
