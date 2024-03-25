@@ -314,7 +314,7 @@ export default connect(({ global = {} }) => ({
         const ZSCQ_Auth = ZSCQ_IDArr.includes(String(LOGIN_USER_INFO.id));
         const XCHT_IDArr = XCHT === '' ? [] : XCHT.split(',');
         const XCHT_Auth = XCHT_IDArr.includes(String(LOGIN_USER_INFO.id));
-        setGrayTest({ KQMK: KQDJ_Auth, DDMK: DDXM_Auth, ZSCQ: ZSCQ_Auth, XCHT: XCHT_Auth });
+        setGrayTest({ KQMK: true, DDMK: true, ZSCQ: true, XCHT: true });
       }
       if (infoData.success) {
         const p = (str, isArr = true) => {
