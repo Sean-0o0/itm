@@ -22,6 +22,7 @@ import {
   QueryProjectUpdateInfo,
   QueryProjectXCContract,
   QueryUserRole,
+  QueryProjectProgressStatistics,
 } from '../../../services/pmsServices/index';
 import { message, Spin } from 'antd';
 import { FetchQueryProjectLabel } from '../../../services/projectManage';
@@ -128,6 +129,12 @@ export default connect(({ global = {} }) => ({
   // var s = 0;
   // var e = 0;
 
+  /** 逾期里程碑数据 */
+  const [overdueData, setOverdueData] = useState([]);
+
+  /** 风险数据 */
+  const [riskData, setRiskData] = useState([]);
+
   useEffect(() => {
     if (xmid !== -1 && HJRYDJ && ZSCQLX && RYGW && CGFS) {
       setIsSpinning(true);
@@ -225,6 +232,10 @@ export default connect(({ global = {} }) => ({
         xmid: Number(xmid),
         ryid: Number(LOGIN_USER_INFO.id),
       });
+      //获取进展统计数据
+      const progressStatisticsPromise = QueryProjectProgressStatistics({
+        projectID: Number(xmid),
+      });
       //信创合同信息展示 - ！！！跳转编辑页后只能查看，故无其他刷新，后续可能有变动，需注意
       const invCPromise = QueryProjectXCContract({
         projectId: Number(xmid), //  关联项目
@@ -243,6 +254,7 @@ export default connect(({ global = {} }) => ({
         curMsRes,
         msItemRes,
         invCRes,
+        progressStatisticsRes,
       ] = await Promise.all([
         xmlxPromise,
         rolePromise,
@@ -256,6 +268,7 @@ export default connect(({ global = {} }) => ({
         curMsPromise,
         msItemPromise,
         invCPromise,
+        progressStatisticsPromise,
       ]);
 
       const xmlxData = (await xmlxRes) || {};
@@ -270,6 +283,7 @@ export default connect(({ global = {} }) => ({
       const curMsData = (await curMsRes) || {};
       const msItemData = (await msItemRes) || {};
       const inVcData = (await invCRes) || {};
+      const progressStatisticsData = (await progressStatisticsRes) || {};
 
       if (xmlxData.success) {
         let xmlxArr = JSON.parse(xmlxData.xmlxRecord).map(x => {
@@ -725,6 +739,13 @@ export default connect(({ global = {} }) => ({
           ...p,
           invCData: JSON.parse(inVcData.result), //信创合同信息展示
         }));
+      }
+      if (progressStatisticsData.success) {
+        const arr = JSON.parse(progressStatisticsData.result);
+        const { milestone, risk } = arr;
+        // console.log('进度管理的数据', milestone, risk)
+        setOverdueData(milestone);
+        setRiskData(risk);
       }
 
       // e = performance.now();
@@ -1312,6 +1333,24 @@ export default connect(({ global = {} }) => ({
     }
   };
 
+  /** 获取进度管理数据 */
+  const getProgressStatisticsData = async () => {
+    const queryParams = {
+      projectID: Number(xmid),
+    };
+    try {
+      const res = await QueryProjectProgressStatistics(queryParams);
+      if (res.code === 1) {
+        const arr = JSON.parse(res.result);
+        const { milestone, risk } = arr;
+        setOverdueData(milestone);
+        setRiskData(risk);
+      }
+    } catch (err) {
+      message.error(`查询项目逾期情况和风险情况失败，${!err.success ? err.message : err.note}`, 3);
+    }
+  };
+
   return (
     <Spin
       spinning={isSpinning}
@@ -1373,6 +1412,7 @@ export default connect(({ global = {} }) => ({
                 getMileStoneData();
                 getPrjDocData({ totalChange: true });
                 getTrackingData();
+                getProgressStatisticsData();
               }}
               setIsSpinning={setIsSpinning}
               isLeader={isLeader}
@@ -1428,7 +1468,12 @@ export default connect(({ global = {} }) => ({
             )}
           </div>
           <div className="col-right">
-            <ProgressStatistics xmid={xmid} isSpinning={isSpinning} setIsSpinning={setIsSpinning} />
+            <ProgressStatistics
+              isSpinning={isSpinning}
+              overdueData={overdueData}
+              riskData={riskData}
+            />
+
             <PaymentStatus
               xmid={xmid}
               prjData={prjData}

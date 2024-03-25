@@ -8,20 +8,15 @@ import { connect } from 'dva';
 import { QueryProjectProgressStatistics } from '../../../../services/pmsServices';
 import Lodash from 'lodash'
 import BlueFlagIcon from '../../../../assets/projectDetail/icon_blueFlag.png'
+import { textOverflowSlice } from '../../../../utils/_selfDefinedMethod'
 
 /**
  * 进展统计
- * @param {*} props 
+ * @param {*} props
  */
 const ProgressStatistics = (props) => {
 
-  const { xmid: projectID } = props
-
-  /** 逾期里程碑数据 */
-  const [overdueData, setOverdueData] = useState([])
-
-  /** 风险数据 */
-  const [riskData, setRiskData] = useState([])
+  const { overdueData, riskData } = props
 
   /** 计算逾期天数 */
   const computedOverdueNum = (endDate) => {
@@ -43,31 +38,6 @@ const ProgressStatistics = (props) => {
     const formattedString = formattedArr.join("、")
     return formattedString
   };
-
-
-  const queryHandle = async () => {
-
-    const queryParams = {
-      projectID
-    }
-    try {
-      const res = await QueryProjectProgressStatistics(queryParams)
-      if (res.code === 1) {
-        const arr = JSON.parse(res.result)
-        const { milestone, risk } = arr
-        // console.log('xxxxxxxxxxxxxxxxxxxx', milestone, risk)
-        setOverdueData(milestone)
-        setRiskData(risk)
-      }
-    }
-    catch (err) {
-      message.error(`查询项目逾期情况和风险情况失败，${!err.success ? err.message : err.note}`, 3)
-    }
-  }
-
-  useEffect(() => {
-    queryHandle()
-  }, [])
 
   return (
     <div className='ProjectDetail_ProgressStatistics'>
@@ -118,8 +88,9 @@ const ProgressStatistics = (props) => {
                 </div>
               </div>
 
-              <div className='listItemBox_bottom'>
-                {item.content}
+              <div className='listItemBox_bottom' title={item.content}
+                dangerouslySetInnerHTML={{ __html: textOverflowSlice(item.content, 50).replace(/\n/g, '<br>') }}
+              >
               </div>
             </div>
           })}
