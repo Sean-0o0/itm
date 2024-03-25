@@ -268,14 +268,10 @@ export default connect(({ global }) => ({
     /**清空弹窗数据 */
     const clearDataHandle = () => {
       resetFields()
-      // setFieldsValue({
-      //   'bgrq': undefined,
-      //   'jjcd': undefined,
-      //   'sfzjss': undefined,
-      //   'bt': undefined,
-      //   'xmysje': undefined,
-      //   'qsbgnr': '<p></p>',
-      // })
+      setFieldsValue({
+        'bgrq': undefined,
+        'qsbgnr': '<p></p>',
+      })
       setXWHmotionData([])
       setXWHsummaryData([])
       setZBHmotionData([])
