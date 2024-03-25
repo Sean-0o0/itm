@@ -444,8 +444,7 @@ export default connect(({ global = {} }) => ({
         '\n考勤：' + (showKQXX && AUTH.includes('attendanceRegistration')),
         '\n生成迭代：' + (is_XMJL_FXMJL && showSCDD && AUTH.includes('generateIteration')),
         '\n完结：' + (is_XMJL_FXMJL && prjBasic.WJZT !== '1' && AUTH.includes('projectFinish')),
-        '\n终止：' +
-          (is_XMJL_FXMJL && prjBasic.WJZT !== '5' && AUTH.includes('projectTermination')),
+        '\n终止：' + (is_XMJL_FXMJL && !isEnd && AUTH.includes('projectTermination')),
         '\n评价管理：' + authorities.RYPJ?.includes('OpenEvaluation'),
         '\n转为迭代：' + (is_XMJL_FXMJL && showZWDD && AUTH.includes('turnIteration')),
       );
@@ -463,7 +462,7 @@ export default connect(({ global = {} }) => ({
       (showKQXX && AUTH.includes('attendanceRegistration')) ||
       (is_XMJL_FXMJL && showSCDD && AUTH.includes('generateIteration')) ||
       (is_XMJL_FXMJL && prjBasic.WJZT !== '1' && AUTH.includes('projectFinish')) ||
-      (is_XMJL_FXMJL && prjBasic.WJZT !== '5' && AUTH.includes('projectTermination')) ||
+      (is_XMJL_FXMJL && !isEnd && AUTH.includes('projectTermination')) ||
       authorities.RYPJ?.includes('OpenEvaluation') ||
       (is_XMJL_FXMJL && showZWDD && AUTH.includes('turnIteration'))
     )
@@ -486,7 +485,7 @@ export default connect(({ global = {} }) => ({
             })}
 
           {is_XMJL_FXMJL &&
-          prjBasic.WJZT !== '5' && // 完结状态 ==='5'   代表   “已终止”
+            !isEnd &&
             AUTH.includes('projectTermination') &&
             getShortcutItem({
               imgTxt: 'terminateHandle',
@@ -542,7 +541,7 @@ export default connect(({ global = {} }) => ({
             })}
 
           {is_XMJL_FXMJL &&
-          prjBasic.WJZT !== '5' && // 完结状态 ==='5'   代表   “已终止”
+            !isEnd &&
             AUTH.includes('projectTermination') &&
             getShortcutItem({
               imgTxt: 'terminateHandle',

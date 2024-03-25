@@ -125,7 +125,7 @@ export default connect(({ global = {} }) => ({
   const [openNewIteContent, setOpenNewIteContent] = useState(false); //（转为自研迭代项目后）打开新增升级内容弹窗
   const ysspHide = String(prjData.prjBasic?.XMZT) === '5'; //预算审批的情况 隐藏 里程碑、项目跟踪、快捷方式、编辑及更多按钮
   const isSinglePayment = String(prjData.prjBasic?.XMLX).includes('单费用付款'); //是否单费用付款项目 项目人员、项目节点、项目跟踪模块不展示。右上角的更多按钮也不展示
-  const isEnd = String(prjData.prjBasic?.WJZT) === '5'; //项目已终止（完结状态为5）的项目详情不能再进行操作
+  const isEnd = ['4', '5'].includes(String(prjData.prjBasic?.WJZT)); //项目已终止，终止中（完结状态为5、4）的项目详情不能再进行操作
   // var s = 0;
   // var e = 0;
 
