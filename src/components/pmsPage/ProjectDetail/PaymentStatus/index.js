@@ -10,6 +10,7 @@ import { EncryptBase64 } from '../../../Common/Encrypt';
 import { Link, useLocation } from 'react-router-dom';
 import { useHistory } from 'react-router';
 import Lodash from 'lodash';
+import Decimal from 'decimal.js'
 
 
 /**
@@ -116,9 +117,16 @@ const PaymentStatus = (props) => {
           const obj = JSON.parse(res.result)
           const { paymentAmount, contractAmount } = obj
           setMoneyObj(obj)
-          setPayRate(Math.floor(parseInt(paymentAmount) / parseInt(contractAmount) * 100))
-          setHasData(true)
-        } else setHasData(false)
+          //合同金额为0，按无数据处理
+          if (String(contractAmount) === '0') {
+            setHasData(false)
+          }
+          else {
+            setPayRate(Math.floor(parseInt(paymentAmount) / parseInt(contractAmount) * 100))
+            setHasData(true)
+          }
+        }
+        else setHasData(false)
       }
     } catch (err) {
       console.log('查付款情况失败，', err)
@@ -127,9 +135,12 @@ const PaymentStatus = (props) => {
   }
 
   useEffect(() => {
-    queryHandle()
     judgeUnconfirmedContractNumHandle()
   }, [contrastArr, year])
+
+  useEffect(() => {
+    queryHandle()
+  }, [year])
 
 
   const yearDropdownMenu = (
