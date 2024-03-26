@@ -15,7 +15,7 @@ import * as Lodash from "lodash";
  */
 const TableBox = (props) => {
 
-  const { isTableLoading, tableData, curPageNum, setCurPageNum, pageSize, setPageSize, total } = props
+  const { isTableLoading, tableData, curPageNum, setCurPageNum, pageSize, setPageSize, total, form } = props
 
   const location = useLocation();
 

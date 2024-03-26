@@ -81,7 +81,7 @@ const ProjectQueryTable = (props) => {
 
     const values = getFieldsValue()
 
-    const { finishTime } = values
+    const { finishTime, } = values
 
     setIsTableLoading(true)
 
@@ -102,6 +102,7 @@ const ProjectQueryTable = (props) => {
       const res = await QueryProjectProgressList(queryParams)
       if (res.code === 1) {
         const arr = JSON.parse(res.result)
+        // console.log('xxxxxxxxxxxxxxx', arr)
         setTableData(arr)
         setTotal(res.totalrows)
         resetCurpageBool && setCurPageNum(1)
@@ -182,6 +183,10 @@ const ProjectQueryTable = (props) => {
     }
   };
 
+  const resetHandle = () => {
+    resetFields()
+    setLabel([])
+  }
 
   useEffect(() => {
     // getprojectManagerData()
@@ -190,11 +195,16 @@ const ProjectQueryTable = (props) => {
   }, [])
 
   useEffect(() => {
+    //不拆开会影响到导致某些情况切换分页 冗余执行了setFieldsValue
     setFieldsValue({
       matter: curStage
     });
     queryHandle()
-  }, [curPageNum, pageSize, curStage, JSON.stringify(roleData)])
+  }, [curStage, JSON.stringify(roleData)])
+
+  useEffect(() => {
+    queryHandle()
+  }, [curPageNum, pageSize])
 
 
   return (
@@ -266,15 +276,14 @@ const ProjectQueryTable = (props) => {
                       className="btn-search"
                       type="primary"
                       onClick={() => {
-                        queryHandle()
+                        queryHandle(true)
                       }}
                     >
                       查询
                     </Button>
 
                     <Button className="btn-reset" onClick={() => {
-                      resetFields()
-                      setLabel([])
+                      resetHandle()
                     }}>
                       重置
                     </Button>
@@ -322,7 +331,7 @@ const ProjectQueryTable = (props) => {
                     placeholder="请选择"
                   >
                     {mileStoneData.map((item, index) => (
-                      <Select.Option key={item.id} value={item.id}>
+                      <Select.Option key={item.id} value={item.lcbmc}>
                         {item.lcbmc}
                       </Select.Option>
                     ))}
@@ -385,6 +394,7 @@ const ProjectQueryTable = (props) => {
             pageSize={pageSize}
             setPageSize={setPageSize}
             total={total}
+            form={form}
           />
         </div>
       </div >
