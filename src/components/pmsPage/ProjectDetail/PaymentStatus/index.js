@@ -36,19 +36,19 @@ const PaymentStatus = (props) => {
   } = prjBasic
 
 
-  /** 是否有数据 */
-  const [hasData, setHasData] = useState(false)
+  /** 调用接口次数 */
+  const [queryApiNum, setQueryApiNum] = useState(0)
 
   /** 年份 */
   const [year, setYear] = useState(moment().format('YYYY'))
 
+  /** 年份数组 */
+  const [yearDatasource, setYearDatasource] = useState([])
+
   /** 付款率 */
   const [payRate, setPayRate] = useState(0)
 
-  const [moneyObj, setMoneyObj] = useState({
-    contractAmount: '0', //合同金额
-    paymentAmount: '0'   //已付款金额
-  })
+  const [moneyObj, setMoneyObj] = useState({})
 
   /** 未确认合同的数量 */
   const [unconfirmedContractNum, setUnconfirmedContract] = useState(0)
@@ -85,48 +85,50 @@ const PaymentStatus = (props) => {
     }
   }
 
-  /** 生成前后interval年 */
-  const yearArrGenerator = (interval) => {
-    const curYear = moment().format('YYYY');
-    const yearData = [];
-    for (let i = +curYear - interval; i <= +curYear + interval; i++) {
-      const yearObj = {
-        key: String(i),
-        value: String(i),
-      }
-      yearData.push(yearObj)
-    }
-    return yearData.reverse()
-  }
-  /** 年份数组 */
-  const yearArr = yearArrGenerator(30)
 
   const menuItemClickHanlde = (obj) => {
     setYear(obj.key)
   }
 
+  const firstQueryHandle = async () => {
+    const queryParams = {
+      projectID,
+      year: String(year), //创建日期
+    }
+    try {
+      const res = await QueryProjectPayments(queryParams);
+      if (res.code === 1) {
+        setQueryApiNum(queryApiNum + 1)
+        if (!Lodash.isEmpty(res.year)) {
+          const yearData = JSON.parse(res.year)
+          if (!Lodash.isEmpty(yearData)) {
+            setYearDatasource(yearData)
+            setYear(yearData[0].YEAR)
+          }
+        }
+      }
+    } catch (err) {
+      console.log('查付款情况失败，', err)
+      message.error(`查付款情况失败，${!err.success ? err.message : err.note}`, 3)
+    }
+  }
+
+
   const queryHandle = async () => {
     const queryParams = {
       projectID,
-      year, //创建日期
+      year: String(year), //创建日期
     };
     try {
       const res = await QueryProjectPayments(queryParams);
       if (res.code === 1) {
-        if (!Lodash.isEmpty(res.result)) {
-          const obj = JSON.parse(res.result)
-          const { paymentAmount, contractAmount } = obj
-          setMoneyObj(obj)
-          //合同金额为0，按无数据处理
-          if (String(contractAmount) === '0') {
-            setHasData(false)
-          }
-          else {
-            setPayRate(Math.floor(parseInt(paymentAmount) / parseInt(contractAmount) * 100))
-            setHasData(true)
-          }
+        const { result } = res
+        if (!Lodash.isEmpty(result)) {
+          const resultObj = JSON.parse(result)
+          const { paymentAmount, contractAmount } = resultObj
+          setMoneyObj(resultObj)
+          setPayRate(Math.floor(parseInt(paymentAmount) / parseInt(contractAmount) * 100))
         }
-        else setHasData(false)
       }
     } catch (err) {
       console.log('查付款情况失败，', err)
@@ -139,19 +141,25 @@ const PaymentStatus = (props) => {
   }, [contrastArr, year])
 
   useEffect(() => {
-    queryHandle()
-  }, [year])
+    if (queryApiNum > 0) {
+      queryHandle()
+    }
+  }, [year, queryApiNum])
 
+  useEffect(() => {
+    firstQueryHandle()
+  }, [])
 
   const yearDropdownMenu = (
     <Menu
-      style={{ height: '200px', overflow: 'auto' }}
+      style={{ maxHeight: '200px', overflow: 'auto' }}
     >
-      {yearArr.map((item) => {
-        return <Menu.Item key={item.value} onClick={menuItemClickHanlde}>
-          {item.value}
+      {yearDatasource?.map((item) => {
+        return <Menu.Item key={item.YEAR} onClick={menuItemClickHanlde}>
+          {item.YEAR}
         </Menu.Item>
-      })}
+      })
+      }
     </Menu>
   )
 
@@ -159,7 +167,15 @@ const PaymentStatus = (props) => {
   return (
     <div className="ProjectDetail_PaymentStatus">
 
-      {projectType !== '硬件入围项目' && !projectTag?.includes('迭代项目') &&
+      {/* <button
+        onClick={() => {
+          console.log('xxxxxx', moneyObj, String(moneyObj.contractAmount))
+        }}
+      >测试按钮</button> */}
+
+
+      {!Lodash.isEmpty(String(yearDatasource)) && !Lodash.isEmpty(moneyObj) &&
+        projectType !== '硬件入围项目' && !projectTag?.includes('迭代项目') &&
         <div className='group'>
           <div className='groupTop'>
             <div className='groupTop_Title'>付款情况</div>
@@ -175,67 +191,68 @@ const PaymentStatus = (props) => {
             </Dropdown>
           </div>
 
-          {hasData &&
-            <div className='groupMiddle Component_ExecutionProgress'>
-              <div className="Component_ExecutionProgress_TopBar">
+          <div className='groupMiddle Component_ExecutionProgress'>
+            <div className="Component_ExecutionProgress_TopBar">
 
-                {/* 若无合同信息录入时，付款情况仅展示已付款金额*/}
-                {!Lodash.isEmpty(contrastArr) &&
-                  <>
-                    <div className="Component_ExecutionProgress_TopBar_left">
-                      <div className="title grayText">付款率</div>
-                      <div className="payRate" >
-                        {payRate}%
-                      </div>
+              {/* 若无合同信息录入时，付款情况仅展示已付款金额*/}
+              {!Lodash.isEmpty(contrastArr)
+                && !Lodash.isEmpty(moneyObj.contractAmount) &&
+                String(moneyObj.contractAmount) !== '0' &&
+                <>
+                  <div className="Component_ExecutionProgress_TopBar_left">
+                    <div className="title grayText">付款率</div>
+                    <div className="payRate" >
+                      <span className='statisticalFont'>{payRate}</span>
+                      <span className='statisticalGreyFont' style={{ fontSize: 12 }}>%</span>
                     </div>
-
-
-                    <div className="Component_ExecutionProgress_TopBar_middle">
-                      <div className="title grayText">合同金额</div>
-
-                      <div className="money blackText" title={`${moneyObj.contractAmount}元`}>
-                        {moneyObj.contractAmount}元
-                      </div>
-                    </div>
-                  </>
-                }
-
-                <div
-                  className={Lodash.isEmpty(contrastArr)
-                    ? 'Component_ExecutionProgress_TopBar_right_style20'
-                    : 'Component_ExecutionProgress_TopBar_right_style14'}
-                >
-                  <div className="title grayText">已付款金额</div>
-
-                  <div className="money blackText" title={`${moneyObj.paymentAmount}元`}>
-                    {moneyObj.paymentAmount}元
                   </div>
+
+
+                  <div className="Component_ExecutionProgress_TopBar_middle">
+                    <div className="title grayText">合同金额</div>
+
+                    <div className="money blackText" title={`${moneyObj.contractAmount}元`}>
+                      <span className='statisticalFont'>{moneyObj.contractAmount}</span>
+                      <span className='statisticalGreyFont'>元</span>
+                    </div>
+                  </div>
+                </>
+              }
+
+              <div
+                className={Lodash.isEmpty(contrastArr)
+                  ? 'Component_ExecutionProgress_TopBar_right_style20'
+                  : 'Component_ExecutionProgress_TopBar_right_style14'}
+              >
+                <div className="title grayText">已付款金额</div>
+
+                <div className="money blackText" title={`${moneyObj.paymentAmount}元`}>
+                  <span className='statisticalFont'>{moneyObj.paymentAmount}</span>
+                  <span className='statisticalGreyFont'>元</span>
                 </div>
               </div>
-
-
-              {!Lodash.isEmpty(contrastArr) &&
-                <div className="Component_ExecutionProgress_ProcessBar">
-                  <div
-                    className="Component_ExecutionProgress_ProcessBar_partProcess"
-                    style={{ width: `${payRate}%` }}
-                  ></div>
-                  <div className="Component_ExecutionProgress_ProcessBar_allProcess" ></div>
-                </div>
-              }
             </div>
-          }
 
-          {hasData && unconfirmedContractNum !== 0 &&
+
+            {!Lodash.isEmpty(contrastArr) &&
+              !Lodash.isEmpty(moneyObj.contractAmount) &&
+              String(moneyObj.contractAmount) !== '0' &&
+              <div className="Component_ExecutionProgress_ProcessBar">
+                <div
+                  className="Component_ExecutionProgress_ProcessBar_partProcess"
+                  style={{ width: `${payRate}%` }}
+                ></div>
+                <div className="Component_ExecutionProgress_ProcessBar_allProcess" ></div>
+              </div>
+            }
+          </div>
+
+          {unconfirmedContractNum !== 0 &&
             <div className='groupBottom'
               onClick={forwardHandle}
             >
               {`合同未确认 >`}
             </div>
-          }
-
-          {!hasData &&
-            <div>暂无数据</div>
           }
 
         </div>
