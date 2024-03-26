@@ -35,6 +35,7 @@ export default function TopConsole(props) {
     setIsSpinning,
     getMileStoneData,
     setPrjData,
+    getProgressStatisticsData,
     isDDXM,
     grayTest = {},
     isAdmin = false,
@@ -96,6 +97,7 @@ export default function TopConsole(props) {
     //刷新数据
     getPrjDtlData();
     getMileStoneData(true); //true 表示将初始化 高亮里程碑 为 当前里程碑
+    getProgressStatisticsData();
   };
 
   //获取项目标签
@@ -1020,6 +1022,7 @@ export default function TopConsole(props) {
         refresh={() => {
           getPrjDtlData();
           getMileStoneData(true);
+          getProgressStatisticsData();
         }}
         xmid={xmid}
       />

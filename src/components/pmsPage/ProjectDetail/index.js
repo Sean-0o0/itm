@@ -1365,6 +1365,7 @@ export default connect(({ global = {} }) => ({
           prjData={prjData}
           getPrjDtlData={getPrjDtlData}
           getMileStoneData={getMileStoneData}
+          getProgressStatisticsData={getProgressStatisticsData}
           isLeader={isLeader}
           haveSpl={!isHwSltPrj && prjData?.supplier?.length !== 0}
           setIsSpinning={setIsSpinning}

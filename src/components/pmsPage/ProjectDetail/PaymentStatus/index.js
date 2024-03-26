@@ -24,8 +24,8 @@ const PaymentStatus = (props) => {
 
   const {
     prjBasic = {}, //项目基本信息
-    contrast,      // 关联合同列表  obj
-    contrastArr,    //关联合同列表    arr
+    contrast = {},      // 关联合同列表  obj
+    contrastArr = [],    //关联合同列表    arr
   } = prjData //项目数据
 
   const {
@@ -65,10 +65,10 @@ const PaymentStatus = (props) => {
 
   /** 点击 合同未确认链接 跳转 */
   const forwardHandle = () => {
-    // 只有一个未确认合同的情况    跳转到 该合同编辑页面
-    if (unconfirmedContractNum === 1) {
+    if (unconfirmedContractNum > 0) {
+      const unCheckedArr = contrastArr.filter(item => String(item.CLZT) === '1')
       const { GLOAHTXX, //关联OA合同信息的ID
-      } = contrastArr[0]
+      } = unCheckedArr[0]
 
       history.push({
         pathname:
@@ -81,19 +81,6 @@ const PaymentStatus = (props) => {
             }),
           ),
       })
-    }
-    //有多个未确认合同的情况      跳转到 合同列表页面
-    else {
-      history.push({
-        pathname:
-          '/pms/manage/InnovationContract/' +
-          EncryptBase64(
-            JSON.stringify({
-              timeStamp: new Date().getTime(),
-              tab: 'PTHT',
-            }),
-          ),
-      });
     }
   }
 
@@ -140,12 +127,10 @@ const PaymentStatus = (props) => {
   }
 
   useEffect(() => {
-    !Lodash.isEmpty(contrastArr) && judgeUnconfirmedContractNumHandle()
-  }, [contrastArr])
-
-  useEffect(() => {
     queryHandle()
-  }, [year])
+    judgeUnconfirmedContractNumHandle()
+  }, [contrastArr, year])
+
 
   const yearDropdownMenu = (
     <Menu
