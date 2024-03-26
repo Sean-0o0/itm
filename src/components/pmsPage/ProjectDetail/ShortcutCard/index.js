@@ -541,7 +541,7 @@ export default connect(({ global = {} }) => ({
             })}
 
           {is_XMJL_FXMJL &&
-            ['4', '5'].includes(prjBasic.WJZT) && // 终止中|4、已终止|5时不显示
+            !['4', '5'].includes(prjBasic.WJZT) && // 终止中|4、已终止|5时不显示
             AUTH.includes('projectTermination') &&
             getShortcutItem({
               imgTxt: 'terminateHandle',
