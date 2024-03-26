@@ -91,7 +91,7 @@ const TableBox = (props) => {
                   }),
                 )}`,
                 state: {
-                  routes: [{ name: '项目动态列表', pathname: location.pathname }],
+                  routes: [{ name: '项目建设情况', pathname: location.pathname }],
                 },
               }}
               className="table-link-strong"
@@ -119,7 +119,7 @@ const TableBox = (props) => {
                 }),
               )}`,
               state: {
-                routes: [{ name: '项目动态列表', pathname: location.pathname }],
+                routes: [{ name: '项目建设情况', pathname: location.pathname }],
               },
             }}
             className="table-link-strong"
@@ -189,7 +189,7 @@ const TableBox = (props) => {
                             }),
                           )}`,
                           state: {
-                            routes: [{ name: '项目动态列表', pathname: location.pathname }],
+                            routes: [{ name: '项目建设情况', pathname: location.pathname }],
                           },
                         }}
                       // className="table-link-strong"
@@ -216,7 +216,7 @@ const TableBox = (props) => {
                                     }),
                                   )}`,
                                   state: {
-                                    routes: [{ name: '项目动态列表', pathname: location.pathname }],
+                                    routes: [{ name: '项目建设情况', pathname: location.pathname }],
                                   },
                                 }}
                               // className="table-link-strong"
