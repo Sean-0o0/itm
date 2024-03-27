@@ -1,7 +1,7 @@
 /*
  * @Author: 钟海秀(创新业务产品部) zhonghaixiu12534@apexsoft.com.cn
  * @Date: 2024-01-31 11:15:16
- * @LastEditTime: 2024-03-01 15:00:05
+ * @LastEditTime: 2024-03-27 11:38:04
  * @FilePath: \pro-pms-fe\src\components\pmsPage\HomePage\ShortcutCard\SinglePaymentModal\index.js
  * @Descripttion: 单费用付款 新建/修改项目弹窗
  */
@@ -876,7 +876,12 @@ export default connect(({ global }) => ({
             {getGLYSTreeSlt({
               label: '关联预算项目',
               dataIndex: 'glysxm',
-              initialValue: (updateData.budgetProject ?? '') + (updateData.budgetTypeId ?? ''),
+              initialValue:
+                updateData.budgetProject === '' || updateData.budgetProject === undefined
+                  ? undefined
+                  : Number(updateData.budgetProject) <= 0
+                  ? updateData.budgetProject + '4'
+                  : updateData.budgetProject + updateData.budgetTypeId,
               treeData: budgetSlt,
               labelCol,
               wrapperCol,
