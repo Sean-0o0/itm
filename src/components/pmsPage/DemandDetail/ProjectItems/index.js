@@ -1063,7 +1063,7 @@ export default function ProjectItems(props) {
       )}
       <div className="top">
         <div className="left">项目事项</div>
-        {FKTX.TXNR !== undefined && (
+        {/* {FKTX.TXNR !== undefined && (
           <div className="right">
             <i className="iconfont fill-info" />
             {FKTX.TXNR}
@@ -1093,7 +1093,7 @@ export default function ProjectItems(props) {
               发起付款
             </div>
           </div>
-        )}
+        )} */}
       </div>
       <div className="bottom">
         {XQSX.map((item, index) => (
