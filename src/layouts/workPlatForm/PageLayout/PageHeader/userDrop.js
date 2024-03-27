@@ -331,14 +331,14 @@ export default connect(({ global, login }) => ({
             </List.Item>
           )}
         /> */}
-          {/* <List
-          className="m-list-icon-small"
-          itemLayout="horizontal"
-          style={{ padding: '0.833rem 0', marginTop: '0.833rem' }}
-          dataSource={this.state.logoutData}
-          renderItem={item => (
-            <Row> */}
-          {/* {
+          <List
+            className="m-list-icon-small"
+            itemLayout="horizontal"
+            style={{ padding: '0.833rem 0', marginTop: '0.833rem' }}
+            dataSource={this.state.logoutData}
+            renderItem={item => (
+              <Row>
+                {/* {
                 allotherusers.length > 0 && (
                   <Col span={span}>
                     <List.Item
@@ -353,7 +353,7 @@ export default connect(({ global, login }) => ({
                   </Col>
                 )
               } */}
-          {/* {
+                {/* {
                 (userId && loginName !== userId) && (
                   <Col span={span}>
                     <List.Item
@@ -368,7 +368,7 @@ export default connect(({ global, login }) => ({
                   </Col>
                 )
               } */}
-          {/* <Col span={24}>
+                {/* <Col span={24}>
                 <Link to={`/UIProcessor?Table=V_XMBQ_GRBQ&hideTitlebar=true`}>
                   <List.Item
                     style={{ borderBottom: 'none' }}
@@ -381,21 +381,19 @@ export default connect(({ global, login }) => ({
                   </List.Item>
                 </Link>
               </Col> */}
-          {/* <Col span={12}>
-                <List.Item
-                  style={{ borderBottom: 'none' }}
-                >
-                  <List.Item.Meta
-                    onClick={() => this.handleLogout(dispatch)}
-                    avatar={<i className={`iconfont ${item.icon}`} />}
-                    title={<span>{item.title}</span>}
-                    style={{ alignItems: 'center' }}
-                  />
-                </List.Item>
-              </Col> */}
-          {/* </Row>
-          )}
-        /> */}
+                <Col span={12}>
+                  <List.Item style={{ borderBottom: 'none' }}>
+                    <List.Item.Meta
+                      onClick={() => this.handleLogout(dispatch)}
+                      avatar={<i className={`iconfont ${item.icon}`} />}
+                      title={<span>{item.title}</span>}
+                      style={{ alignItems: 'center' }}
+                    />
+                  </List.Item>
+                </Col>
+              </Row>
+            )}
+          />
         </Card>
       );
     };
