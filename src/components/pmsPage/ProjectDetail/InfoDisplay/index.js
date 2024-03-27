@@ -37,7 +37,6 @@ export default function InfoDisplay(props) {
     supplier = [],
     member = [],
     contrastArr = [],
-    glddxmData = [],
     invCData = [],
   } = prjData;
   const history = useHistory();
@@ -344,11 +343,12 @@ export default function InfoDisplay(props) {
   };
 
   //关联迭代项目名称
-  const getGlddxmmc = (idStr = '') => {
+  const getGlddxmmc = (idStr = '', mcStr = '') => {
     //.分割，取最后一个
     const glddxmIdArr = idStr === '' ? [] : idStr.split('.');
+    const glddxmMcArr = mcStr === '' ? [] : mcStr.split('.');
     const glddxmId = glddxmIdArr.length > 0 ? glddxmIdArr[glddxmIdArr.length - 1] : undefined;
-    const glddxmmc = glddxmData.find(x => x.ID === glddxmId)?.XMMC || '';
+    const glddxmmc = glddxmMcArr.length > 0 ? glddxmMcArr[glddxmMcArr.length - 1] : '-';
     if (idStr !== '')
       return (
         <div className="info-item" key="关联迭代项目：">
@@ -619,7 +619,7 @@ export default function InfoDisplay(props) {
                 )}
               </div>
             )}
-            {isDDXM && getGlddxmmc(prjBasic.GLDDXM)}
+            {isDDXM && getGlddxmmc(prjBasic.GLDDXM, prjBasic.GLDDXMMC)}
           </div>
         </div>
       )}

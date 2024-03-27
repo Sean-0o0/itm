@@ -10,7 +10,6 @@ import ProgressStatistics from './ProgressStatistics';
 import {
   FetchQueryLifecycleStuff,
   FetchQueryLiftcycleMilestone,
-  QueryIteProjectList,
   QueryIteProjPayPlan,
   QueryIteProjPayRcd,
   QueryMemberAttendanceRcd,
@@ -577,36 +576,15 @@ export default connect(({ global = {} }) => ({
         const KQDJ_Auth = KQDJ_IDArr.includes(String(LOGIN_USER_INFO.id));
         const DDXM_IDArr = DDXM === '' ? [] : DDXM.split(',');
         const DDXM_Auth = DDXM_IDArr.includes(String(LOGIN_USER_INFO.id));
-
-        //.分割，取最后一个
-        const glddxmIdArr = XMJBXX.GLDDXM === '' ? [] : XMJBXX.GLDDXM?.split('.') || [];
-        const glddxmId = glddxmIdArr.length > 0 ? glddxmIdArr[glddxmIdArr.length - 1] : undefined;
-        //迭代项目下拉框数据 - 用于判断是否显示生成迭代、基本信息 - 迭代项目显示
-        const itrListData =
-          (await QueryIteProjectList({
-            current: 1,
-            pageSize: glddxmId, //这边是迭代项目id
-            paging: -1,
-            sort: '',
-            total: -1,
-            cxlx: 'DDXM',
-          })) || {};
-
-        if (itrListData.success) {
-          // const itrListArr = [...JSON.parse(itrListData.result)].map(x => x.ID);
-          /**
-           * 生成迭代按钮显示：
-           * (软硬件 且 不包含硬件 或 软硬件 且 包含硬件 且 软件金额>0) 或 关联预算为科研预算
-           */
-          const isPrjExist = true;
-          // itrListArr.includes(String(xmid)); //且 关联项目数据包含本项目
-          const isNotCplHard =
-            XMJBXX.XMLX === '1' &&
-            (XMJBXX.SFBHYJ === '2' || (XMJBXX.SFBHYJ === '1' && parseFloat(XMJBXX.RJYSJE) > 0));
-          const isKYYS = XMJBXX.YSLX === '科研预算';
-          setShowSCDD((isPrjExist && isNotCplHard) || isKYYS);
-          setPrjData(p => ({ ...p, glddxmData: [...JSON.parse(itrListData.result)] }));
-        }
+        /**
+         * 生成迭代按钮显示：
+         * (软硬件 且 不包含硬件 或 软硬件 且 包含硬件 且 软件金额>0) 或 关联预算为科研预算
+         */
+        const isNotCplHard =
+          XMJBXX.XMLX === '1' &&
+          (XMJBXX.SFBHYJ === '2' || (XMJBXX.SFBHYJ === '1' && parseFloat(XMJBXX.RJYSJE) > 0));
+        const isKYYS = XMJBXX.YSLX === '科研预算';
+        setShowSCDD(isNotCplHard || isKYYS);
 
         if (
           XMJBXX.XMBQ?.includes('迭代项目') ||

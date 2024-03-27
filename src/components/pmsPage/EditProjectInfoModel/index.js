@@ -782,6 +782,9 @@ class EditProjectInfoModel extends React.Component {
 
   // 获取关联迭代项目下拉框数据
   getGlddxmData(glddxmid) {
+    const roleTxt =
+      (JSON.parse(this.props.roleData?.testRole || '{}')?.ALLROLE ?? '') +
+      (this.props.roleData?.role ?? ''); //角色信息
     return QueryIteProjectList({
       current: 1,
       pageSize: glddxmid, //这边是迭代项目id
@@ -789,6 +792,7 @@ class EditProjectInfoModel extends React.Component {
       sort: '',
       total: -1,
       cxlx: 'DDXM',
+      underOrg: roleTxt?.includes('非IT部门') ? Number(this.props.userBasicInfo?.orgid) : 11167, //非IT部门时传登录人的部门号，IT部门的写死11167
     })
       .then(res => {
         if (res?.success) {
@@ -1576,7 +1580,8 @@ class EditProjectInfoModel extends React.Component {
             //     });
             //   });
             // });
-            totalBudget = Decimal(result.generalBudget || 0).times(10000)
+            totalBudget = Decimal(result.generalBudget || 0)
+              .times(10000)
               .toNumber();
             relativeBudget = Decimal(result.budgetUse || 0)
               .times(10000)
@@ -3274,6 +3279,7 @@ class EditProjectInfoModel extends React.Component {
     await InitIterationProjectInfo({
       iterationProject,
       projectId,
+      isGenerate: 2, //生成迭代时传1
     });
   };
 
@@ -9263,4 +9269,6 @@ class EditProjectInfoModel extends React.Component {
 
 export default connect(({ global }) => ({
   dictionary: global.dictionary,
+  roleData: global.roleData,
+  userBasicInfo: global.userBasicInfo,
 }))(Form.create()(EditProjectInfoModel));

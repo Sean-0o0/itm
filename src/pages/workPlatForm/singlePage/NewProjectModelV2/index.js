@@ -1786,6 +1786,9 @@ class NewProjectModelV2 extends React.Component {
 
   // 获取关联迭代项目下拉框数据
   getGlddxmData() {
+    const roleTxt =
+      (JSON.parse(this.props.roleData?.testRole || '{}')?.ALLROLE ?? '') +
+      (this.props.roleData?.role ?? ''); //角色信息
     return QueryIteProjectList({
       current: 1,
       pageSize: -1, //这边是迭代项目id
@@ -1793,11 +1796,18 @@ class NewProjectModelV2 extends React.Component {
       sort: '',
       total: -1,
       cxlx: 'DDXM',
+      underOrg: roleTxt?.includes('非IT部门') ? Number(this.props.userBasicInfo?.orgid) : 11167, //非IT部门时传登录人的部门号，IT部门的写死11167
     })
       .then(res => {
         if (res?.success) {
           const data = [...JSON.parse(res.result)].map(x => ({ ...x, ID: String(x.ID) }));
-          // console.log('🚀 ~ file: index.js:1551 ~ NewProjectModelV2 ~ getGlddxmData ~ data:', data);
+          if (
+            this.props.scddProps?.prjData !== undefined &&
+            data.findIndex(x => String(x.ID) === String(this.props.scddProps?.glddxmId)) === -1
+          ) {
+            //生成迭代，若当前项目不是迭代项目（也就是data里没有），拼上
+            data.unshift(this.props.scddProps?.prjData || {});
+          }
           this.setState({
             glddxmData: data,
           });
@@ -2728,6 +2738,7 @@ class NewProjectModelV2 extends React.Component {
     await InitIterationProjectInfo({
       iterationProject,
       projectId,
+      isGenerate: this.props.scddProps?.glddxmId !== undefined ? 1 : 2,
     });
     this.props.form.resetFields();
     if (this.props.scddProps?.glddxmId !== undefined) {
@@ -7577,4 +7588,6 @@ class NewProjectModelV2 extends React.Component {
 
 export default connect(({ global }) => ({
   dictionary: global.dictionary,
+  roleData: global.roleData,
+  userBasicInfo: global.userBasicInfo,
 }))(Form.create()(NewProjectModelV2));

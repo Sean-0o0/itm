@@ -2,8 +2,6 @@ import React, { useEffect, useState, useRef } from 'react';
 import { Modal, message, Popover, Popconfirm } from 'antd';
 import moment from 'moment';
 import {
-  FinishProject,
-  QueryIteProjectList,
   QueryUserRole,
   QueryEmployeeAppraiseList,
   ConvertToSelfDevIteProject,
@@ -41,7 +39,7 @@ export default connect(({ global = {} }) => ({
     isEnd = false,
   } = dataProps;
 
-  const { prjBasic = {}, member = [], contrastArr = [] } = prjData;
+  const { prjBasic = {}, member = [], contrastArr = [], iterationYear = {} } = prjData;
   // console.log('xxxxxxxxxxxxxxxxxxprjBasic', prjBasic, )
   const {
     getPrjDtlData,
@@ -92,35 +90,6 @@ export default connect(({ global = {} }) => ({
     }
     return () => {};
   }, [JSON.stringify(member)]);
-
-  // 获取关联迭代项目下拉框数据 - 用于判断是否显示生成迭代
-  const getGlddxmData = () => {
-    // setIsSpinning(true);
-    QueryIteProjectList({
-      current: 1,
-      pageSize: -1, //这边是迭代项目id
-      paging: -1,
-      sort: '',
-      total: -1,
-      cxlx: 'DDXM',
-    })
-      .then(res => {
-        if (res?.success) {
-          const data = [...JSON.parse(res.result)].map(x => String(x.ID));
-          const isPrjExist = data.includes(String(xmid));
-          const isNotCplHard =
-            prjBasic.XMLX === '软硬件项目' &&
-            (prjBasic.SFBHYJ === '2' ||
-              (prjBasic.SFBHYJ === '1' && parseFloat(prjBasic.RJYSJE) > 0));
-          setShowSCDD(isPrjExist && isNotCplHard);
-        }
-      })
-      .catch(e => {
-        // setIsSpinning(false);
-        console.error('关联迭代项目下拉框数据', e);
-        message.error('关联迭代项目下拉框数据查询失败', 1);
-      });
-  };
 
   //考勤登记的按钮权限，给到项目里面的所有人
   const isMember = () => {
@@ -541,7 +510,7 @@ export default connect(({ global = {} }) => ({
             })}
 
           {is_XMJL_FXMJL &&
-            !['4', '5'].includes(prjBasic.WJZT) && // 终止中|4、已终止|5时不显示
+          !['4', '5'].includes(prjBasic.WJZT) && // 终止中|4、已终止|5时不显示
             AUTH.includes('projectTermination') &&
             getShortcutItem({
               imgTxt: 'terminateHandle',
@@ -683,7 +652,6 @@ export default connect(({ global = {} }) => ({
             }))
           }
           successCallBack={() => {
-            getGlddxmData();
             setModalVisible(p => ({
               ...p,
               createIterationPrj: false,
@@ -693,6 +661,12 @@ export default connect(({ global = {} }) => ({
           projectType={'1'} //项目类型为软硬件，才有这个按钮
           scddProps={{
             glddxmId: String(xmid),
+            prjData: {
+              ID: String(xmid),
+              XMMC: prjBasic.XMMC,
+              XMJL: prjBasic.XMJL,
+              XMNF: iterationYear.currentYear,
+            },
             routes,
           }} //生成迭代需要用的参数
         />
