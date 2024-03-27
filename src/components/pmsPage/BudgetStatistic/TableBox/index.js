@@ -443,8 +443,8 @@ const TableBox = props => {
       yearOpen: false,
       budgetCategory: undefined,
       budgetPrj: undefined,
-      org: undefined,
       director: undefined,
+      orgList: [],
     }));
   };
 
@@ -783,16 +783,20 @@ const TableBox = props => {
                 showArrow
                 className="item-selector"
                 showSearch
-                showCheckedStrategy={TreeSelect.SHOW_PARENT}
+                multiple
+                maxTagCount={1}
+                maxTagPlaceholder={extraArr => {
+                  return `等${extraArr.length + 1}个`;
+                }}
+                treeCheckable
+                showCheckedStrategy={TreeSelect.SHOW_CHILD}
                 treeNodeFilterProp="title"
                 dropdownClassName="newproject-treeselect"
                 dropdownStyle={{ maxHeight: 300, overflow: 'auto' }}
                 treeData={orgData}
-                value={filterData.org}
+                value={filterData.orgList || []}
                 placeholder="请选择"
-                onChange={v =>
-                  setFilterData(p => ({ ...p, org: v === undefined ? undefined : Number(v) }))
-                }
+                onChange={v => setFilterData(p => ({ ...p, orgList: v }))}
                 treeDefaultExpandAll
                 open={orgOpen}
                 onDropdownVisibleChange={v => setOrgOpen(v)}

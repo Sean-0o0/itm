@@ -28,7 +28,7 @@ export default function BudgetStatistic(props) {
     budgetCategorySlt: [],
     budgetId: undefined,
     budgetPrjSlt: [],
-    org: undefined,
+    orgList: [],
     director: undefined,
   }); //筛选栏数据
   const [activeKey, setActiveKey] = useState('ZB');
@@ -136,7 +136,7 @@ export default function BudgetStatistic(props) {
       sort = '',
       budgetCategory,
       budgetId,
-      org,
+      orgList = [],
       director,
       year = moment(),
       yearNum = moment().year(),
@@ -152,7 +152,7 @@ export default function BudgetStatistic(props) {
       budgetCategory,
       budgetId,
       budgetType,
-      org,
+      orgList: orgList?.length === 0 ? undefined : orgList?.join(','),
       director,
       year: yearNum,
       current,
@@ -175,7 +175,7 @@ export default function BudgetStatistic(props) {
           setSearchData({
             budgetCategory,
             budgetId,
-            org,
+            orgList,
             director,
             year,
           });
@@ -263,7 +263,7 @@ export default function BudgetStatistic(props) {
       year: moment(),
       budgetCategory: undefined,
       budgetId: undefined,
-      org: undefined,
+      orgList: [],
       director: undefined,
     }));
     queryTableData({ budgetType: key });
