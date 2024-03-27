@@ -100,7 +100,7 @@ export default function AttendanceRegister(props) {
   }, [modalVisible, calendarRef]);
 
   // 获取考勤信息 - 初始化数据
-  const getCalendarData = async (memberId, month, projectId, fn = () => {}) => {
+  const getCalendarData = async (memberId, month, projectId, fn = () => {}, clearAll = false) => {
     try {
       fn(true);
       const atdCalendarResult = await QueryMemberAttendanceRcd({
@@ -140,17 +140,31 @@ export default function AttendanceRegister(props) {
 
         setConstData(constDataArr);
         getWorkdaysOfMonth(moment(String(month)), constDataArr, fn);
-        setData(p => ({
-          ...p,
-          attendance: attendanceDaysArr,
-          attendanceHalf: attendanceHalfDaysArr,
-          leave: leaveDaysArr,
-          leaveHalf: leaveHalfDaysArr,
-          overtime: overtimeDaysArr,
-          overtimeHalf: overtimeHalfDaysArr,
-          otherPrj: otherPrjArr,
-          otherPrjHalf: otherPrjHalfArr,
-        }));
+        if (clearAll) {
+          setData(p => ({
+            ...p,
+            attendance: attendanceDaysArr,
+            attendanceHalf: attendanceHalfDaysArr,
+            leave: leaveDaysArr,
+            leaveHalf: leaveHalfDaysArr,
+            overtime: overtimeDaysArr,
+            overtimeHalf: overtimeHalfDaysArr,
+            otherPrj: otherPrjArr,
+            otherPrjHalf: otherPrjHalfArr,
+          }));
+        } else {
+          setData(p => ({
+            ...p,
+            attendance: p.attendance.concat(attendanceDaysArr),
+            attendanceHalf: p.attendanceHalf.concat(attendanceHalfDaysArr),
+            leave: p.leave.concat(leaveDaysArr),
+            leaveHalf: p.leaveHalf.concat(leaveHalfDaysArr),
+            overtime: p.overtime.concat(overtimeDaysArr),
+            overtimeHalf: p.overtimeHalf.concat(overtimeHalfDaysArr),
+            otherPrj: p.otherPrj.concat(otherPrjArr),
+            otherPrjHalf: p.otherPrjHalf.concat(otherPrjHalfArr),
+          }));
+        }
       }
     } catch (e) {
       message.error('考勤信息获取失败', 1);
@@ -477,6 +491,7 @@ export default function AttendanceRegister(props) {
       Number(moment(calendarRef.current?.getApi().getDate()).format('YYYYMM')),
       Number(xmid),
       setIsSpinning,
+      true, //清空时为true
     );
   };
 
@@ -497,7 +512,7 @@ export default function AttendanceRegister(props) {
       });
     };
     if (e.target.checked) {
-      //未被选择地本月工作日
+      //未被选择的本月工作日
       const dateArr = curWorkDays.filter(x => !selectedData.includes(x));
       setFullAtdData({
         checked: e.target.checked,

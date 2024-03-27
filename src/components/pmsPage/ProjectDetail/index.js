@@ -110,8 +110,7 @@ export default connect(({ global = {} }) => ({
     prjData.prjBasic?.XMBQ?.includes('迭代项目') && !prjData.prjBasic?.XMLX?.includes('自研项目'); // 是否迭代项目付款 - 标签有迭代项目且类型不为自研项目的展示，其他隐藏
   const [showSCDD, setShowSCDD] = useState(false); //显示生成迭代
   let showKQXX =
-    prjData.prjBasic?.YSLX === '科研预算' ||
-    prjData.prjBasic?.YSXMMC === '自研项目无预算' ||
+    String(prjData.prjBasic?.XMLX).includes('普通自研项目') ||
     prjData.prjBasic?.XMBQ?.includes('抵税扣除'); //显示考勤信息、考勤登记
   let is_XMJL_FXMJL = [
     prjData.prjBasic?.XMJLID,
@@ -662,10 +661,7 @@ export default connect(({ global = {} }) => ({
           }
         }
 
-        const showKQXX =
-          XMJBXX.YSLX === '科研预算' ||
-          XMJBXX.YSXMMC === '自研项目无预算' ||
-          XMJBXX.XMBQ?.includes('抵税扣除'); //显示考勤信息、考勤登记
+        const showKQXX = String(XMJBXX.XMLX) === '2' || XMJBXX.XMBQ?.includes('抵税扣除'); //显示考勤信息、考勤登记
         if (showKQXX) {
           //获取考勤信息 - 月份数据
           const attendanceMonthRes = await QueryMemberAttendanceRcd({
