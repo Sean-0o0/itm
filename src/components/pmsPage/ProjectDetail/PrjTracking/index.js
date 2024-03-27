@@ -345,7 +345,7 @@ export default function PrjTracking(props) {
       <div className="bottom-box">
         <div className="title">
           项目进度概况
-          {isXMJL && (
+          {isXMJL && !isEnd && (
             <div
               className="icon-box"
               onClick={() => {
@@ -403,10 +403,11 @@ export default function PrjTracking(props) {
     );
   };
 
-  //预算审批隐藏 单费用付款项目隐藏  项目终止隐藏
-  if(ysspHide || isSinglePayment || isEnd) return null;
+  //预算审批隐藏 单费用付款项目隐藏 
+  if(ysspHide || isSinglePayment) return null;
+  //对于终止项目而言, 数据要展示，修改和新增按钮隐藏
 
-  if (trackingData.length === 0) return isXMJL ? (
+  if (trackingData.length === 0) return isXMJL && !isEnd ? (
     <div className="prj-tracking-box">
       {/*新增——项目信息弹窗*/}
       {addModal.visible && (
@@ -467,7 +468,7 @@ export default function PrjTracking(props) {
           </div>
         </Popover> */}
 
-        {isXMJL && isTrackingDataAndOvertime &&
+        {isXMJL && !isEnd && isTrackingDataAndOvertime &&
           <div className="icon-box" onClick={addBtnClickHandle}>
             <Icon type='plus-circle' style={{ fontSize: 14, marginRight: 5, color: '#3361ff' }}></Icon>
             <span>新增</span>
