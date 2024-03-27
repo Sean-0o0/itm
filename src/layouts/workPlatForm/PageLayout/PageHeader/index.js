@@ -80,7 +80,7 @@ export default connect(({ global, login }) => ({
         theme,
         dataAnonymization,
       } = this.props;
-      const { globalSearch, TGYS_GYSRYQX, V_GYSRYQX, V_RYKQ } = authorities;
+      const { globalSearch, TGYS_GYSRYQX, V_GYSRYQX, V_RYKQ, GRGZT = [] } = authorities;
 
       // 引导
       const guidesRecords = [
@@ -154,7 +154,10 @@ export default connect(({ global, login }) => ({
           {/*搜索框 */}
           <div
             style={{
-              display: TGYS_GYSRYQX || V_GYSRYQX || V_RYKQ ? 'none' : 'flex',
+              display:
+                !GRGZT.includes('globalSearch') || TGYS_GYSRYQX || V_GYSRYQX || V_RYKQ
+                  ? 'none'
+                  : 'flex',
               borderBottom: '1px solid rgb(238, 239, 241)',
               alignItems: 'center',
             }}
