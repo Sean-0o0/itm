@@ -64,6 +64,12 @@ export default connect(({ global }) => ({
     startYearOpen: false,
     endYearOpen: false,
   }); //更多筛选
+  const [moreData_Filtered, setMoreData_Filtered] = useState({
+    projectManager: undefined,
+    projectStatus: undefined,
+    startYear: moment(String(defaultYear)),
+    endYear: moment(String(defaultYear)),
+  }); //用于控制数据
   const [projectName, setPrjName] = useState(undefined); //项目名称
   let filterParams = {
     role: roleData.role,
@@ -181,8 +187,6 @@ export default connect(({ global }) => ({
   const getLabelBox = (curTab = '1') => {
     //选中
     const handleSlt = (keyArr = [], e = {}) => {
-      // let sltedItem = { name: e.node?.props?.title, id: e.node?.props?.eventKey };
-      // // console.log('🚀 ~ handleSlt ~ keyArr = [], e = {}:', keyArr, e, sltedItem);
       const data = e.checkedNodes?.map(x => ({ id: x.key, name: x.props?.title })) || [];
       setLabelData(p => ({ ...p, sltedItems: data }));
       getPrjDynamicData({
@@ -234,8 +238,6 @@ export default connect(({ global }) => ({
         autoAdjustOverflow
         content={
           <Tree
-            // selectedKeys={labelData.sltedItems.map(x => x.id)}
-            // onSelect={handleSlt}
             selectable={false}
             className="slt-list"
             defaultExpandAll
@@ -278,7 +280,9 @@ export default connect(({ global }) => ({
         trigger="click"
         visible={moreData.open}
         getPopupContainer={triggerNode => triggerNode.parentNode}
-        onVisibleChange={v => setMoreData(p => ({ ...p, open: v }))}
+        onVisibleChange={v =>
+          setMoreData(p => ({ ...p, open: v, startYearOpen: false, endYearOpen: false }))
+        }
         autoAdjustOverflow
         content={
           <div className="slt-form-box">
@@ -290,7 +294,6 @@ export default connect(({ global }) => ({
                 className="item-component"
                 showSearch
                 treeNodeFilterProp="title"
-                // dropdownClassName="newproject-treeselect"
                 multiple
                 treeCheckStrictly
                 treeCheckable
@@ -313,7 +316,6 @@ export default connect(({ global }) => ({
               <Input
                 placeholder="请输入"
                 value={moreData.projectName}
-                // allowClear
                 className="item-component"
                 onChange={e => {
                   e.persist();
@@ -327,7 +329,6 @@ export default connect(({ global }) => ({
               <Input
                 placeholder="请输入"
                 value={moreData.projectManager}
-                // allowClear
                 className="item-component"
                 onChange={e => {
                   e.persist();
@@ -369,12 +370,6 @@ export default connect(({ global }) => ({
                 placeholder="请选择"
                 format="YYYY"
                 allowClear={false}
-                // disabledDate={startValue => {
-                //   if (!startValue || !moreData.endYear) {
-                //     return false;
-                //   }
-                //   return startValue.valueOf() > moreData.endYear.valueOf();
-                // }}
                 onChange={v =>
                   setMoreData(p => ({
                     ...p,
@@ -400,12 +395,6 @@ export default connect(({ global }) => ({
                 placeholder="请选择"
                 format="YYYY"
                 allowClear={false}
-                // disabledDate={endValue => {
-                //   if (!endValue || !moreData.startYear) {
-                //     return false;
-                //   }
-                //   return endValue.valueOf() <= moreData.startYear.valueOf();
-                // }}
                 onChange={v =>
                   setMoreData(p => ({
                     ...p,
@@ -473,6 +462,13 @@ export default connect(({ global }) => ({
                   setOrgData(p => ({ ...p, sltedItems: moreData.org }));
                   setPrjName(moreData.projectName);
                   setMoreData(p => ({ ...p, open: false }));
+                  //外边没有的几个字段存起来
+                  setMoreData_Filtered({
+                    projectManager: moreData.projectManager,
+                    projectStatus: moreData.projectStatus,
+                    startYear: moreData.startYear,
+                    endYear: moreData.endYear,
+                  });
                   getPrjDynamicData({
                     ...filterParams,
                     ...moreData,
@@ -490,12 +486,17 @@ export default connect(({ global }) => ({
           className="filter-item"
           key="更多筛选"
           onClick={() => {
-            //初始值 与外边一致
             setMoreData(p => ({
               ...p,
+              //初始值 与外边一致
               tag: labelData.sltedItems,
               org: orgData.sltedItems,
               projectName,
+              //外边没有的几个字段
+              projectManager: moreData_Filtered.projectManager,
+              projectStatus: moreData_Filtered.projectStatus,
+              startYear: moreData_Filtered.startYear,
+              endYear: moreData_Filtered.endYear,
             }));
           }}
         >

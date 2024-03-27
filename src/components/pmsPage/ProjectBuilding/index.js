@@ -248,7 +248,7 @@ class ProjectBuilding extends Component {
           normalizeTitleName: 'title',
           normalizeKeyName: 'value',
         });
-        orgTree = get(orgTree, '[0].children', []);
+        orgTree = [get(orgTree, '[0].children[0].children[0].children[0]', {})];
         this.setState({
           orgData: orgTree,
         });
@@ -467,6 +467,7 @@ class ProjectBuilding extends Component {
                       radioKeys === '项目列表' && this.fetchRole(year);
                       if (radioKeys === '项目动态') {
                         this.getSltData();
+                        this.queryProjectGeneralInfo('MX_ALL_ONE', '', pageParam, year);
                         this.getPrjDynamicData({
                           startYear: moment(String(year)),
                           endYear: moment(String(year)),

@@ -77,6 +77,12 @@ export default connect(({ global }) => ({
     startYearOpen: false,
     endYearOpen: false,
   }); //更多筛选
+  const [moreData_Filtered, setMoreData_Filtered] = useState({
+    projectManager: undefined,
+    projectStatus: undefined,
+    startYear: moment(String(currentYear)),
+    endYear: moment(String(currentYear)),
+  }); //用于控制数据
   const [projectName, setPrjName] = useState(undefined); //项目名称
   const [isUnfold, setIsUnfold] = useState(false); //是否展开
   const [infoList, setInfoList] = useState([]); //项目信息 - 展示
@@ -248,9 +254,6 @@ export default connect(({ global }) => ({
         autoAdjustOverflow
         content={
           <Tree
-            // selectedKeys={orgData.sltedItems.map(x => x.id)}
-            // onSelect={handleSlt}
-            // defaultExpandedKeys={['11167', '357', '11168', '15681']}
             defaultExpandAll
             className="slt-list"
             multiple
@@ -338,8 +341,6 @@ export default connect(({ global }) => ({
         autoAdjustOverflow
         content={
           <Tree
-            // selectedKeys={labelData.sltedItems.map(x => x.id)}
-            // onSelect={handleSlt}
             className="slt-list"
             defaultExpandAll
             multiple
@@ -382,9 +383,25 @@ export default connect(({ global }) => ({
         trigger="click"
         visible={moreData.open}
         getPopupContainer={triggerNode => triggerNode.parentNode}
-        onVisibleChange={v =>
-          setMoreData(p => ({ ...p, open: v, startYearOpen: false, endYearOpen: false }))
-        }
+        onVisibleChange={v => {
+          if (v) setMoreData(p => ({ ...p, open: v, startYearOpen: false, endYearOpen: false }));
+          else
+            setMoreData(p => ({
+              ...p,
+              open: v,
+              stage: [],
+              tag: [],
+              org: [],
+              projectName: undefined,
+              //另外维护
+              projectManager: undefined,
+              projectStatus: undefined,
+              startYear: moment(String(currentYear)),
+              endYear: moment(String(currentYear)),
+              startYearOpen: false,
+              endYearOpen: false,
+            }));
+        }}
         autoAdjustOverflow
         content={
           <div className="slt-form-box">
@@ -404,6 +421,8 @@ export default connect(({ global }) => ({
                     })),
                   }));
                 }}
+                showSearch
+                optionFilterProp="title"
               >
                 {XMJZ.sort((a, b) => Number(a.ibm) - Number(b.ibm)).map(x => (
                   <Select.Option key={x.ibm} title={x.note} value={x.ibm}>
@@ -420,7 +439,6 @@ export default connect(({ global }) => ({
                 className="item-component"
                 showSearch
                 treeNodeFilterProp="title"
-                // dropdownClassName="newproject-treeselect"
                 multiple
                 treeCheckable
                 treeCheckStrictly
@@ -441,7 +459,6 @@ export default connect(({ global }) => ({
               <Input
                 placeholder="请输入"
                 value={moreData.projectName}
-                // allowClear
                 className="item-component"
                 onChange={e => {
                   e.persist();
@@ -455,7 +472,6 @@ export default connect(({ global }) => ({
               <Input
                 placeholder="请输入"
                 value={moreData.projectManager}
-                // allowClear
                 className="item-component"
                 onChange={e => {
                   e.persist();
@@ -496,12 +512,6 @@ export default connect(({ global }) => ({
                 placeholder="请选择"
                 format="YYYY"
                 allowClear={false}
-                // disabledDate={startValue => {
-                //   if (!startValue || !moreData.endYear) {
-                //     return false;
-                //   }
-                //   return startValue.valueOf() > moreData.endYear.valueOf();
-                // }}
                 onChange={v =>
                   setMoreData(p => ({
                     ...p,
@@ -527,12 +537,6 @@ export default connect(({ global }) => ({
                 placeholder="请选择"
                 format="YYYY"
                 allowClear={false}
-                // disabledDate={endValue => {
-                //   if (!endValue || !moreData.startYear) {
-                //     return false;
-                //   }
-                //   return endValue.valueOf() <= moreData.startYear.valueOf();
-                // }}
                 onChange={v =>
                   setMoreData(p => ({
                     ...p,
@@ -601,6 +605,13 @@ export default connect(({ global }) => ({
                   setOrgData(p => ({ ...p, sltedItems: moreData.org }));
                   setStageData(p => ({ ...p, sltedItems: moreData.stage }));
                   setPrjName(moreData.projectName);
+                  //外边没有的几个字段存起来
+                  setMoreData_Filtered({
+                    projectManager: moreData.projectManager,
+                    projectStatus: moreData.projectStatus,
+                    startYear: moreData.startYear,
+                    endYear: moreData.endYear,
+                  });
                   setMoreData(p => ({ ...p, open: false }));
                   getPrjSituation({
                     ...filterParams,
@@ -619,13 +630,18 @@ export default connect(({ global }) => ({
           className="filter-item"
           key="更多筛选"
           onClick={() => {
-            //初始值 与外边一致
             setMoreData(p => ({
               ...p,
+              //初始值 与外边一致
               stage: stageData.sltedItems,
               tag: labelData.sltedItems,
               org: orgData.sltedItems,
               projectName,
+              //外边没有的几个字段
+              projectManager: moreData_Filtered.projectManager,
+              projectStatus: moreData_Filtered.projectStatus,
+              startYear: moreData_Filtered.startYear,
+              endYear: moreData_Filtered.endYear,
             }));
           }}
         >
@@ -761,6 +777,7 @@ export default connect(({ global }) => ({
     }
     //有风险
     const haveRisk = item.XMFX?.length > 0;
+    console.log('🚀 ~ getPrjItem ~ haveRisk:', haveRisk, item);
     //终止
     const isEnd = String(item.WJZT) === '5';
     //完结
@@ -905,37 +922,47 @@ export default connect(({ global }) => ({
           </div>
         </div>
         <div className="status-row" style={isRed ? { backgroundColor: 'rgba(215,14,25,0.1)' } : {}}>
-          {haveRisk && (
+          {/* 逾期时必显示 */}
+          {isLate && <div className="status-item-red">逾期{lateDays}天</div>}
+          {/* 无风险时显示逾期事项 */}
+          {isLate && !haveRisk && (
+            <div className="status-txt">
+              逾期：
+              <Tooltip title={item.SXMC} placement="topLeft">
+                {item.SXMC ?? '-'}
+              </Tooltip>
+            </div>
+          )}
+          {/* 有风险且逾期，显示一个风险 */}
+          {haveRisk && isLate && (
             <Fragment>
-              {item.XMFX?.slice(0, 2)?.map(fx => (
+              <div className="status-item-red" key={item.XMFX[0].FXID}>
+                <Tooltip title={item.XMFX[0].FXBT} placement="topLeft">
+                  {item.XMFX[0].FXBT ?? '-'}
+                </Tooltip>
+              </div>
+            </Fragment>
+          )}
+          {/* 有风险且未逾期，最多显示两个， 只有一个时显示风险内容 */}
+          {haveRisk &&
+            !isLate &&
+            item.XMFX?.slice(0, 2)?.map(fx => (
+              <Fragment>
                 <div className="status-item-red" key={fx.FXID}>
                   <Tooltip title={fx.FXBT} placement="topLeft">
                     {fx.FXBT ?? '-'}
                   </Tooltip>
                 </div>
-              ))}
-              {!isLate && item.XMFX?.length === 1 && (
-                <div className="status-txt">
-                  <Tooltip title={item.XMFX[0]?.FXNR} placement="topLeft">
-                    {item.XMFX[0]?.FXNR ?? '-'}
-                  </Tooltip>
-                </div>
-              )}
-            </Fragment>
-          )}
-          {isLate && (
-            <Fragment>
-              <div className="status-item-red">逾期{lateDays}天</div>
-              {!haveRisk && (
-                <div className="status-txt">
-                  逾期：
-                  <Tooltip title={item.SXMC} placement="topLeft">
-                    {item.SXMC ?? '-'}
-                  </Tooltip>
-                </div>
-              )}
-            </Fragment>
-          )}
+                {item.XMFX.length === 1 && (
+                  <div className="status-txt">
+                    <Tooltip title={fx.FXNR} placement="topLeft">
+                      {fx.FXNR ?? '-'}
+                    </Tooltip>
+                  </div>
+                )}
+              </Fragment>
+            ))}
+          {/* 未逾期且无风险时 */}
           {!haveRisk && !isLate && (
             <Fragment>
               <div className={isEnd ? 'status-item-red' : 'status-item'}>
