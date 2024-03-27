@@ -196,9 +196,13 @@ const TableBox = props => {
       key: 'JBR',
       ellipsis: true,
       render: (txt, row) => {
-        return txt
-          ? getStaffNode(txt, row.JBRID, [{ name: '合同列表', pathname: location.pathname }])
-          : row.YJBR;
+        return txt ? (
+          getStaffNode(txt, row.JBRID, [{ name: '合同列表', pathname: location.pathname }])
+        ) : (
+          <Tooltip title={'未匹配到人员'} placement="topLeft">
+            <span style={{ cursor: 'default' }}>{'未匹配到人员'}</span>
+          </Tooltip>
+        );
       },
     },
     {

@@ -28,7 +28,6 @@ export default connect(({ global }) => ({
     userBasicInfo = {},
     roleData = {},
   } = props;
-console.log("🚀 ~ connect ~ roleData:", roleData)
   const [tableData, setTableData] = useState({
     data: [],
     current: 1,
@@ -64,10 +63,10 @@ console.log("🚀 ~ connect ~ roleData:", roleData)
   useLayoutEffect(() => {
     if (params !== '') {
       let obj = JSON.parse(DecryptBase64(params));
-      console.log("🚀 ~ useLayoutEffect ~ obj:", obj)
+      console.log('🚀 ~ useLayoutEffect ~ obj:', obj);
       if (obj.tab === 'PTHT') {
         setFilterData(p => ({ ...p, contractCode: obj.htbh }));
-        setSearchData(p => ({ ...p, contractCode: obj.htbh }))
+        setSearchData(p => ({ ...p, contractCode: obj.htbh }));
         queryTableData({ contractCode: obj.htbh });
         queryProjectData(roleTxt.includes('信创管理员'));
       } else {
@@ -160,7 +159,7 @@ console.log("🚀 ~ connect ~ roleData:", roleData)
         // console.log('🚀 ~ file: index.js:136 ~ queryProjectData ~ res:', res);
         setSltData(p => ({
           ...p,
-          glxm: [...res.record].map(x => ({ XMMC: x.xmmc, XMID: x.xmid, XMNF: x.xmnf  })),
+          glxm: [...res.record].map(x => ({ XMMC: x.xmmc, XMID: x.xmid, XMNF: x.xmnf })),
         }));
         getJbrData();
       }
@@ -170,7 +169,7 @@ console.log("🚀 ~ connect ~ roleData:", roleData)
   //经办人下拉框数据
   const getJbrData = () => {
     FetchQueryOrganizationInfo({
-      type: 'FXRY',
+      type: roleTxt.includes('非IT部门') ? 'FITBM' : 'FXRY',
     })
       .then(res => {
         if (res?.success) {
@@ -217,7 +216,7 @@ console.log("🚀 ~ connect ~ roleData:", roleData)
           }
           let data = toTreeData(res.record)[0].children[0].children;
           QueryMemberInfo({
-            type: 'XXJS',
+            type: roleTxt.includes('非IT部门') ? 'FITBM' : 'XXJS',
           })
             .then(res => {
               if (res.success) {
@@ -270,15 +269,17 @@ console.log("🚀 ~ connect ~ roleData:", roleData)
                     ];
                   });
                 });
-                finalData = finalData.filter(item => {
-                  let parentArr = [];
-                  memberArr.forEach(y => {
-                    if (y.orgId === item.value) parentArr.push(y);
+                if (!roleTxt.includes('非IT部门')) {
+                  finalData = finalData.filter(item => {
+                    let parentArr = [];
+                    memberArr.forEach(y => {
+                      if (y.orgId === item.value) parentArr.push(y);
+                    });
+                    return parentArr.length > 0;
                   });
-                  return parentArr.length > 0;
-                });
+                }
                 finalData.forEach(node => setParentSelectableFalse(node));
-                setSltData(p => ({ ...p, jbr: [...finalData] }));
+                setSltData(p => ({ ...p, jbr: finalData }));
                 setIsSpinning(false);
               }
             })
