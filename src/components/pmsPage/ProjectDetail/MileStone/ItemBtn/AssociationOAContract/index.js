@@ -40,7 +40,7 @@ export default connect(({ global }) => ({
         paging: -1,
         sort: '',
         total: -1,
-        role: roleTxt,
+        role: roleTxt + ',项目详情',
         handleStatus: 2,
       })
         .then(res => {
