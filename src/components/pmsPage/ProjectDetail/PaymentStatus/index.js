@@ -68,8 +68,20 @@ const PaymentStatus = (props) => {
   const forwardHandle = () => {
     if (unconfirmedContractNum > 0) {
       const unCheckedArr = contrastArr.filter(item => String(item.CLZT) === '1')
+
+      //  根据 QSRQ  来排序，越旧的时间放越前面---不确定后端排了没，前端加个排序
+      const sortedArr = unCheckedArr.sort((a, b) => {
+        const dateA = new Date(
+          a.QSRQ.replace(/(\d{4})(\d{2})(\d{2})/, '$1-$2-$3')
+        )
+        const dateB = new Date(
+          b.QSRQ.replace(/(\d{4})(\d{2})(\d{2})/, '$1-$2-$3')
+        )
+        return dateA - dateB
+      })
+
       const { GLOAHTXX, //关联OA合同信息的ID
-      } = unCheckedArr[0]
+      } = sortedArr[0]
 
       history.push({
         pathname:
@@ -169,7 +181,7 @@ const PaymentStatus = (props) => {
 
       {/* <button
         onClick={() => {
-          console.log('xxxxxx', moneyObj, String(moneyObj.contractAmount))
+          console.log('xxxx合同金额xx', moneyObj, String(moneyObj.contractAmount))
         }}
       >测试按钮</button> */}
 
@@ -248,6 +260,8 @@ const PaymentStatus = (props) => {
           </div>
 
           {unconfirmedContractNum !== 0 &&
+            !Lodash.isEmpty(moneyObj.contractAmount) &&
+            String(moneyObj.contractAmount) !== '0' &&
             <div className='groupBottom'
               onClick={forwardHandle}
             >
