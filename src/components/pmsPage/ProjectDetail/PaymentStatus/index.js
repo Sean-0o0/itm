@@ -89,7 +89,7 @@ const PaymentStatus = (props) => {
           EncryptBase64(
             JSON.stringify({
               id: Number(GLOAHTXX), //可能跳转后数据都是“-”（因为接口返回空）   id=2有值
-              routes: [{ name: '合同列表', pathname: location.pathname }],
+              routes: [{ name: '项目详情', pathname: location.pathname }],
               timeStamp: new Date().getTime(),
             }),
           ),
@@ -178,13 +178,6 @@ const PaymentStatus = (props) => {
 
   return (
     <div className="ProjectDetail_PaymentStatus">
-
-      {/* <button
-        onClick={() => {
-          console.log('xxxx合同金额xx', moneyObj, String(moneyObj.contractAmount))
-        }}
-      >测试按钮</button> */}
-
 
       {!Lodash.isEmpty(String(yearDatasource)) && !Lodash.isEmpty(moneyObj) &&
         projectType !== '硬件入围项目' && !projectTag?.includes('迭代项目') &&
