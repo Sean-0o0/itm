@@ -301,10 +301,11 @@ export default function CustomRptInfo(props) {
       let SXLX = x.ZJLX;
       let SXTJ = x.SXTJ;
       if (
-        SXSJ !== undefined &&
-        SXSJ !== null &&
-        JSON.stringify(SXSJ) !== '[]' &&
-        JSON.stringify(SXSJ?.value) !== '[]'
+        (SXSJ !== undefined &&
+          SXSJ !== null &&
+          JSON.stringify(SXSJ) !== '[]' &&
+          JSON.stringify(SXSJ?.value) !== '[]') ||
+        x.TJBCXLX === 'YSXM'
       ) {
         if (x.ZJLX === 'DATE') {
           if (x.SELECTORVALUE[0] === '' && x.SELECTORVALUE[1] === '') {
@@ -345,14 +346,14 @@ export default function CustomRptInfo(props) {
           }
           bmArr.push(x.BM);
         } else if (x.TJBCXLX === 'YSXM') {
-          if (JSON.stringify(SXSJ?.value) !== '[]') {
+          if (JSON.stringify(x.SELECTORVALUE?.value) !== '[]') {
             SXSJ = x.SELECTORVALUE.value;
             SXTJ = x.SELECTORVALUE.typeObj?.CXTJ;
             SXLX = 'MULTIPLE';
           } else {
             SXSJ = [];
             if (x.SELECTORVALUE.typeObj?.YSLXID === 1) {
-              SXTJ = 'XM.GLYSXM IS NOT NULL';
+              SXTJ = 'XM.GLYSXM IS NOT NULL AND XM.GLYSXM > 0';
             } else if (x.SELECTORVALUE.typeObj?.YSLXID === 2) {
               SXTJ = 'XM.GLFZBYSXM IS NOT NULL';
             } else if (x.SELECTORVALUE.typeObj?.YSLXID === 3) {

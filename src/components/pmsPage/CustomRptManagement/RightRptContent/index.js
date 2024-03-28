@@ -809,10 +809,11 @@ export default connect(({ global }) => ({
           let SXLX = x.ZJLX;
           let SXTJ = x.SXTJ;
           if (
-            SXSJ !== undefined &&
-            SXSJ !== null &&
-            JSON.stringify(SXSJ) !== '[]' &&
-            JSON.stringify(SXSJ?.value) !== '[]'
+            (SXSJ !== undefined &&
+              SXSJ !== null &&
+              JSON.stringify(SXSJ) !== '[]' &&
+              JSON.stringify(SXSJ?.value) !== '[]') ||
+            x.TJBCXLX === 'YSXM'
           ) {
             if (x.ZJLX === 'DATE') {
               if (x.SELECTORVALUE[0] === '' && x.SELECTORVALUE[1] === '') {
@@ -860,7 +861,7 @@ export default connect(({ global }) => ({
               } else {
                 SXSJ = [];
                 if (x.SELECTORVALUE.typeObj?.YSLXID === 1) {
-                  SXTJ = 'XM.GLYSXM IS NOT NULL';
+                  SXTJ = 'XM.GLYSXM IS NOT NULL AND XM.GLYSXM > 0';
                 } else if (x.SELECTORVALUE.typeObj?.YSLXID === 2) {
                   SXTJ = 'XM.GLFZBYSXM IS NOT NULL';
                 } else if (x.SELECTORVALUE.typeObj?.YSLXID === 3) {
