@@ -21,6 +21,9 @@ export default connect(({ global }) => ({
   const [edited, setEdited] = useState(false);
   const [monthData, setMonthData] = useState(null); //月份数据
   const [activeKey, setActiveKey] = useState(undefined);
+  const isBGHZR = (
+    (JSON.parse(roleData.testRole || '{}')?.ALLROLE ?? '') + (roleData.role ?? '')
+  ).includes('报告汇总人');
   const tabsData =
     roleData.zyrole === '自定义报告管理员'
       ? [
@@ -31,6 +34,13 @@ export default connect(({ global }) => ({
           {
             title: '本部门月报',
             value: 'BMYB',
+          },
+        ]
+      : roleData.role === '一级部门领导' && !isBGHZR
+      ? [
+          {
+            title: '月报汇总',
+            value: 'YBHZ',
           },
         ]
       : [
@@ -51,7 +61,7 @@ export default connect(({ global }) => ({
   useEffect(() => {
     if (bgid !== -2) {
       setMonthData(moment());
-      setActiveKey(roleData.zyrole === '自定义报告管理员' ? 'YBHZ' : 'BMYB');
+      setActiveKey(tabsData[0].value);
       getData(
         Number(bgid),
         Number(moment().format('YYYYMM')),
@@ -59,7 +69,7 @@ export default connect(({ global }) => ({
       );
     }
     return () => {};
-  }, [bgid, JSON.stringify(roleData)]);
+  }, [bgid, JSON.stringify(roleData), JSON.stringify(tabsData)]);
 
   //获取数据
   const getData = (reportID, month, queryType) => {
@@ -76,7 +86,7 @@ export default connect(({ global }) => ({
     })
       .then(res => {
         if (res?.success) {
-          let mergeData= JSON.parse(res.nrxx);
+          let mergeData = JSON.parse(res.nrxx);
           let columnsArr = JSON.parse(res.zdxx);
           let filteredArr = columnsArr.filter(item => item.ZDLX === '1'); //分类字段信息
           let otherArr = columnsArr.filter(item => item.ZDLX !== '1'); //填写字段信息

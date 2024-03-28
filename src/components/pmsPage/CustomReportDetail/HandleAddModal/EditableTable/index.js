@@ -185,16 +185,15 @@ const EditableCell = props => {
       <Form.Item style={{ margin: 0 }}>
         {formdecorate.getFieldDecorator(dataIndex + record['ID'], {
           rules: [
-            { required: true, message: label + '不能为空' },
+            {
+              required: !label.includes('上月') && !label.includes('当月'),
+              message: label + '不能为空',
+            },
             { max: 500, message: label + `长度不能超过500` },
           ],
           initialValue: record[dataIndex + record['ID']],
         })(
           <Input.TextArea
-            // onChange={e => {
-            //   e.persist();
-            //   handleSave({ ...record, [dataIndex + record['ID']]: e.target.value });
-            // }}
             onPressEnter={save}
             onBlur={save}
             maxLength={500}

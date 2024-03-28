@@ -32,8 +32,9 @@ const TableBox = props => {
   }); //新增行弹窗
   //编辑分类用的取值字段
   const EDIT_FIELD = columnsData.find(x => x.ZDMC === '建设任务')?.QZZD;
-  const isBGHZR =
-    ((JSON.parse(roleData.testRole || '{}')?.ALLROLE ?? '') + (roleData.role ?? '')).includes('报告汇总人');
+  const isBGHZR = (
+    (JSON.parse(roleData.testRole || '{}')?.ALLROLE ?? '') + (roleData.role ?? '')
+  ).includes('报告汇总人');
 
   //表格跨行合并
   const getRowSpanCount = (data, key, target, bool = false) => {
@@ -363,13 +364,16 @@ const TableBox = props => {
             >
               刷新
             </Button>
-            {isBGHZR && activeKey === 'BMYB' && tableData.data.length > 0 && (
-              <Popconfirm title="确定要提交吗？" onConfirm={handleSubmit}>
-                <Button type="primary" style={{ marginLeft: '8px' }}>
-                  提交
-                </Button>
-              </Popconfirm>
-            )}
+            {isBGHZR &&
+              activeKey === 'BMYB' &&
+              tableData.data.length > 0 &&
+              monthData.format('YYYYMM') === moment().format('YYYYMM') && (
+                <Popconfirm title="确定要提交吗？" onConfirm={handleSubmit}>
+                  <Button type="primary" style={{ marginLeft: '8px' }}>
+                    提交
+                  </Button>
+                </Popconfirm>
+              )}
             {isGLY && activeKey === 'YBHZ' && tableData.data.length > 0 && (
               <Fragment>
                 <Popconfirm title="确定要导出吗?" onConfirm={handleExport}>

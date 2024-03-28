@@ -52,8 +52,9 @@ function HandleAddModal(props) {
     glxm: [], //关联项目
     txr: [], //填写人
   }); //下拉框数据
-  const isBGHZR =
-    ((JSON.parse(roleData.testRole || '{}')?.ALLROLE ?? '') + (roleData.role ?? '')).includes('报告汇总人');
+  const isBGHZR = (
+    (JSON.parse(roleData.testRole || '{}')?.ALLROLE ?? '') + (roleData.role ?? '')
+  ).includes('报告汇总人');
 
   useEffect(() => {
     if (visible) {
@@ -105,8 +106,10 @@ function HandleAddModal(props) {
           tableColumns.reduce((obj = {}, item = {}) => {
             obj.ID = UUID;
             obj[item.key + UUID] = undefined;
-            if (item.key === 'TXR' && !isBGHZR) {
-              obj.TXR = userBasicInfo.name;
+            if (item.key === 'TXR') {
+              !isBGHZR
+                ? (obj.TXR = userBasicInfo.name)
+                : (obj['TXR' + UUID] = String(userBasicInfo.id));
               obj['TXRID' + UUID] = String(userBasicInfo.id);
             }
             return obj;
@@ -117,7 +120,9 @@ function HandleAddModal(props) {
             obj.ID = UUID;
             obj[item.key + UUID] = undefined;
             if (item.key === 'TXR' && !isBGHZR) {
-              obj.TXR = userBasicInfo.name;
+              !isBGHZR
+                ? (obj.TXR = userBasicInfo.name)
+                : (obj['TXR' + UUID] = String(userBasicInfo.id));
               obj['TXRID' + UUID] = String(userBasicInfo.id);
             }
             obj.isNew = true;
@@ -211,9 +216,7 @@ function HandleAddModal(props) {
   //保存
   const handleOK = () => {
     validateFieldsAndScroll(err => {
-      if (tableData.length === 0) {
-        message.error('表格至少要有一条数据', 2);
-      } else if (!err) {
+      if (!err) {
         setIsSpinning(true);
         //过滤删除的数据
         let editDataDelFilter = editData.filter(
@@ -504,8 +507,11 @@ function HandleAddModal(props) {
                 tableColumns.reduce((obj = {}, item = {}) => {
                   obj.ID = UUID;
                   obj[item.key + UUID] = undefined;
-                  if (item.key === 'TXR' && !isBGHZR) {
-                    obj.TXR = userBasicInfo.name;
+                  obj['TXR' + UUID] = String(userBasicInfo.id);
+                  if (item.key === 'TXR') {
+                    !isBGHZR
+                      ? (obj.TXR = userBasicInfo.name)
+                      : (obj['TXR' + UUID] = String(userBasicInfo.id));
                     obj['TXRID' + UUID] = String(userBasicInfo.id);
                   }
                   return obj;
@@ -516,8 +522,10 @@ function HandleAddModal(props) {
                 tableColumns.reduce((obj = {}, item = {}) => {
                   obj.ID = UUID;
                   obj[item.key + UUID] = undefined;
-                  if (item.key === 'TXR' && !isBGHZR) {
-                    obj.TXR = userBasicInfo.name;
+                  if (item.key === 'TXR') {
+                    !isBGHZR
+                      ? (obj.TXR = userBasicInfo.name)
+                      : (obj['TXR' + UUID] = String(userBasicInfo.id));
                     obj['TXRID' + UUID] = String(userBasicInfo.id);
                   }
                   obj.isNew = true;
