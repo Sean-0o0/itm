@@ -121,7 +121,7 @@ export default function TeamCard(props) {
   }, [props]);
   return (
     <div className="team-card-box" style={{ padding: '16px 12px  24px 0' }}>
-      <div className="home-card-title-box" style={{ padding: '0  24px' }}>
+      <div className="home-card-title-box" style={{ padding: '0  12px 0 24px' }}>
         部门队伍建设(含外包)
         <span>
           <Link
