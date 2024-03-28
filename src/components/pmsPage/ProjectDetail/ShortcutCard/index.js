@@ -39,7 +39,7 @@ export default connect(({ global = {} }) => ({
     isEnd = false,
   } = dataProps;
 
-  const { prjBasic = {}, member = [], contrastArr = [], iterationYear = {} } = prjData;
+  const { prjBasic = {}, member = [], contrastArr = [] } = prjData;
   // console.log('xxxxxxxxxxxxxxxxxxprjBasic', prjBasic, )
   const {
     getPrjDtlData,
@@ -665,7 +665,7 @@ export default connect(({ global = {} }) => ({
               ID: String(xmid),
               XMMC: prjBasic.XMMC,
               XMJL: prjBasic.XMJL,
-              XMNF: iterationYear.currentYear,
+              XMNF: prjBasic.XMNF,
             },
             routes,
           }} //生成迭代需要用的参数
