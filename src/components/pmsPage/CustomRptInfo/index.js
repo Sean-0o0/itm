@@ -243,7 +243,7 @@ export default function CustomRptInfo(props) {
       groupData: [],
       origin: {
         columns: JSON.parse(obj.QDZSBTZD),
-        filterData,
+        filterData: JSON.parse(JSON.stringify(filterData)),
         groupData: [],
       },
     };
@@ -271,9 +271,11 @@ export default function CustomRptInfo(props) {
     let bmArr = ['TXMXX_XMXX XM'];
     let sxtjArr = [];
     let columnFieldsArr = [...origin.columns];
-    let conditionFilterArr = filterData.filter(x => x.ZJLX !== 'ZHTJ');
+    let conditionFilterArr = JSON.parse(JSON.stringify(filterData.filter(x => x.ZJLX !== 'ZHTJ')));
     //组合条件特殊处理
-    let conditionGroupObj = filterData.find(x => x.ZJLX === 'ZHTJ') || {};
+    let conditionGroupObj = JSON.parse(
+      JSON.stringify(filterData.find(x => x.ZJLX === 'ZHTJ') || {}),
+    );
     let conditionGroupArr = [];
     if (JSON.stringify(conditionGroupObj) !== '{}') {
       //组合条件特殊处理
