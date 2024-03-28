@@ -11,6 +11,7 @@ import {
   Select,
   Spin,
   Button,
+  InputNumber,
 } from 'antd';
 
 const { Option } = Select;
@@ -262,9 +263,12 @@ class EditPrjTracking extends React.Component {
                                 },
                               ],
                             })(
-                              <Input
-                                type={"number"}
-                                placeholder="请输入当前里程碑"
+                              <InputNumber
+                                placeholder="请输入当前进度"
+                                min={0}
+                                max={100}
+                                precision={0}
+                                style={{width: '100%'}}
                               />,
                             )}
                           </Form.Item>

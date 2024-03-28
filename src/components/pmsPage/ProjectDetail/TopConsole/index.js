@@ -42,6 +42,7 @@ export default function TopConsole(props) {
     ysspHide = false,
     isSinglePayment = false,
     isEnd = false,
+    isHwSltPrj = false, //是否硬件入围
   } = props;
   const [fileAddVisible, setFileAddVisible] = useState(false); //项目信息修改弹窗显示
   const [src_fileAdd, setSrc_fileAdd] = useState({}); //项目信息修改弹窗显示
@@ -364,9 +365,7 @@ export default function TopConsole(props) {
         <SubMenu title={<span style={{ marginLeft: 20 }}>流程补录</span>}>
           <Menu.Item onClick={() => openLbModal('信委会附件', 'xwhfj')}>信委会附件</Menu.Item>
           <Menu.Item onClick={() => openLbModal('总办会流程', 'zbh')}>总办会流程</Menu.Item>
-          <Menu.Item onClick={() => openLbModal('项目立项申请', 'xmlxsq')}>
-            项目立项申请
-          </Menu.Item>
+          <Menu.Item onClick={() => openLbModal('项目立项申请', 'xmlxsq')}>项目立项申请</Menu.Item>
           <Menu.Item onClick={() => openLbModal('软件合同签署流程', 'rjhtqs')}>
             软件合同签署流程
           </Menu.Item>
@@ -376,11 +375,19 @@ export default function TopConsole(props) {
           <Menu.Item onClick={() => openLbModal('软件费用审批流程-无合同', 'rjfyspwht')}>
             软件费用审批流程-无合同
           </Menu.Item>
-          <Menu.Item onClick={() => openLbModal('设备采购有合同', 'sbcgyht')}>
-            设备采购有合同
+          <Menu.Item
+            onClick={() =>
+              openLbModal(isHwSltPrj ? '设备采购有合同' : '框架外硬件采购流程', 'sbcgyht')
+            }
+          >
+            {isHwSltPrj ? '设备采购有合同' : '框架外硬件采购流程'}
           </Menu.Item>
-          <Menu.Item onClick={() => openLbModal('设备采购无合同', 'sbcgwht')}>
-            设备采购无合同
+          <Menu.Item
+            onClick={() =>
+              openLbModal(isHwSltPrj ? '设备采购无合同' : '框架内硬件采购流程', 'sbcgwht')
+            }
+          >
+            {isHwSltPrj ? '设备采购无合同' : '框架内硬件采购流程'}
           </Menu.Item>
           <Menu.Item onClick={() => openLbModal('其他流程', 'qt')}>其他流程</Menu.Item>
         </SubMenu>

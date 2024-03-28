@@ -1,36 +1,18 @@
-import { Progress, Popover, Empty, Popconfirm, message, Icon, Modal } from 'antd';
-import React, { useEffect, useState, useRef, useLayoutEffect } from 'react';
+import { Empty, Popconfirm, message, Icon, Modal, Tooltip } from 'antd';
+import React, { useEffect, useState } from 'react';
 import { OperateCreatProject } from '../../../../services/projectManage';
-import { EncryptBase64 } from '../../../Common/Encrypt';
 import BridgeModel from '../../../Common/BasicModal/BridgeModel';
-import { useLocation } from 'react-router';
-import { Link } from 'react-router-dom';
-import { QueryProjectGeneralInfo } from '../../../../services/pmsServices';
 import NewProjectModelV2 from '../../../../pages/workPlatForm/singlePage/NewProjectModelV2';
 import emptyImg from '../../../../assets/homePage/img_no data@2x.png';
 import EditProjectInfoModel from '../../EditProjectInfoModel';
 import SinglePaymentModal from '../ShortcutCard/SinglePaymentModal';
 
 export default function ProjectCard(props) {
-  const {
-    itemWidth,
-    getAfterItem,
-    userRole,
-    prjInfo,
-    getPrjInfo,
-    total,
-    placement,
-    setPlacement,
-    toDoData = [],
-  } = props;
-  let LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
+  const { itemWidth, getAfterItem, userRole, prjInfo, getPrjInfo, total } = props;
   const [isUnfold, setIsUnfold] = useState(false); //是否展开
   const [infoList, setInfoList] = useState([]); //项目信息 - 展示
   const [fileAddVisible, setFileAddVisible] = useState(false); //项目信息修改弹窗显示
   const [src_fileAdd, setSrc_fileAdd] = useState({}); //项目信息修改弹窗显示
-  const [allPrj, setAllPrj] = useState([]); //全部项目
-  const [isLoading, setIsLoading] = useState(false); //查询全部数据时加载状态
-  const location = useLocation();
   const [lcxqModalData, setLcxqModalData] = useState({
     url: '#',
     visible: false,
@@ -215,7 +197,9 @@ export default function ProjectCard(props) {
             className="item-top"
             onClick={() => handleModify(xmid, { isDraft, isBack, isStop, isPending, noPass }, item)}
           >
-            <span>{title}</span>
+            <Tooltip title={title} placement="topLeft">
+              {title}
+            </Tooltip>
             <div className="tag" style={{ backgroundColor: fontColor }}>
               {titleTag}
             </div>
@@ -367,7 +351,7 @@ export default function ProjectCard(props) {
         ) : (
           <div className="more-item" onClick={() => handleUnfold(true)}>
             更多
-            {isLoading ? <Icon type="loading" /> : <i className="iconfont icon-down" />}
+            <i className="iconfont icon-down" />
           </div>
         ))}
     </div>

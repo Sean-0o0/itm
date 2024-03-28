@@ -150,6 +150,7 @@ export default connect(({ global }) => ({
         destroyOnClose={true}
         onCancel={onCancel}
         onOk={onOk}
+        confirmLoading={isSpinning}
       >
         <div className="body-title-box">
           <strong>关联OA合同</strong>

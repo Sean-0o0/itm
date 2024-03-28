@@ -165,6 +165,7 @@ export default function PrjFinishModal(props) {
     visible,
     onCancel,
     onOk,
+    confirmLoading: isSpinning,
     footer: allowFinish() ? undefined : null,
   };
 

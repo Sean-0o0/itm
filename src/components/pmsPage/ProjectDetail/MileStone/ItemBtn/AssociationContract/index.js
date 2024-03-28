@@ -65,6 +65,7 @@ export default Form.create()(function AssociationContract(props) {
       destroyOnClose={true}
       onCancel={onCancel}
       onOk={onOk}
+      confirmLoading={isSpinning}
     >
       <div className="body-title-box">
         <strong>关联合同</strong>

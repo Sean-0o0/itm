@@ -200,6 +200,7 @@ export default Form.create()(function AssociationInitiatedProcess(props) {
     visible,
     onCancel,
     onOk,
+    confirmLoading: isSpinning,
   };
 
   return (

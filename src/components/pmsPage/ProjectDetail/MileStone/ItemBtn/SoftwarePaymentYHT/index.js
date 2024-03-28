@@ -648,6 +648,7 @@ export default connect(({ global }) => ({
       onCancel,
       onOk,
       destroyOnClose: true,
+      confirmLoading: isSpinning,
     };
 
     return (

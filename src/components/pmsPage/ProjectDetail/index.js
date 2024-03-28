@@ -929,6 +929,28 @@ export default connect(({ global = {} }) => ({
         });
   };
 
+  //获取项目节点数据
+  const getPrjNodeData = async () => {
+    try {
+      setIsSpinning(true);
+      const res = await QueryProjectNode({
+        projectId: Number(xmid),
+      });
+      if (res?.success) {
+        let nodeArr = JSON.parse(res.result).reverse();
+        setPrjData(p => ({
+          ...p,
+          nodeData: nodeArr,
+        }));
+        setIsSpinning(false);
+      }
+    } catch (e) {
+      console.error('🚀项目节点数据', e);
+      message.error('项目节点数据获取失败', 1);
+      setIsSpinning(false);
+    }
+  };
+
   //获取里程碑数据
   const getMileStoneData = async (isInitCurStep = false) => {
     setIsSpinning(true);
@@ -1353,6 +1375,7 @@ export default connect(({ global = {} }) => ({
           ysspHide={ysspHide}
           isSinglePayment={isSinglePayment}
           isEnd={isEnd}
+          isHwSltPrj={isHwSltPrj}
         />
         <div className="detail-row">
           <div className="col-left">
@@ -1388,6 +1411,7 @@ export default connect(({ global = {} }) => ({
                 getPrjDocData({ totalChange: true });
                 getTrackingData();
                 getProgressStatisticsData();
+                getPrjNodeData();
               }}
               setIsSpinning={setIsSpinning}
               isLeader={isLeader}

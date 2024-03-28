@@ -268,6 +268,7 @@ class EditPrjTracking extends React.Component {
                                 placeholder="请输入当前进度"
                                 min={0}
                                 max={100}
+                                precision={0}
                                 style={{width: '100%'}}
                               />,
                             )}
