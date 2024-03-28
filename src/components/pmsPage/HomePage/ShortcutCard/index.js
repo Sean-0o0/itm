@@ -115,6 +115,23 @@ export default function ShortcutCard(props) {
     getPrjInfo(userRole); //刷新数据
   };
 
+  //个数为 0 时隐藏  -  加新的入口时，这边也要记得加
+  if (
+    userRole === '' ||
+    (userRole === '普通人员' &&
+      !AUTH.includes('quickEntranceNewProject') &&
+      !AUTH.includes('quickEntranceReportFilling'))
+  )
+    return null;
+  if (
+    !(userRole === '二级部门领导' && AUTH.includes('quickEntranceMessage')) &&
+    !AUTH.includes('quickEntranceNewProject') &&
+    !(userRole !== '二级部门领导' && AUTH.includes('quickEntranceMotionApproval')) &&
+    !AUTH.includes('quickEntranceBudegetView') &&
+    !AUTH.includes('quickEntranceReport')
+  )
+    return null;
+    
   return (
     <div className="shortcut-card-box">
       <div className="home-card-title-box">快捷入口</div>
