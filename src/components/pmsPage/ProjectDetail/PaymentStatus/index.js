@@ -21,12 +21,13 @@ const PaymentStatus = (props) => {
   const location = useLocation()
   const history = useHistory();
 
-  const { xmid: projectID, prjData } = props
+  const { xmid: projectID, prjData, is_XMJL_FXMJL= false, isLeader = fasle } = props
 
   const {
     prjBasic = {}, //项目基本信息
     contrast = {},      // 关联合同列表  obj
     contrastArr = [],    //关联合同列表    arr
+    member = [],
   } = prjData //项目数据
 
   const {
@@ -175,6 +176,15 @@ const PaymentStatus = (props) => {
     </Menu>
   )
 
+  //是否项目成员
+  const isMember = () => {
+    let LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
+    let arr = member.filter(x => x.RYZT === '1').map(x => x.RYID);
+    return arr.includes(String(LOGIN_USER_INFO.id));
+  };
+
+  //非成员且非二级领导及以上 不显示
+  if(!isMember() && !isLeader) return null;
 
   return (
     <div className="ProjectDetail_PaymentStatus">
@@ -260,7 +270,8 @@ const PaymentStatus = (props) => {
             !Lodash.isEmpty(moneyObj.contractAmount) &&
             String(moneyObj.contractAmount) !== '0' &&
             <div className='groupBottom'
-              onClick={forwardHandle}
+              onClick={is_XMJL_FXMJL ? forwardHandle : () => {}}
+              style={is_XMJL_FXMJL? {} : { color: '#303133', cursor: 'default' }}
             >
               {`合同未确认 >`}
             </div>

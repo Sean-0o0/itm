@@ -1503,6 +1503,8 @@ export default connect(({ global = {} }) => ({
               prjData={prjData}
               isSpinning={isSpinning}
               setIsSpinning={setIsSpinning}
+              is_XMJL_FXMJL={is_XMJL_FXMJL}
+              isLeader={isLeader}
             />
 
             <PrjMember
