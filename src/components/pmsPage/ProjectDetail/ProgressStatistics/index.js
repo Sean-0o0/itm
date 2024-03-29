@@ -51,12 +51,14 @@ const ProgressStatistics = (props) => {
               <div className='listItemBox_top'>
                 <div className='listItemBox_top_leftBox'>
                   <img src={BlueFlagIcon} className='img'></img>
-                  <span className='title' title={item.name}>
-                    {item.name}
-                  </span>
+                  <Tooltip title={item.name} placement="topLeft">
+                    <span className='title' title={item.name} style={{ cursor: 'default' }}>
+                      {item.name}
+                    </span>
+                  </Tooltip>
                 </div>
 
-                <div className='listItemBox_top_rightBox' title={`逾期${computedOverdueNum(item.endDate)}天`}>
+                <div className='listItemBox_top_rightBox'>
                   逾期{computedOverdueNum(item.endDate)}天
                 </div>
               </div>
@@ -78,20 +80,27 @@ const ProgressStatistics = (props) => {
               <div className='listItemBox_top'>
                 <div className='listItemBox_top_leftBox'>
                   <img src={BlueFlagIcon} className='img'></img>
-                  <span className='title' title={item.milestone}>
-                    {item.milestone}
-                  </span>
+                  <Tooltip title={item.milestone} placement="topLeft">
+                    <span className='title' title={item.milestone} style={{ cursor: 'default' }}>
+                      {item.milestone}
+                    </span>
+                  </Tooltip>
                 </div>
 
-                <div className='listItemBox_top_rightBox' title={item.title}>
-                  {item.title}
+                <div className='listItemBox_top_rightBox'>
+                  <Tooltip title={item.title} placement="topLeft">
+                    <span style={{ cursor: 'default' }}>{item.title}</span>
+                  </Tooltip>
                 </div>
               </div>
 
-              <div className='listItemBox_bottom' title={item.content}
-                dangerouslySetInnerHTML={{ __html: textOverflowSlice(item.content, 50).replace(/\n/g, '<br>') }}
-              >
-              </div>
+              <Tooltip title={item.content} placement="topLeft">
+                <div className='listItemBox_bottom' style={{ cursor: 'default' }}
+                  dangerouslySetInnerHTML={{ __html: textOverflowSlice(item.content, 50).replace(/\n/g, '<br>') }}
+                >
+                </div>
+              </Tooltip>
+
             </div>
           })}
         </div>

@@ -8,6 +8,7 @@ import {
   Dropdown,
   Icon,
   Popconfirm,
+  Tooltip,
 } from 'antd';
 import React, { Fragment, useState } from 'react';
 import { Link, useHistory } from 'react-router-dom';
@@ -855,7 +856,7 @@ export default function TopConsole(props) {
           <div className="prj-name">
             {prjBasic.XMMC &&
               prjBasic.XMMC +
-                (iterationYear.currentYear && isDDXM ? ` -${iterationYear.currentYear}` : '')}
+              (iterationYear.currentYear && isDDXM ? ` -${iterationYear.currentYear}` : '')}
           </div>
         ) : (
           <div className="prj-name">{prjBasic?.XMMC}</div>
@@ -1006,9 +1007,11 @@ export default function TopConsole(props) {
 
         {prjBasic.ZZSM && <span className="project-terminationt-statement">项目终止说明：</span>}
         {prjBasic.ZZSM && (
-          <span className="project-terminationt-statement-content" title={prjBasic.ZZSM}>
-            {prjBasic.ZZSM}
-          </span>
+          <Tooltip title={prjBasic.ZZSM} placement="topLeft">
+            <span className="project-terminationt-statement-content" style={{ cursor: 'default' }}>
+              {prjBasic.ZZSM}
+            </span>
+          </Tooltip>
         )}
         {isDDXM && iterationYear.dropdown?.length > 0 && (
           <div className="iteration-year">

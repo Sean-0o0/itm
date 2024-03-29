@@ -216,10 +216,12 @@ const PaymentStatus = (props) => {
                   <div className="Component_ExecutionProgress_TopBar_middle">
                     <div className="title grayText">合同金额</div>
 
-                    <div className="money blackText" title={`${moneyObj.contractAmount}元`}>
-                      <span className='statisticalFont'>{moneyObj.contractAmount}</span>
-                      <span className='statisticalGreyFont'>元</span>
-                    </div>
+                    <Tooltip title={`${moneyObj.contractAmount}元`} placement="topLeft">
+                      <div className="money blackText" style={{ cursor: 'default' }}>
+                        <span className='statisticalFont'>{moneyObj.contractAmount}</span>
+                        <span className='statisticalGreyFont'>元</span>
+                      </div>
+                    </Tooltip>
                   </div>
                 </>
               }
@@ -231,10 +233,12 @@ const PaymentStatus = (props) => {
               >
                 <div className="title grayText">已付款金额</div>
 
-                <div className="money blackText" title={`${moneyObj.paymentAmount}元`}>
-                  <span className='statisticalFont'>{moneyObj.paymentAmount}</span>
-                  <span className='statisticalGreyFont'>元</span>
-                </div>
+                <Tooltip title={`${moneyObj.paymentAmount}元`} placement="topLeft">
+                  <div className="money blackText" style={{ cursor: 'default' }} >
+                    <span className='statisticalFont'>{moneyObj.paymentAmount}</span>
+                    <span className='statisticalGreyFont'>元</span>
+                  </div>
+                </Tooltip>
               </div>
             </div>
 
