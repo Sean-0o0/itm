@@ -22,6 +22,7 @@ const TableBox = props => {
     activeKey,
     roleData = {},
     userBasicInfo = {},
+    authorities = {},
   } = dataProps;
   const isGLY = roleData.zyrole === '自定义报告管理员';
   const { setTableLoading, setMonthData, getData } = funcProps;
@@ -220,8 +221,8 @@ const TableBox = props => {
         };
       }),
     ];
-    //部门月报才有编辑
-    if (activeKey === 'BMYB') {
+    //部门月报 且有编辑权限 才有编辑
+    if (activeKey === 'BMYB' && authorities.ZDYBG?.includes('CustomReportInfoUpdate')) {
       arr.push({
         title: '操作',
         dataIndex: 'OPRT',

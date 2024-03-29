@@ -22,6 +22,7 @@ const TableBox = props => {
     userBasicInfo = {},
     roleTxt = '',
     searchData = {},
+    AUTH = [],
   } = dataProps;
   const {
     setFilterData = () => {},
@@ -229,15 +230,22 @@ const TableBox = props => {
           //不是经办人但是管理员，且处理状态为已处理时可编辑
           <div className="opr-column">
             {(String(row.JBRID) === String(userBasicInfo.id) ||
-              (roleTxt.includes('信创管理员') && String(row.CLZT) === '2')) && (
-              <span onClick={() => handleEdit(row)}>编辑</span>
+              (roleTxt.includes('信创管理员') && String(row.CLZT) === '2')) &&
+              AUTH.includes('InnovationContractEdit') && (
+                <span onClick={() => handleEdit(row)}>编辑</span>
+              )}
+            {AUTH.includes('InnovationContractTransfer') && (
+              <span onClick={() => setTransferData({ visible: true, curRowId: row.HTID })}>
+                转办
+              </span>
             )}
-            <span onClick={() => setTransferData({ visible: true, curRowId: row.HTID })}>转办</span>
           </div>
-        ) : (
+        ) : AUTH.includes('InnovationContractView') ? (
           <div className="opr-column">
             <span onClick={() => handleView(row)}>查看</span>
           </div>
+        ) : (
+          ''
         ),
     },
   ];

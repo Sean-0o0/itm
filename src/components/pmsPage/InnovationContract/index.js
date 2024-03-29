@@ -19,6 +19,7 @@ export default connect(({ global }) => ({
   dictionary: global.dictionary,
   userBasicInfo: global.userBasicInfo,
   roleData: global.roleData,
+  authorities: global.authorities,
 }))(function InnovationContract(props) {
   const {
     dictionary = {},
@@ -27,6 +28,7 @@ export default connect(({ global }) => ({
     },
     userBasicInfo = {},
     roleData = {},
+    authorities = {},
   } = props;
   const [tableData, setTableData] = useState({
     data: [],
@@ -61,6 +63,14 @@ export default connect(({ global }) => ({
     (JSON.parse(roleData.testRole || '{}')?.ALLROLE ?? '') + ',' + (roleData.role ?? ''); //角色信息
 
   useLayoutEffect(() => {
+    const cxlx =
+      roleTxt.includes('信创管理员') ||
+      roleTxt.includes('一级部门领导') ||
+      roleTxt.includes('信息技术事业部领导')
+        ? 'ALL'
+        : roleTxt.includes('二级部门领导')
+        ? 'XMLD'
+        : 'GR';
     if (params !== '') {
       let obj = JSON.parse(DecryptBase64(params));
       console.log('🚀 ~ useLayoutEffect ~ obj:', obj);
@@ -68,14 +78,14 @@ export default connect(({ global }) => ({
         setFilterData(p => ({ ...p, contractCode: obj.htbh }));
         setSearchData(p => ({ ...p, contractCode: obj.htbh }));
         queryTableData({ contractCode: obj.htbh });
-        queryProjectData(roleTxt.includes('信创管理员'));
+        queryProjectData(cxlx);
       } else {
         queryDDHTTableData({});
       }
     } else {
       if (activeKey === 'PTHT') {
         queryTableData({});
-        queryProjectData(roleTxt.includes('信创管理员'));
+        queryProjectData(cxlx);
       } else {
         queryDDHTTableData({});
       }
@@ -148,12 +158,12 @@ export default connect(({ global }) => ({
   };
 
   //项目下拉框数据
-  const queryProjectData = (isGLY = false) => {
+  const queryProjectData = cxlx => {
     FetchQueryOwnerProjectList({
       paging: -1,
       total: -1,
       sort: '',
-      cxlx: isGLY ? 'ALL' : 'GR',
+      cxlx,
     }).then(res => {
       if (res.code === 1) {
         // console.log('🚀 ~ file: index.js:136 ~ queryProjectData ~ res:', res);
@@ -401,6 +411,7 @@ export default connect(({ global }) => ({
               userBasicInfo,
               roleTxt,
               searchData,
+              AUTH: authorities.XCHTXXLB,
             }}
             funcProps={{
               setFilterData,
@@ -412,7 +423,7 @@ export default connect(({ global }) => ({
           />
         ) : (
           <IterationContractInfo
-            dataProps={{ tableData, filterData, sortInfo, searchData }}
+            dataProps={{ tableData, filterData, sortInfo, searchData, AUTH: authorities.XCHTXXLB }}
             funcProps={{
               setFilterData,
               queryDDHTTableData,

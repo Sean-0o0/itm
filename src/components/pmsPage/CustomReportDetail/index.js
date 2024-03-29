@@ -10,8 +10,9 @@ export default connect(({ global }) => ({
   dictionary: global.dictionary,
   userBasicInfo: global.userBasicInfo,
   roleData: global.roleData,
+  authorities: global.authorities,
 }))(function CustomReportDetail(props) {
-  const { bgid = -2, bgmc = '', roleData = {}, userBasicInfo = {} } = props;
+  const { bgid = -2, bgmc = '', roleData = {}, userBasicInfo = {}, authorities = {} } = props;
   const [tableData, setTableData] = useState({
     data: [],
     origin: [], //编辑前的数据
@@ -209,6 +210,7 @@ export default connect(({ global }) => ({
             activeKey,
             roleData,
             userBasicInfo,
+            authorities,
           }}
           funcProps={{
             setTableLoading,

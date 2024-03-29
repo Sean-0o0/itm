@@ -1,7 +1,7 @@
 /*
  * @Author: 钟海秀(创新业务产品部) zhonghaixiu12534@apexsoft.com.cn
  * @Date: 2024-02-06 14:00:19
- * @LastEditTime: 2024-02-28 18:50:10
+ * @LastEditTime: 2024-03-29 15:53:35
  * @FilePath: \pro-pms-fe\src\components\pmsPage\InnovationContract\IterationContractInfo\index.js
  * @Descripttion: 迭代合同信息tab
  */
@@ -20,7 +20,7 @@ const IterationContractInfo = connect(({ global }) => ({
   dictionary: global.dictionary,
 }))(props => {
   const { dataProps = {}, funcProps = {}, userBasicInfo = {} } = props;
-  const { tableData = {}, filterData = {}, sortInfo = {}, searchData = {} } = dataProps;
+  const { tableData = {}, filterData = {}, sortInfo = {}, searchData = {}, AUTH = [] } = dataProps;
   const {
     setFilterData = () => {},
     queryDDHTTableData = () => {},
@@ -240,10 +240,10 @@ const IterationContractInfo = connect(({ global }) => ({
     {
       title: '操作',
       dataIndex: 'OPRT',
-      width: 80,
+      width: AUTH.includes('IterationContractEdit') ? 80 : 0,
       align: 'center',
       key: 'OPRT',
-      fixed: 'right',
+      fixed: AUTH.includes('IterationContractEdit') ? 'right' : undefined,
       ellipsis: true,
       render: (txt, row) => (
         <div className="opr-column">
