@@ -1,0 +1,109 @@
+//人员调整
+.member-adjustment-modal {
+  .default-modal();
+  .ant-modal .content-box.staffInfo {
+    height: 494px;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+
+    .job {
+      overflow-y: auto;
+      width: 50%;
+      padding: 18px 18px 0 21px;
+      background-color: #fafafb;
+
+      .jobItem {
+        display: flex;
+        flex-direction: row;
+        margin-bottom: 18px;
+
+        .name {
+          text-align: end;
+          width: 40%;
+          font-size: 14px;
+          padding: 9px 0 0 0;
+        }
+      }
+    }
+
+    .button {
+      height: 33vh;
+      text-align: center;
+      padding-top: 30vh;
+    }
+
+    .tree {
+      width: 50%;
+      overflow: auto;
+      padding: 18px 18px 0 21px;
+      background-color: #fafafb;
+    }
+  }
+}
+
+.prj-detail-box {
+  .prj-member-box {
+    .top-title {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+
+      span {
+        cursor: pointer;
+        font-size: 12px;
+        font-weight: normal;
+        transition: color 0.3s;
+        margin-left: 6px;
+        color: #3361ff;
+        &:hover {
+          color: #3361ffaf;
+        }
+      }
+    }
+  }
+}
+
+//中标
+.bid-info-mod-modal {
+  .default-modal();
+  .ant-modal .content-box {
+    padding-left: 8px; //控制左右空白宽度尽可能一致
+    padding-bottom: 0;
+    max-height: 584px;
+
+    .gys-selector {
+      .ant-select-arrow {
+        right: 45px;
+      }
+
+      .ant-select-selection--single .ant-select-selection__rendered {
+        margin-right: 66px;
+      }
+    }
+
+    .bid-info-table-box {
+      .antd-table-adaptation();
+      .table-add-row {
+        margin-top: 12px;
+        text-align: center;
+        border: 1px dashed #e0e0e0;
+        line-height: 32px;
+        height: 32px;
+        cursor: pointer;
+
+        &:hover {
+          color: #3361ff;
+        }
+      }
+    }
+  }
+}
+
+//合同
+.contract-info-mod-modal {
+  .default-modal();
+  .ant-modal .content-box {
+  }
+}

@@ -1100,4 +1100,17 @@ export default [
     url: '/projectManage/queryMemberSelectList',
     dis: '查询人员选择下拉框的数据（大部分操作窗口下拉框适用）',
   },
+
+  {
+    code: '',
+    key: 'queryWinningBidderInfo',
+    url: '/projectManage/queryWinningBidderInfo',
+    dis: '查询中标信息',
+  },
+  {
+    code: '',
+    key: 'operateWinningBidderInfo',
+    url: '/projectManage/operateWinningBidderInfo',
+    dis: '编辑中标信息',
+  },
 ];

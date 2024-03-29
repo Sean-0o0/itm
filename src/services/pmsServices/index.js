@@ -191,6 +191,8 @@ const {
     queryProjectSelectList,
     queryMemberSelectList,
     queryProjectDynamicSection,
+    queryWinningBidderInfo,
+    operateWinningBidderInfo,
   },
 } = api;
 
@@ -1953,7 +1955,6 @@ export async function QueryOperateDetail(payload) {
   return request(option);
 }
 
-
 // 自定义报告导出
 export async function ExportCustomReportToExcel(payload) {
   const option = {
@@ -2058,6 +2059,26 @@ export async function QueryProjectSelectList(payload) {
 export async function QueryMemberSelectList(payload) {
   const option = {
     url: queryMemberSelectList,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 查询中标信息
+export async function QueryWinningBidderInfo(payload) {
+  const option = {
+    url: queryWinningBidderInfo,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 编辑中标信息
+export async function OperateWinningBidderInfo(payload) {
+  const option = {
+    url: operateWinningBidderInfo,
     method: 'post',
     data: payload,
   };

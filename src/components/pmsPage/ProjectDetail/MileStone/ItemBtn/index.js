@@ -33,9 +33,7 @@ import AssociationInitiatedProcess from './AssociationInitiatedProcess';
 import SoftwarePaymentYHT from './SoftwarePaymentYHT';
 import AssociationOAContract from './AssociationOAContract';
 import ProjectApprovalApplicate from './ProjectApprovalApplicate';
-// import BidInfoMod from './BidInfoMod';
-// import ContractInfoModRlfwrw from './ContractInfoModRlfwrw';
-import { connect } from 'dva';
+import BidInfoMod from './BidInfoMod';
 
 const { api } = config;
 const { confirm } = Modal;
@@ -60,6 +58,16 @@ class ItemBtn extends React.Component {
     //信息修改
     editMessageVisible: false, //合同
     bidInfoModalVisible: false, //中标
+    bidInfoMod: {
+      visible: false,
+      type: 'ADD',
+      xmid: -1,
+    }, //中标
+    contractInfoMod_RLFWRW: {
+      visible: false,
+      type: 'ADD',
+      xmid: -1,
+    }, //合同
     //信息修改url
     editMessageUrl: '/OperateProcessor?operate=TXMXX_XMXX_ADDCONTRACTAINFO&Table=TXMXX_XMXX',
     editModelUrl:
@@ -242,7 +250,6 @@ class ItemBtn extends React.Component {
       })
         .then(res => {
           if (res?.success) {
-            // console.log('🚀 ~ FetchQueryWpsWDXX ~ res', JSON.parse(res.record.url));
             const { url, zxwdmc, zxwd } = res.record;
             let arr = [...JSON.parse(url)];
             if (zxwdmc && zxwdmc !== '' && zxwd && zxwd !== '') {
@@ -404,7 +411,11 @@ class ItemBtn extends React.Component {
         }
         if (item.sxmc === '中标信息录入') {
           this.setState({
-            bidInfoModalVisible: true,
+            bidInfoMod: {
+              visible: true,
+              type: 'UPDATE',
+              xmid: item.xmid,
+            },
           });
           return;
         }
@@ -418,16 +429,14 @@ class ItemBtn extends React.Component {
           ]);
         }
         if (item.sxmc === '中标信息录入') {
-          params = this.getParams('View_TBXX', 'View_TBXX_ADD', [
-            {
-              name: 'XMMC',
-              value: item.xmid,
+          this.setState({
+            bidInfoMod: {
+              visible: true,
+              type: 'ADD',
+              xmid: item.xmid,
             },
-            {
-              name: 'LCB',
-              value: item.lcbid,
-            },
-          ]);
+          });
+          return;
         }
       }
       this.setState({
@@ -465,7 +474,6 @@ class ItemBtn extends React.Component {
                   loading: false,
                 },
               });
-              console.log('🚀 ~ htxxList:', htxxList);
             }
           } catch (error) {
             console.error('查询供应商下拉列表、合同信息', error);
@@ -649,7 +657,6 @@ class ItemBtn extends React.Component {
                     loading: false,
                   },
                 });
-                console.log('🚀 ~ htxxList:', htxxList);
               }
             })
             .catch(error => {
@@ -764,44 +771,18 @@ class ItemBtn extends React.Component {
     //权限控制
     const { isEnd = false } = this.props.auth || {};
     //录入
-    const htxxlr = async () => {
-      try {
-        const roleTxt =
-          (JSON.parse(this.props.roleData?.testRole || '{}')?.ALLROLE ?? '') +
-          ',' +
-          (this.props.roleData?.role ?? '') +
-          ',项目详情'; //角色信息
-        const res = await QueryXCContractInfo({
-          projectId: Number(item.xmid), //  关联项目
-          trustee: Number(this.props.userBasicInfo?.id), //经办人
-          handleStatus: 1, //处理状态 - 未处理
-          current: 1,
-          pageSize: 1,
-          paging: 1,
-          sort: '',
-          total: -1,
-          role: roleTxt,
+    const htxxlr = () => {
+      if (this.props.prjBasic?.XMLX === '人力服务入围项目') {
+        this.setState({
+          contractInfoMod_RLFWRW: {
+            visible: true,
+            type: 'ADD',
+            xmid: item.xmid,
+          },
         });
-        const data = JSON.parse(res.result);
-        // console.log('🚀 ~ htxxlr ~ data:', data);
-        if (data.length > 0) {
-          const obj = data[0] || {};
-          window.location.href =
-            '/#/pms/manage/InnovationContractEdit/' +
-            EncryptBase64(
-              JSON.stringify({
-                id: obj.HTID,
-                routes: this.props.routes ?? [],
-                timeStamp: new Date().getTime(),
-              }),
-            );
-        } else {
-          message.info('请先在OA中进行合同录入，后在系统中进行确认即可', 2);
-        }
-      } catch (error) {
-        message.error('合同数据获取失败');
-        console.error('合同数据获取失败', error);
-      }
+        return;
+      } else {
+      message.info('请先在OA中进行合同录入，后在系统中进行确认即可', 2);}
     };
     if (done) {
       const htxxck = async () => {
@@ -833,7 +814,6 @@ class ItemBtn extends React.Component {
               },
               fklcLoading: false,
             });
-            console.log('🚀 ~ htxxList:', htxxList);
           }
         } catch (error) {
           console.error('查询供应商下拉列表、合同信息', error);
@@ -848,7 +828,6 @@ class ItemBtn extends React.Component {
       };
 
       const htxxxg = (obj = {}) => {
-        console.log('🚀 ~ htxxxg ~ obj:', obj);
         if (obj.oahtxxid !== '') {
           window.location.href =
             '/#/pms/manage/InnovationContractEdit/' +
@@ -1035,7 +1014,6 @@ class ItemBtn extends React.Component {
           })
             .then(res => {
               if (res?.success) {
-                // console.log('🚀 ~ RemindSubProjectFinish ~ res', res);
                 message.success('操作成功', 1);
               }
             })
@@ -1180,7 +1158,6 @@ class ItemBtn extends React.Component {
                   subject: x.BT,
                   url: { url: x.URL },
                 }));
-                // console.log('🚀 ~ 迭代合同签署流程:', arr);
                 this.setState({
                   fklcLoading: false,
                   currentFklcList: arr,
@@ -1889,7 +1866,6 @@ class ItemBtn extends React.Component {
       return someAuth();
     } else if (isFXMJL && !isMnger) {
       //副项目经理权限
-      console.log('🚀 ~ 副项目经理权限');
       if (['需求发起', '付款流程'].includes(name)) {
         return this.getLcfqck(done, item);
       }
@@ -1955,10 +1931,14 @@ class ItemBtn extends React.Component {
       glOAhtModalVisible,
       glOAhtData,
       projectApprovalApplicateModalVisible,
+      bidInfoMod = {
+        visible: false,
+      },
+      contractInfoMod_RLFWRW = {
+        visible: false,
+      },
     } = this.state;
-    const { item, xmmc, xmbh, isHwSltPrj, auth = {}, prjBasic } = this.props;
-    // console.log('🚀 ~ file: index.js:1005 ~ ItemBtn ~ render ~ item:', item);
-
+    const { item, xmmc, xmbh, isHwSltPrj, auth = {}, prjBasic = {} } = this.props;
     //文档上传、修改弹窗
     const uploadModalProps = {
       isAllWindow: 1,
@@ -2296,6 +2276,17 @@ class ItemBtn extends React.Component {
             loginUserId={JSON.parse(sessionStorage.getItem('user')).id}
             onSuccess={() => this.onSuccess('信息修改')}
           ></BidInfoUpdate>
+        )}
+
+        {/*中标信息录入修改弹窗*/}
+        {bidInfoMod.visible && (
+          <BidInfoMod
+            visible={bidInfoMod.visible}
+            setVisible={v => this.setState({ bidInfoMod: { ...bidInfoMod, visible: v } })}
+            type={bidInfoMod.type}
+            xmid={bidInfoMod.xmid}
+            refresh={this.props.refresh}
+          ></BidInfoMod>
         )}
 
         {/* 迭代合同信息录入弹窗 */}
