@@ -65,13 +65,12 @@ export default function TableBox(props) {
             arrowPointAtCenter
             overlayClassName="page-log-statistic-box-popover"
           >
-            <a
-              className="table-link-strong"
-              style={{ color: '#3361ff' }}
+            <span
+              className='table-link-detail'
               onClick={() => getCzmxData(row)}
             >
               查看详情
-            </a>
+            </span>
           </Popover>
         </Tooltip>
       ),
