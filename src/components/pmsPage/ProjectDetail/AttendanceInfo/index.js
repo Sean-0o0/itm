@@ -218,8 +218,8 @@ export default function AttendanceInfo(props) {
 
   //处理月份显示
   const handleMonthShow = monthstr => {
-    if (moment(monthstr).year() === moment(String(prjBasic.CJRQ)).year())
-      return moment(monthstr).format('M月');
+    // if (moment(monthstr).year() === moment(String(prjBasic.CJRQ)).year())
+    //   return moment(monthstr).format('M月');
     return moment(monthstr).format('YYYY年M月');
   };
 
