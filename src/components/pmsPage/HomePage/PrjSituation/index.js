@@ -777,7 +777,6 @@ export default connect(({ global }) => ({
     }
     //有风险
     const haveRisk = item.XMFX?.length > 0;
-    console.log('🚀 ~ getPrjItem ~ haveRisk:', haveRisk, item);
     //终止
     const isEnd = String(item.WJZT) === '5';
     //完结
@@ -841,7 +840,6 @@ export default connect(({ global }) => ({
                           routes: [{ name: '个人工作台', pathname: location.pathname }],
                         },
                       }}
-                      // className="table-link-strong"
                     >
                       {x.name}
                     </Link>
@@ -868,7 +866,6 @@ export default connect(({ global }) => ({
                                   routes: [{ name: '个人工作台', pathname: location.pathname }],
                                 },
                               }}
-                              // className="table-link-strong"
                             >
                               {x.name}
                             </Link>
