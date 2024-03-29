@@ -21,7 +21,7 @@ const PaymentStatus = (props) => {
   const location = useLocation()
   const history = useHistory();
 
-  const { xmid: projectID, prjData, is_XMJL_FXMJL= false, isLeader = fasle } = props
+  const { xmid: projectID, prjData, is_XMJL_FXMJL = false, isLeader = fasle } = props
 
   const {
     prjBasic = {}, //项目基本信息
@@ -184,7 +184,7 @@ const PaymentStatus = (props) => {
   };
 
   //非成员且非二级领导及以上 不显示
-  if(!isMember() && !isLeader) return null;
+  if (!isMember() && !isLeader) return null;
 
   return (
     <div className="ProjectDetail_PaymentStatus">
@@ -207,7 +207,12 @@ const PaymentStatus = (props) => {
           </div>
 
           <div className='groupMiddle Component_ExecutionProgress'>
-            <div className="Component_ExecutionProgress_TopBar">
+            <div className="Component_ExecutionProgress_TopBar"
+              style={{
+                height: `${(Lodash.isEmpty(contrastArr) || String(moneyObj.contractAmount) === '0')
+                  ? '40px' : ''}`
+              }}
+            >
 
               {/* 若无合同信息录入时，付款情况仅展示已付款金额*/}
               {!Lodash.isEmpty(contrastArr)
@@ -236,8 +241,10 @@ const PaymentStatus = (props) => {
                 </>
               }
 
+              {/* 若无合同信息录入时，付款情况仅展示已付款金额*/}
               <div
-                className={Lodash.isEmpty(contrastArr)
+                className={(Lodash.isEmpty(contrastArr) ||
+                  String(moneyObj.contractAmount) === '0')
                   ? 'Component_ExecutionProgress_TopBar_right_style20'
                   : 'Component_ExecutionProgress_TopBar_right_style14'}
               >
@@ -251,7 +258,6 @@ const PaymentStatus = (props) => {
                 </Tooltip>
               </div>
             </div>
-
 
             {!Lodash.isEmpty(contrastArr) &&
               !Lodash.isEmpty(moneyObj.contractAmount) &&
@@ -270,8 +276,8 @@ const PaymentStatus = (props) => {
             !Lodash.isEmpty(moneyObj.contractAmount) &&
             String(moneyObj.contractAmount) !== '0' &&
             <div className='groupBottom'
-              onClick={is_XMJL_FXMJL ? forwardHandle : () => {}}
-              style={is_XMJL_FXMJL? {} : { color: '#303133', cursor: 'default' }}
+              onClick={is_XMJL_FXMJL ? forwardHandle : () => { }}
+              style={is_XMJL_FXMJL ? {} : { color: '#303133', cursor: 'default' }}
             >
               {`合同未确认 >`}
             </div>
