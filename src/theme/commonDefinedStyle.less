@@ -305,13 +305,22 @@
     border-color: #3361ffaf !important;
   }
 
+  &:focus {
+    border-color: #3361ff !important;
+    color: #3361ff !important;
+  }
 }
 
-//处理某些页面按钮focus的时候，文字是蓝色的 联合类名，类名本身就叫 “.blue-dark-theme .ant-btn-primary:focus”
+//处理某些页面primary按钮focus的时候，文字颜色 联合类名，类名本身就叫 “.blue-dark-theme .ant-btn-primary:focus”
 .blue-dark-theme .ant-btn-primary:focus {
   color: #fff !important;
 }
 
+//处理某些页面default按钮focus的时候，文字颜色
+.blue-dark-theme .ant-btn:focus {
+  // border-color: #3361ff !important;
+  // color: #3361ff !important;
+}
 
 //涉及统计就要用的字体
 .statisticalFont {

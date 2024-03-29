@@ -21,12 +21,13 @@ const PaymentStatus = (props) => {
   const location = useLocation()
   const history = useHistory();
 
-  const { xmid: projectID, prjData } = props
+  const { xmid: projectID, prjData, is_XMJL_FXMJL = false, isLeader = fasle } = props
 
   const {
     prjBasic = {}, //项目基本信息
     contrast = {},      // 关联合同列表  obj
     contrastArr = [],    //关联合同列表    arr
+    member = [],
   } = prjData //项目数据
 
   const {
@@ -175,6 +176,15 @@ const PaymentStatus = (props) => {
     </Menu>
   )
 
+  //是否项目成员
+  const isMember = () => {
+    let LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
+    let arr = member.filter(x => x.RYZT === '1').map(x => x.RYID);
+    return arr.includes(String(LOGIN_USER_INFO.id));
+  };
+
+  //非成员且非二级领导及以上 不显示
+  if (!isMember() && !isLeader) return null;
 
   return (
     <div className="ProjectDetail_PaymentStatus">
@@ -197,7 +207,12 @@ const PaymentStatus = (props) => {
           </div>
 
           <div className='groupMiddle Component_ExecutionProgress'>
-            <div className="Component_ExecutionProgress_TopBar">
+            <div className="Component_ExecutionProgress_TopBar"
+              style={{
+                height: `${(Lodash.isEmpty(contrastArr) || String(moneyObj.contractAmount) === '0')
+                  ? '40px' : ''}`
+              }}
+            >
 
               {/* 若无合同信息录入时，付款情况仅展示已付款金额*/}
               {!Lodash.isEmpty(contrastArr)
@@ -216,28 +231,33 @@ const PaymentStatus = (props) => {
                   <div className="Component_ExecutionProgress_TopBar_middle">
                     <div className="title grayText">合同金额</div>
 
-                    <div className="money blackText" title={`${moneyObj.contractAmount}元`}>
-                      <span className='statisticalFont'>{moneyObj.contractAmount}</span>
-                      <span className='statisticalGreyFont'>元</span>
-                    </div>
+                    <Tooltip title={`${moneyObj.contractAmount}元`} placement="topLeft">
+                      <div className="money blackText" style={{ cursor: 'default' }}>
+                        <span className='statisticalFont'>{moneyObj.contractAmount}</span>
+                        <span className='statisticalGreyFont'>元</span>
+                      </div>
+                    </Tooltip>
                   </div>
                 </>
               }
 
+              {/* 若无合同信息录入时，付款情况仅展示已付款金额*/}
               <div
-                className={Lodash.isEmpty(contrastArr)
+                className={(Lodash.isEmpty(contrastArr) ||
+                  String(moneyObj.contractAmount) === '0')
                   ? 'Component_ExecutionProgress_TopBar_right_style20'
                   : 'Component_ExecutionProgress_TopBar_right_style14'}
               >
                 <div className="title grayText">已付款金额</div>
 
-                <div className="money blackText" title={`${moneyObj.paymentAmount}元`}>
-                  <span className='statisticalFont'>{moneyObj.paymentAmount}</span>
-                  <span className='statisticalGreyFont'>元</span>
-                </div>
+                <Tooltip title={`${moneyObj.paymentAmount}元`} placement="topLeft">
+                  <div className="money blackText" style={{ cursor: 'default' }} >
+                    <span className='statisticalFont'>{moneyObj.paymentAmount}</span>
+                    <span className='statisticalGreyFont'>元</span>
+                  </div>
+                </Tooltip>
               </div>
             </div>
-
 
             {!Lodash.isEmpty(contrastArr) &&
               !Lodash.isEmpty(moneyObj.contractAmount) &&
@@ -256,7 +276,8 @@ const PaymentStatus = (props) => {
             !Lodash.isEmpty(moneyObj.contractAmount) &&
             String(moneyObj.contractAmount) !== '0' &&
             <div className='groupBottom'
-              onClick={forwardHandle}
+              onClick={is_XMJL_FXMJL ? forwardHandle : () => { }}
+              style={is_XMJL_FXMJL ? {} : { color: '#303133', cursor: 'default' }}
             >
               {`合同未确认 >`}
             </div>
