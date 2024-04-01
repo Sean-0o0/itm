@@ -1758,6 +1758,7 @@ class ItemBtn extends React.Component {
         case '用户手册':
         case '硬件合同':
         case '验收报告':
+        case '后评价报告':
           return that.getWdscxg(done, item);
 
         //操作
@@ -1801,6 +1802,7 @@ class ItemBtn extends React.Component {
         case '用户手册':
         case '硬件合同':
         case '验收报告':
+        case '后评价报告':
           return that.getWdscxg(done, item);
         default:
           return '';
@@ -1834,6 +1836,7 @@ class ItemBtn extends React.Component {
         case '用户手册':
         case '硬件合同':
         case '验收报告':
+        case '后评价报告':
           return that.getWdscxg(done, item);
         default:
           return '';
