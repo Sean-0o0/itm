@@ -432,7 +432,7 @@ export default connect(({ global }) => ({
       getDatePicker,
       getRadio,
       getInput,
-      getInputNumber
+      getInputNumber,
     }
 
     /** 给子组件的状态 */

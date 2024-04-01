@@ -19,9 +19,9 @@ const BasicInfoContent = (props) => {
 
   const { isUnfold, } = stateObj
 
-  const { userBasicInfo, dictionary } = dataObj
+  const { userBasicInfo, dictionary, prjBasic } = dataObj
 
-  const { getTitle, getInputDisabled, getDatePicker, getRadio, getInput } = componentsObj
+  const { getTitle, getInputDisabled, getDatePicker, getRadio, getInput, } = componentsObj
 
   const labelCol = 8;
   const wrapperCol = 16;
@@ -42,6 +42,17 @@ const BasicInfoContent = (props) => {
     { title: '直接送审', value: 1 },
     { title: '发送至OA草稿箱', value: 2 },
   ]
+
+  /** 从字典note 找ibm */
+  const matchDictionaryId = (dicArr, text) => {
+
+    const matchedItem = dicArr.find(item => item.note === text);
+    if (matchedItem) {
+      return matchedItem.ibm;
+    } else {
+      return null;
+    }
+  };
 
   return (
     <>
@@ -96,8 +107,38 @@ const BasicInfoContent = (props) => {
                 </span>
             })}
 
-            {/* 招采方式===2 隐藏 附件的“招标采购文件、招标采购文件模板” ，但入参好像没用到 招采方式，所以暂时不管*/}
-            {getInputDisabled('招采方式', '公开招标', labelCol, wrapperCol)}
+            {/* 招采方式===2 (邀请招标) 隐藏 附件的“招标采购文件、招标采购文件模板” ，prjBasic出参无ZBFSID*/}
+            {/* {getInputDisabled('招采方式', prjBasic.ZBFS, labelCol, wrapperCol)} */}
+
+            <Col span={12}>
+              <Form.Item
+                label="招采方式"
+                labelCol={{ span: labelCol }}
+                wrapperCol={{ span: wrapperCol }}
+              >
+                {getFieldDecorator(`zcfs`, {
+                  initialValue: matchDictionaryId(dictionary.CGFS, prjBasic.ZBFS),
+                })(
+                  <Select
+                    style={{ width: '100%' }}
+                    filterOption={(input, option) =>
+                      option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                    }
+                    showSearch
+                    allowClear
+                    placeholder="请选择"
+                  >
+                    {dictionary.CGFS?.map((item, index) => (
+                      <Select.Option key={item.ibm} value={item.ibm}>
+                        {item.note}
+                      </Select.Option>
+                    ))}
+                  </Select>
+                )}
+              </Form.Item>
+            </Col>
+
+
           </Row>
 
           <Row>

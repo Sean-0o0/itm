@@ -359,19 +359,24 @@ const AttachmentInfoContent = (props) => {
           </Row>
 
           <Row>
-            {getMultipleUpload({
-              label: '招标采购文件',
-              labelCol: labelCol,
-              wrapperCol: wrapperCol,
-              fileList: ZBshoppingData,
-              setFileList: setZBshoppingData,
-              isTurnRed: undefined,
-              setIsTurnRed: () => { },
-            })}
+            {/* prjBasic.ZBFS !== '邀请招标' && */}
+            {
+              getMultipleUpload({
+                label: '招标采购文件',
+                labelCol: labelCol,
+                wrapperCol: wrapperCol,
+                fileList: ZBshoppingData,
+                setFileList: setZBshoppingData,
+                isTurnRed: undefined,
+                setIsTurnRed: () => { },
+              })}
 
+            {/* //招采方式===2 (邀请招标) 隐藏 附件的“招标采购文件、招标采购文件模板” ，prjBasic出参无ZBFSID
+            // prjBasic.ZBFS !== '邀请招标' && */}
             {templateData.ZBshoppingTemplate.length !== 0 &&
               getFileTemplate('招标采购文件模板', templateData.ZBshoppingTemplate)
             }
+
           </Row>
 
           <Row>
