@@ -108,6 +108,7 @@ const BasicInfoContent = (props) => {
             })}
 
             {/* 招采方式===2 (邀请招标) 隐藏 附件的“招标采购文件、招标采购文件模板” ，prjBasic出参无ZBFSID*/}
+
             {/* {getInputDisabled('招采方式', prjBasic.ZBFS, labelCol, wrapperCol)} */}
 
             <Col span={12}>

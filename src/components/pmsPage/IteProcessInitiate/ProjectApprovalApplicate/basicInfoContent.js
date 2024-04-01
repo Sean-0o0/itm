@@ -95,8 +95,37 @@ const BasicInfoContent = (props) => {
                 </span>
             })}
 
-            {/* 招采方式===2 隐藏 附件的“招标采购文件、招标采购文件模板” ，但入参好像没用到 招采方式，所以暂时不管*/}
-            {getInputDisabled('招采方式', '公开招标', labelCol, wrapperCol)}
+            {/* 招采方式===2 (邀请招标) 隐藏 附件的“招标采购文件、招标采购文件模板” ，prjBasic出参无ZBFSID*/}
+
+            {/* {getInputDisabled('招采方式', prjBasic.ZBFS, labelCol, wrapperCol)} */}
+
+            <Col span={12}>
+              <Form.Item
+                label="招采方式"
+                labelCol={{ span: labelCol }}
+                wrapperCol={{ span: wrapperCol }}
+              >
+                {getFieldDecorator(`zcfs`, {
+                  initialValue: undefined,
+                })(
+                  <Select
+                    style={{ width: '100%' }}
+                    filterOption={(input, option) =>
+                      option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                    }
+                    showSearch
+                    allowClear
+                    placeholder="请选择"
+                  >
+                    {dictionary.CGFS?.map((item, index) => (
+                      <Select.Option key={item.ibm} value={item.ibm}>
+                        {item.note}
+                      </Select.Option>
+                    ))}
+                  </Select>
+                )}
+              </Form.Item>
+            </Col>
           </Row>
 
           <Row>

@@ -123,7 +123,6 @@ export default connect(({ global }) => ({
     const submitHandle = () => {
       validateFields(async (err, values) => {
         if (err === null) {
-
           //附件数据
           const arr1 = await convertFilesToBase64(XWHmotionData.map(x => x.originFileObj || x), '信委会议案');
           const arr2 = await convertFilesToBase64(XWHsummaryData.map(x => x.originFileObj || x), '信委会会议纪要');
@@ -132,7 +131,12 @@ export default connect(({ global }) => ({
           const arr5 = await convertFilesToBase64(BQHYscannerData.map(x => x.originFileObj || x), '标前会议纪要扫描件');
           const arr6 = await convertFilesToBase64(ZBshoppingData.map(x => x.originFileObj || x), '招标采购文件');
           const arr7 = await convertFilesToBase64(otherUplodData.map(x => x.originFileObj || x), '其他附件');
-          let mergedFileArray = [...arr5, ...arr6, ...arr7]
+          let mergedFileArray = [...arr5, , ...arr7]
+
+          // 招采方式不能为 2 （邀请招标）
+          if (getFieldValue('zcfs') !== '2') {
+            mergedFileArray = [...mergedFileArray, ...arr6]
+          }
 
           //空附件校验 和  设置附件值
           if (judgeMoneyHanlde(500000) === true) {
@@ -271,6 +275,7 @@ export default connect(({ global }) => ({
       setFieldsValue({
         'bgrq': undefined,
         'qsbgnr': '<p></p>',
+        'zcfs': undefined,
       })
       setXWHmotionData([])
       setXWHsummaryData([])

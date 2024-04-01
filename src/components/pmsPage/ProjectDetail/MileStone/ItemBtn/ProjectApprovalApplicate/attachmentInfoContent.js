@@ -359,8 +359,9 @@ const AttachmentInfoContent = (props) => {
           </Row>
 
           <Row>
-            {/* prjBasic.ZBFS !== '邀请招标' && */}
-            {
+            {/* 招采方式===2 (邀请招标) 隐藏 附件的“招标采购文件、招标采购文件模板” ，prjBasic出参无ZBFSID */}
+
+            {getFieldValue('zcfs') !== '2' &&
               getMultipleUpload({
                 label: '招标采购文件',
                 labelCol: labelCol,
@@ -371,9 +372,8 @@ const AttachmentInfoContent = (props) => {
                 setIsTurnRed: () => { },
               })}
 
-            {/* //招采方式===2 (邀请招标) 隐藏 附件的“招标采购文件、招标采购文件模板” ，prjBasic出参无ZBFSID
-            // prjBasic.ZBFS !== '邀请招标' && */}
             {templateData.ZBshoppingTemplate.length !== 0 &&
+              getFieldValue('zcfs') !== '2' &&
               getFileTemplate('招标采购文件模板', templateData.ZBshoppingTemplate)
             }
 
