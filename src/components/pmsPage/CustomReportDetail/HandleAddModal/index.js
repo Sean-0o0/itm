@@ -137,13 +137,7 @@ function HandleAddModal(props) {
       }
     }
     return () => {};
-  }, [
-    visible,
-    JSON.stringify(dataArr),
-    isBGHZR,
-    JSON.stringify(tableColumns),
-    JSON.stringify(userBasicInfo),
-  ]);
+  }, [visible, JSON.stringify(dataArr), isBGHZR, tableColumns, JSON.stringify(userBasicInfo)]);
 
   // useEffect(() => {
   //   console.log('@@@', editData);
@@ -442,7 +436,7 @@ function HandleAddModal(props) {
           formdecorate: form,
           sltdata: sltData,
           setsltdata: setSltData,
-          label: col?.title,
+          label: col?.label,
           getPrjData,
           getStaffData,
           tableColumns,

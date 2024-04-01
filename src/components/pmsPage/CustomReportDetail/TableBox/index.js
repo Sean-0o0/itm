@@ -312,6 +312,7 @@ const TableBox = props => {
       if (x.ZDMC.includes('上月工作'))
         return {
           title: x.ZDMC + `（${monthData.month()}月）`,
+          label: x.ZDMC + `（${monthData.month()}月）`,
           dataIndex: x.QZZD,
           key: x.QZZD,
           width: getColumnWidth(x),
@@ -321,6 +322,31 @@ const TableBox = props => {
       if (x.ZDMC.includes('当月工作'))
         return {
           title: x.ZDMC + `（${monthData.month() + 1}月）`,
+          label: x.ZDMC + `（${monthData.month() + 1}月）`,
+          dataIndex: x.QZZD,
+          key: x.QZZD,
+          width: getColumnWidth(x),
+          editable: true,
+          ellipsis: true,
+        };
+      if (x.ZDMC.includes('系统项目'))
+        return {
+          title: (
+            <span>
+              <span
+                style={{
+                  fontFamily: 'SimSun, sans-serif',
+                  color: '#f5222d',
+                  marginRight: '4px',
+                  lineHeight: 1,
+                }}
+              >
+                *
+              </span>
+              {x.ZDMC}
+            </span>
+          ),
+          label: x.ZDMC,
           dataIndex: x.QZZD,
           key: x.QZZD,
           width: getColumnWidth(x),
@@ -329,6 +355,7 @@ const TableBox = props => {
         };
       return {
         title: x.ZDMC,
+        label: x.ZDMC,
         dataIndex: x.QZZD,
         key: x.QZZD,
         width: getColumnWidth(x),
