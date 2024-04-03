@@ -1,7 +1,7 @@
 /*
  * @Author: 钟海秀(创新业务产品部) zhonghaixiu12534@apexsoft.com.cn
  * @Date: 2024-01-31 11:15:16
- * @LastEditTime: 2024-03-27 11:38:04
+ * @LastEditTime: 2024-04-03 10:51:13
  * @FilePath: \pro-pms-fe\src\components\pmsPage\HomePage\ShortcutCard\SinglePaymentModal\index.js
  * @Descripttion: 单费用付款 新建/修改项目弹窗
  */
@@ -121,13 +121,14 @@ export default connect(({ global }) => ({
             });
             setMilestoneSlt(data);
             //默认选中项目立项下的所有事项
-            const xzxsx =
+            const xzxsx = (
               data
                 .find(x => String(x.value) === '14')
                 ?.children?.reduce(
                   (acc, cur) => [...acc, ...(cur?.children?.map(x => x.sxid) || [])],
                   [],
-                ) || [];
+                ) || []
+            ).filter(x => x !== '109'); //去掉 框架内硬件采购流程
             setFieldsValue({
               xzxsx,
             });
@@ -311,13 +312,14 @@ export default connect(({ global }) => ({
             console.log('🚀 ~ getMilestoneSlt ~ data:', data);
             setMilestoneSlt(data);
             //默认选中项目立项下的所有事项
-            const xzxsx =
+            const xzxsx = (
               data
                 .find(x => String(x.value) === '14')
                 ?.children?.reduce(
                   (acc, cur) => [...acc, ...(cur?.children?.map(x => x.sxid) || [])],
                   [],
-                ) || [];
+                ) || []
+            ).filter(x => x !== '109'); //去掉 框架内硬件采购流程;
             setFieldsValue({
               xzxsx,
             });
