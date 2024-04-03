@@ -64,7 +64,7 @@ export default connect(({ global }) => ({
 
   useLayoutEffect(() => {
     const cxlx =
-      roleTxt.includes('信创管理员') ||
+      roleTxt.includes('合同管理员') ||
       roleTxt.includes('一级部门领导') ||
       roleTxt.includes('信息技术事业部领导')
         ? 'ALL'

@@ -331,7 +331,7 @@ export default connect(({ global }) => ({
                   })),
               })}
               {/* 管理员但非经办人 、该合同有项目经理时且经办人但非项目经理 */}
-              {(roleTxt.includes('信创管理员') &&
+              {(roleTxt.includes('合同管理员') &&
                 Number(userBasicInfo.id) !== Number(data.JBRID)) ||
               (data.XMJL !== undefined &&
                 Number(userBasicInfo.id) === Number(data.JBRID) &&

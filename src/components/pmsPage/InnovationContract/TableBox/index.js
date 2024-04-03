@@ -224,13 +224,13 @@ const TableBox = props => {
       ellipsis: true,
       fixed: 'right',
       render: (txt, row) =>
-        String(row.JBRID) === String(userBasicInfo.id) || roleTxt.includes('信创管理员') ? (
+        String(row.JBRID) === String(userBasicInfo.id) || roleTxt.includes('合同管理员') ? (
           //登录人为经办人时可编辑转办
           //管理员可转办
           //不是经办人但是管理员，且处理状态为已处理时可编辑
           <div className="opr-column">
             {(String(row.JBRID) === String(userBasicInfo.id) ||
-              (roleTxt.includes('信创管理员') && String(row.CLZT) === '2')) &&
+              (roleTxt.includes('合同管理员') && String(row.CLZT) === '2')) &&
               AUTH.includes('InnovationContractEdit') && (
                 <span onClick={() => handleEdit(row)}>编辑</span>
               )}

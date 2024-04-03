@@ -29,7 +29,7 @@ const queryDetailData = (
     paging: -1,
     sort: '',
     total: -1,
-    role: '信创管理员',
+    role: '合同管理员',
   })
     .then(res => {
       if (res?.success) {
@@ -65,7 +65,7 @@ const getUserRole = (userId, setData, setIsSpinning, obj) => {
       if (res?.code === 1) {
         const { testRole = '{}' } = res;
         getPrjNameData(
-          JSON.parse(testRole).ALLROLE?.includes('信创管理员'),
+          JSON.parse(testRole).ALLROLE?.includes('合同管理员'),
           setData,
           setIsSpinning,
           obj,
