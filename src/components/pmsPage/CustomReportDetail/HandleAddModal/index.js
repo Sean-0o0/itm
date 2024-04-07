@@ -168,7 +168,7 @@ function HandleAddModal(props) {
   const returnNewTable = (mergeData, temp) => {
     mergeData.forEach( m => {
       temp.forEach( t => {
-        if(m.ZD3 === t["ZD3" + t.ID] && m.ZD1 === data.ZD1 && m.ZD2 === data.ZD2) {
+        if(m.ZD3 === t["ZD3" + t.ID] && m.ZD1 === data.ZD1 && m.ZD2 === data.ZD2 && m.TXRID === String(userBasicInfo.id)) {
           t["GLXM" + t.ID] = m.GLXMID === undefined || m.GLXMID === '-1' ? undefined : m.GLXMID;
           t["GLXMID" + t.ID] = m.GLXMID === undefined || m.GLXMID === '-1' ? undefined : m.GLXMID;
           t["ZD4" + t.ID] = m.ZD4;
