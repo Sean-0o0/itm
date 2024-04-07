@@ -23,6 +23,7 @@ import { useHistory } from 'react-router';
 import CarryoverModal from '../../BudgetCarryover/TableBox/CarryoverModal';
 
 export default connect(({ global }) => ({
+  userBasicInfo: global.userBasicInfo,
   dataAnonymization: global.dataAnonymization, //是否数据匿名化 脱敏
 }))(function OverviewCard(props) {
   const [hovered, setHovered] = useState(false);
@@ -38,6 +39,7 @@ export default connect(({ global }) => ({
     handleCurYearChange,
     componentType = 'default', // 'shortcut'
     dataAnonymization,
+    userBasicInfo,
     getToDoData,
     popLoading,
     AUTH = [], //权限点控制
@@ -1096,6 +1098,50 @@ export default connect(({ global }) => ({
                 : false,
             })}
             {getOverviewItem({
+              title: '个人项目数量',
+              img: 'yszxje',
+              amount: getAmountFormat(overviewInfo?.cyxm),
+              addNum: overviewInfo?.cyjrxz,
+              unit: '项',
+              width: '22%',
+              more: AUTH.includes('personalProject'),
+              linkTo: AUTH.includes('personalProject')
+                ? {
+                  pathname: `/pms/manage/staffDetail/${EncryptBase64(
+                    JSON.stringify({
+                      ryid: userBasicInfo.id,
+                      isOneself: true,
+                    }),
+                  )}`,
+                  state: {
+                    routes: [{ name: '个人工作台', pathname: location.pathname }],
+                  },
+                }
+                : false,
+            })}
+            {getOverviewItem({
+              title: '供应商数量',
+              img: 'gyssl',
+              amount: getAmountFormat(overviewInfo?.gyssl),
+              addNum: overviewInfo?.gysjrxz,
+              unit: '家',
+              width: '22%',
+              more: AUTH.includes('supplierCount'),
+              linkTo: AUTH.includes('supplierCount')
+                ? {
+                  pathname: `/pms/manage/SupplierSituation/${EncryptBase64(
+                    JSON.stringify({
+                      defaultYear: statisticYearData.currentYear,
+                      routes: [{ name: '个人工作台', pathname: location.pathname }],
+                    }),
+                  )}`,
+                  state: {
+                    routes: [{ name: '个人工作台', pathname: location.pathname }],
+                  },
+                }
+                : false,
+            })}
+            {getOverviewItem({
               title: '部门队伍数量',
               img: 'bmdwsl',
               amount: getAmountFormat(overviewInfo?.ryzs),
@@ -1117,51 +1163,29 @@ export default connect(({ global }) => ({
                   }
                 : false,
             })}
-            {getOverviewItem({
-              title: '预算执行金额(万元)/执行率',
-              img: 'yszxje',
-              amount: getAmountFormat(overviewInfo?.yszxje),
-              percent: overviewInfo?.yszxl,
-              addNum: overviewInfo?.ysjrxz,
-              unit: '万元',
-              width: '34%',
-              more: AUTH.includes('budgetStatistics'),
-              linkTo: AUTH.includes('budgetStatistics')
-                ? {
-                    pathname: `/pms/manage/BudgetExcute/${EncryptBase64(
-                      JSON.stringify({
-                        defaultYear: statisticYearData.currentYear,
-                        routes: [{ name: '个人工作台', pathname: location.pathname }],
-                      }),
-                    )}`,
-                    state: {
-                      routes: [{ name: '个人工作台', pathname: location.pathname }],
-                    },
-                  }
-                : false,
-            })}
-            {getOverviewItem({
-              title: '供应商数量',
-              img: 'gyssl',
-              amount: getAmountFormat(overviewInfo?.gyssl),
-              addNum: overviewInfo?.gysjrxz,
-              unit: '家',
-              width: '22%',
-              more: AUTH.includes('supplierCount'),
-              linkTo: AUTH.includes('supplierCount')
-                ? {
-                    pathname: `/pms/manage/SupplierSituation/${EncryptBase64(
-                      JSON.stringify({
-                        defaultYear: statisticYearData.currentYear,
-                        routes: [{ name: '个人工作台', pathname: location.pathname }],
-                      }),
-                    )}`,
-                    state: {
-                      routes: [{ name: '个人工作台', pathname: location.pathname }],
-                    },
-                  }
-                : false,
-            })}
+            {/*{getOverviewItem({*/}
+            {/*  title: '预算执行金额(万元)/执行率',*/}
+            {/*  img: 'yszxje',*/}
+            {/*  amount: getAmountFormat(overviewInfo?.yszxje),*/}
+            {/*  percent: overviewInfo?.yszxl,*/}
+            {/*  addNum: overviewInfo?.ysjrxz,*/}
+            {/*  unit: '万元',*/}
+            {/*  width: '34%',*/}
+            {/*  more: AUTH.includes('budgetStatistics'),*/}
+            {/*  linkTo: AUTH.includes('budgetStatistics')*/}
+            {/*    ? {*/}
+            {/*        pathname: `/pms/manage/BudgetExcute/${EncryptBase64(*/}
+            {/*          JSON.stringify({*/}
+            {/*            defaultYear: statisticYearData.currentYear,*/}
+            {/*            routes: [{ name: '个人工作台', pathname: location.pathname }],*/}
+            {/*          }),*/}
+            {/*        )}`,*/}
+            {/*        state: {*/}
+            {/*          routes: [{ name: '个人工作台', pathname: location.pathname }],*/}
+            {/*        },*/}
+            {/*      }*/}
+            {/*    : false,*/}
+            {/*})}*/}
           </div>
         ) : (
           ''
