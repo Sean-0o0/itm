@@ -156,7 +156,6 @@ function HandleAddModal(props) {
           let mergeData = JSON.parse(res.nrxx);
           let temp = JSON.parse(JSON.stringify(tableData));
           setTableData(JSON.parse(JSON.stringify(returnNewTable(mergeData, temp))));
-
         }
       })
       .catch(e => {
@@ -167,24 +166,22 @@ function HandleAddModal(props) {
   };
 
   const returnNewTable = (mergeData, temp) => {
-    console.log("temp", mergeData)
     mergeData.forEach( m => {
       temp.forEach( t => {
-        if(m.ZD3 === t["ZD3" + t.ID]) {
+        if(m.ZD3 === t["ZD3" + t.ID] && m.ZD1 === data.ZD1 && m.ZD2 === data.ZD2) {
           t["GLXM" + t.ID] = m.GLXMID === undefined || m.GLXMID === '-1' ? undefined : m.GLXMID;
           t["GLXMID" + t.ID] = m.GLXMID === undefined || m.GLXMID === '-1' ? undefined : m.GLXMID;
           t["ZD4" + t.ID] = m.ZD4;
           t["ZD5" + t.ID] = m.ZD5;
-          t["TXR" + t.ID] = m.TXRID === undefined || m.TXRID === '-1' ? undefined : m.TXRID;
-          t["TXRID" + t.ID] = m.TXRID === undefined || m.TXRID === '-1' ? undefined : m.TXRID;
-
+          t["TXR" + t.ID] = String(userBasicInfo.id);
+          t["TXRID" + t.ID] = String(userBasicInfo.id);
           setFieldsValue({
             ["GLXM" + t.ID]: m.GLXMID === undefined || m.GLXMID === '-1' ? undefined : m.GLXMID,
             ["GLXMID" + t.ID]: m.GLXMID === undefined || m.GLXMID === '-1' ? undefined : m.GLXMID,
             ["ZD4" + t.ID]: m.ZD4,
             ["ZD5" + t.ID]: m.ZD5,
-            ["TXR" + t.ID]: m.TXRID === undefined || m.TXRID === '-1' ? undefined : m.TXRID,
-            ["TXRID" + t.ID]: m.TXRID === undefined || m.TXRID === '-1' ? undefined : m.TXRID,
+            ["TXR" + t.ID]: String(userBasicInfo.id),
+            ["TXRID" + t.ID]: String(userBasicInfo.id),
           })
           setEditData(p => {
               p.push(t);
@@ -550,7 +547,7 @@ function HandleAddModal(props) {
             </div>
           ))}
           <Popconfirm
-            title={<div>将复制上月系统名称与本月系统名称一致的数据，<br/>覆盖上月工作总结和本月工作计划</div>}
+            title='按系统名称匹配，复制上月工作总结和本月工作计划到表格中'
             onConfirm={getLastMonth}
             onCancel={cancel}
             okText="确认"
