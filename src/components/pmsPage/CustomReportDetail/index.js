@@ -167,6 +167,7 @@ export default connect(({ global }) => ({
               tableWidth += x.ZDMC?.length * 25;
             }
           });
+          console.log("finalColumns", finalColumns);
           setColumnsData(finalColumns);
           setTableData({
             data: JSON.parse(JSON.stringify(mergeData)),

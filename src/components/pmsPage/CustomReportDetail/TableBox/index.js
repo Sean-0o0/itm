@@ -421,6 +421,8 @@ const TableBox = props => {
           />
         </div>
         <HandleAddModal
+          bgid={bgid}
+          monthData={monthData}
           visible={addModalData.visible}
           setVisible={v => setAddModalData(p => ({ ...p, visible: v }))}
           tableColumns={tableColumnsForModal}

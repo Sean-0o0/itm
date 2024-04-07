@@ -5,24 +5,20 @@ import {
   message,
   Spin,
   Button,
-  Input,
   Table,
-  Row,
-  Col,
   Icon,
   Popconfirm,
-  Checkbox,
-  Tooltip,
 } from 'antd';
 import { EditableCell, EditableRow } from './EditableTable';
 import {
   EditCustomReport,
+  QueryCustomReportContent,
   QueryMemberSelectList,
   QueryProjectSelectList,
 } from '../../../../services/pmsServices';
 import { connect } from 'dva';
-// import { OperateSupplierInfo } from '../../../../../services/pmsServices';
 import { debounce } from 'lodash';
+import moment from 'moment';
 
 function HandleAddModal(props) {
   const {
@@ -36,12 +32,15 @@ function HandleAddModal(props) {
     userBasicInfo = {},
     dataArr = [],
     roleData = {},
+    bgid,
+    monthData
   } = props;
   const {
     validateFields,
     getFieldValue,
     resetFields,
     getFieldDecorator,
+    setFieldsValue,
     validateFieldsAndScroll,
   } = form;
   const [tableData, setTableData] = useState([]); //表格数据
@@ -139,10 +138,63 @@ function HandleAddModal(props) {
     return () => {};
   }, [visible, JSON.stringify(dataArr), isBGHZR, tableColumns, JSON.stringify(userBasicInfo)]);
 
-  // useEffect(() => {
-  //   console.log('@@@', editData);
-  //   return () => {};
-  // }, [JSON.stringify(editData)]);
+  //获取数据
+  const getData = (reportID, month, queryType) => {
+    setIsSpinning(true);
+    QueryCustomReportContent({
+      current: 1,
+      pageSize: 20,
+      paging: -1,
+      queryType: 'BMYB',
+      reportID,
+      sort: '',
+      total: -1,
+      month,
+    })
+      .then(res => {
+        if (res?.success) {
+          let mergeData = JSON.parse(res.nrxx);
+          let temp = JSON.parse(JSON.stringify(tableData));
+          setTableData(JSON.parse(JSON.stringify(returnNewTable(mergeData, temp))));
+
+        }
+      })
+      .catch(e => {
+        message.error('获取上月表格数据获取失败', 1);
+      }).finally(() => {
+      setIsSpinning(false);
+    });
+  };
+
+  const returnNewTable = (mergeData, temp) => {
+    console.log("temp", mergeData)
+    mergeData.forEach( m => {
+      temp.forEach( t => {
+        if(m.ZD3 === t["ZD3" + t.ID]) {
+          t["GLXM" + t.ID] = m.GLXMID === undefined || m.GLXMID === '-1' ? undefined : m.GLXMID;
+          t["GLXMID" + t.ID] = m.GLXMID === undefined || m.GLXMID === '-1' ? undefined : m.GLXMID;
+          t["ZD4" + t.ID] = m.ZD4;
+          t["ZD5" + t.ID] = m.ZD5;
+          t["TXR" + t.ID] = m.TXRID === undefined || m.TXRID === '-1' ? undefined : m.TXRID;
+          t["TXRID" + t.ID] = m.TXRID === undefined || m.TXRID === '-1' ? undefined : m.TXRID;
+
+          setFieldsValue({
+            ["GLXM" + t.ID]: m.GLXMID === undefined || m.GLXMID === '-1' ? undefined : m.GLXMID,
+            ["GLXMID" + t.ID]: m.GLXMID === undefined || m.GLXMID === '-1' ? undefined : m.GLXMID,
+            ["ZD4" + t.ID]: m.ZD4,
+            ["ZD5" + t.ID]: m.ZD5,
+            ["TXR" + t.ID]: m.TXRID === undefined || m.TXRID === '-1' ? undefined : m.TXRID,
+            ["TXRID" + t.ID]: m.TXRID === undefined || m.TXRID === '-1' ? undefined : m.TXRID,
+          })
+          setEditData(p => {
+              p.push(t);
+            return p;
+          });
+        }
+      });
+    })
+    return temp;
+  }
 
   const getPrjData = useCallback(
     debounce(async value => {
@@ -357,6 +409,22 @@ function HandleAddModal(props) {
     setIsSpinning(false);
   };
 
+  // 获取上个月填写信息填入
+  const getLastMonth = () => {
+    const nowTime = new Date(monthData);
+    const year = nowTime.getFullYear();
+    const month = nowTime.getMonth();
+    let date = new Date(year, month, 1); // 创建日期对象，月份是从0开始的，所以减1
+    date.setMonth(date.getMonth() - 1); // 将月份减去1
+    getData(
+      Number(bgid),
+      Number(moment(date).format("YYYYMM")),
+      roleData.zyrole === '自定义报告管理员' ? 'YBHZ' : 'BMYB',
+    );
+  }
+
+  const cancel = () => {}
+
   //表格数据保存
   const handleTableSave = row => {
     setEditData(p => {
@@ -481,6 +549,17 @@ function HandleAddModal(props) {
               {data[x.dataIndex]}
             </div>
           ))}
+          <Popconfirm
+            title={<div>将复制上月系统名称与本月系统名称一致的数据，<br/>覆盖上月工作总结和本月工作计划</div>}
+            onConfirm={getLastMonth}
+            onCancel={cancel}
+            okText="确认"
+            cancelText="取消"
+          >
+            <Button style={{ marginBottom: '16px' }} type="primary">
+              复制上月填写内容
+            </Button>
+          </Popconfirm>
           <Table
             columns={columns}
             components={components}
