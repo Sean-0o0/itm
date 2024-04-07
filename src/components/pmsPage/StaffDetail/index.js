@@ -1,14 +1,21 @@
 import React, { Component } from 'react';
 import TopConsole from './TopConsole'
 import InfoTable from './InfoTable'
-import { message, Tabs } from 'antd'
-import { QueryMemberDetailInfo, QueryUserRole } from '../../../services/pmsServices'
+import { message, Tabs, Checkbox, Dropdown, Menu } from 'antd';
+import {
+  QueryBudgetOverviewInfo,
+  QueryMemberDetailInfo,
+  QueryUserRole,
+  QueryWeekday,
+} from '../../../services/pmsServices';
 import EvaluationTable from './EvaluationTable'
 import { connect } from 'dva';
+import moment from 'moment';
 
 const { TabPane } = Tabs
 
 class StaffDetailComponent extends Component {
+
   state = {
     xmxx: '-', //项目列表
     bm: '-',//部门
@@ -36,16 +43,19 @@ class StaffDetailComponent extends Component {
       sort: undefined,
       columnKey: '',
     },
+    statisticYearData: {
+      dropdown: [], //下拉菜单数据
+      currentYear: moment().year(), //当前年份
+    },
+    limitValue: [],
   }
 
   componentDidMount() {
-
-    const { ryid } = this.props;
-    this.handleSearch({}, ryid)
+    this.getDefaultYear();
   }
 
   componentWillReceiveProps(nextProps) {
-    const { ryid } = nextProps
+    const { ryid, isOneself } = nextProps
     this.setState({
       xmxx: '-', //项目列表
       bm: '-',//部门
@@ -66,13 +76,15 @@ class StaffDetailComponent extends Component {
         total: -1,
         ryid
       },
+      limitValue: isOneself ? ['1', '2'] : []
     }, () => {
-      this.handleSearch({}, ryid)
+      this.getDefaultYear();
+      // this.handleSearch({}, ryid)
     })
   }
 
   handleSearch = (params = {}, ryid) => {
-    const { pageParams = {} } = this.state
+    const { pageParams = {}, limitValue = [], statisticYearData } = this.state
     this.setState({
       tableLoading: true,
     })
@@ -84,7 +96,10 @@ class StaffDetailComponent extends Component {
     if (ryid) {
       param = {
         ...param,
-        ryid
+        ryid,
+        year: statisticYearData.currentYear,
+        launchProject: limitValue.includes('1') ? 1: 2, //是否筛选项目经理是自己的项目 1|是；2|否
+        participateProject: limitValue.includes('2') ? 1: 2, //是否筛选参与了的项目 1|是；2|否
       }
     }
     QueryMemberDetailInfo(param)
@@ -146,6 +161,67 @@ class StaffDetailComponent extends Component {
       });
   }
 
+  //获取默认年份
+  getDefaultYear = async () => {
+    await QueryWeekday({
+      begin: 20600101,
+      days: 31,
+      queryType: 'YSCKNF',
+    })
+      .then(res => {
+        if (res?.success) {
+          const data = JSON.parse(res.result);
+          if (data.length > 0) {
+            const year = data[0].YSCKNF ? moment(String(data[0].YSCKNF), 'YYYY') : moment();
+
+            const { statisticYearData } = this.state;
+            this.setState({
+              statisticYearData: {
+                ...statisticYearData,
+                currentYear: year.year()
+              }
+            }, () => {
+              const { ryid } = this.props;
+              this.handleSearch({}, ryid)
+            })
+            this.getBudgetOverviewInfo(year.year())
+          }
+        }
+      })
+      .catch(e => {
+        console.error('🚀默认年份', e);
+        message.error('默认年份获取失败', 1);
+      });
+  };
+
+   getBudgetOverviewInfo = async (year) => {
+     let LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
+     const { statisticYearData } = this.state;
+     const roleData =
+       (await QueryUserRole({
+         userId: String(LOGIN_USER_INFO.id),
+       })) || {};
+     if (roleData.code === 1) {
+       const ROLE = roleData.role;
+
+
+       const res = await QueryBudgetOverviewInfo({
+         org: Number(LOGIN_USER_INFO.org),
+         queryType: 'SY',
+         role: ROLE,
+         year,
+       });
+       if (res.code === 1) {
+         this.setState({
+           statisticYearData: {
+             ...statisticYearData,
+             dropdown: JSON.parse(res.ysqs)
+           }
+         })
+       }
+     }
+   }
+
   /** tab改变 */
   tabChangeHandle = (activeKey) => {
     this.setState({ curTab: activeKey })
@@ -156,6 +232,18 @@ class StaffDetailComponent extends Component {
     }
   }
 
+  onChange = (checkedValues) => {
+    const { pageParams } = this.state;
+    this.setState({
+      limitValue: checkedValues,
+      pageParams: {
+        ...pageParams,
+        current: 1,
+      }
+    }, () => {
+      this.handleSearch({}, this.props.ryid)
+    });
+  }
 
 
   render() {
@@ -175,9 +263,63 @@ class StaffDetailComponent extends Component {
       pageParams = {},
       curTab = 'projectSituation',
       role = '',
+      statisticYearData,
+      limitValue = [],
     } = this.state
     const { routes, ryid, userBasicInfo } = this.props
 
+    // 统计年份
+    const menu = (
+      <Menu>
+        {statisticYearData.dropdown?.map(x => (
+          <Menu.Item
+            key={x.NF}
+            onClick={() => {
+              if (Number(x.NF) !== statisticYearData.currentYear) {
+                this.setState({
+                  statisticYearData: {
+                    ...statisticYearData,
+                    currentYear: Number(x.NF),
+                  },
+                  pageParams: {
+                    ...pageParams,
+                    current: 1,
+                  }
+                }, () => {
+                  this.handleSearch({}, this.props.ryid)
+                });
+              }
+            }}
+          >
+            {x.NF}
+          </Menu.Item>
+        ))}
+      </Menu>
+    );
+
+    const plainOptions = [
+      { label: '发起项目', value: '1' },
+      { label: '参与项目', value: '2' },
+    ];
+
+    const operations =
+      (
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+          <div>
+            <Checkbox.Group options={plainOptions} value={limitValue} onChange={this.onChange} />
+          </div>
+          <div style={{ borderRight: '1px solid', height: '15px', marginRight: '8px' }}></div>
+          <div className="statistic-year">
+            统计年份：
+            <Dropdown overlay={menu} trigger={['click']}>
+                    <span>
+                      {statisticYearData.currentYear}
+                      <i className="iconfont icon-fill-down" />
+                    </span>
+            </Dropdown>
+          </div>
+        </div>
+      )
 
     return (
       <div className="staff-detail-box" >
@@ -200,9 +342,9 @@ class StaffDetailComponent extends Component {
         />
 
         <div className='StaffDetailTabs'>
-          <Tabs type='card' activeKey={curTab} onChange={this.tabChangeHandle}>
+          <Tabs type='card' activeKey={curTab} onChange={this.tabChangeHandle} tabBarExtraContent={operations}>
             <TabPane tab="项目情况" key="projectSituation">
-              <div className='staff-detail-box'>
+              <div style={{width: '100%'}} className='staff-detail-box'>
                 <InfoTable ryid={ryid} tableData={attachList} pageParams={pageParams} tableLoading={tableLoading} routes={routes} handleSearch={this.handleSearch} />
               </div>
             </TabPane>

@@ -22,7 +22,8 @@ class StaffDetailPage extends Component {
     }
     const { pathname = '', state = {} } = location;
     const { routes = [] } = state;
-    const { ryid
+    const { ryid,
+      isOneself
       // , routes = []
      } = params;
     const item = routes.length?routes[routes.length-1]:'';
@@ -32,9 +33,9 @@ class StaffDetailPage extends Component {
     }else{
       result = routes
     }
-    
 
-    return <StaffDetail dictionary={dictionary} routes={result} ryid={ryid} />;
+
+    return <StaffDetail dictionary={dictionary} routes={result} ryid={ryid} isOneself={isOneself}/>;
   }
 }
 
