@@ -48,7 +48,13 @@ export default connect(({ global }) => ({
       ZBXXZBQK = [], //中标情况
       GYSLX = [], //供应商类型
     } = dictionary;
-    const { getFieldDecorator, getFieldValue, validateFields, resetFields, setFieldsValue } = form;
+    const {
+      getFieldDecorator,
+      getFieldValue,
+      validateFieldsAndScroll,
+      resetFields,
+      setFieldsValue,
+    } = form;
     const [isSpinning, setIsSpinning] = useState(false); //加载状态
     const [fileList, setFileList] = useState([]); //上传文件
     const [isTurnRed, setIsTurnRed] = useState(false); //文件是否为空 报红
@@ -464,7 +470,7 @@ export default connect(({ global }) => ({
 
     //提交数据
     const onOk = () => {
-      validateFields(async (err, values) => {
+      validateFieldsAndScroll(async (err, values) => {
         let judgeCondition = fileList.length === 0;
         if (values.zbqk === '2') {
           judgeCondition = tableData.qttbgys.length === 0 || fileList.length === 0;
@@ -473,7 +479,15 @@ export default connect(({ global }) => ({
             tableData.rwgys.length === 0 || tableData.wrwgys.length === 0 || fileList.length === 0;
         }
         if (judgeCondition) {
-          fileList.length === 0 && setIsTurnRed(true);
+          if (fileList.length === 0) {
+            setIsTurnRed(true);
+            setTimeout(() => {
+              const table = document.querySelectorAll(`.bid-info-mod-modal .content-box`)[0];
+              if (table) {
+                table.scrollTop = 85;
+              }
+            }, 200);
+          }
           values.zbqk === '2' &&
             tableData.qttbgys.length === 0 &&
             message.error('其他投标供应商不允许空值', 2);
@@ -521,7 +535,7 @@ export default connect(({ global }) => ({
             failDes: values.zbsbsm,
             operateType: type,
           };
-          console.log('🚀 ~ validateFields ~ params:', params);
+          console.log('🚀 ~ validateFieldsAndScroll ~ params:', params);
           OperateWinningBidderInfo(params)
             .then(res => {
               if (res?.success) {

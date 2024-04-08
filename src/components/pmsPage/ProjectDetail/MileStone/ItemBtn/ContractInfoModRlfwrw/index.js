@@ -8,6 +8,7 @@ import {
   OperateHumanServiceContract,
   QueryHumanServiceContract,
   QueryPaymentAccountList,
+  QueryWinningBidderInfo,
   QueryXCContractInfo,
 } from '../../../../../../services/pmsServices';
 import TableBox from './TableBox';
@@ -37,7 +38,7 @@ export default connect(({ global }) => ({
       prjYear = moment().year(), //项目年份
     } = props;
     const { RLRWHTQSZT = [], GYSLX = [], ZDTSNRPZ = [] } = dictionary;
-    const { getFieldDecorator, validateFields, resetFields } = form;
+    const { getFieldDecorator, validateFields, resetFields, validateFieldsAndScroll } = form;
     const [isSpinning, setIsSpinning] = useState(false); //加载状态
     const [curStep, setCurStep] = useState(0); //当前tab ID
     const [oaData, setOaData] = useState({}); //新增时给的默认数据
@@ -62,9 +63,6 @@ export default connect(({ global }) => ({
     useEffect(() => {
       if (visible) {
         initData(type);
-        if (type === 'ADD') {
-          handleDefaultAddRow();
-        }
       }
       return () => {};
     }, [visible, type, xmid]);
@@ -104,7 +102,10 @@ export default connect(({ global }) => ({
                 projectId: Number(xmid),
               })
             : QueryHumanServiceContract({ projectID: Number(xmid) });
-        const [rydjRes, accountRes, gysRes, res] = await Promise.all([p1, p2, p3, p4]);
+        const p5 = QueryWinningBidderInfo({
+          projectID: Number(xmid),
+        });
+        const [rydjRes, accountRes, gysRes, res, bidRes] = await Promise.all([p1, p2, p3, p4, p5]);
         if (rydjRes?.success && accountRes?.success && gysRes?.success && res?.success) {
           setSltData({
             rydj: JSON.parse(rydjRes.rydjxx),
@@ -114,6 +115,27 @@ export default connect(({ global }) => ({
           });
           if (type === 'ADD') {
             setOaData(JSON.parse(res.result)[0] || {});
+            handleDefaultAddRow();
+            if (bidRes.success) {
+              const data = JSON.parse(bidRes.result)[0] || {};
+              let rwgys = [];
+              rwgys = (data.shortlistedVendor?.split(',') || []).map(x => {
+                let UUID = getUUID();
+                return {
+                  ...x,
+                  ID: UUID,
+                  ['GYS' + UUID]: x,
+                  ['QSZT' + UUID]: '1',
+                  ['QSSM' + UUID]: undefined,
+                  ['GYSZH' + UUID]: undefined,
+                  accountObj: undefined,
+                  fileList: [],
+                  isNew: true,
+                };
+              });
+              setTableData(p => ({ ...p, rwgys }));
+              setEditData(p => ({ ...p, rwgys: JSON.parse(JSON.stringify(rwgys)) }));
+            }
           } else {
             //修改时回显
             const data = JSON.parse(res.result)[0] || {};
@@ -155,8 +177,8 @@ export default connect(({ global }) => ({
           setIsSpinning(false);
         }
       } catch (e) {
-        console.error('🚀下拉框', e);
-        message.error('下拉框数据获取失败', 1);
+        console.error('🚀数据初始化', e);
+        message.error('数据初始化失败', 1);
         setIsSpinning(false);
       }
     };
@@ -361,18 +383,14 @@ export default connect(({ global }) => ({
 
     //下一步
     const handleNext = () => {
-      validateFields(err => {
+      validateFieldsAndScroll(err => {
         if (tableData.rldj.length === 0 || tableData.rwgys.length === 0) {
           tableData.rldj.length === 0 && message.error('人力单价不允许空值', 2);
           tableData.rwgys.length === 0 && message.error('入围供应商不允许空值', 2);
           return;
         }
         if (!err) {
-          // if (JSON.stringify(confirmInfo) === '{}') {
-          //   message.error('请确认付款单单号是否正确', 1);
-          // } else {
           setCurStep(1);
-          // }
         }
       });
     };
