@@ -20,6 +20,7 @@ const EditableCell = props => {
     formdecorate,
     children,
     gysdata = [],
+    setaddgysmodalvisible,
     ...restProps
   } = props;
 
@@ -49,6 +50,7 @@ const EditableCell = props => {
           <Select
             style={{ width: '100%', borderRadius: '8px !important' }}
             placeholder="请选择供应商"
+            className="gys-selector"
             onChange={v => {
               let obj = {
                 [dataIndex + record['ID']]: v,
@@ -73,6 +75,11 @@ const EditableCell = props => {
             })}
           </Select>,
         )}
+        <div className="gys-selector-devide"></div>
+        <i
+          className="iconfont circle-add gys-selector-circle-add"
+          onClick={() => setaddgysmodalvisible(true)}
+        />
       </Form.Item>
     );
   };

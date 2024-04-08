@@ -24,12 +24,14 @@ import {
   QueryWinningBidderInfo,
 } from '../../../../../../services/pmsServices';
 import InfoOprtModal from '../../../../SupplierDetail/TopConsole/InfoOprtModal';
-import { convertFilesToBase64, handleFileStrParse } from '../../../../../../utils/pmsPublicUtils';
+import {
+  convertFilesToBase64,
+  getUUID,
+  handleFileStrParse,
+} from '../../../../../../utils/pmsPublicUtils';
 
 export default connect(({ global }) => ({
   dictionary: global.dictionary,
-  userBasicInfo: global.userBasicInfo,
-  roleData: global.roleData,
 }))(
   Form.create()(function BidInfoMod(props) {
     const {
@@ -40,14 +42,13 @@ export default connect(({ global }) => ({
       form = {},
       refresh = () => {},
       dictionary = {},
-      userBasicInfo = {},
-      roleData = {},
+      isRlfwrw = false, //当项目类型为人力服务入围时，默认为多供应商中标
     } = props;
     const {
       ZBXXZBQK = [], //中标情况
       GYSLX = [], //供应商类型
     } = dictionary;
-    const { getFieldDecorator, getFieldValue, validateFields, resetFields } = form;
+    const { getFieldDecorator, getFieldValue, validateFields, resetFields, setFieldsValue } = form;
     const [isSpinning, setIsSpinning] = useState(false); //加载状态
     const [fileList, setFileList] = useState([]); //上传文件
     const [isTurnRed, setIsTurnRed] = useState(false); //文件是否为空 报红
@@ -59,98 +60,133 @@ export default connect(({ global }) => ({
       rwgys: [],
       wrwgys: [],
     }); //表格数据
-    const [editData, setEditData] = useState({
-      qttbgys: [],
-      rwgys: [],
-      wrwgys: [],
-    }); //编辑的数据-似乎没用到
     const labelCol = 8;
     const wrapperCol = 16;
 
     useEffect(() => {
       if (visible) {
-        fetchQueryGysInZbxx(); //todo
+        setIsSpinning(true);
+        fetchQueryGysInZbxx();
+        if (isRlfwrw) {
+          setFieldsValue({
+            zbqk: '3', //当项目类型为人力服务入围时，默认为多供应商中标
+          });
+          //默认新增一行
+          const UUID = getUUID();
+          const UUID2 = getUUID();
+          setTableData({
+            qttbgys: [],
+            rwgys: [{ ID: UUID, ['GYS' + UUID]: undefined }],
+            wrwgys: [{ ID: UUID2, ['GYS' + UUID2]: undefined }],
+          });
+        }
         if (type === 'UPDATE' && xmid !== -1) {
+          //修改
           getBidInfo(Number(xmid));
+        } else {
+          //新增
+          setIsSpinning(false);
         }
       }
       return () => {};
-    }, [visible, type, xmid]);
+    }, [visible, type, xmid, isRlfwrw]);
+
+    useEffect(() => {
+      if (getFieldValue('zbqk') === '2') {
+        //默认新增一行
+        const UUID = getUUID();
+        setTableData({
+          qttbgys: [{ ID: UUID, ['GYS' + UUID]: undefined }],
+          rwgys: [],
+          wrwgys: [],
+        });
+      } else if (getFieldValue('zbqk') === '3') {
+        //默认新增一行
+        const UUID = getUUID();
+        const UUID2 = getUUID();
+        setTableData({
+          qttbgys: [],
+          rwgys: [{ ID: UUID, ['GYS' + UUID]: undefined }],
+          wrwgys: [{ ID: UUID2, ['GYS' + UUID2]: undefined }],
+        });
+      }
+      return () => {};
+    }, [getFieldValue('zbqk')]);
 
     // 查询供应商下拉列表
-    const fetchQueryGysInZbxx = () => {
-      FetchQueryGysInZbxx({
-        paging: -1,
-        sort: '',
-        current: 1,
-        pageSize: 20,
-        total: -1,
-      })
-        .then(res => {
-          if (res.success) {
-            let rec = res.record;
-            setGysSlt(rec);
-            setIsSpinning(false);
-          }
-        })
-        .catch(e => {
-          console.error('供应商信息查询失败', e);
-          message.error('供应商信息查询失败', 1);
-          setIsSpinning(false);
+    const fetchQueryGysInZbxx = async () => {
+      try {
+        const res = await FetchQueryGysInZbxx({
+          paging: -1,
+          sort: '',
+          current: 1,
+          pageSize: 20,
+          total: -1,
         });
+        if (res.success) {
+          let rec = res.record;
+          setGysSlt(rec);
+        }
+      } catch (e) {
+        console.error('供应商信息查询失败', e);
+        message.error('供应商信息查询失败', 1);
+        setIsSpinning(false);
+      }
     };
 
     //获取中标信息
-    const getBidInfo = projectID => {
-      setIsSpinning(true);
-      QueryWinningBidderInfo({
-        projectID,
-      })
-        .then(async res => {
-          if (res?.success) {
-            const data = JSON.parse(res.result)[0] || {};
-            console.log('🚀 ~ queryWinningBidderInfo ~ res', data);
-            setUpdateData(data);
-            const file = await handleFileStrParse(data.report, {
-              objectName: 'TXMXX_ZBXX',
-              columnName: 'PBBG',
-              id: data.id,
-            });
-            setFileList(file);
-            console.log('🚀 ~ getBidInfo ~ file:', file);
-            let qttbgys = [];
-            let rwgys = [];
-            let wrwgys = [];
-            const UUID = new Date().getTime();
-            if (data.state === '2') {
-              qttbgys = data.otherVendor.map(x => ({ ...x, ID: x.id, ['GYS' + x.id]: x.vendorId }));
-            }
-            if (data.state === '3') {
-              rwgys = (data.shortlistedVendor?.split(',') || []).map(x => ({
-                ...x,
-                ID: UUID,
-                ['GYS' + UUID]: x,
-              }));
-              wrwgys = (data.notShortlistedVendor?.split(',') || []).map(x => ({
-                ...x,
-                ID: UUID,
-                ['GYS' + UUID]: x,
-              }));
-            }
-            setTableData({
-              qttbgys,
-              rwgys,
-              wrwgys,
-            });
-            //to do ...
-            setIsSpinning(false);
-          }
-        })
-        .catch(e => {
-          console.error('🚀中标信息', e);
-          message.error('中标信息获取失败', 1);
-          setIsSpinning(false);
+    const getBidInfo = async projectID => {
+      try {
+        const res = await QueryWinningBidderInfo({
+          projectID,
         });
+        if (res?.success) {
+          const data = JSON.parse(res.result)[0] || {};
+          console.log('🚀 ~ queryWinningBidderInfo ~ res', data);
+          setUpdateData(data);
+          const file = await handleFileStrParse(data.report, {
+            objectName: 'TXMXX_ZBXX',
+            columnName: 'PBBG',
+            id: data.id,
+          });
+          setFileList(file);
+          console.log('🚀 ~ getBidInfo ~ file:', file);
+          let qttbgys = [];
+          let rwgys = [];
+          let wrwgys = [];
+          if (data.state === '2') {
+            qttbgys = data.otherVendor.map(x => ({ ...x, ID: x.id, ['GYS' + x.id]: x.vendorId }));
+          }
+          if (data.state === '3') {
+            rwgys = (data.shortlistedVendor?.split(',') || []).map(x => {
+              let UUID = getUUID();
+              return {
+                ...x,
+                ID: UUID,
+                ['GYS' + UUID]: x,
+              };
+            });
+            wrwgys = (data.notShortlistedVendor?.split(',') || []).map(x => {
+              let UUID = getUUID();
+              return {
+                ...x,
+                ID: UUID,
+                ['GYS' + UUID]: x,
+              };
+            });
+          }
+          setTableData({
+            qttbgys,
+            rwgys,
+            wrwgys,
+          });
+          setIsSpinning(false);
+        }
+      } catch (e) {
+        console.error('🚀中标信息', e);
+        message.error('中标信息获取失败', 1);
+        setIsSpinning(false);
+      }
     };
 
     //简单常用表单组件
@@ -314,9 +350,7 @@ export default connect(({ global }) => ({
                 multiple={true}
                 onChange={onUploadChange}
                 beforeUpload={onBeforeUpload}
-                accept={
-                  '.doc,.docx,.xml,.pdf,.txt,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-                }
+                accept={'*'}
                 fileList={fileList}
                 {...componentProps}
               >
@@ -407,32 +441,24 @@ export default connect(({ global }) => ({
                 ))}
               </Select>,
             )}
-            <div
-              style={{
-                height: '20px',
-                width: '1px',
-                backgroundColor: '#c7c7c7',
-                marginTop: '0px',
-                cursor: 'pointer',
-                position: 'absolute',
-                top: '0',
-                right: '34px',
-              }}
-            ></div>
+            <div className="gys-selector-devide"></div>
             <i
-              className="iconfont circle-add"
+              className="iconfont circle-add gys-selector-circle-add"
               onClick={() => setAddGysModalVisible(true)}
-              style={{
-                cursor: 'pointer',
-                position: 'absolute',
-                top: '-10px',
-                right: '8px',
-                color: '#c7c7c7',
-                fontSize: '20px',
-              }}
             />
           </Form.Item>
         </Col>
+      );
+    };
+
+    //供应商下拉框数据处理
+    const handleGysSlt = record => {
+      const arr =
+        getFieldValue('zbqk') === '2'
+          ? [...tableData.qttbgys]
+          : [...tableData.rwgys, ...tableData.wrwgys];
+      return gysSlt.filter(
+        x => !(arr?.filter(y => y.ID !== record.ID).map(y => y['GYS' + y.ID]) || []).includes(x.id),
       );
     };
 
@@ -518,7 +544,6 @@ export default connect(({ global }) => ({
     const onCancel = () => {
       resetFields();
       setTableData({ qttbgys: [], rwgys: [], wrwgys: [] });
-      setEditData({ qttbgys: [], rwgys: [], wrwgys: [] });
       setFileList([]);
       setIsTurnRed(false);
       setUpdateData({});
@@ -614,12 +639,11 @@ export default connect(({ global }) => ({
                   wrapperCol: { span: 24 - labelCol / 2 },
                   required: true,
                 }}
-                gysSlt={gysSlt}
+                handleGysSlt={handleGysSlt}
                 setTableData={v => setTableData(p => ({ ...p, qttbgys: v }))}
-                setEditData={v => setEditData(p => ({ ...p, qttbgys: v }))}
                 tableData={tableData.qttbgys}
-                editData={editData.qttbgys}
                 form={form}
+                setAddGysModalVisible={setAddGysModalVisible}
                 tableScroll={true}
               />
             )}
@@ -632,12 +656,11 @@ export default connect(({ global }) => ({
                     wrapperCol: { span: 24 - labelCol / 2 },
                     required: true,
                   }}
-                  gysSlt={gysSlt}
+                  handleGysSlt={handleGysSlt}
                   setTableData={v => setTableData(p => ({ ...p, rwgys: v }))}
-                  setEditData={v => setEditData(p => ({ ...p, rwgys: v }))}
                   tableData={tableData.rwgys}
-                  editData={editData.rwgys}
                   form={form}
+                  setAddGysModalVisible={setAddGysModalVisible}
                 />
                 <TableBox
                   labelProps={{
@@ -646,12 +669,12 @@ export default connect(({ global }) => ({
                     wrapperCol: { span: 24 - labelCol / 2 },
                     required: true,
                   }}
-                  gysSlt={gysSlt}
+                  handleGysSlt={handleGysSlt}
                   setTableData={v => setTableData(p => ({ ...p, wrwgys: v }))}
-                  setEditData={v => setEditData(p => ({ ...p, wrwgys: v }))}
                   tableData={tableData.wrwgys}
-                  editData={editData.wrwgys}
                   form={form}
+                  setAddGysModalVisible={setAddGysModalVisible}
+                  tableScroll={true}
                 />
               </Fragment>
             )}

@@ -34,6 +34,7 @@ import SoftwarePaymentYHT from './SoftwarePaymentYHT';
 import AssociationOAContract from './AssociationOAContract';
 import ProjectApprovalApplicate from './ProjectApprovalApplicate';
 import BidInfoMod from './BidInfoMod';
+import ContractInfoModRlfwrw from './ContractInfoModRlfwrw';
 
 const { api } = config;
 const { confirm } = Modal;
@@ -63,7 +64,7 @@ class ItemBtn extends React.Component {
       type: 'ADD',
       xmid: -1,
     }, //中标
-    contractInfoMod_RLFWRW: {
+    contractInfoModRlfwrw: {
       visible: false,
       type: 'ADD',
       xmid: -1,
@@ -774,7 +775,7 @@ class ItemBtn extends React.Component {
     const htxxlr = () => {
       if (this.props.prjBasic?.XMLX === '人力服务入围项目') {
         this.setState({
-          contractInfoMod_RLFWRW: {
+          contractInfoModRlfwrw: {
             visible: true,
             type: 'ADD',
             xmid: item.xmid,
@@ -893,6 +894,23 @@ class ItemBtn extends React.Component {
           </div>
         </Spin>
       );
+      if (this.props.prjBasic?.XMLX === '人力服务入围项目') {
+        const rlfwhtxxxg = (item = {}) => {
+          this.setState({
+            contractInfoModRlfwrw: {
+              visible: true,
+              type: 'UPDATE',
+              xmid: item.xmid,
+            },
+          });
+        };
+        return (
+          <div className="opr-btn" onClick={() => rlfwhtxxxg(item)}>
+            修改
+          </div>
+        );
+      }
+
       return (
         <div className="opr-more">
           <Popover
@@ -1934,7 +1952,7 @@ class ItemBtn extends React.Component {
       bidInfoMod = {
         visible: false,
       },
-      contractInfoMod_RLFWRW = {
+      contractInfoModRlfwrw = {
         visible: false,
       },
     } = this.state;
@@ -2286,7 +2304,22 @@ class ItemBtn extends React.Component {
             type={bidInfoMod.type}
             xmid={bidInfoMod.xmid}
             refresh={this.props.refresh}
+            isRlfwrw={this.props.prjBasic?.XMLX === '人力服务入围项目'} //当项目类型为人力服务入围时，默认为多供应商中标
           ></BidInfoMod>
+        )}
+
+        {/*人力服务入围 - 合同信息录入修改弹窗*/}
+        {contractInfoModRlfwrw.visible && (
+          <ContractInfoModRlfwrw
+            visible={contractInfoModRlfwrw.visible}
+            setVisible={v =>
+              this.setState({ contractInfoModRlfwrw: { ...contractInfoModRlfwrw, visible: v } })
+            }
+            type={contractInfoModRlfwrw.type}
+            xmid={contractInfoModRlfwrw.xmid}
+            prjYear={this.props.prjBasic?.XMNF}
+            refresh={this.props.refresh}
+          ></ContractInfoModRlfwrw>
         )}
 
         {/* 迭代合同信息录入弹窗 */}

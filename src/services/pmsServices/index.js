@@ -193,6 +193,9 @@ const {
     queryProjectDynamicSection,
     queryWinningBidderInfo,
     operateWinningBidderInfo,
+    operateHumanServiceContract,
+    queryHumanServiceContract,
+    queryShortlistedSuppliers,
   },
 } = api;
 
@@ -2079,6 +2082,36 @@ export async function QueryWinningBidderInfo(payload) {
 export async function OperateWinningBidderInfo(payload) {
   const option = {
     url: operateWinningBidderInfo,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 编辑人力服务项目合同信息
+export async function OperateHumanServiceContract(payload) {
+  const option = {
+    url: operateHumanServiceContract,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 查询人力服务合同信息
+export async function QueryHumanServiceContract(payload) {
+  const option = {
+    url: queryHumanServiceContract,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 查询入围供应商
+export async function QueryShortlistedSuppliers(payload) {
+  const option = {
+    url: queryShortlistedSuppliers,
     method: 'post',
     data: payload,
   };

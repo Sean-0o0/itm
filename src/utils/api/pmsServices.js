@@ -1113,4 +1113,22 @@ export default [
     url: '/projectManage/operateWinningBidderInfo',
     dis: '编辑中标信息',
   },
+  {
+    code: '',
+    key: 'operateHumanServiceContract',
+    url: '/projectManage/operateHumanServiceContract',
+    dis: '编辑人力服务项目合同信息',
+  },
+  {
+    code: '',
+    key: 'queryHumanServiceContract',
+    url: '/projectManage/queryHumanServiceContract',
+    dis: '查询人力服务合同信息',
+  },
+  {
+    code: '',
+    key: 'queryShortlistedSuppliers',
+    url: '/projectManage/queryShortlistedSuppliers',
+    dis: '查询入围供应商',
+  },
 ];

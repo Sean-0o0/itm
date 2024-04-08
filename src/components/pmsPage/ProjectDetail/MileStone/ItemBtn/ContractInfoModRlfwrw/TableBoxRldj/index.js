@@ -4,21 +4,17 @@ import { EditableRow, EditableCell } from '../EditableTable';
 import moment from 'moment';
 import { getUUID } from '../../../../../../../utils/pmsPublicUtils';
 
-export default function TableBox(props) {
+export default function TableBoxRldj(props) {
   const {
     labelProps = {},
-    handleGysSlt,
     setTableData,
     tableData = [],
     form = {},
     tableScroll = false,
+    sltData = {},
     setAddGysModalVisible,
   } = props;
   const { getFieldDecorator, getFieldValue, validateFields, resetFields } = form;
-
-  useEffect(() => {
-    return () => {};
-  }, []);
 
   //表格数据保存
   const handleTableSave = row => {
@@ -33,19 +29,40 @@ export default function TableBox(props) {
     setTableData(tableDataArr);
   };
 
+  //新增一行
+  const handleAddRow = () => {
+    const UUID = getUUID();
+    setTableData([
+      ...tableData,
+      { ID: UUID, ['DJ' + UUID]: undefined, ['RLDJ' + UUID]: undefined },
+    ]);
+  };
+
   //列配置
   const columns = [
     {
       title: (
         <span>
           <span className="table-column-required">*</span>
-          供应商名称
+          等级
         </span>
       ),
-      dataIndex: 'GYS',
-      // width: 80,
-      key: 'GYS',
-      align: 'center',
+      label: '等级',
+      dataIndex: 'DJ',
+      width: 150,
+      key: 'DJ',
+      editable: true,
+    },
+    {
+      title: (
+        <span>
+          <span className="table-column-required">*</span>
+          人力单价（人月/元）
+        </span>
+      ),
+      label: '人力单价（人月/元）',
+      dataIndex: 'RLDJ',
+      key: 'RLDJ',
       editable: true,
     },
     {
@@ -63,9 +80,6 @@ export default function TableBox(props) {
             if (tableData.filter(x => x.ID !== record.ID).length === 0) {
               message.error(labelProps.label + '不允许空值', 1);
             }
-            // if (dataArr.findIndex(x => x.ID === record.ID) !== -1) {
-            //   setDelData(p => [...p, record]);
-            // }
           }}
         >
           <a style={{ color: '#3361ff' }}>删除</a>
@@ -84,7 +98,9 @@ export default function TableBox(props) {
           handleSave: handleTableSave,
           key: col.key,
           formdecorate: form,
-          gysdata: handleGysSlt(record),
+          sltdata: sltData,
+          label: col.label,
+          validatefieldarr: ['DJ' + record.ID, 'RLDJ' + record.ID],
           setaddgysmodalvisible: setAddGysModalVisible,
         };
       },
@@ -98,29 +114,29 @@ export default function TableBox(props) {
       cell: EditableCell,
     },
   };
+
   return (
     <Row>
       <Col span={24}>
         <Form.Item {...labelProps}>
-          <div className="bid-info-table-box">
+          <div className="contract-info-table-box">
             <Table
               columns={columns}
               components={components}
               rowKey={'ID'}
               dataSource={tableData}
-              // scroll={tableScroll ? { y: 260 } : undefined}
+              scroll={tableScroll ? { y: 260 } : undefined}
               pagination={false}
               size="middle"
             />
             <div
               className="table-add-row"
               onClick={() => {
-                const UUID = getUUID();
-                setTableData([...tableData, { ID: UUID, ['GYS' + UUID]: undefined }]);
+                handleAddRow();
                 if (tableScroll) {
                   setTimeout(() => {
                     const table = document.querySelectorAll(
-                      `.bid-info-mod-modal .content-box`,
+                      `.contract-info-mod-modal .contract-info-table-box .ant-table-body`,
                     )[0];
                     if (table) {
                       table.scrollTop = table.scrollHeight;

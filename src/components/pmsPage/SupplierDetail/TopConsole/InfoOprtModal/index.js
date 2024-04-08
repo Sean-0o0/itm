@@ -314,7 +314,7 @@ function InfoOprtModal(props) {
                   message: '供应商名称不允许空值',
                 },
               ],
-            })(<Input maxLength={100} allowClear placeholder={`请输入供应商名称`} />)}
+            })(<Input maxLength={30} allowClear placeholder={`请输入供应商名称`} />)}
           </Form.Item>
           <Row>
             <Col span={12}>
