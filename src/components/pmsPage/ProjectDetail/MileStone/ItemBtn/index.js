@@ -7,6 +7,7 @@ import {
   FetchQueryWpsWDXX,
   GetApplyListProvisionalAuth,
   QueryIteContractFlow,
+  QueryXCContractInfo,
   RemindSubProjectFinish,
 } from '../../../../../services/pmsServices';
 import BridgeModel from '../../../../Common/BasicModal/BridgeModel';
@@ -32,6 +33,9 @@ import AssociationInitiatedProcess from './AssociationInitiatedProcess';
 import SoftwarePaymentYHT from './SoftwarePaymentYHT';
 import AssociationOAContract from './AssociationOAContract';
 import ProjectApprovalApplicate from './ProjectApprovalApplicate';
+// import BidInfoMod from './BidInfoMod';
+// import ContractInfoModRlfwrw from './ContractInfoModRlfwrw';
+import { connect } from 'dva';
 
 const { api } = config;
 const { confirm } = Modal;
@@ -760,8 +764,44 @@ class ItemBtn extends React.Component {
     //权限控制
     const { isEnd = false } = this.props.auth || {};
     //录入
-    const htxxlr = () => {
-      message.info('请先在OA中进行合同录入，后在系统中进行确认即可', 2);
+    const htxxlr = async () => {
+      try {
+        const roleTxt =
+          (JSON.parse(this.props.roleData?.testRole || '{}')?.ALLROLE ?? '') +
+          ',' +
+          (this.props.roleData?.role ?? '') +
+          ',项目详情'; //角色信息
+        const res = await QueryXCContractInfo({
+          projectId: Number(item.xmid), //  关联项目
+          trustee: Number(this.props.userBasicInfo?.id), //经办人
+          handleStatus: 1, //处理状态 - 未处理
+          current: 1,
+          pageSize: 1,
+          paging: 1,
+          sort: '',
+          total: -1,
+          role: roleTxt,
+        });
+        const data = JSON.parse(res.result);
+        // console.log('🚀 ~ htxxlr ~ data:', data);
+        if (data.length > 0) {
+          const obj = data[0] || {};
+          window.location.href =
+            '/#/pms/manage/InnovationContractEdit/' +
+            EncryptBase64(
+              JSON.stringify({
+                id: obj.HTID,
+                routes: this.props.routes ?? [],
+                timeStamp: new Date().getTime(),
+              }),
+            );
+        } else {
+          message.info('请先在OA中进行合同录入，后在系统中进行确认即可', 2);
+        }
+      } catch (error) {
+        message.error('合同数据获取失败');
+        console.error('合同数据获取失败', error);
+      }
     };
     if (done) {
       const htxxck = async () => {
@@ -2338,4 +2378,7 @@ class ItemBtn extends React.Component {
   }
 }
 
-export default ItemBtn;
+export default connect(({ global }) => ({
+  userBasicInfo: global.userBasicInfo,
+  roleData: global.roleData,
+}))(ItemBtn);
