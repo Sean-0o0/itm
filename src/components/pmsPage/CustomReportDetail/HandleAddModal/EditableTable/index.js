@@ -186,7 +186,7 @@ const EditableCell = props => {
         {formdecorate.getFieldDecorator(dataIndex + record['ID'], {
           rules: [
             {
-              required: !label.includes('上月') && !label.includes('当月'),
+              required: !label.includes('月工作') && !label.includes('季度工作'),
               message: label + '不能为空',
             },
             { max: 500, message: label + `长度不能超过500` },

@@ -190,6 +190,15 @@ const TableBox = props => {
             ellipsis: false,
             render: txt => handleValue(txt),
           };
+        if (x.ZDMC.includes('季度工作'))
+          return {
+            title: x.ZDMC,
+            dataIndex: x.QZZD,
+            key: x.QZZD,
+            width: 180,
+            ellipsis: false,
+            render: txt => handleValue(txt),
+          };
         if (x.ZDLX === '2')
           return {
             title: x.ZDMC,
