@@ -29,28 +29,28 @@ export default connect(({ global }) => ({
     roleData.zyrole === '自定义报告管理员'
       ? [
           {
-            title: '月报汇总',
+            title: '事业部报告汇总',
             value: 'YBHZ',
           },
           {
-            title: '本部门月报',
+            title: '二级部门报告',
             value: 'BMYB',
           },
         ]
       : roleData.role === '一级部门领导' && !isBGHZR
       ? [
           {
-            title: '月报汇总',
+            title: '事业部报告汇总',
             value: 'YBHZ',
           },
         ]
       : [
           {
-            title: '本部门月报',
+            title: '二级部门报告',
             value: 'BMYB',
           },
           {
-            title: '月报汇总',
+            title: '事业部报告汇总',
             value: 'YBHZ',
           },
         ];
