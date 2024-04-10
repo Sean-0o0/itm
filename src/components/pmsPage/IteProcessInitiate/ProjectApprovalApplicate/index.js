@@ -11,6 +11,7 @@ import ProjectInfoContent from './projectInfoContent'
 import AttachmentInfoContent from './attachmentInfoContent'
 import AssociationFlowContent from './associationFlowContent'
 import Lodash from 'lodash'
+import { removeArrEmptyValue } from '../../../../utils/_selfDefinedMethod'
 
 
 export default connect(({ global }) => ({
@@ -197,14 +198,14 @@ export default connect(({ global }) => ({
             czr: '0',
             objectclass: '项目立项申请',
             formdata: JSON.stringify(mergedFormdata),
-            attachments: mergedFileArray,
+            attachments: removeArrEmptyValue(mergedFileArray),
             flowdata: JSON.stringify(flowdata),
           }
 
           try {
             setIsSpinning(true)
 
-            console.log('项目立项申请的查询参数为', { mergedFormdata, mergedFileArray, flowdata }, queryParams)
+            console.log('项目立项申请的查询参数为', { mergedFormdata, mergedFileArray: removeArrEmptyValue(mergedFileArray), flowdata }, queryParams)
 
             const res = await IndividuationGetOAResult(queryParams)
 
@@ -219,8 +220,8 @@ export default connect(({ global }) => ({
             }
           }
           catch (err) {
-            console.log('项目立项申请发起失败', err)
             setIsSpinning(false)
+            console.log('项目立项申请发起失败', err)
             message.error(`项目立项申请发起失败${!err.success ? err.message : err.note}`, 3)
           }
         }
