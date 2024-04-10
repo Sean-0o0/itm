@@ -37,7 +37,7 @@ export default connect(({ global }) => ({
             value: 'BMYB',
           },
         ]
-      : roleData.role === '一级部门领导' && !isBGHZR
+      : (roleData.role === '一级部门领导' || roleData.role === '信息技术事业部领导') && !isBGHZR
       ? [
           {
             title: '事业部报告汇总',
@@ -61,16 +61,19 @@ export default connect(({ global }) => ({
 
   useEffect(() => {
     if (bgid !== -2) {
+      let defaultKey = 'BMYB';
+      if (
+        roleData.zyrole === '自定义报告管理员' ||
+        ((roleData.role === '一级部门领导' || roleData.role === '信息技术事业部领导') && !isBGHZR)
+      ) {
+        defaultKey = 'YBHZ';
+      }
       setMonthData(moment());
-      setActiveKey(tabsData[0].value);
-      getData(
-        Number(bgid),
-        Number(moment().format('YYYYMM')),
-        roleData.zyrole === '自定义报告管理员' ? 'YBHZ' : 'BMYB',
-      );
+      setActiveKey(defaultKey);
+      getData(Number(bgid), Number(moment().format('YYYYMM')), defaultKey);
     }
     return () => {};
-  }, [bgid, JSON.stringify(roleData), JSON.stringify(tabsData)]);
+  }, [bgid, JSON.stringify(roleData), isBGHZR]);
 
   //获取数据
   const getData = (reportID, month, queryType) => {
@@ -167,7 +170,7 @@ export default connect(({ global }) => ({
               tableWidth += x.ZDMC?.length * 25;
             }
           });
-          console.log("finalColumns", finalColumns);
+          console.log('finalColumns', finalColumns);
           setColumnsData(finalColumns);
           setTableData({
             data: JSON.parse(JSON.stringify(mergeData)),
