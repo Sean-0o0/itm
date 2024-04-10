@@ -312,7 +312,7 @@ export default connect(({ global }) => ({
               id: x.isNew ? -1 : Number(x.ID),
               vendor: Number(x['GYS' + x.ID]),
               state: Number(x['QSZT' + x.ID]),
-              illustrate: x['ASSM' + x.ID],
+              illustrate: x['QSSM' + x.ID],
               account: x.accountObj?.id === undefined ? -1 : Number(x.accountObj?.id),
               sysAccount: x.ZHID === undefined ? -1 : Number(x.ZHID),
               operateType: x.isNew ? 'ADD' : 'UPDATE',
@@ -510,7 +510,6 @@ export default connect(({ global }) => ({
               setTableData={v => setTableData(p => ({ ...p, rldj: v }))}
               tableData={tableData.rldj}
               form={form}
-              setAddGysModalVisible={setAddGysModalVisible}
             />
             <TableBox
               labelProps={{

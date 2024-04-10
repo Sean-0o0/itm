@@ -33,6 +33,7 @@ const EditableCell = props => {
         return;
       }
       handleSave({ ...record, ...values });
+      console.log("🚀 ~ formdecorate.validateFields ~ values:", values)
     });
   };
 

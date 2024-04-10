@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useMemo } from 'react';
 import { Button, Icon, Row, Table, message, Col, Form, Popconfirm } from 'antd';
 import { EditableRow, EditableCell } from '../EditableTable';
 import moment from 'moment';
@@ -7,12 +7,13 @@ import { getUUID } from '../../../../../../../utils/pmsPublicUtils';
 export default function TableBox(props) {
   const {
     labelProps = {},
-    handleGysSlt,
+    gysSlt,
     setTableData,
     tableData = [],
     form = {},
     tableScroll = false,
     setAddGysModalVisible,
+    gysSltFilterArr = [],
   } = props;
   const { getFieldDecorator, getFieldValue, validateFields, resetFields } = form;
 
@@ -35,6 +36,14 @@ export default function TableBox(props) {
 
   //列配置
   const columns = [
+    {
+      title: '序号',
+      dataIndex: 'XH',
+      width: 80,
+      key: 'XH',
+      align: 'center',
+      render: (txt, _, index) => index + 1,
+    },
     {
       title: (
         <span>
@@ -84,7 +93,12 @@ export default function TableBox(props) {
           handleSave: handleTableSave,
           key: col.key,
           formdecorate: form,
-          gysdata: handleGysSlt(record),
+          gysdata: gysSlt.filter(
+            x =>
+              !(
+                gysSltFilterArr?.filter(y => y.ID !== record.ID).map(y => y['GYS' + y.ID]) || []
+              ).includes(x.id),
+          ),
           setaddgysmodalvisible: setAddGysModalVisible,
         };
       },
@@ -98,20 +112,29 @@ export default function TableBox(props) {
       cell: EditableCell,
     },
   };
+
+  //表格渲染
+  const renderTable = useMemo(
+    () => (
+      <Table
+        columns={columns}
+        components={components}
+        rowKey={'ID'}
+        dataSource={tableData}
+        // scroll={tableScroll ? { y: 260 } : undefined}
+        pagination={false}
+        size="middle"
+      />
+    ),
+    [JSON.stringify(tableData)],
+  );
+
   return (
     <Row>
       <Col span={24}>
         <Form.Item {...labelProps}>
           <div className="bid-info-table-box">
-            <Table
-              columns={columns}
-              components={components}
-              rowKey={'ID'}
-              dataSource={tableData}
-              // scroll={tableScroll ? { y: 260 } : undefined}
-              pagination={false}
-              size="middle"
-            />
+            {renderTable}
             <div
               className="table-add-row"
               onClick={() => {
@@ -119,9 +142,7 @@ export default function TableBox(props) {
                 setTableData([...tableData, { ID: UUID, ['GYS' + UUID]: undefined }]);
                 if (tableScroll) {
                   setTimeout(() => {
-                    const table = document.querySelectorAll(
-                      `.bid-info-mod-modal .content-box`,
-                    )[0];
+                    const table = document.querySelectorAll(`.bid-info-mod-modal .content-box`)[0];
                     if (table) {
                       table.scrollTop = table.scrollHeight;
                     }

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useMemo } from 'react';
 import { Button, Icon, Row, Table, message, Col, Form, Popconfirm, Input, Tooltip } from 'antd';
 import { EditableRow, EditableCell } from '../EditableTable';
 import moment from 'moment';
@@ -8,7 +8,7 @@ import { get } from 'lodash';
 import SelectModal from '../SelectModal';
 import { getUUID } from '../../../../../../../utils/pmsPublicUtils';
 
-export default function TableBoxRldj(props) {
+export default function TableBox(props) {
   const {
     labelProps = {},
     setTableData,
@@ -28,6 +28,7 @@ export default function TableBoxRldj(props) {
     ht: false,
     data: {},
   }); //弹窗显隐
+  const [editingId, setEditingId] = useState(-1); //编辑行id
 
   //表格数据保存
   const handleTableSave = row => {
@@ -56,6 +57,7 @@ export default function TableBoxRldj(props) {
   //新增一行
   const handleAddRow = () => {
     const UUID = getUUID();
+    setEditingId(UUID);
     setTableData([
       ...tableData,
       {
@@ -86,6 +88,14 @@ export default function TableBoxRldj(props) {
   //列配置
   const columns = [
     {
+      title: '序号',
+      dataIndex: 'XH',
+      width: 80,
+      key: 'XH',
+      align: 'center',
+      render: (txt, _, index) => index + 1,
+    },
+    {
       title: (
         <span>
           <span className="table-column-required">*</span>
@@ -97,6 +107,16 @@ export default function TableBoxRldj(props) {
       width: 200,
       key: 'GYS',
       editable: true,
+      ellipsis: true,
+      render: (_, record) => {
+        const txt =
+          sltData.gys?.find(x => String(x.id) === String(record['GYS' + record.ID]))?.gysmc || '';
+        return (
+          <Tooltip title={txt} placement="topLeft">
+            {txt}
+          </Tooltip>
+        );
+      },
     },
     {
       title: (
@@ -110,6 +130,16 @@ export default function TableBoxRldj(props) {
       width: 160,
       key: 'QSZT',
       editable: true,
+      ellipsis: true,
+      render: (_, record) => {
+        const txt =
+          sltData.qszt?.find(x => String(x.ibm) === String(record['QSZT' + record.ID]))?.note || '';
+        return (
+          <Tooltip title={txt} placement="topLeft">
+            {txt}
+          </Tooltip>
+        );
+      },
     },
     {
       title: '签署说明',
@@ -117,6 +147,15 @@ export default function TableBoxRldj(props) {
       dataIndex: 'QSSM',
       key: 'QSSM',
       editable: true,
+      ellipsis: true,
+      render: (_, record) => {
+        const txt = record['QSSM' + record.ID] || '';
+        return (
+          <Tooltip title={txt} placement="topLeft" overlayClassName="pre-wrap-tooltip">
+            {txt}
+          </Tooltip>
+        );
+      },
     },
     {
       title: '供应商账户',
@@ -198,32 +237,39 @@ export default function TableBoxRldj(props) {
     return {
       ...col,
       onCell: record => {
+        if (col.editable && editingId === record.ID)
+          return {
+            record,
+            ...col,
+            editable: true,
+            dataIndex: col.dataIndex,
+            handleSave: handleTableSave,
+            key: col.key,
+            formdecorate: form,
+            sltdata: {
+              ...sltData,
+              // gys: sltData.gys,
+              gys: sltData.gys?.filter(
+                x =>
+                  !(
+                    tableData?.filter(y => y.ID !== record.ID).map(y => y['GYS' + y.ID]) || []
+                  ).includes(x.id),
+              ),
+            },
+            label: col.label,
+            validatefieldarr: ['GYS' + record.ID, 'QSZT' + record.ID, 'QSSM' + record.ID],
+            setaddgysmodalvisible: setAddGysModalVisible,
+          };
         return {
           record,
           ...col,
-          editable: col.editable,
+          editable: false,
           dataIndex: col.dataIndex,
-          handleSave: handleTableSave,
           key: col.key,
-          formdecorate: form,
-          sltdata: {
-            ...sltData,
-            gys: sltData.gys?.filter(
-              x =>
-                !(
-                  tableData?.filter(y => y.ID !== record.ID).map(y => y['GYS' + y.ID]) || []
-                ).includes(x.id),
-            ),
-          },
           label: col.label,
-          validatefieldarr: [
-            'GYS' + record.ID,
-            'QSZT' + record.ID,
-            // 'GYSZHMC' + record.ID,
-            'QSSM' + record.ID,
-            // 'HT' + record.ID,
-          ],
-          setaddgysmodalvisible: setAddGysModalVisible,
+          onClick: () => {
+            setEditingId(record.ID);
+          },
         };
       },
     };

@@ -29,10 +29,10 @@ export default function SupplierConfirm(props) {
   //获取入围供应商信息
   const getRwgysData = vendorList => {
     setIsSpinning(true);
-    QueryShortlistedSuppliers({ vendorList, year: Number(prjYear) })
+    QueryShortlistedSuppliers({ vendorList })
       .then(res => {
         if (res?.success) {
-          console.log('🚀 ~ queryShortlistedSuppliers ~ res', JSON.parse(res.result));
+          // console.log('🚀 ~ queryShortlistedSuppliers ~ res', JSON.parse(res.result));
           // let arr = JSON.parse(JSON.stringify(tableData))
           let arr = JSON.parse(res.result).map(x => {
             let obj = tableData.find(y => Number(y['GYS' + y.ID]) === Number(x.GYSID)) || {};
@@ -47,7 +47,7 @@ export default function SupplierConfirm(props) {
             ...(JSON.parse(res.result).find(y => Number(y.GYSID) === Number(x['GYS' + y.ID])) ||
               {}),
           }));
-          // console.log('🚀 ~ queryShortlistedSuppliers ~ arr, editArr:', arr, editArr);
+          console.log('🚀 ~ queryShortlistedSuppliers ~ arr, editArr:', arr, editArr);
           setTableData(arr);
           setEditData(editArr);
           setIsSpinning(false);
@@ -61,10 +61,18 @@ export default function SupplierConfirm(props) {
   };
   const columns = [
     {
+      title: '序号',
+      dataIndex: 'XH',
+      width: 80,
+      key: 'XH',
+      align: 'center',
+      render: (txt, _, index) => index + 1,
+    },
+    {
       title: '入围年份',
       dataIndex: 'RWNF',
       key: 'RWNF',
-      width: 100,
+      width: 80,
       ellipsis: true,
       render: txt => (txt ? txt : moment().year()),
     },

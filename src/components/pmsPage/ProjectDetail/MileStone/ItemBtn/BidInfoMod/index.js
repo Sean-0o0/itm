@@ -98,23 +98,25 @@ export default connect(({ global }) => ({
     }, [visible, type, xmid, isRlfwrw]);
 
     useEffect(() => {
-      if (getFieldValue('zbqk') === '2') {
-        //默认新增一行
-        const UUID = getUUID();
-        setTableData({
-          qttbgys: [{ ID: UUID, ['GYS' + UUID]: undefined }],
-          rwgys: [],
-          wrwgys: [],
-        });
-      } else if (getFieldValue('zbqk') === '3') {
-        //默认新增一行
-        const UUID = getUUID();
-        const UUID2 = getUUID();
-        setTableData({
-          qttbgys: [],
-          rwgys: [{ ID: UUID, ['GYS' + UUID]: undefined }],
-          wrwgys: [{ ID: UUID2, ['GYS' + UUID2]: undefined }],
-        });
+      if (type === 'ADD') {
+        if (getFieldValue('zbqk') === '2') {
+          //默认新增一行
+          const UUID = getUUID();
+          setTableData({
+            qttbgys: [{ ID: UUID, ['GYS' + UUID]: undefined }],
+            rwgys: [],
+            wrwgys: [],
+          });
+        } else if (getFieldValue('zbqk') === '3') {
+          //默认新增一行
+          const UUID = getUUID();
+          const UUID2 = getUUID();
+          setTableData({
+            qttbgys: [],
+            rwgys: [{ ID: UUID, ['GYS' + UUID]: undefined }],
+            wrwgys: [{ ID: UUID2, ['GYS' + UUID2]: undefined }],
+          });
+        }
       }
       return () => {};
     }, [getFieldValue('zbqk')]);
@@ -457,17 +459,6 @@ export default connect(({ global }) => ({
       );
     };
 
-    //供应商下拉框数据处理
-    const handleGysSlt = record => {
-      const arr =
-        getFieldValue('zbqk') === '2'
-          ? [...tableData.qttbgys]
-          : [...tableData.rwgys, ...tableData.wrwgys];
-      return gysSlt.filter(
-        x => !(arr?.filter(y => y.ID !== record.ID).map(y => y['GYS' + y.ID]) || []).includes(x.id),
-      );
-    };
-
     //提交数据
     const onOk = () => {
       validateFieldsAndScroll(async (err, values) => {
@@ -653,7 +644,8 @@ export default connect(({ global }) => ({
                   wrapperCol: { span: 24 - labelCol / 2 },
                   required: true,
                 }}
-                handleGysSlt={handleGysSlt}
+                gysSlt={gysSlt}
+                gysSltFilterArr={[...tableData.qttbgys]}
                 setTableData={v => setTableData(p => ({ ...p, qttbgys: v }))}
                 tableData={tableData.qttbgys}
                 form={form}
@@ -670,7 +662,8 @@ export default connect(({ global }) => ({
                     wrapperCol: { span: 24 - labelCol / 2 },
                     required: true,
                   }}
-                  handleGysSlt={handleGysSlt}
+                  gysSlt={gysSlt}
+                  gysSltFilterArr={[...tableData.rwgys, ...tableData.wrwgys]}
                   setTableData={v => setTableData(p => ({ ...p, rwgys: v }))}
                   tableData={tableData.rwgys}
                   form={form}
@@ -683,7 +676,8 @@ export default connect(({ global }) => ({
                     wrapperCol: { span: 24 - labelCol / 2 },
                     required: true,
                   }}
-                  handleGysSlt={handleGysSlt}
+                  gysSlt={gysSlt}
+                  gysSltFilterArr={[...tableData.rwgys, ...tableData.wrwgys]}
                   setTableData={v => setTableData(p => ({ ...p, wrwgys: v }))}
                   tableData={tableData.wrwgys}
                   form={form}

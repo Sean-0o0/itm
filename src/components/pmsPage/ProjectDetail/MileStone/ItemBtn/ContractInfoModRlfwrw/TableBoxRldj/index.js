@@ -1,5 +1,5 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { Button, Icon, Row, Table, message, Col, Form, Popconfirm } from 'antd';
+import React, { useEffect, useState, useRef, useMemo } from 'react';
+import { Button, Icon, Row, Table, message, Col, Form, Popconfirm, Tooltip } from 'antd';
 import { EditableRow, EditableCell } from '../EditableTable';
 import moment from 'moment';
 import { getUUID } from '../../../../../../../utils/pmsPublicUtils';
@@ -12,9 +12,8 @@ export default function TableBoxRldj(props) {
     form = {},
     tableScroll = false,
     sltData = {},
-    setAddGysModalVisible,
   } = props;
-  const { getFieldDecorator, getFieldValue, validateFields, resetFields } = form;
+  const [editingId, setEditingId] = useState(-1); //编辑行id
 
   //表格数据保存
   const handleTableSave = row => {
@@ -32,6 +31,7 @@ export default function TableBoxRldj(props) {
   //新增一行
   const handleAddRow = () => {
     const UUID = getUUID();
+    setEditingId(UUID);
     setTableData([
       ...tableData,
       { ID: UUID, ['DJ' + UUID]: undefined, ['RLDJ' + UUID]: undefined },
@@ -40,6 +40,14 @@ export default function TableBoxRldj(props) {
 
   //列配置
   const columns = [
+    {
+      title: '序号',
+      dataIndex: 'XH',
+      width: 80,
+      key: 'XH',
+      align: 'center',
+      render: (txt, _, index) => index + 1,
+    },
     {
       title: (
         <span>
@@ -52,6 +60,17 @@ export default function TableBoxRldj(props) {
       width: 150,
       key: 'DJ',
       editable: true,
+      ellipsis: true,
+      render: (_, record) => {
+        const txt =
+          sltData.rydj?.find(x => String(x.RYDJID) === String(record['DJ' + record.ID]))?.RYDJ ||
+          '';
+        return (
+          <Tooltip title={txt} placement="topLeft">
+            {txt}
+          </Tooltip>
+        );
+      },
     },
     {
       title: (
@@ -64,6 +83,7 @@ export default function TableBoxRldj(props) {
       dataIndex: 'RLDJ',
       key: 'RLDJ',
       editable: true,
+      render: (_, record) => record['RLDJ' + record.ID],
     },
     {
       title: '操作',
@@ -90,18 +110,37 @@ export default function TableBoxRldj(props) {
     return {
       ...col,
       onCell: record => {
+        if (col.editable && editingId === record.ID)
+          return {
+            record,
+            ...col,
+            editable: true,
+            dataIndex: col.dataIndex,
+            handleSave: handleTableSave,
+            key: col.key,
+            formdecorate: form,
+            sltdata: {
+              ...sltData,
+              rydj: sltData.rydj?.filter(
+                x =>
+                  !(
+                    tableData?.filter(y => y.ID !== record.ID).map(y => y['DJ' + y.ID]) || []
+                  ).includes(x.RYDJID),
+              ),
+            },
+            label: col.label,
+            validatefieldarr: ['DJ' + record.ID, 'RLDJ' + record.ID],
+          };
         return {
           record,
           ...col,
-          editable: col.editable,
+          editable: false,
           dataIndex: col.dataIndex,
-          handleSave: handleTableSave,
           key: col.key,
-          formdecorate: form,
-          sltdata: sltData,
           label: col.label,
-          validatefieldarr: ['DJ' + record.ID, 'RLDJ' + record.ID],
-          setaddgysmodalvisible: setAddGysModalVisible,
+          onClick: () => {
+            setEditingId(record.ID);
+          },
         };
       },
     };
