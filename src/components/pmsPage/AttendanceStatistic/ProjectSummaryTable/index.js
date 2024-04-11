@@ -219,11 +219,11 @@ const ProjectSummaryTable = props => {
   return (
     <>
       <div className="table-box">
-        <ExportModal
-          visible={exportModalVisible}
-          setVisible={setExportModalVisible}
-          columns={columns}
-        />
+        {/*<ExportModal*/}
+        {/*  visible={exportModalVisible}*/}
+        {/*  setVisible={setExportModalVisible}*/}
+        {/*  columns={columns}*/}
+        {/*/>*/}
         <div className="filter-row">
           <div className="console-item">
             <div className="item-label">年份</div>

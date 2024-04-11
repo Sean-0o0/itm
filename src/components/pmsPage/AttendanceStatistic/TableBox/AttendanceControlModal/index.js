@@ -77,12 +77,12 @@ function AttendanceControlModal(props) {
           })
             .then(res => {
               if (res?.success) {
-                message.success('操作成功', 1);
+                message.success('执行成功', 1);
                 handleCancel();
               }
             })
         } catch (e) {
-          message.error('操作失败', 1);
+          message.error('执行失败', 1);
         } finally {
           setIsSpinning(false);
         }
