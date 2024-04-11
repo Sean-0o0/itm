@@ -783,7 +783,8 @@ class ItemBtn extends React.Component {
         });
         return;
       } else {
-      message.info('请先在OA中进行合同录入，后在系统中进行确认即可', 2);}
+        message.info('请先在OA中进行合同录入，后在系统中进行确认即可', 2);
+      }
     };
     if (done) {
       const htxxck = async () => {
@@ -2402,7 +2403,4 @@ class ItemBtn extends React.Component {
   }
 }
 
-export default connect(({ global }) => ({
-  userBasicInfo: global.userBasicInfo,
-  roleData: global.roleData,
-}))(ItemBtn);
+export default ItemBtn;
