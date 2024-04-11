@@ -308,13 +308,13 @@ class StaffDetailComponent extends Component {
           <div>
             <Checkbox.Group options={plainOptions} value={limitValue} onChange={this.onChange} />
           </div>
-          <div style={{ borderRight: '1px solid', height: '15px', marginRight: '8px' }}></div>
+          <span style={{ color: '#C0C4CC', marginRight: '8px' }}>|</span>
           <div className="statistic-year">
             统计年份：
             <Dropdown overlay={menu} trigger={['click']}>
                     <span>
                       {statisticYearData.currentYear}
-                      <i className="iconfont icon-fill-down" />
+                      <i className="iconfont icon-fill-down"  style={{ fontSize: '12px', color: '#909399', marginLeft: '4px'}}/>
                     </span>
             </Dropdown>
           </div>
