@@ -37,6 +37,7 @@ export default function ProjectInfo(props) {
     setCurPageSize(20);
     setDateRange([moment().subtract(1, 'year'), moment()]);
     setFilterData({});
+    setPrjMnger(undefined);
     setSortInfo({
       sort: undefined,
       columnKey: '',
@@ -50,8 +51,12 @@ export default function ProjectInfo(props) {
     if (prjManager !== undefined && isComplete) {
       getTableData({ projectManager: prjManager, cxlx });
       setQueryType(cxlx);
-      setPrjMnger(String(prjManager));
-      setFilterData(p => ({ ...p, prjMnger: String(prjManager) }));
+      if (cxlx === 'PARTICIPATE') {
+        setFilterData(p => ({ ...p, prjMnger: String(prjManager) }));
+      } else {
+        setPrjMnger(String(prjManager));
+        setFilterData(p => ({ ...p, prjMnger: String(prjManager) }));
+      }
       setSortInfo({
         sort: undefined,
         columnKey: '',

@@ -256,7 +256,6 @@ export default forwardRef(function TopConsole(props, ref) {
     setTableLoading(true);
     setCurPage(current);
     setCurPageSize(pageSize);
-    setQueryType('ALL');
 
     let params = {
       current,
@@ -547,6 +546,7 @@ export default forwardRef(function TopConsole(props, ref) {
               minAmount,
               maxAmount,
             });
+            setQueryType('ALL');
             handleSearch({
               current: 1,
               pageSize: curPageSize,
