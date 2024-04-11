@@ -1,14 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import {
-  Modal,
-  Form,
-  message,
-  Spin,
-  Button,
-  Table,
-  Icon,
-  Popconfirm,
-} from 'antd';
+import { Modal, Form, message, Spin, Button, Table, Icon, Popconfirm } from 'antd';
 import { EditableCell, EditableRow } from './EditableTable';
 import {
   EditCustomReport,
@@ -33,7 +24,7 @@ function HandleAddModal(props) {
     dataArr = [],
     roleData = {},
     bgid,
-    monthData
+    monthData,
   } = props;
   const {
     validateFields,
@@ -160,38 +151,44 @@ function HandleAddModal(props) {
       })
       .catch(e => {
         message.error('获取上月表格数据获取失败', 1);
-      }).finally(() => {
-      setIsSpinning(false);
-    });
+      })
+      .finally(() => {
+        setIsSpinning(false);
+      });
   };
 
   const returnNewTable = (mergeData, temp) => {
-    mergeData.forEach( m => {
-      temp.forEach( t => {
-        if(m.ZD3 === t["ZD3" + t.ID] && m.ZD1 === data.ZD1 && m.ZD2 === data.ZD2 && m.TXRID === String(userBasicInfo.id)) {
-          t["GLXM" + t.ID] = m.GLXMID === undefined || m.GLXMID === '-1' ? undefined : m.GLXMID;
-          t["GLXMID" + t.ID] = m.GLXMID === undefined || m.GLXMID === '-1' ? undefined : m.GLXMID;
-          t["ZD4" + t.ID] = m.ZD4;
-          t["ZD5" + t.ID] = m.ZD5;
-          t["TXR" + t.ID] = String(userBasicInfo.id);
-          t["TXRID" + t.ID] = String(userBasicInfo.id);
+    mergeData.forEach(m => {
+      temp.forEach(t => {
+        if (
+          m.ZD3 === t['ZD3' + t.ID] &&
+          m.ZD1 === data.ZD1 &&
+          m.ZD2 === data.ZD2 &&
+          m.TXRID === String(userBasicInfo.id)
+        ) {
+          t['GLXM' + t.ID] = m.GLXMID === undefined || m.GLXMID === '-1' ? undefined : m.GLXMID;
+          t['GLXMID' + t.ID] = m.GLXMID === undefined || m.GLXMID === '-1' ? undefined : m.GLXMID;
+          t['ZD4' + t.ID] = m.ZD4;
+          t['ZD5' + t.ID] = m.ZD5;
+          t['TXR' + t.ID] = String(userBasicInfo.id);
+          t['TXRID' + t.ID] = String(userBasicInfo.id);
           setFieldsValue({
-            ["GLXM" + t.ID]: m.GLXMID === undefined || m.GLXMID === '-1' ? undefined : m.GLXMID,
-            ["GLXMID" + t.ID]: m.GLXMID === undefined || m.GLXMID === '-1' ? undefined : m.GLXMID,
-            ["ZD4" + t.ID]: m.ZD4,
-            ["ZD5" + t.ID]: m.ZD5,
-            ["TXR" + t.ID]: String(userBasicInfo.id),
-            ["TXRID" + t.ID]: String(userBasicInfo.id),
-          })
+            ['GLXM' + t.ID]: m.GLXMID === undefined || m.GLXMID === '-1' ? undefined : m.GLXMID,
+            ['GLXMID' + t.ID]: m.GLXMID === undefined || m.GLXMID === '-1' ? undefined : m.GLXMID,
+            ['ZD4' + t.ID]: m.ZD4,
+            ['ZD5' + t.ID]: m.ZD5,
+            ['TXR' + t.ID]: String(userBasicInfo.id),
+            ['TXRID' + t.ID]: String(userBasicInfo.id),
+          });
           setEditData(p => {
-              p.push(t);
+            p.push(t);
             return p;
           });
         }
       });
-    })
+    });
     return temp;
-  }
+  };
 
   const getPrjData = useCallback(
     debounce(async value => {
@@ -233,7 +230,7 @@ function HandleAddModal(props) {
   const getStaffData = async name => {
     try {
       const res = await QueryMemberSelectList({
-        orgId: isBGHZR ? Number(userBasicInfo.orgid) : undefined,
+        getByOrgPermission: isBGHZR ? 1 : undefined,
         name,
         current: 1,
         pageSize: 100,
@@ -415,12 +412,12 @@ function HandleAddModal(props) {
     date.setMonth(date.getMonth() - 1); // 将月份减去1
     getData(
       Number(bgid),
-      Number(moment(date).format("YYYYMM")),
+      Number(moment(date).format('YYYYMM')),
       roleData.zyrole === '自定义报告管理员' ? 'YBHZ' : 'BMYB',
     );
-  }
+  };
 
-  const cancel = () => {}
+  const cancel = () => {};
 
   //表格数据保存
   const handleTableSave = row => {
@@ -547,7 +544,7 @@ function HandleAddModal(props) {
             </div>
           ))}
           <Popconfirm
-            title='按系统名称匹配，复制上月工作总结和本月工作计划到表格中'
+            title="按系统名称匹配，复制上月工作总结和本月工作计划到表格中"
             onConfirm={getLastMonth}
             onCancel={cancel}
             okText="确认"
