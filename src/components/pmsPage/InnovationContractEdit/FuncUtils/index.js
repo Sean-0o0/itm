@@ -210,6 +210,42 @@ const getIputNumber = ({
   );
 };
 
+//获取数字输入框
+const getIputNumberNoRequired = ({
+                         label,
+                         labelNode = false,
+                         initialValue,
+                         dataIndex,
+                         getFieldDecorator,
+                         display,
+                       }) => {
+  return (
+    <div className="console-item" key={label} style={{ display }}>
+      <div className="item-label">{labelNode !== false ? labelNode : label}：</div>
+      <Form.Item>
+        {getFieldDecorator(dataIndex, {
+          initialValue,
+          rules: [
+            {
+              required: false,
+            },
+          ],
+        })(
+          <InputNumber
+            className="item-selector"
+            placeholder={'请输入' + label}
+            allowClear
+            style={{ width: '100%', marginTop: 4 }}
+            min={0}
+            step={0.01}
+            precision={2}
+          />,
+        )}
+      </Form.Item>
+    </div>
+  );
+};
+
 //跳转员工详情
 const getStaffNode = (name, id, routes) => {
   let nameArr = name?.split(',') || [];
@@ -519,6 +555,7 @@ export {
   getPrjNameData,
   getSelector,
   getIputNumber,
+  getIputNumberNoRequired,
   getInfoItem,
   getStaffNode,
   getNote,

@@ -19,6 +19,7 @@ import { Link, useLocation } from 'react-router-dom';
 import {
   queryDetailData,
   getIputNumber,
+  getIputNumberNoRequired,
   getSelector,
   getInfoItem,
   getStaffNode,
@@ -139,6 +140,7 @@ export default connect(({ global }) => ({
             dw: String(x.DW), //单位
             dj: String(x.DJ), //单价
             zje: String(x.ZJE), //总金额
+            lsfkje: String(x.LSFKJE), //总金额
             cpmc: String(x.CPMC), //产品名称
             cpxh: String(x.CPXH), //产品型号
             pzxq: String(x.PZXQ), //配置详情
@@ -149,6 +151,7 @@ export default connect(({ global }) => ({
           }));
           const params = {
             amount: String(values.zje ?? data.ZJE), //现在显示为合同金额
+            historyPay: String(values.lsfkje ?? data.LSFKJE), //现在显示为合同金额
             contractId: Number(data.HTID),
             contractType: Number(values.htlx ?? data.HTLX),
             isXC: Number(values.sfxc ?? data.SFXC),
@@ -482,6 +485,25 @@ export default connect(({ global }) => ({
                         OA中的合同乙方在系统中无对应供应商，请先新增供应商数据
                       </span>
                     )}
+                  {getIputNumberNoRequired({
+                    label: '历史付款金额(元)',
+                    labelNode: (
+                      <span>
+                        {/*<span style={{ color: '#f5222d', marginRight: '4px' }}>*</span>*/}
+                        历史付款金额(元)
+                        <Tooltip title={'在完结时通过合同金额减历史付款金额来做付款完成判断'}>
+                          <Icon
+                            type="question-circle-o"
+                            style={{ marginLeft: 4, marginRight: 2 }}
+                          />
+                        </Tooltip>
+                      </span>
+                    ),
+                    dataIndex: 'lsfkje',
+                    initialValue: getValue(data.LSFKJE), //ZJE有值时直接取，没有则自行判断
+                    getFieldDecorator,
+                    display: rowTitle.supplement ? 'flex' : 'none',
+                  })}
                 </Fragment>
               )}
             </div>
