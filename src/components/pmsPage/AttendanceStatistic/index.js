@@ -31,7 +31,7 @@ export default function AttendanceStatistic(props) {
     prjId: undefined,
   }); //筛选栏数据
 
-  const [activeKey, setActiveKey] = useState('YDHZ');
+  const [activeKey, setActiveKey] = useState('KQTJ');
   const [spinningData, setSpinningData] = useState({
     spinning: false,
     tip: '加载中',
@@ -203,13 +203,13 @@ export default function AttendanceStatistic(props) {
       >
         <div className="top-console">
           <Tabs
-            defaultActiveKey="YDHZ"
+            defaultActiveKey="KQTJ"
             activeKey={activeKey}
             onChange={handleTabsChange}
             size={'large'}
           >
+            <TabPane tab="考勤详情" key="KQTJ"></TabPane>
             <TabPane tab="月度汇总" key="YDHZ"></TabPane>
-            <TabPane tab="考勤统计" key="KQTJ"></TabPane>
             <TabPane tab="项目汇总" key="XMHZ"></TabPane>
           </Tabs>
         </div>
