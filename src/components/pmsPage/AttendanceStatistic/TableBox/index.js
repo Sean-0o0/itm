@@ -22,6 +22,7 @@ import handleExport from './exportUtils.js';
 import axios from 'axios';
 import config from '../../../../utils/config';
 import ExportModal from './ExportModal';
+import AttendanceControlModal from './AttendanceControlModal';
 const { api } = config;
 const {
   pmsServices: { attendanceStatisticExportExcel },
@@ -31,12 +32,12 @@ const { Option } = Select;
 const { MonthPicker } = DatePicker;
 
 const TableBox = props => {
-  const { dataProps = {}, funcProps = {} } = props;
+  const { dataProps = {}, funcProps = {}, authorities = {} } = props;
   const { tableData = [], filterData = {}, activeKey, summaryData = {} } = dataProps;
-  console.log('🚀 ~ file: index.js:36 ~ TableBox ~ tableData:', tableData);
   const { setFilterData = () => { }, queryTableData = () => { } } = funcProps;
   const [columns, setColumns] = useState([]); //列配置
   const [exportModalVisible, setExportModalVisible] = useState(false); //导出弹窗显隐
+  const [controlModalVisible, setControlModalVisible] = useState(false); //考勤控制弹窗显隐
   const location = useLocation();
 
   useEffect(() => {
@@ -571,12 +572,25 @@ const TableBox = props => {
     ];
   };
 
+  const openControlModal = () => {
+    setControlModalVisible(true);
+  }
+
+  const { ZYXMKQTJ = [] } = authorities;
+
   return (
     <>
       <div className="table-box">
         <ExportModal
           visible={exportModalVisible}
           setVisible={setExportModalVisible}
+          xmid={Number(filterData.prjId)}
+          defaultDate={filterData.month}
+          getColumns={getYDHZColumns}
+        />
+        <AttendanceControlModal
+          visible={controlModalVisible}
+          setVisible={setControlModalVisible}
           xmid={Number(filterData.prjId)}
           defaultDate={filterData.month}
           getColumns={getYDHZColumns}
@@ -632,9 +646,19 @@ const TableBox = props => {
               />
             </div>
           )}
-          <Button className="btn-search" type="primary" onClick={handleExcelxport}>
-            导出
-          </Button>
+          <div style={{ marginLeft: 'auto' }} className="console-item">
+            {
+              activeKey === 'KQTJ' && ZYXMKQTJ.includes('attendanceManage') ?
+                (
+                  <Button className="btn-search" style={{ marginRight: '5px', backgroundColor: '#3361ff',borderColor: '' }} type="primary" onClick={openControlModal}>
+                    考勤管理
+                  </Button>
+                ) : (<div/>)
+            }
+            <Button className="btn-search" type="primary" style={{ backgroundColor: '#3361ff',borderColor: '' }} onClick={handleExcelxport}>
+              导出
+            </Button>
+          </div>
         </div>
         <div className="project-info-table-box">
           <Table

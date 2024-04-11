@@ -97,9 +97,9 @@ function ExportModal(props) {
               title: String(x.title),
             })),
           );
-          console.log('🚀 ~ file: index.js:97 ~ validateFields ~ columnList:', columnList);
+          // console.log('🚀 ~ file: index.js:97 ~ validateFields ~ columnList:', columnList);
           setIsSpinning(false);
-          // console.log("🚀 ~ file: index.js:100 ~ validateFields ~ sheetNames:", sheetNames)；
+          // console.log("🚀 ~ file: index.js:100 ~ validateFields ~ sheetNames:", sheetNames);
           handleExport({
             list: dataList,
             headList: columnList,

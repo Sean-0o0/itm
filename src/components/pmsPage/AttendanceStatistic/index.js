@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useLayoutEffect } from 'react';
 import { message, Spin, Tabs } from 'antd';
 import TableBox from './TableBox';
+import ProjectSummaryTable from './ProjectSummaryTable';
 import {
   QueryBudgetStatistics,
-  QueryProjectListPara,
+  QueryProjectListPara, QueryProjectManHourSummary,
   QuerySelfDevProjWHstatistics,
   QueryUserRole,
 } from '../../../services/pmsServices';
@@ -12,8 +13,16 @@ import { FetchQueryBudgetProjects } from '../../../services/projectManage';
 const { TabPane } = Tabs;
 
 export default function AttendanceStatistic(props) {
+  const { authorities } = props;
   const [tableData, setTableData] = useState([]);
   const [summaryData, setSummaryData] = useState({}); //合计
+  const [summaryFilterData, setSummaryFilterData] = useState({
+    year: moment(),
+    startMonth: 1,
+    endMonth: 12,
+    yearOpen: false,
+  }); //筛选栏数据
+
   const [filterData, setFilterData] = useState({
     year: moment(),
     yearOpen: false,
@@ -21,15 +30,20 @@ export default function AttendanceStatistic(props) {
     prjSlt: [],
     prjId: undefined,
   }); //筛选栏数据
-  const [activeKey, setActiveKey] = useState('KQTJ');
+
+  const [activeKey, setActiveKey] = useState('YDHZ');
   const [spinningData, setSpinningData] = useState({
     spinning: false,
     tip: '加载中',
   }); //加载状态
 
   useLayoutEffect(() => {
-    getPrjSlt(activeKey);
-  }, []);
+    if(activeKey === 'KQTJ' || activeKey === 'YDHZ') {
+      getPrjSlt(activeKey);
+    } else {
+      queryProjectManHourSummary();
+    }
+  }, [activeKey, getPrjSlt]);
 
   const queryTableData = ({ queryType = activeKey, projectId, year, month }) => {
     setSpinningData(p => ({
@@ -92,11 +106,6 @@ export default function AttendanceStatistic(props) {
               ? JSON.parse(res.statisticsResult)[0]
               : JSON.parse(res.summaryResult)[0]) || {};
           setSummaryData(obj);
-          // console.log(
-          //   (queryType === 'KQTJ'
-          //     ? JSON.parse(res.statisticsResult)[0]
-          //     : JSON.parse(res.summaryResult)[0]) || {},
-          // );
           setTableData(p => (p.length > 0 ? [...p, obj] : p));
           setSpinningData(p => ({
             ...p,
@@ -148,8 +157,41 @@ export default function AttendanceStatistic(props) {
   };
 
   const handleTabsChange = key => {
-    queryTableData({ queryType: key });
+    if(activeKey === 'KQTJ' || activeKey === 'YDHZ') {
+      // queryTableData({ queryType: key });
+    }
     setActiveKey(key);
+  };
+
+  const queryProjectManHourSummary = () => {
+    setSpinningData(p => ({
+      tip: '加载中',
+      spinning: true,
+    }));
+    // let params = summaryFilterData;
+    const params = {
+      year: summaryFilterData.year.year(),
+      startMonth: 1,
+      endMonth: 12,
+    }
+    //表格数据
+    QueryProjectManHourSummary(params)
+      .then(res => {
+        if (res?.success) {
+          setTableData(JSON.parse(res.result));
+          console.log(JSON.parse(res.result))
+        }
+      })
+      .catch(e => {
+        console.error('🚀表格数据', e);
+        message.error('表格数据获取失败', 1);
+
+      }).finally(() => {
+      setSpinningData(p => ({
+        ...p,
+        spinning: false,
+      }));
+    });
   };
 
   return (
@@ -161,19 +203,33 @@ export default function AttendanceStatistic(props) {
       >
         <div className="top-console">
           <Tabs
-            defaultActiveKey="KQTJ"
+            defaultActiveKey="YDHZ"
             activeKey={activeKey}
             onChange={handleTabsChange}
             size={'large'}
           >
-            <TabPane tab="考勤统计" key="KQTJ"></TabPane>
             <TabPane tab="月度汇总" key="YDHZ"></TabPane>
+            <TabPane tab="考勤统计" key="KQTJ"></TabPane>
+            <TabPane tab="项目汇总" key="XMHZ"></TabPane>
           </Tabs>
         </div>
-        <TableBox
-          dataProps={{ tableData, filterData, activeKey, summaryData }}
-          funcProps={{ setFilterData, queryTableData }}
-        />
+        {
+          activeKey === 'KQTJ' || activeKey === 'YDHZ' ?
+            (
+              <TableBox
+                authorities={authorities}
+                dataProps={{ tableData, filterData, activeKey, summaryData }}
+                funcProps={{ setFilterData, queryTableData }}
+              />
+            ) :
+            (
+              <ProjectSummaryTable
+                authorities={authorities}
+                dataProps={{ tableData, filterData: summaryFilterData, activeKey }}
+                funcProps={{ setFilterData: setSummaryFilterData, queryProjectManHourSummary }}
+              />
+            )
+        }
       </Spin>
     </div>
   );

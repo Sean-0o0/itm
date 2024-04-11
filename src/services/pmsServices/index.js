@@ -193,9 +193,16 @@ const {
     queryProjectDynamicSection,
     queryWinningBidderInfo,
     operateWinningBidderInfo,
+    vendorQueryOutsrcMemberAttend,
+    updateOutsourceCost,
     operateHumanServiceContract,
     queryHumanServiceContract,
     queryShortlistedSuppliers,
+    sendMessageToVendor,
+    operateVendorSysAccount,
+    queryProjectManHourSummary,
+    selfProjectMonthAttendManage,
+    querySysConfigInfo,
   },
 } = api;
 
@@ -2088,10 +2095,30 @@ export async function OperateWinningBidderInfo(payload) {
   return request(option);
 }
 
+// 供应商查询外包人员考勤
+export async function VendorQueryOutsrcMemberAttend(payload) {
+  const option = {
+    url: vendorQueryOutsrcMemberAttend,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
 // 编辑人力服务项目合同信息
 export async function OperateHumanServiceContract(payload) {
   const option = {
     url: operateHumanServiceContract,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 编辑外包人员费用
+export async function UpdateOutsourceCost(payload) {
+  const option = {
+    url: updateOutsourceCost,
     method: 'post',
     data: payload,
   };
@@ -2112,6 +2139,56 @@ export async function QueryHumanServiceContract(payload) {
 export async function QueryShortlistedSuppliers(payload) {
   const option = {
     url: queryShortlistedSuppliers,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+/** 给供应商发送消息 */
+export async function SendMessageToVendor(payload) {
+  const option = {
+    url: sendMessageToVendor,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+/** 编辑供应商系统账号 */
+export async function OperateVendorSysAccount(payload) {
+  const option = {
+    url: operateVendorSysAccount,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 查询自研项目工时汇总
+export async function QueryProjectManHourSummary(payload) {
+  const option = {
+    url: queryProjectManHourSummary,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 自研项目考勤登记月份管理
+export async function SelfProjectMonthAttendManage(payload) {
+  const option = {
+    url: selfProjectMonthAttendManage,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 查询系统配置信息
+export async function QuerySysConfigInfo(payload) {
+  const option = {
+    url: querySysConfigInfo,
     method: 'post',
     data: payload,
   };

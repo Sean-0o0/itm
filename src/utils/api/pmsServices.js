@@ -1115,6 +1115,24 @@ export default [
   },
   {
     code: '',
+    key: 'vendorQueryOutsrcMemberAttend',
+    url: '/projectManage/vendorQueryOutsrcMemberAttend',
+    dis: '供应商查询外包人员考勤',
+  },
+  {
+    code: '',
+    key: 'queryOutsourceCostList',
+    url: '/projectManage/queryOutsourceCostList',
+    dis: '查询费用列表',
+  },
+  {
+    code: '',
+    key: 'updateOutsourceCost',
+    url: '/projectManage/updateOutsourceCost',
+    dis: '编辑外包人员费用',
+  },
+  {
+    code: '',
     key: 'operateHumanServiceContract',
     url: '/projectManage/operateHumanServiceContract',
     dis: '编辑人力服务项目合同信息',
@@ -1130,5 +1148,35 @@ export default [
     key: 'queryShortlistedSuppliers',
     url: '/projectManage/queryShortlistedSuppliers',
     dis: '查询入围供应商',
+  },
+  {
+    code: '',
+    key: 'sendMessageToVendor',
+    url: '/projectManage/sendMessageToVendor',
+    dis: '给供应商发送消息',
+  },
+  {
+    code: '',
+    key: 'operateVendorSysAccount',
+    url: '/projectManage/operateVendorSysAccount',
+    dis: '编辑供应商系统账号',
+  },
+  {
+    code: '',
+    key: 'queryProjectManHourSummary',
+    url: '/projectManage/queryProjectManHourSummary',
+    dis: '查询自研项目工时汇总',
+  },
+  {
+    code: '',
+    key: 'selfProjectMonthAttendManage',
+    url: '/projectManage/selfProjectMonthAttendManage',
+    dis: '自研项目考勤登记月份管理',
+  },
+  {
+    code: '',
+    key: 'querySysConfigInfo',
+    url: '/projectManage/querySysConfigInfo',
+    dis: '查询系统配置信息',
   },
 ];

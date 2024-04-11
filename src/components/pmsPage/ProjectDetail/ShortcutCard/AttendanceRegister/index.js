@@ -23,7 +23,7 @@ import {
 import moment from 'moment';
 import {
   InsertProjectAttendanceRcd,
-  QueryMemberAttendanceRcd,
+  QueryMemberAttendanceRcd, QuerySysConfigInfo,
   QueryWeekday,
 } from '../../../../../services/pmsServices';
 import FullCalendar from '@fullcalendar/react';
@@ -57,6 +57,8 @@ export default function AttendanceRegister(props) {
   const [curNonWorkDays, setCurNonWorkDays] = useState([]); //当月非工作日
   const [curAllDays, setCurAllDays] = useState([]); //当月所有
   const [modalVisible, setModalVisible] = useState(false); //登记内容弹窗显隐
+  const [validRange, setValidRange] = useState({ start: moment().format('YYYY-MM-DD'), end: moment().format('YYYY-MM-DD') }); //登记内容弹窗显隐
+  const [onselfArr, setOnselfArr] = useState([]); //登记内容弹窗显隐
   const [radioValue, setRadioValue] = useState({
     type: 1,
     time: 1,
@@ -80,14 +82,7 @@ export default function AttendanceRegister(props) {
 
   useEffect(() => {
     if (visible) {
-      setIsSpinning(true);
-      getCalendarData(LOGIN_USER_ID, Number(moment().format('YYYYMM')), Number(xmid), () => {});
-    }
-    if (calendarRef !== null && visible) {
-      setTimeout(() => {
-        calendarRef.current?.getApi().updateSize();
-        setIsSpinning(false);
-      }, 500);
+      querySysConfigInfo();
     }
     return () => {};
   }, [visible, calendarRef]);
@@ -110,27 +105,44 @@ export default function AttendanceRegister(props) {
         queryType: 'XQ',
       });
       if (atdCalendarResult.success) {
+        //自研项目考勤登记月份管理
+        // const {startTime, endTime} = await querySysConfigInfo();
         const atdCalendarArr = JSON.parse(atdCalendarResult.result);
-        const constDataArr = atdCalendarArr.map(x => moment(String(x.RQ)).format('YYYY-MM-DD'));
+
+        const onselfArrTemp = atdCalendarArr.filter(x => Number(x.XMMC) === Number(xmid));
+        setOnselfArr(onselfArrTemp);
+        // const constDataArr = atdCalendarArr.map(x => moment(String(x.RQ)).format('YYYY-MM-DD'));
         // console.log('🚀 ~ file: index.js:145 ~ getCalendarData ~ constDataArr:', constDataArr);
+        console.log("atdCalendarArr", atdCalendarArr);
+        //本项目工作一天
         const attendanceDaysArr = atdCalendarArr
           .filter(x => x.KQLX === 3 && Number(x.XMMC) === Number(xmid))
           .map(x => moment(String(x.RQ)).format('YYYY-MM-DD'));
+        //本项目工作半天
         const attendanceHalfDaysArr = atdCalendarArr
           .filter(x => x.KQLX === 1 && Number(x.XMMC) === Number(xmid))
           .map(x => moment(String(x.RQ)).format('YYYY-MM-DD'));
+
+        //本项目请假一天
         const leaveDaysArr = atdCalendarArr
           .filter(x => x.KQLX === 4 && Number(x.XMMC) === Number(xmid))
           .map(x => moment(String(x.RQ)).format('YYYY-MM-DD'));
+
+        //本项目请假半天
         const leaveHalfDaysArr = atdCalendarArr
           .filter(x => x.KQLX === 2 && Number(x.XMMC) === Number(xmid))
           .map(x => moment(String(x.RQ)).format('YYYY-MM-DD'));
+
+        //本项目加班一天
         const overtimeDaysArr = atdCalendarArr
           .filter(x => x.KQLX === 5 && Number(x.XMMC) === Number(xmid))
           .map(x => moment(String(x.RQ)).format('YYYY-MM-DD'));
+
+        //本项目加班半天
         const overtimeHalfDaysArr = atdCalendarArr
           .filter(x => x.KQLX === 6 && Number(x.XMMC) === Number(xmid))
           .map(x => moment(String(x.RQ)).format('YYYY-MM-DD'));
+
         const otherPrjArr = atdCalendarArr
           .filter(x => Number(x.XMMC) !== Number(xmid) && [3, 5, 4].includes(x.KQLX))
           .map(x => ({ ...x, RQ: moment(String(x.RQ)).format('YYYY-MM-DD') }));
@@ -138,6 +150,10 @@ export default function AttendanceRegister(props) {
           .filter(x => Number(x.XMMC) !== Number(xmid) && [1, 6, 2].includes(x.KQLX))
           .map(x => ({ ...x, RQ: moment(String(x.RQ)).format('YYYY-MM-DD') }));
 
+        //将其他项目的考勤插入不可修改的回显数据
+        const constDataTemp = [...otherPrjArr, ...otherPrjHalfArr];
+        const constDataArr = constDataTemp.map(x => moment(String(x.RQ)).format('YYYY-MM-DD'))
+        // const constDataArr = constDataTemp.map(x => moment(String(x.RQ)).format('YYYY-MM-DD'))
         setConstData(constDataArr);
         getWorkdaysOfMonth(moment(String(month)), constDataArr, fn);
         if (clearAll) {
@@ -173,6 +189,51 @@ export default function AttendanceRegister(props) {
     }
   };
 
+  const querySysConfigInfo = async () => {
+    let startTime = undefined;
+    let endTime = undefined;
+    try {
+      setIsSpinning(true);
+      await QuerySysConfigInfo({
+        configName: "自研项目考勤登记月份管理"
+      })
+        .then(res => {
+          if (res?.success) {
+            const result = JSON.parse(res.result);
+            if(result.length > 0) {
+              if(result[0].config) {
+                const config = JSON.parse(result[0].config);
+                const start = moment(String(config.startMonth));
+                const end = moment(String(config.endMonth));
+                if(config.state === 'OPEN') {
+                  startTime = moment(new Date(start.year(), start.month(), 1)).format('YYYY-MM-DD'); // 月份是从0开始的，所以减1
+                  endTime = moment(new Date(end.year(), end.month())).endOf('month').format('YYYY-MM-DD')
+                }
+
+                setValidRange({
+                  start: startTime,
+                  end: endTime
+                })
+                if(Number(moment(endTime).format('YYYYMM')) > Number(moment().format('YYYYMM'))){
+                  getCalendarData(LOGIN_USER_ID, Number(moment().format('YYYYMM')), Number(xmid), () => {});
+                } else {
+                  getCalendarData(LOGIN_USER_ID, Number(moment(endTime).format('YYYYMM')), Number(xmid), () => {});
+                }
+              }
+            }
+          }
+        })
+    } catch (e) {
+      message.error('自研项目考勤登记月份管理信息查询失败', 1);
+    } finally {
+      if (calendarRef !== null && visible) {
+        setTimeout(() => {
+          calendarRef.current?.getApi().updateSize();
+          setIsSpinning(false);
+        }, 500);
+      }
+    }
+  }
   //提交数据
   const handleOk = () => {
     Modal.confirm({
@@ -242,7 +303,15 @@ export default function AttendanceRegister(props) {
             GS: '0.5',
             KQLX: '6', //加班
           }));
+        console.log("onselfArr", onselfArr)
         const finalArr = arr1.concat(arr2, arr3, arr4, arr5, arr6);
+        finalArr.forEach(((newParams) => {
+          onselfArr.forEach((oldParams) => {
+            if( Number(newParams.RQ) === Number(oldParams.RQ) ) {
+              newParams.ID = String(oldParams.ID);
+            }
+          })
+        }))
         InsertProjectAttendanceRcd({
           count: finalArr.length,
           member: LOGIN_USER_ID,
@@ -454,6 +523,7 @@ export default function AttendanceRegister(props) {
   //选中事件
   const onCalendarSlt = useCallback(
     async info => {
+      console.log("info", info);
       const startDate = moment(info.startStr, 'YYYY-MM-DD');
       const endDate = moment(info.endStr, 'YYYY-MM-DD');
       const diff = endDate.diff(startDate, 'days'); // 计算天数差
@@ -620,6 +690,7 @@ export default function AttendanceRegister(props) {
               plugins={[dayGridPlugin, interactionPlugin]}
               initialView="dayGridMonth"
               locale={locale}
+              validRange={validRange}
               unselectAuto={modalVisible}
               customButtons={customButtons}
               headerToolbar={{

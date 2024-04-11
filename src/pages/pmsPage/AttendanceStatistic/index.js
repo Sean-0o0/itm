@@ -20,6 +20,7 @@ const AttendanceStatistic = props => {
     <Fragment>
       <AttendanceStatisticTab
         dictionary={props.dictionary}
+        authorities={props.authorities}
         params={params}
         {...props}
       ></AttendanceStatisticTab>
@@ -28,4 +29,5 @@ const AttendanceStatistic = props => {
 };
 export default connect(({ global }) => ({
   dictionary: global.dictionary,
+  authorities: global.authorities,
 }))(AttendanceStatistic);
