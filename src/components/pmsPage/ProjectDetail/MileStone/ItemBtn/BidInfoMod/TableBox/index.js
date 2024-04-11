@@ -120,7 +120,7 @@ export default function TableBox(props) {
         size="middle"
       />
     ),
-    [JSON.stringify(tableData), JSON.stringify(gysSlt)],
+    [JSON.stringify(tableData), JSON.stringify(gysSlt), JSON.stringify(gysSltFilterArr)],
   );
 
   return (
