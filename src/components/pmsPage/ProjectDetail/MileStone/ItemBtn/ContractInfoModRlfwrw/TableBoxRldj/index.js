@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, useMemo } from 'react';
+import React, { useEffect, useState, useRef, useMemo, useCallback } from 'react';
 import { Button, Icon, Row, Table, message, Col, Form, Popconfirm, Tooltip } from 'antd';
 import { EditableRow, EditableCell } from '../EditableTable';
 import moment from 'moment';
@@ -12,8 +12,21 @@ export default function TableBoxRldj(props) {
     form = {},
     tableScroll = false,
     sltData = {},
+    editingId, setEditingId
   } = props;
-  const [editingId, setEditingId] = useState(-1); //编辑行id
+  
+  const rydjSltData = useCallback(
+    (record = {}, sltData = {}, tableData = []) =>
+      sltData.rydj?.filter(
+        x =>
+          !(tableData?.filter(y => y.ID !== record.ID).map(y => y['DJ' + y.ID]) || []).includes(
+            x.RYDJID,
+          ),
+      ),
+    [],
+  );
+
+  const showAddRow = tableData.length < sltData.rydj?.length;
 
   //表格数据保存
   const handleTableSave = row => {
@@ -31,11 +44,15 @@ export default function TableBoxRldj(props) {
   //新增一行
   const handleAddRow = () => {
     const UUID = getUUID();
-    setEditingId(UUID);
-    setTableData([
-      ...tableData,
-      { ID: UUID, ['DJ' + UUID]: undefined, ['RLDJ' + UUID]: undefined },
-    ]);
+    form.validateFieldsAndScroll(['DJ' + editingId, 'RLDJ' + editingId], err => {
+      if (!err) {
+        setEditingId(UUID);
+        setTableData([
+          ...tableData,
+          { ID: UUID, ['DJ' + UUID]: undefined, ['RLDJ' + UUID]: undefined },
+        ]);
+      }
+    });
   };
 
   //列配置
@@ -121,12 +138,7 @@ export default function TableBoxRldj(props) {
             formdecorate: form,
             sltdata: {
               ...sltData,
-              rydj: sltData.rydj?.filter(
-                x =>
-                  !(
-                    tableData?.filter(y => y.ID !== record.ID).map(y => y['DJ' + y.ID]) || []
-                  ).includes(x.RYDJID),
-              ),
+              rydj: rydjSltData(record, sltData, tableData),
             },
             label: col.label,
             validatefieldarr: ['DJ' + record.ID, 'RLDJ' + record.ID],
@@ -139,7 +151,9 @@ export default function TableBoxRldj(props) {
           key: col.key,
           label: col.label,
           onClick: () => {
-            setEditingId(record.ID);
+            form.validateFieldsAndScroll(['DJ' + editingId, 'RLDJ' + editingId], err => {
+              if (col.dataIndex !== 'OPRT' && !err) setEditingId(record.ID);
+            });
           },
         };
       },
@@ -168,27 +182,29 @@ export default function TableBoxRldj(props) {
               pagination={false}
               size="middle"
             />
-            <div
-              className="table-add-row"
-              onClick={() => {
-                handleAddRow();
-                if (tableScroll) {
-                  setTimeout(() => {
-                    const table = document.querySelectorAll(
-                      `.contract-info-mod-modal .contract-info-table-box .ant-table-body`,
-                    )[0];
-                    if (table) {
-                      table.scrollTop = table.scrollHeight;
-                    }
-                  }, 200);
-                }
-              }}
-            >
-              <span>
-                <Icon type="plus" style={{ fontSize: '12px' }} />
-                <span style={{ paddingLeft: '6px', fontSize: '14px' }}>新增</span>
-              </span>
-            </div>
+            {showAddRow && (
+              <div
+                className="table-add-row"
+                onClick={() => {
+                  handleAddRow();
+                  if (tableScroll) {
+                    setTimeout(() => {
+                      const table = document.querySelectorAll(
+                        `.contract-info-mod-modal .contract-info-table-box .ant-table-body`,
+                      )[0];
+                      if (table) {
+                        table.scrollTop = table.scrollHeight;
+                      }
+                    }, 200);
+                  }
+                }}
+              >
+                <span>
+                  <Icon type="plus" style={{ fontSize: '12px' }} />
+                  <span style={{ paddingLeft: '6px', fontSize: '14px' }}>新增</span>
+                </span>
+              </div>
+            )}
           </div>
         </Form.Item>
       </Col>

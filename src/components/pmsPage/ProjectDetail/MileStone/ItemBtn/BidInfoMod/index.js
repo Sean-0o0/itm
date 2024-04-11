@@ -134,6 +134,7 @@ export default connect(({ global }) => ({
         if (res.success) {
           let rec = res.record;
           setGysSlt(rec);
+          console.log("🚀 ~ fetchQueryGysInZbxx ~ rec:", rec)
         }
       } catch (e) {
         console.error('供应商信息查询失败', e);
@@ -188,7 +189,7 @@ export default connect(({ global }) => ({
             rwgys,
             wrwgys,
           });
-          setIsSpinning(false);
+          setTimeout(() => setIsSpinning(false), 800);
         }
       } catch (e) {
         console.error('🚀中标信息', e);
@@ -256,9 +257,10 @@ export default connect(({ global }) => ({
             message: label + '不允许空值',
           },
         ],
+        display = false,
       }) => {
         return (
-          <Col span={24}>
+          <Col span={24} style={display ? {} : { display: 'none' }}>
             <Form.Item
               label={label}
               labelCol={{ span: labelCol }}
@@ -462,6 +464,7 @@ export default connect(({ global }) => ({
     //提交数据
     const onOk = () => {
       validateFieldsAndScroll(async (err, values) => {
+        console.log('🚀 ~ validateFieldsAndScroll ~ err:', err, values);
         let judgeCondition = fileList.length === 0;
         if (values.zbqk === '2') {
           judgeCondition = tableData.qttbgys.length === 0 || fileList.length === 0;
@@ -489,6 +492,9 @@ export default connect(({ global }) => ({
             tableData.wrwgys.length === 0 &&
             message.error('未入围供应商不允许空值', 2);
           return;
+        }
+        if (Object.keys(err || {}).findIndex(x => x.includes('GYS')) !== -1) {
+          message.error('供应商不允许空值', 2);
         }
         if (!err) {
           setIsSpinning(true);
@@ -590,6 +596,7 @@ export default connect(({ global }) => ({
                 valueField: 'ibm',
                 labelCol: labelCol / 2,
                 wrapperCol: 24 - labelCol / 2,
+                display: type === 'ADD',
               })}
             </Row>
             <Row>

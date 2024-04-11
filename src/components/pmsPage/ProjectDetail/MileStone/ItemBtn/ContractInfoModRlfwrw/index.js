@@ -57,6 +57,10 @@ export default connect(({ global }) => ({
       rldj: [],
       rwgys: [],
     }); //删除的数据
+    const [editingId, setEditingId] = useState({
+      rldj: -1,
+      rwgys: -1,
+    }); //编辑行id
     const labelCol = 6;
     const wrapperCol = 18;
 
@@ -133,8 +137,12 @@ export default connect(({ global }) => ({
                   isNew: true,
                 };
               });
-              setTableData(p => ({ ...p, rwgys }));
-              setEditData(p => ({ ...p, rwgys: JSON.parse(JSON.stringify(rwgys)) }));
+              if (rwgys.length > 0) {
+                setEditingId(p => ({ ...p, rwgys: rwgys[0].ID }));
+                console.log("🚀 ~ initData ~ rwgys[0].ID:", rwgys[0].ID)
+                setTableData(p => ({ ...p, rwgys }));
+                setEditData(p => ({ ...p, rwgys: JSON.parse(JSON.stringify(rwgys)) }));
+              }
             }
           } else {
             //修改时回显
@@ -173,6 +181,9 @@ export default connect(({ global }) => ({
               rldj: manpowerUnit,
               rwgys: vendor,
             });
+            if (manpowerUnit?.length > 0 && vendor?.length > 0) {
+              setEditingId({ rldj: manpowerUnit[0].ID, rwgys: vendor[0].ID });
+            }
           }
           setIsSpinning(false);
         }
@@ -225,6 +236,10 @@ export default connect(({ global }) => ({
           },
         ],
       };
+      setEditingId({
+        rldj: UUID,
+        rwgys: UUID,
+      });
       setTableData(obj);
       setEditData(JSON.parse(JSON.stringify(obj)));
     };
@@ -510,6 +525,8 @@ export default connect(({ global }) => ({
               setTableData={v => setTableData(p => ({ ...p, rldj: v }))}
               tableData={tableData.rldj}
               form={form}
+              editingId={editingId.rldj}
+              setEditingId={v => setEditingId(p => ({ ...p, rldj: v }))}
             />
             <TableBox
               labelProps={{
@@ -528,6 +545,8 @@ export default connect(({ global }) => ({
               form={form}
               tableScroll={true}
               setAddGysModalVisible={setAddGysModalVisible}
+              editingId={editingId.rwgys}
+              setEditingId={v => setEditingId(p => ({ ...p, rwgys: v }))}
             />
           </Form>
           <Form

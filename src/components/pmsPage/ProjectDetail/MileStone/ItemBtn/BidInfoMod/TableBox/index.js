@@ -17,9 +17,7 @@ export default function TableBox(props) {
   } = props;
   const { getFieldDecorator, getFieldValue, validateFields, resetFields } = form;
 
-  useEffect(() => {
-    return () => {};
-  }, []);
+  const showAddRow = true;
 
   //表格数据保存
   const handleTableSave = row => {
@@ -93,12 +91,8 @@ export default function TableBox(props) {
           handleSave: handleTableSave,
           key: col.key,
           formdecorate: form,
-          gysdata: gysSlt.filter(
-            x =>
-              !(
-                gysSltFilterArr?.filter(y => y.ID !== record.ID).map(y => y['GYS' + y.ID]) || []
-              ).includes(x.id),
-          ),
+          gysdata: gysSlt,
+          gyssltfilterarr: gysSltFilterArr,
           setaddgysmodalvisible: setAddGysModalVisible,
         };
       },
@@ -126,7 +120,7 @@ export default function TableBox(props) {
         size="middle"
       />
     ),
-    [JSON.stringify(tableData)],
+    [JSON.stringify(tableData), JSON.stringify(gysSlt)],
   );
 
   return (
@@ -135,26 +129,30 @@ export default function TableBox(props) {
         <Form.Item {...labelProps}>
           <div className="bid-info-table-box">
             {renderTable}
-            <div
-              className="table-add-row"
-              onClick={() => {
-                const UUID = getUUID();
-                setTableData([...tableData, { ID: UUID, ['GYS' + UUID]: undefined }]);
-                if (tableScroll) {
-                  setTimeout(() => {
-                    const table = document.querySelectorAll(`.bid-info-mod-modal .content-box`)[0];
-                    if (table) {
-                      table.scrollTop = table.scrollHeight;
-                    }
-                  }, 200);
-                }
-              }}
-            >
-              <span>
-                <Icon type="plus" style={{ fontSize: '12px' }} />
-                <span style={{ paddingLeft: '6px', fontSize: '14px' }}>新增</span>
-              </span>
-            </div>
+            {showAddRow && (
+              <div
+                className="table-add-row"
+                onClick={() => {
+                  const UUID = getUUID();
+                  setTableData([...tableData, { ID: UUID, ['GYS' + UUID]: undefined }]);
+                  if (tableScroll) {
+                    setTimeout(() => {
+                      const table = document.querySelectorAll(
+                        `.bid-info-mod-modal .content-box`,
+                      )[0];
+                      if (table) {
+                        table.scrollTop = table.scrollHeight;
+                      }
+                    }, 200);
+                  }
+                }}
+              >
+                <span>
+                  <Icon type="plus" style={{ fontSize: '12px' }} />
+                  <span style={{ paddingLeft: '6px', fontSize: '14px' }}>新增</span>
+                </span>
+              </div>
+            )}
           </div>
         </Form.Item>
       </Col>

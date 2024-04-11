@@ -32,14 +32,13 @@ export default function SupplierConfirm(props) {
     QueryShortlistedSuppliers({ vendorList })
       .then(res => {
         if (res?.success) {
-          // console.log('🚀 ~ queryShortlistedSuppliers ~ res', JSON.parse(res.result));
-          // let arr = JSON.parse(JSON.stringify(tableData))
-          let arr = JSON.parse(res.result).map(x => {
-            let obj = tableData.find(y => Number(y['GYS' + y.ID]) === Number(x.GYSID)) || {};
+          let arr = tableData.map(x => {
+            let obj =
+              JSON.parse(res.result)?.find(y => Number(y.GYSID) === Number(x['GYS' + x.ID])) || {};
             return {
               ...x,
               ...obj,
-              QSZT: obj['QSZT' + obj.ID],
+              QSZT: x['QSZT' + x.ID],
             };
           });
           let editArr = editData.map(x => ({

@@ -21,6 +21,8 @@ export default function TableBox(props) {
     tableScroll = false,
     sltData = {},
     setAddGysModalVisible,
+    editingId,
+    setEditingId,
   } = props;
   const { getFieldDecorator, getFieldValue, validateFields, resetFields } = form;
   const [modalData, setModalData] = useState({
@@ -28,7 +30,8 @@ export default function TableBox(props) {
     ht: false,
     data: {},
   }); //弹窗显隐
-  const [editingId, setEditingId] = useState(-1); //编辑行id
+
+  const showAddRow = tableData.length < sltData.gys?.length;
 
   //表格数据保存
   const handleTableSave = row => {
@@ -57,32 +60,39 @@ export default function TableBox(props) {
   //新增一行
   const handleAddRow = () => {
     const UUID = getUUID();
-    setEditingId(UUID);
-    setTableData([
-      ...tableData,
-      {
-        ID: UUID,
-        ['GYS' + UUID]: undefined,
-        ['QSZT' + UUID]: '1',
-        ['QSSM' + UUID]: undefined,
-        ['GYSZH' + UUID]: undefined,
-        accountObj: undefined,
-        fileList: [],
-        isNew: true,
+    form.validateFieldsAndScroll(
+      ['GYS' + editingId, 'QSZT' + editingId, 'QSSM' + editingId],
+      err => {
+        if (!err) {
+          setEditingId(UUID);
+          setTableData([
+            ...tableData,
+            {
+              ID: UUID,
+              ['GYS' + UUID]: undefined,
+              ['QSZT' + UUID]: '1',
+              ['QSSM' + UUID]: undefined,
+              ['GYSZH' + UUID]: undefined,
+              accountObj: undefined,
+              fileList: [],
+              isNew: true,
+            },
+          ]);
+          setEditData([
+            ...editData,
+            {
+              ID: UUID,
+              ['GYS' + UUID]: undefined,
+              ['QSZT' + UUID]: '1',
+              ['QSSM' + UUID]: undefined,
+              accountObj: undefined,
+              fileList: [],
+              isNew: true,
+            },
+          ]);
+        }
       },
-    ]);
-    setEditData([
-      ...editData,
-      {
-        ID: UUID,
-        ['GYS' + UUID]: undefined,
-        ['QSZT' + UUID]: '1',
-        ['QSSM' + UUID]: undefined,
-        accountObj: undefined,
-        fileList: [],
-        isNew: true,
-      },
-    ]);
+    );
   };
 
   //列配置
@@ -268,7 +278,12 @@ export default function TableBox(props) {
           key: col.key,
           label: col.label,
           onClick: () => {
-            setEditingId(record.ID);
+            form.validateFieldsAndScroll(
+              ['GYS' + editingId, 'QSZT' + editingId, 'QSSM' + editingId],
+              err => {
+                if (col.dataIndex !== 'OPRT' && !err) setEditingId(record.ID);
+              },
+            );
           },
         };
       },
@@ -297,27 +312,29 @@ export default function TableBox(props) {
               pagination={false}
               size="middle"
             />
-            <div
-              className="table-add-row"
-              onClick={() => {
-                handleAddRow();
-                if (tableScroll) {
-                  setTimeout(() => {
-                    const table = document.querySelectorAll(
-                      `.contract-info-mod-modal .content-box`,
-                    )[0];
-                    if (table) {
-                      table.scrollTop = table.scrollHeight;
-                    }
-                  }, 200);
-                }
-              }}
-            >
-              <span>
-                <Icon type="plus" style={{ fontSize: '12px' }} />
-                <span style={{ paddingLeft: '6px', fontSize: '14px' }}>新增</span>
-              </span>
-            </div>
+            {showAddRow && (
+              <div
+                className="table-add-row"
+                onClick={() => {
+                  handleAddRow();
+                  if (tableScroll) {
+                    setTimeout(() => {
+                      const table = document.querySelectorAll(
+                        `.contract-info-mod-modal .content-box`,
+                      )[0];
+                      if (table) {
+                        table.scrollTop = table.scrollHeight;
+                      }
+                    }, 200);
+                  }
+                }}
+              >
+                <span>
+                  <Icon type="plus" style={{ fontSize: '12px' }} />
+                  <span style={{ paddingLeft: '6px', fontSize: '14px' }}>新增</span>
+                </span>
+              </div>
+            )}
           </div>
         </Form.Item>
       </Col>

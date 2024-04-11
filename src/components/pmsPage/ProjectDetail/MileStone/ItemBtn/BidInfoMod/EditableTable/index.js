@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Form, Select, Tooltip } from 'antd';
 
 const EditableContext = React.createContext();
@@ -20,9 +20,16 @@ const EditableCell = props => {
     formdecorate,
     children,
     gysdata = [],
+    gyssltfilterarr = [],
     setaddgysmodalvisible,
     ...restProps
   } = props;
+  const [gysSltData, setGysSltData] = useState([]); //供应商数据
+
+  useEffect(() => {
+    setGysSltData(gysdata.slice());
+    return () => {};
+  }, [JSON.stringify(gysdata)]);
 
   const save = e => {
     formdecorate.validateFields([dataIndex + record.ID], (error, values) => {
@@ -59,12 +66,20 @@ const EditableCell = props => {
               handleSave({ ...record, ...obj });
             }}
             onBlur={save}
-            onFocus={save}
+            onFocus={() => {
+              let data = gysdata.filter(
+                x =>
+                  !(
+                    gyssltfilterarr?.filter(y => y.ID !== record.ID).map(y => y['GYS' + y.ID]) || []
+                  ).includes(x.id),
+              );
+              setGysSltData(data);
+            }}
             showSearch
             optionLabelProp="title"
             optionFilterProp="title"
           >
-            {gysdata?.map((item = {}, ind) => {
+            {gysSltData?.map((item = {}, ind) => {
               return (
                 <Select.Option key={ind} value={item.id} title={item.gysmc}>
                   <Tooltip title={item.gysmc} placement="topLeft">
