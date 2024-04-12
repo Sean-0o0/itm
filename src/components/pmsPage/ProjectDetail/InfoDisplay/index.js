@@ -659,8 +659,8 @@ export default function InfoDisplay(props) {
               style={{ display: 'flex', height: 'unset' }}
             >
               <div style={{ flexShrink: 0, color: '#909399' }}>关联预算项目：</div>
-              {/* <Link<div style={{ whiteSpace: 'break-spaces' }}>
-              
+              <div style={{ whiteSpace: 'break-spaces' }}>
+                <Link
                   style={{ color: '#3361ff' }}
                   to={{
                     pathname: `/pms/manage/BudgetDetail/${EncryptBase64(
@@ -677,9 +677,9 @@ export default function InfoDisplay(props) {
                   className="table-link-strong"
                 >
                   {notNull(prjBasic.YSXMMC)}
-                </Link> 
-              </div>*/}
-              <div style={{ whiteSpace: 'break-spaces' }}>{notNull(prjBasic.YSXMMC)}</div>
+                </Link>
+              </div>
+              {/* <div style={{ whiteSpace: 'break-spaces' }}>{notNull(prjBasic.YSXMMC)}</div> */}
             </div>
             <div className="info-item" key="关联预算项目已执行预算">
               <span>已执行预算：</span>
@@ -710,7 +710,7 @@ export default function InfoDisplay(props) {
               style={{ display: 'flex', height: 'unset', width: '100%' }}
             >
               <div style={{ flexShrink: 0, color: '#909399' }}>关联预算项目：</div>
-              {/* <div style={{ whiteSpace: 'break-spaces' }}>
+              <div style={{ whiteSpace: 'break-spaces' }}>
                 <Link
                   style={{ color: '#3361ff' }}
                   to={{
@@ -729,8 +729,8 @@ export default function InfoDisplay(props) {
                 >
                   {notNull(prjBasic.YSXMMC)}
                 </Link>
-              </div> */}
-              <div style={{ whiteSpace: 'break-spaces' }}>{notNull(prjBasic.YSXMMC)}</div>
+              </div>
+              {/* <div style={{ whiteSpace: 'break-spaces' }}>{notNull(prjBasic.YSXMMC)}</div> */}
             </div>
           </div>
         </div>
