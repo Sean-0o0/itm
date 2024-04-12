@@ -155,7 +155,7 @@ export default connect(({ global }) => ({
             selectable={false}
             checkable
             checkedKeys={orgData.sltedItems.map(x => x.id)}
-            checkStrictly
+            // checkStrictly
             onCheck={handleSlt}
           >
             {renderTreeNodes(sltorData.org)}
@@ -295,19 +295,17 @@ export default connect(({ global }) => ({
                 showSearch
                 treeNodeFilterProp="title"
                 multiple
-                treeCheckStrictly
+                // treeCheckStrictly
                 treeCheckable
                 showCheckedStrategy="SHOW_ALL"
                 dropdownStyle={{ maxHeight: 300, overflow: 'auto' }}
                 treeData={sltorData.org}
                 placeholder="请选择"
-                onChange={(v = []) => {
-                  let arr = v.map(x => ({ id: x.value, name: x.label }));
+                onChange={(v = [], txt = []) => {
+                  let arr = v.map((x, i) => ({ id: x, name: txt[i] }));
                   setMoreData(p => ({ ...p, org: arr }));
                 }}
-                value={moreData.org.map(x => ({
-                  value: x.id,
-                }))}
+                value={moreData.org.map(x => x.id)}
                 treeDefaultExpandAll
               />
             </div>

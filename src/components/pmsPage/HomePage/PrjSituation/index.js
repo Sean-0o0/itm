@@ -259,7 +259,7 @@ export default connect(({ global }) => ({
             multiple
             selectable={false}
             checkable
-            checkStrictly
+            // checkStrictly
             checkedKeys={orgData.sltedItems.map(x => x.id)}
             onCheck={handleSlt}
           >
@@ -441,16 +441,16 @@ export default connect(({ global }) => ({
                 treeNodeFilterProp="title"
                 multiple
                 treeCheckable
-                treeCheckStrictly
+                // treeCheckStrictly
                 showCheckedStrategy="SHOW_ALL"
                 dropdownStyle={{ maxHeight: 300, overflow: 'auto' }}
                 treeData={sltorData.org}
                 placeholder="请选择"
                 onChange={(v = [], txt = []) => {
-                  let arr = v.map((x, i) => ({ id: x.value, name: x.label }));
+                  let arr = v.map((x, i) => ({ id: x, name: txt[i] }));
                   setMoreData(p => ({ ...p, org: arr }));
                 }}
-                value={moreData.org.map(x => ({ value: x.id }))}
+                value={moreData.org.map(x => x.id)}
                 treeDefaultExpandAll
               />
             </div>
@@ -781,8 +781,8 @@ export default connect(({ global }) => ({
     const isEnd = String(item.WJZT) === '5';
     //完结
     const isComplete = String(item.WJZT) === '1';
-    //是否显示红色，逾期或有风险
-    const isRed = haveRisk || isLate;
+    //是否显示红色，逾期
+    const isRed = isLate;
 
     return (
       <Link
@@ -802,84 +802,88 @@ export default connect(({ global }) => ({
           width: itemWidth,
         }}
       >
-        <div className="prj-name">
-          <Popconfirm
-            title={item.SFSC === 0 ? '确定收藏？' : '确定取消收藏？'}
-            onConfirm={e => {
-              e.stopPropagation();
-              handleProjectCollect(item.XMID, item.SFSC === 0 ? 'SCXM' : 'QXXM');
-            }}
-            onCancel={e => {
-              e.stopPropagation();
-            }}
-            okText="确认"
-            cancelText="取消"
-          >
-            <i className={item.SFSC === 0 ? 'iconfont icon-star' : 'iconfont icon-fill-star'} />
-          </Popconfirm>
-          <Tooltip title={item.XMMC} placement="topLeft">
-            {item.XMMC ?? '-'}
-          </Tooltip>
-        </div>
-        <div className="prj-tags">
-          {getTagData(item.XMBQ, item.XMBQID).length > 0 && (
-            <>
-              {getTagData(item.XMBQ, item.XMBQID)
-                ?.slice(0, 2)
-                .map(x => (
-                  <div key={x.id} className={'tag-item ' + getTagClassName(x.name)}>
-                    <Link
-                      style={{ color: getTagTxtColor(x.name) }}
-                      to={{
-                        pathname: `/pms/manage/labelDetail/${EncryptBase64(
-                          JSON.stringify({
-                            bqid: x.id,
-                          }),
-                        )}`,
-                        state: {
-                          routes: [{ name: '个人工作台', pathname: location.pathname }],
-                        },
-                      }}
-                    >
-                      {x.name}
-                    </Link>
-                  </div>
-                ))}
-              {getTagData(item.XMBQ, item.XMBQID)?.length > 2 && (
-                <Popover
-                  overlayClassName="tag-more-popover"
-                  content={
-                    <div className="tag-more">
-                      {getTagData(item.XMBQ, item.XMBQID)
-                        ?.slice(2)
-                        .map(x => (
-                          <div key={x.id} className={'tag-item ' + getTagClassName(x.name)}>
-                            <Link
-                              style={{ color: getTagTxtColor(x.name) }}
-                              to={{
-                                pathname: `/pms/manage/labelDetail/${EncryptBase64(
-                                  JSON.stringify({
-                                    bqid: x.id,
-                                  }),
-                                )}`,
-                                state: {
-                                  routes: [{ name: '个人工作台', pathname: location.pathname }],
-                                },
-                              }}
-                            >
-                              {x.name}
-                            </Link>
-                          </div>
-                        ))}
+        <div className="name-tags-row">
+          <div className="prj-name">
+            <Popconfirm
+              title={item.SFSC === 0 ? '确定收藏？' : '确定取消收藏？'}
+              onConfirm={e => {
+                e.stopPropagation();
+                handleProjectCollect(item.XMID, item.SFSC === 0 ? 'SCXM' : 'QXXM');
+              }}
+              onCancel={e => {
+                e.stopPropagation();
+              }}
+              okText="确认"
+              cancelText="取消"
+            >
+              <i className={item.SFSC === 0 ? 'iconfont icon-star' : 'iconfont icon-fill-star'} />
+            </Popconfirm>
+            <Tooltip title={item.XMMC} placement="topLeft">
+              {item.XMMC ?? '-'}
+            </Tooltip>
+          </div>
+          <div className="prj-tags">
+            {getTagData(item.XMBQ, item.XMBQID).length > 0 && (
+              <>
+                {getTagData(item.XMBQ, item.XMBQID)
+                  ?.slice(0, 2)
+                  .map(x => (
+                    <div key={x.id} className={'tag-item ' + getTagClassName(x.name)}>
+                      <Link
+                        style={{ color: getTagTxtColor(x.name) }}
+                        to={{
+                          pathname: `/pms/manage/labelDetail/${EncryptBase64(
+                            JSON.stringify({
+                              bqid: x.id,
+                            }),
+                          )}`,
+                          state: {
+                            routes: [{ name: '个人工作台', pathname: location.pathname }],
+                          },
+                        }}
+                      >
+                        {x.name}
+                      </Link>
                     </div>
-                  }
-                  title={null}
-                >
-                  <div className="tag-item">{getTagData(item.XMBQ, item.XMBQID)?.length - 2}+</div>
-                </Popover>
-              )}
-            </>
-          )}
+                  ))}
+                {getTagData(item.XMBQ, item.XMBQID)?.length > 2 && (
+                  <Popover
+                    overlayClassName="tag-more-popover"
+                    content={
+                      <div className="tag-more">
+                        {getTagData(item.XMBQ, item.XMBQID)
+                          ?.slice(2)
+                          .map(x => (
+                            <div key={x.id} className={'tag-item ' + getTagClassName(x.name)}>
+                              <Link
+                                style={{ color: getTagTxtColor(x.name) }}
+                                to={{
+                                  pathname: `/pms/manage/labelDetail/${EncryptBase64(
+                                    JSON.stringify({
+                                      bqid: x.id,
+                                    }),
+                                  )}`,
+                                  state: {
+                                    routes: [{ name: '个人工作台', pathname: location.pathname }],
+                                  },
+                                }}
+                              >
+                                {x.name}
+                              </Link>
+                            </div>
+                          ))}
+                      </div>
+                    }
+                    title={null}
+                  >
+                    <div className="tag-item">
+                      {getTagData(item.XMBQ, item.XMBQID)?.length - 2}+
+                    </div>
+                  </Popover>
+                )}
+              </>
+            )}
+          </div>
         </div>
         <div className="progress-row">
           <div className="row-top">
@@ -918,62 +922,43 @@ export default connect(({ global }) => ({
             </span>
           </div>
         </div>
-        <div className="status-row" style={isRed ? { backgroundColor: 'rgba(215,14,25,0.1)' } : {}}>
-          {/* 逾期时必显示 */}
-          {isLate && <div className="status-item-red">逾期{lateDays}天</div>}
-          {/* 无风险时显示逾期事项 */}
-          {isLate && !haveRisk && (
-            <div className="status-txt">
-              逾期：
-              <Tooltip title={item.SXMC} placement="topLeft">
-                {item.SXMC ?? '-'}
-              </Tooltip>
+        <div className="status-row">
+          {/* 逾期时显示 */}
+          {isLate && (
+            <div className="status-item-late">
+              <div className="late-days">
+                <i className="iconfont circle-info" />
+                逾期{lateDays}天：
+              </div>
+              <div className="late-txt">
+                <Tooltip title={item.SXMC} placement="topLeft">
+                  {item.SXMC}
+                </Tooltip>
+              </div>
             </div>
           )}
-          {/* 有风险且逾期，显示一个风险 */}
-          {haveRisk && isLate && (
+          {/* 未逾期时 */}
+          {!isLate && (
             <Fragment>
-              <div className="status-item-red" key={item.XMFX[0].FXID}>
-                <Tooltip title={item.XMFX[0].FXBT} placement="topLeft">
-                  {item.XMFX[0].FXBT ?? '-'}
-                </Tooltip>
-              </div>
-            </Fragment>
-          )}
-          {/* 有风险且未逾期，最多显示两个， 只有一个时显示风险内容 */}
-          {haveRisk &&
-            !isLate &&
-            item.XMFX?.slice(0, 2)?.map(fx => (
-              <Fragment>
-                <div className="status-item-red" key={fx.FXID}>
-                  <Tooltip title={fx.FXBT} placement="topLeft">
-                    {fx.FXBT ?? '-'}
+              {isEnd ? (
+                <div className="status-item-red">
+                  <i className="iconfont icon-close-circle" />
+                  终止
+                </div>
+              ) : (
+                <div className="status-item">
+                  <i className="iconfont circle-check" />
+                  {isComplete ? '完结' : '正常'}
+                </div>
+              )}
+              {!isEnd && item.XYSX !== undefined && (
+                <div className="status-txt">
+                  下一事项：
+                  <Tooltip title={item.XYSX} placement="topLeft">
+                    {item.XYSX}
                   </Tooltip>
                 </div>
-                {item.XMFX.length === 1 && (
-                  <div className="status-txt">
-                    <Tooltip title={fx.FXNR} placement="topLeft">
-                      {fx.FXNR ?? '-'}
-                    </Tooltip>
-                  </div>
-                )}
-              </Fragment>
-            ))}
-          {/* 未逾期且无风险时 */}
-          {!haveRisk && !isLate && (
-            <Fragment>
-              <div className={isEnd ? 'status-item-red' : 'status-item'}>
-                {isEnd ? '终止' : isComplete ? '完结' : '正常'}
-              </div>
-              <div className="status-txt">
-                当前进展：
-                <Tooltip
-                  title={XMJZ.find(x => String(x.ibm) === String(item.XMJZ))?.note}
-                  placement="topLeft"
-                >
-                  {XMJZ.find(x => String(x.ibm) === String(item.XMJZ))?.note ?? '-'}
-                </Tooltip>
-              </div>
+              )}
             </Fragment>
           )}
         </div>
