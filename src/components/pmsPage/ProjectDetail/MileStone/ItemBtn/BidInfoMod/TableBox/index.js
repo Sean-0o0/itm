@@ -67,12 +67,9 @@ export default function TableBox(props) {
           title="确定要删除吗?"
           onConfirm={() => {
             setTableData(tableData.filter(x => x.ID !== record.ID));
-            if (tableData.filter(x => x.ID !== record.ID).length === 0) {
+            if (tableData.filter(x => x.ID !== record.ID).length === 0 && labelProps.required) {
               message.error(labelProps.label + '不允许空值', 1);
             }
-            // if (dataArr.findIndex(x => x.ID === record.ID) !== -1) {
-            //   setDelData(p => [...p, record]);
-            // }
           }}
         >
           <a style={{ color: '#3361ff' }}>删除</a>
@@ -120,7 +117,7 @@ export default function TableBox(props) {
         size="middle"
       />
     ),
-    [JSON.stringify(tableData), JSON.stringify(gysSlt), JSON.stringify(gysSltFilterArr)],
+    [JSON.stringify(tableData), JSON.stringify(gysSlt), JSON.stringify(gysSltFilterArr), form],
   );
 
   return (

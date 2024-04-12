@@ -470,7 +470,7 @@ export default connect(({ global }) => ({
     return (
       <Modal {...modalProps}>
         <div className="body-title-box">
-          <strong>合同信息录入修改</strong>
+          <strong>合同信息{type === 'ADD' ? '录入' : '修改'}</strong>
         </div>
         <Spin spinning={isSpinning} tip="加载中">
           <Steps

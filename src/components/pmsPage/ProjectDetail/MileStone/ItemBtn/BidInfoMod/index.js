@@ -114,7 +114,7 @@ export default connect(({ global }) => ({
           setTableData({
             qttbgys: [],
             rwgys: [{ ID: UUID, ['GYS' + UUID]: undefined }],
-            wrwgys: [{ ID: UUID2, ['GYS' + UUID2]: undefined }],
+            wrwgys: [],
           });
         }
       }
@@ -464,13 +464,12 @@ export default connect(({ global }) => ({
     //提交数据
     const onOk = () => {
       validateFieldsAndScroll(async (err, values) => {
-        console.log('🚀 ~ validateFieldsAndScroll ~ err:', err, values);
         let judgeCondition = fileList.length === 0;
         if (values.zbqk === '2') {
           judgeCondition = tableData.qttbgys.length === 0 || fileList.length === 0;
         } else if (values.zbqk === '3') {
           judgeCondition =
-            tableData.rwgys.length === 0 || tableData.wrwgys.length === 0 || fileList.length === 0;
+            tableData.rwgys.length === 0 || fileList.length === 0;
         }
         if (judgeCondition) {
           if (fileList.length === 0) {
@@ -488,9 +487,6 @@ export default connect(({ global }) => ({
           values.zbqk === '3' &&
             tableData.rwgys.length === 0 &&
             message.error('入围供应商不允许空值', 2);
-          values.zbqk === '3' &&
-            tableData.wrwgys.length === 0 &&
-            message.error('未入围供应商不允许空值', 2);
           return;
         }
         if (Object.keys(err || {}).findIndex(x => x.includes('GYS')) !== -1) {
@@ -681,7 +677,7 @@ export default connect(({ global }) => ({
                     label: '未入围供应商',
                     labelCol: { span: labelCol / 2 },
                     wrapperCol: { span: 24 - labelCol / 2 },
-                    required: true,
+                    required: false,
                   }}
                   gysSlt={gysSlt}
                   gysSltFilterArr={[...tableData.rwgys, ...tableData.wrwgys]}
