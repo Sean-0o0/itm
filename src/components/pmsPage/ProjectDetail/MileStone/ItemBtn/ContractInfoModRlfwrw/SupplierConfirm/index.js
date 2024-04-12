@@ -37,12 +37,18 @@ export default function SupplierConfirm(props) {
               JSON.parse(res.result)?.find(y => Number(y.GYSID) === Number(x['GYS' + x.ID])) || {};
             return {
               ...x,
+              //清空之前的账号
+              XTZH: undefined,
+              ZHID: undefined,
               ...obj,
               QSZT: x['QSZT' + x.ID],
             };
           });
           let editArr = editData.map(x => ({
             ...x,
+            //清空之前的账号
+            XTZH: undefined,
+            ZHID: undefined,
             ...(JSON.parse(res.result).find(y => Number(y.GYSID) === Number(x['GYS' + x.ID])) ||
               {}),
           }));
@@ -73,7 +79,7 @@ export default function SupplierConfirm(props) {
       key: 'RWNF',
       width: 80,
       ellipsis: true,
-      render: txt => (txt ? txt : moment().year()),
+      render: txt => (txt ? txt : prjYear),
     },
     {
       title: '供应商名称',
