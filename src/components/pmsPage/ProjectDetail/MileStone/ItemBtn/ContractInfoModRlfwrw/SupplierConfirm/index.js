@@ -43,7 +43,7 @@ export default function SupplierConfirm(props) {
           });
           let editArr = editData.map(x => ({
             ...x,
-            ...(JSON.parse(res.result).find(y => Number(y.GYSID) === Number(x['GYS' + y.ID])) ||
+            ...(JSON.parse(res.result).find(y => Number(y.GYSID) === Number(x['GYS' + x.ID])) ||
               {}),
           }));
           console.log('🚀 ~ queryShortlistedSuppliers ~ arr, editArr:', arr, editArr);
