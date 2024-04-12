@@ -77,7 +77,7 @@ export default function AttendanceRegister(props) {
         data.overtime,
         data.overtimeHalf,
       ),
-    [JSON.stringify(data)],
+    [data.attendance, data.attendanceHalf, data.leave, data.leaveHalf, data.overtime, data.overtimeHalf],
   ); // 已选择的数据
 
   useEffect(() => {
@@ -85,7 +85,7 @@ export default function AttendanceRegister(props) {
       querySysConfigInfo();
     }
     return () => {};
-  }, [visible, calendarRef]);
+  }, [visible, calendarRef, querySysConfigInfo]);
 
   useEffect(() => {
     if (calendarRef !== null && !modalVisible) {
@@ -472,12 +472,7 @@ export default function AttendanceRegister(props) {
         className: 'fc-highlight',
       })),
     ],
-    [
-      JSON.stringify(data),
-      JSON.stringify(fastSlting),
-      JSON.stringify(constData),
-      JSON.stringify(fastSlting),
-    ],
+    [constData, data.attendance, data.attendanceHalf, data.leave, data.leaveHalf, data.otherPrj, data.otherPrjHalf, data.overtime, data.overtimeHalf, fastSlting],
   );
 
   //模拟选中事件
@@ -519,6 +514,14 @@ export default function AttendanceRegister(props) {
       </Menu.Item>
     </Menu>
   );
+
+  const getTime = (e) => {
+    let time = "-年-月";
+    if(e) {
+      time= moment(e).format('YYYY年MM月');
+    }
+    return time;
+  }
 
   //选中事件
   const onCalendarSlt = useCallback(
@@ -682,6 +685,7 @@ export default function AttendanceRegister(props) {
           </Dropdown>
         </div>
         <Spin spinning={isSpinning} tip="加载中">
+          <div style={{ fontSize: '12px', position: 'absolute', right: '15px', top: '14px' ,color: '#999999'}}>{ `可登记${getTime(validRange.start)}到${getTime(validRange.end)}的数据` }</div>
           <div className="content">
             <FullCalendar
               ref={calendarRef}
