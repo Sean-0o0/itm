@@ -19,10 +19,11 @@ import { Link, useLocation } from 'react-router-dom';
 import { EncryptBase64 } from '../../../Common/Encrypt';
 import ExportModal from './ExportModal';
 import { FetchQueryBudgetProjects } from '../../../../services/projectManage';
+import { connect } from 'dva';
 const { Option } = Select;
 
 const TableBox = props => {
-  const { dataProps = {}, funcProps = {} } = props;
+  const { dataProps = {}, funcProps = {}, authorities = {} } = props;
   const {
     tableData = {},
     filterData = {},
@@ -842,7 +843,7 @@ const TableBox = props => {
         )}
         <div className="export-row">
           <span className="table-unit">单位：万元</span>
-          {allowExport && (
+          {authorities.YSTJ?.includes('budgetExport') && (
             <Button type="primary" onClick={() => setExportModalVisible(true)}>
               导出
             </Button>
@@ -851,7 +852,7 @@ const TableBox = props => {
         <div
           className="project-info-table-box"
           style={
-            !allowExport
+            !authorities.YSTJ?.includes('budgetExport')
               ? filterFold
                 ? { height: 'calc(100% - 109px)' }
                 : { height: 'calc(100% - 174px)' }
@@ -912,4 +913,6 @@ const TableBox = props => {
     </>
   );
 };
-export default Form.create()(TableBox);
+export default connect(({ global = {} }) => ({
+  authorities: global.authorities,
+}))(Form.create()(TableBox));
