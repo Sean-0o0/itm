@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useRef, useCallback, Fragment } from 'react';
-import { Button, Table, message, Popconfirm, Form, DatePicker, Icon } from 'antd';
+import { Button, Table, message, Popconfirm, Form, DatePicker, Icon, Tooltip } from 'antd';
 import { EditCustomReport } from '../../../../services/pmsServices';
 import moment from 'moment';
 import HandleAddModal from '../HandleAddModal';
 import config from '../../../../utils/config';
 import axios from 'axios';
+import { Link, useLocation } from 'react-router-dom';
+import { EncryptBase64 } from '../../../Common/Encrypt';
 const { api } = config;
 const {
   pmsServices: { exportCustomReportToExcel },
@@ -36,6 +38,7 @@ const TableBox = props => {
   const isBGHZR = (
     (JSON.parse(roleData.testRole || '{}')?.ALLROLE ?? '') + (roleData.role ?? '')
   ).includes('报告汇总人');
+  const location = useLocation();
 
   //表格跨行合并
   const getRowSpanCount = (data, key, target, bool = false) => {
@@ -131,7 +134,7 @@ const TableBox = props => {
     return ['-1', '', ' ', 'undefined', null].includes(v) ? '' : v;
   };
 
-  //列配置 - 排列顺序 - 分类字段（合并） - 关联项目 - 填写人 - 上月字段 - 本月填写字段 - 固定字段
+  //列配置 - 排列顺序 - 分类字段（合并） - 关联项目 - 提交人 - 上月字段 - 本月填写字段 - 固定字段
   const tableColumns = () => {
     let arr = [
       ...columnsData.map(x => {
@@ -159,9 +162,31 @@ const TableBox = props => {
             dataIndex: x.QZZD,
             key: x.QZZD,
             width: 140,
-            ellipsis: false,
+            ellipsis: true,
             borderLeft: true, //左边框
-            render: (txt, row) => handleValue(txt),
+            render: (txt, row) =>
+              handleValue(txt) !== '' ? (
+                <Tooltip title={handleValue(txt)} placement="topLeft">
+                  <Link
+                    style={{ color: '#3361ff' }}
+                    to={{
+                      pathname: `/pms/manage/ProjectDetail/${EncryptBase64(
+                        JSON.stringify({
+                          xmid: row.GLXMID,
+                        }),
+                      )}`,
+                      state: {
+                        routes: [{ name: '报告内容', pathname: location.pathname }],
+                      },
+                    }}
+                    className="table-link-strong"
+                  >
+                    {handleValue(txt)}
+                  </Link>
+                </Tooltip>
+              ) : (
+                ''
+              ),
           };
         if (x.QZZD === 'TXR')
           return {

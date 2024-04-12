@@ -40,7 +40,7 @@ function HandleAddModal(props) {
   const [isSpinning, setIsSpinning] = useState(false);
   const [sltData, setSltData] = useState({
     glxm: [], //关联项目
-    txr: [], //填写人
+    txr: [], //提交人
   }); //下拉框数据
   const isBGHZR = (
     (JSON.parse(roleData.testRole || '{}')?.ALLROLE ?? '') + (roleData.role ?? '')
@@ -246,8 +246,8 @@ function HandleAddModal(props) {
         // console.log('🚀 ~ getStaffData ~ JSON.parse(res.result):', JSON.parse(res.result));
       }
     } catch (error) {
-      console.error('🚀填写人下拉框数据', error);
-      message.error('填写人下拉框数据获取失败', 1);
+      console.error('🚀提交人下拉框数据', error);
+      message.error('提交人下拉框数据获取失败', 1);
       setIsSpinning(false);
       setSltData(p => ({ ...p, loading: false }));
     }

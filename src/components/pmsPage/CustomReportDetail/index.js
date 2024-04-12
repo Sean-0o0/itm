@@ -109,7 +109,7 @@ export default connect(({ global }) => ({
             ];
           }
           // console.log('🚀 ~ mergeData:', mergeData);
-          //排列顺序 - 分类字段（合并） - 关联项目 - 填写人 - 上月字段 - 本月填写字段 - 固定字段
+          //排列顺序 - 分类字段（合并） - 关联项目 - 提交人 - 上月字段 - 本月填写字段 - 固定字段
           let finalColumns = [
             //分类字段（合并）
             ...filteredArr,
@@ -148,9 +148,9 @@ export default connect(({ global }) => ({
             //   ZDLX: '3', //非分类、非填写
             //   QZZD: 'JD',
             // },
-            //填写人
+            //提交人
             {
-              ZDMC: '填写人',
+              ZDMC: '提交人',
               ZDLX: '3', //非分类、非填写
               QZZD: 'TXR',
             },
