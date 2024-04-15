@@ -355,7 +355,7 @@ export default forwardRef(function TopConsole(props, ref) {
             });
             handleSearch({
               current: 1,
-              pageSize: curPageSize,
+              pageSize: 20,
               gysmc,
               gyslx,
               lxrmc,
