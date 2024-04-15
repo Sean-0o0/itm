@@ -1,17 +1,17 @@
-import React, {useEffect, useState} from 'react';
-import {Button, Table, Popover, message, Tooltip, Popconfirm} from 'antd';
+import React, { useEffect, useState } from 'react';
+import { Button, Table, Popover, message, Tooltip, Popconfirm } from 'antd';
 // import InfoDetail from '../InfoDetail';
 import BridgeModel from '../../../Common/BasicModal/BridgeModel.js';
-import {EncryptBase64} from '../../../Common/Encrypt';
-import {Link} from 'react-router-dom';
-import {useLocation} from 'react-router';
+import { EncryptBase64 } from '../../../Common/Encrypt';
+import { Link } from 'react-router-dom';
+import { useLocation } from 'react-router';
 import InfoOprtModal from '../../SupplierDetail/TopConsole/InfoOprtModal/index.js';
-import moment from "moment";
+import moment from 'moment';
 import {
   CreateOperateHyperLink,
   DeleteMonthlyAssessment,
-  QueryMonthlyAssessment
-} from "../../../../services/pmsServices";
+  QueryMonthlyAssessment,
+} from '../../../../services/pmsServices';
 
 export default function InfoTable(props) {
   const [operateVisible, setOperateVisible] = useState(false);
@@ -25,26 +25,31 @@ export default function InfoTable(props) {
     handleSearch,
     curPage,
     curPageSize,
+    sortInfo = {},
+    setSortInfo,
   } = props; //表格数据
   const location = useLocation();
 
-  useEffect(() => {
-    return () => {
-    };
-  }, [total, tableData]);
-
-
   //表格操作后更新数据
-  const handleTableChange = (pagination) => {
-    // console.log('handleTableChange', pagination, filters, sorter, extra);
-    const {current = 1, pageSize = 20} = pagination;
-    handleSearch(current, pageSize);
+  const handleTableChange = (pagination, filters, sorter, extra) => {
+    const { current = 1, pageSize = 20 } = pagination;
+    setSortInfo(sorter);
+    if (sorter.order !== undefined) {
+      if (sorter.order === 'ascend') {
+        handleSearch({ current, pageSize, sort: sorter.field + ' ASC' });
+      } else {
+        handleSearch({ current, pageSize, sort: sorter.field + ' DESC' });
+      }
+    } else {
+      handleSearch({ current, pageSize });
+    }
+    return;
   };
 
   const getOperateUrl = (id, operateName) => {
-    let params = {}
-    if (operateName === "V_YDKH_ADD") {
-      setTitle("新增月度考核信息")
+    let params = {};
+    if (operateName === 'V_YDKH_ADD') {
+      setTitle('新增月度考核信息');
       params = {
         attribute: 0,
         authFlag: 0,
@@ -54,8 +59,8 @@ export default function InfoTable(props) {
         userId: String(JSON.parse(sessionStorage.getItem('user')).loginName),
       };
     }
-    if (operateName === "V_YDKH_MOD") {
-      setTitle("修改月度考核信息")
+    if (operateName === 'V_YDKH_MOD') {
+      setTitle('修改月度考核信息');
       params = {
         attribute: 0,
         authFlag: 0,
@@ -72,7 +77,7 @@ export default function InfoTable(props) {
     }
     CreateOperateHyperLink(params)
       .then((ret = {}) => {
-        const {code, message, url} = ret;
+        const { code, message, url } = ret;
         if (code === 1) {
           setOperateUrl(url);
           setOperateVisible(true);
@@ -83,63 +88,67 @@ export default function InfoTable(props) {
       });
   };
 
-  const delData = (id) => {
-    DeleteMonthlyAssessment({id})
+  const delData = id => {
+    DeleteMonthlyAssessment({ id })
       .then(res => {
-        const {code, result} = res
+        const { code, result } = res;
         if (code > 0) {
           message.info('删除成功！', 1);
-          handleSearch(curPage, curPageSize);
+          handleSearch({});
         }
       })
       .catch(e => {
         message.error('表格数据查询失败', 1);
         console.error('getTableData', e);
       });
-  }
+  };
 
   //列配置
   const columns = [
     {
       title: '月份',
       dataIndex: 'YF',
-      width: '10%',
-      // align: 'right',
+      width: '9%',
       key: 'YF',
       ellipsis: true,
-      // sorter: true,
-      // sortDirections: ['descend', 'ascend'],
-      render: text => <span style={{marginRight: 20}}>{moment(text, "YYYY-MM").format("YYYY-MM") || '-'}</span>,
+      sortOrder: sortInfo.columnKey === 'YF' ? sortInfo.order : undefined,
+      sorter: true,
+      sortDirections: ['descend', 'ascend'],
+      render: text => (
+        <span style={{ marginRight: 20 }}>{moment(text, 'YYYY-MM').format('YYYY-MM') || '-'}</span>
+      ),
     },
     {
       title: '项目名称',
       dataIndex: 'XMMC',
-      width: '20%',
+      // width: '20%',
       key: 'XMMC',
       ellipsis: true,
       render: (text, row, index) => {
-        const {XMID = ''} = row;
-        return <div title={text}>
-          <Tooltip title={text} placement="topLeft">
-            <Link
-              style={{color: '#3361ff'}}
-              to={{
-                pathname: `/pms/manage/ProjectDetail/${EncryptBase64(
-                  JSON.stringify({
-                    xmid: XMID,
-                  }),
-                )}`,
-                state: {
-                  routes: [{name: '月度考核', pathname: location.pathname}],
-                },
-              }}
-              className="table-link-strong"
-            >
-              {text || '-'}
-            </Link>
-          </Tooltip>
-        </div>
-      }
+        const { XMID = '' } = row;
+        return (
+          <div title={text}>
+            <Tooltip title={text} placement="topLeft">
+              <Link
+                style={{ color: '#3361ff' }}
+                to={{
+                  pathname: `/pms/manage/ProjectDetail/${EncryptBase64(
+                    JSON.stringify({
+                      xmid: XMID,
+                    }),
+                  )}`,
+                  state: {
+                    routes: [{ name: '月度考核', pathname: location.pathname }],
+                  },
+                }}
+                className="table-link-strong"
+              >
+                {text || '-'}
+              </Link>
+            </Tooltip>
+          </div>
+        );
+      },
     },
     {
       title: '人员名称',
@@ -151,13 +160,13 @@ export default function InfoTable(props) {
         return (
           <Tooltip title={text} placement="topLeft">
             <Link
-              style={{color: '#3361ff'}}
+              style={{ color: '#3361ff' }}
               to={{
                 pathname: `/pms/manage/MemberDetail/${EncryptBase64(
-                  JSON.stringify({ryid: row.RYID}),
+                  JSON.stringify({ ryid: row.RYID }),
                 )}`,
                 state: {
-                  routes: [{name: '月度考核', pathname: location.pathname}],
+                  routes: [{ name: '月度考核', pathname: location.pathname }],
                 },
               }}
               className="table-link-strong"
@@ -174,10 +183,10 @@ export default function InfoTable(props) {
       width: '6%',
       key: 'PF',
       ellipsis: true,
-      // align: 'right',
-      // sorter: true,
-      // sortDirections: ['descend', 'ascend'],
-      render: text => <span style={{marginRight: 20}}>{text || '-'}</span>,
+      sortOrder: sortInfo.columnKey === 'PF' ? sortInfo.order : undefined,
+      sorter: true,
+      sortDirections: ['descend', 'ascend'],
+      render: text => <span style={{ marginRight: 20 }}>{text || '-'}</span>,
     },
     {
       title: '综合评价',
@@ -185,10 +194,7 @@ export default function InfoTable(props) {
       width: '12%',
       key: 'ZHPJ',
       ellipsis: true,
-      // align: 'right',
-      // sorter: true,
-      // sortDirections: ['descend', 'ascend'],
-      render: text => <span style={{marginRight: 20}}>{text || '-'}</span>,
+      render: text => <span style={{ marginRight: 20 }}>{text || '-'}</span>,
     },
     {
       title: '附件',
@@ -196,13 +202,19 @@ export default function InfoTable(props) {
       width: '18%',
       key: 'FJ',
       ellipsis: true,
-      // align: 'right',
-      // sorter: true,
-      // sortDirections: ['descend', 'ascend'],
-      render: (text, row) => <span style={{marginRight: 20}}>
-        <a style={{color: '#3361FF'}}
-           href={`${localStorage.getItem('livebos') || ''}/OperateProcessor?Column=FJ&PopupWin=false&Table=TWBRY_YDKH&operate=Download&Type=View&ID=${row.FJID}&fileid=0`}>
-        {text}</a></span>,
+      render: (text, row) => (
+        <span style={{ marginRight: 20 }}>
+          <a
+            style={{ color: '#3361FF' }}
+            href={`${localStorage.getItem('livebos') ||
+              ''}/OperateProcessor?Column=FJ&PopupWin=false&Table=TWBRY_YDKH&operate=Download&Type=View&ID=${
+              row.FJID
+            }&fileid=0`}
+          >
+            {text}
+          </a>
+        </span>
+      ),
     },
     {
       title: '日期',
@@ -210,10 +222,14 @@ export default function InfoTable(props) {
       width: '12%',
       key: 'RQ',
       ellipsis: true,
-      // align: 'right',
-      // sorter: true,
-      // sortDirections: ['descend', 'ascend'],
-      render: text => <span style={{marginRight: 20}}>{moment(text, "YYYY-MM-DD").format("YYYY-MM-DD") || '-'}</span>,
+      sortOrder: sortInfo.columnKey === 'RQ' ? sortInfo.order : undefined,
+      sorter: true,
+      sortDirections: ['descend', 'ascend'],
+      render: text => (
+        <span style={{ marginRight: 20 }}>
+          {moment(text, 'YYYY-MM-DD').format('YYYY-MM-DD') || '-'}
+        </span>
+      ),
     },
     {
       title: '操作',
@@ -221,17 +237,18 @@ export default function InfoTable(props) {
       width: 120,
       render: (text, record) => (
         <span>
-         <a style={{color: '#3361FF'}} onClick={() => getOperateUrl(record.FJID, "V_YDKH_MOD")}>修改</a>
-            <Popconfirm
-              title="确定删除？"
-              onConfirm={() => delData(record.FJID)}
-              onCancel={() => {
-              }}
-              okText="确认"
-              cancelText="取消"
-            >
-              <a style={{color: '#3361FF'}}>&nbsp;&nbsp;删除</a>
-            </Popconfirm>
+          <a style={{ color: '#3361FF' }} onClick={() => getOperateUrl(record.FJID, 'V_YDKH_MOD')}>
+            修改
+          </a>
+          <Popconfirm
+            title="确定删除？"
+            onConfirm={() => delData(record.FJID)}
+            onCancel={() => {}}
+            okText="确认"
+            cancelText="取消"
+          >
+            <a style={{ color: '#3361FF' }}>&nbsp;&nbsp;删除</a>
+          </Popconfirm>
         </span>
       ),
     },
@@ -241,33 +258,36 @@ export default function InfoTable(props) {
     isAllWindow: 1,
     // defaultFullScreen: true,
     width: '860px',
-    height: '420px',
+    height: '320px',
     title,
-    style: {top: '40px'},
+    style: { top: '60px' },
     visible: operateVisible,
     footer: null,
   };
 
   return (
     <div className="info-table">
-      {
-        operateVisible &&
+      {operateVisible && (
         <BridgeModel
           modalProps={operateModalProps}
           onSucess={() => {
-            message.info("操作成功！")
-            setOperateVisible(false)
+            message.info('操作成功！');
+            setOperateVisible(false);
             handleSearch(curPage, curPageSize);
           }}
           onCancel={() => {
-            setOperateVisible(false)
+            setOperateVisible(false);
             handleSearch(curPage, curPageSize);
           }}
           src={operateUrl}
         />
-      }
+      )}
       <div className="btn-add-prj-box">
-        <Button type="primary" className="btn-add-prj" onClick={() => getOperateUrl('', "V_YDKH_ADD")}>
+        <Button
+          type="primary"
+          className="btn-add-prj"
+          onClick={() => getOperateUrl('', 'V_YDKH_ADD')}
+        >
           新增
         </Button>
       </div>
@@ -275,16 +295,15 @@ export default function InfoTable(props) {
         <Table
           loading={tableLoading}
           columns={columns}
-          rowKey={'RYID'}
+          rowKey={'ID'}
           dataSource={tableData}
           onChange={handleTableChange}
-          // scroll={{ y: 500 }}
           pagination={{
             current: curPage,
             pageSize: curPageSize,
             defaultCurrent: 1,
             defaultPageSize: 5,
-            // pageSizeOptions: ['20', '40', '50', '100'],
+            pageSizeOptions: ['20', '40', '50', '100'],
             showSizeChanger: true,
             hideOnSinglePage: false,
             showQuickJumper: true,

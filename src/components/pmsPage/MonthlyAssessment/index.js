@@ -1,14 +1,11 @@
-import React, {useEffect, useState, useRef} from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import InfoTable from './InfoTable';
 import TopConsole from './TopConsole';
 import {
   QueryMonthlyAssessment,
-  QueryOutsourceMemberList,
-  QuerySupplierList,
-  QueryUserRole
+  QueryUserRole,
 } from '../../../services/pmsServices';
-import {setCommentRange} from 'typescript';
-import {message} from 'antd';
+import { message } from 'antd';
 
 export default function MonthlyAssessment(props) {
   const [tableData, setTableData] = useState([]); //表格数据-项目列表
@@ -16,21 +13,23 @@ export default function MonthlyAssessment(props) {
   const [total, setTotal] = useState(0); //数据总数
   const [curPage, setCurPage] = useState(1); //当前页码
   const [curPageSize, setCurPageSize] = useState(20); //每页数量
-  const {params = {}, dictionary = {}} = props;
+  const { params = {}, dictionary = {} } = props;
   const {} = dictionary;
   const LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
   const topConsoleRef = useRef(null);
+  const [filterData, setFilterData] = useState({}); //点查询后的顶部筛选数据
+  const [sortInfo, setSortInfo] = useState({
+    sort: undefined,
+    columnKey: '',
+  }); //用于查询后清空排序状态
 
   useEffect(() => {
-    console.log("1111")
     //无参数
     getTableData({});
   }, [params]);
 
-
   //获取表格数据
-  const getTableData = ({current = 1, pageSize = 20, queryType = 'ALL', sort = 'ID ASC'}) => {
-    console.log("刷新列表数据....")
+  const getTableData = ({ current = 1, pageSize = 20, queryType = 'ALL', sort = 'ID ASC' }) => {
     setTableLoading(true);
     //获取用户角色
     QueryUserRole({
@@ -38,27 +37,19 @@ export default function MonthlyAssessment(props) {
     })
       .then(res => {
         if (res?.code === 1) {
-          const {role = '', zyrole = ''} = res;
+          const { role = '', zyrole = '' } = res;
           const param = {
             current,
             cxlx: queryType,
-            js: zyrole === "暂无" ? role : zyrole,
+            js: zyrole === '暂无' ? role : zyrole,
             pageSize,
             paging: 1,
-            // rymc: 0,
-            sort: "",
+            sort: '',
             total: -1,
-            // xmmc: 0,
-            // yf: 0,
-            // zhpj: 0
-          }
-          // console.log("params.xmid", params.xmid)
-          // if (String(params.xmid) !== "" || params.xmid !== "undefined") {
-          //   param.xmmc = Number(params.xmid);
-          // }
-          QueryMonthlyAssessment({...param})
+          };
+          QueryMonthlyAssessment({ ...param })
             .then(res => {
-              const {code, result, totalrows} = res
+              const { code, result, totalrows } = res;
               if (code > 0) {
                 setTableData(p => [...JSON.parse(result)]);
                 setTotal(totalrows);
@@ -89,8 +80,8 @@ export default function MonthlyAssessment(props) {
         setCurPage={setCurPage}
         setCurPageSize={setCurPageSize}
         ref={topConsoleRef}
-        curPage={curPage}
-        curPageSize={curPageSize}
+        setFilterData={setFilterData}
+        setSortInfo={setSortInfo}
       />
       <InfoTable
         tableData={tableData}
@@ -99,7 +90,9 @@ export default function MonthlyAssessment(props) {
         total={total}
         curPage={curPage}
         curPageSize={curPageSize}
-        handleSearch={topConsoleRef?.current?.handleSearch}
+        handleSearch={(v = {}) => topConsoleRef?.current?.handleSearch({ ...filterData, ...v })}
+        sortInfo={sortInfo}
+        setSortInfo={setSortInfo}
       />
     </div>
   );
