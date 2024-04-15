@@ -860,7 +860,15 @@ export default function HomePage(props) {
               prjInfo={prjInfo}
               getPrjInfo={() => {
                 getPrjInfo(userRole, statisticYearData.currentYear);
-                getTrackingData({ current: 1, pageSize: 9 });
+                let yearMoment =
+                  statisticYearData.currentYear === undefined
+                    ? moment()
+                    : moment(String(statisticYearData.currentYear));
+                getPrjSituation({
+                  role: userRole,
+                  startYear: yearMoment,
+                  endYear: yearMoment,
+                });
               }}
               total={total.project}
               placement={placement}
@@ -889,7 +897,15 @@ export default function HomePage(props) {
               userRole={userRole}
               getPrjInfo={() => {
                 getPrjInfo(userRole, statisticYearData.currentYear);
-                getTrackingData({ current: 1, pageSize: 9 });
+                let yearMoment =
+                  statisticYearData.currentYear === undefined
+                    ? moment()
+                    : moment(String(statisticYearData.currentYear));
+                getPrjSituation({
+                  role: userRole,
+                  startYear: yearMoment,
+                  endYear: yearMoment,
+                });
               }}
               reflush={handlePromiseAll}
               toDoData={toDoData}
