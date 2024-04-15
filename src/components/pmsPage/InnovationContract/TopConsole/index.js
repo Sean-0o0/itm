@@ -21,6 +21,7 @@ export default function TopConsole(props) {
     },
     dictionary = {},
     filterFold,
+    roleTxt = '',
   } = dataProps;
   const {
     xc_deal_flag = [], //处理状态
@@ -165,7 +166,16 @@ export default function TopConsole(props) {
                 placeholder="请选择"
                 onChange={v => setFilterData(p => ({ ...p, trustee: v }))}
                 value={filterData.trustee}
-                treeDefaultExpandedKeys={['357', '11168']}
+                treeDefaultExpandedKeys={[
+                  '8867',
+                  '13104',
+                  '13395',
+                  '393',
+                  '544',
+                  '12459',
+                  '357',
+                  '11168',
+                ]}
               />
             </div>
             <div className="console-item">

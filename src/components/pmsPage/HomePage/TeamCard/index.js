@@ -5,7 +5,7 @@ import * as echarts from 'echarts';
 import { EncryptBase64 } from '../../../Common/Encrypt';
 
 export default function TeamCard(props) {
-  const { teamData = [], defaultYear } = props;
+  const { teamData = [], defaultYear, AUTH = [] } = props;
   const location = useLocation();
   const pieChartRef = useRef(null);
 
@@ -123,24 +123,26 @@ export default function TeamCard(props) {
     <div className="team-card-box" style={{ padding: '16px 12px  24px 0' }}>
       <div className="home-card-title-box" style={{ padding: '0  12px 0 24px' }}>
         部门队伍建设(含外包)
-        <span>
-          <Link
-            to={{
-              pathname: `/pms/manage/departmentOverview/${EncryptBase64(
-                JSON.stringify({
-                  defaultYear,
+        {AUTH.includes('teamBuilding') && (
+          <span>
+            <Link
+              to={{
+                pathname: `/pms/manage/departmentOverview/${EncryptBase64(
+                  JSON.stringify({
+                    defaultYear,
+                    routes: [{ name: '个人工作台', pathname: location.pathname }],
+                  }),
+                )}`,
+                state: {
                   routes: [{ name: '个人工作台', pathname: location.pathname }],
-                }),
-              )}`,
-              state: {
-                routes: [{ name: '个人工作台', pathname: location.pathname }],
-              },
-            }}
-          >
-            全部
-            <i className="iconfont icon-right" />
-          </Link>
-        </span>
+                },
+              }}
+            >
+              全部
+              <i className="iconfont icon-right" />
+            </Link>
+          </span>
+        )}
       </div>
       <div className="team-chart" ref={pieChartRef} />
     </div>

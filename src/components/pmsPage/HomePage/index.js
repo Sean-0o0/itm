@@ -111,6 +111,8 @@ export default function HomePage(props) {
     data: [],
     total: -1,
   }); //项目情况数据
+  const roleTxt =
+    (JSON.parse(roleData.testRole || '{}')?.ALLROLE ?? '') + ',' + (roleData.role ?? ''); //角色信息
   var s = 0;
   var e = 0;
 
@@ -141,12 +143,10 @@ export default function HomePage(props) {
   }, []);
 
   useEffect(() => {
-    if (LOGIN_USER_INFO.id !== undefined) {
-      s = performance.now();
-      getDefaultYear();
-    }
+    s = performance.now();
+    getDefaultYear();
     return () => {};
-  }, [LOGIN_USER_INFO.id]);
+  }, [JSON.stringify(roleData)]);
 
   //获取默认年份
   const getDefaultYear = () => {
@@ -178,330 +178,306 @@ export default function HomePage(props) {
   const handlePromiseAll = async (year = statisticYearData.currentYear) => {
     try {
       setIsSpinning(true);
-      //获取用户角色
-      const roleData =
-        (await QueryUserRole({
-          userId: String(LOGIN_USER_INFO.id),
-        })) || {};
-      if (roleData.code === 1) {
-        const ROLE = roleData.role;
-        setUserRole(ROLE);
-        setIsGLY({
-          zscq: JSON.parse(roleData.testRole || '{}').ALLROLE?.includes('知识产权管理员'),
-          hjry: JSON.parse(roleData.testRole || '{}').ALLROLE?.includes('获奖荣誉管理员'),
+      const ROLE = roleData.role;
+      setUserRole(ROLE);
+      setIsGLY({
+        zscq: JSON.parse(roleData.testRole || '{}').ALLROLE?.includes('知识产权管理员'),
+        hjry: JSON.parse(roleData.testRole || '{}').ALLROLE?.includes('获奖荣誉管理员'),
+      });
+
+      //获取预算执行情况
+      const budgetPromise = QueryBudgetOverviewInfo({
+        org: Number(LOGIN_USER_INFO.org),
+        queryType: 'SY',
+        role: ROLE,
+        year,
+      });
+      //项目信息
+      const prjPromise = QueryProjectDraft({
+        projectManager: Number(LOGIN_USER_INFO.id),
+      });
+      //获取待办、系统公告数据
+      const todoPromise = FetchQueryOwnerMessage({
+        cxlx: 'DB',
+        date: Number(new moment().format('YYYYMMDD')),
+        paging: 1,
+        current: 1,
+        pageSize: 99999,
+        total: -1,
+        sort: '',
+      });
+      //获取系统公告数据
+      const sysNoticePromise = FetchQueryOwnerMessage({
+        cxlx: 'GG',
+        date: Number(new moment().format('YYYYMMDD')),
+        paging: 1,
+        current: 1,
+        pageSize: 5,
+        total: -1,
+        sort: '',
+      });
+      //获取项目概览信息
+      const overviewPromise1 = QueryStagingOverviewInfo({
+        org: Number(LOGIN_USER_INFO.org),
+        role: ROLE,
+        year,
+        queryType: 'NR1',
+      });
+      const overviewPromise2 = QueryStagingOverviewInfo({
+        org: Number(LOGIN_USER_INFO.org),
+        role: ROLE,
+        year,
+        queryType: 'NR2',
+      });
+      //获取我的报表数据
+      const rptPromise = FetchQueryCustomReportList({
+        current: 1,
+        //SC|收藏的报表;WD|我的报表;GX|共享报表;CJ|我创建的报表;CJR|查询创建人;KJBB|可见报表
+        cxlx: 'WD',
+        pageSize: 3,
+        paging: 1,
+        sort: '',
+        total: -1,
+      });
+      //获取项目跟踪数据
+      const trackingPromise = QueryProjectTracking({
+        current: 1,
+        pageSize: 9,
+        paging: 1,
+        queryType: 'XM',
+        sort: '',
+        total: -1,
+      });
+      //标签
+      const labelPromise = FetchQueryProjectLabel({});
+      //部门
+      const orgPromise = FetchQueryOrganizationInfo({
+        type: roleTxt.includes('非IT部门') ? 'FITBM' : 'ZZJG',
+      });
+      //项目情况
+      const prjSitutaionPromise = QueryProjectStatusList({
+        current: 1,
+        pageSize: 9,
+        paging: -1,
+        sort: '',
+        total: -1,
+        role: ROLE,
+        startYear: year,
+        endYear: year,
+      });
+
+      const PROMISE = [
+        budgetPromise,
+        prjPromise,
+        todoPromise,
+        sysNoticePromise,
+        overviewPromise1,
+        overviewPromise2,
+        rptPromise,
+        trackingPromise,
+        labelPromise,
+        orgPromise,
+        prjSitutaionPromise,
+      ];
+      if (['二级部门领导', '普通人员'].includes(ROLE)) {
+        //获取流程情况
+        const processPromise = FetchQueryOwnerWorkflow({
+          paging: 1,
+          current: 1,
+          pageSize: 3,
+          total: -1,
+          sort: '',
         });
-        // const testRole = JSON.parse(roleData.testRole || '{}');
-        // const { ZSCQ = '' } = testRole;
-        // const ZSCQ_IDArr = ZSCQ === '' ? [] : ZSCQ.split(',');
-        // const ZSCQ_Auth = ZSCQ_IDArr.includes(String(LOGIN_USER_INFO.id));
-        // setGrayTest(p => ({ ...p, ZSCQ: true }));
-        //获取预算执行情况
-        const budgetPromise = QueryBudgetOverviewInfo({
+
+        PROMISE.push(processPromise);
+      } else {
+        //队伍建设
+        const teamPromise = QueryMemberOverviewInfo({
           org: Number(LOGIN_USER_INFO.org),
           queryType: 'SY',
           role: ROLE,
           year,
         });
-        //项目信息
-        // const prjPromise = QueryProjectGeneralInfo({
-        //   queryType: 'CG',
-        //   role: ROLE,
-        //   org: Number(LOGIN_USER_INFO.org),
-        //   paging: 1,
-        //   current: 1,
-        //   pageSize: 3,
-        //   total: -1,
-        //   sort: '',
-        //   year,
-        // });
-        //项目信息
-        const prjPromise = QueryProjectDraft({
-          projectManager: Number(LOGIN_USER_INFO.id),
-        });
-        //获取待办、系统公告数据
-        const todoPromise = FetchQueryOwnerMessage({
-          cxlx: 'DB',
-          date: Number(new moment().format('YYYYMMDD')),
-          paging: 1,
-          current: 1,
-          pageSize: 99999,
-          total: -1,
-          sort: '',
-        });
-        //获取系统公告数据
-        const sysNoticePromise = FetchQueryOwnerMessage({
-          cxlx: 'GG',
-          date: Number(new moment().format('YYYYMMDD')),
-          paging: 1,
-          current: 1,
-          pageSize: 5,
-          total: -1,
-          sort: '',
-        });
-        //获取项目概览信息
-        const overviewPromise1 = QueryStagingOverviewInfo({
+        //供应商情况
+        const supplierPromise = QuerySupplierOverviewInfo({
           org: Number(LOGIN_USER_INFO.org),
-          role: ROLE,
-          year,
-          queryType: 'NR1',
-        });
-        const overviewPromise2 = QueryStagingOverviewInfo({
-          org: Number(LOGIN_USER_INFO.org),
-          role: ROLE,
-          year,
-          queryType: 'NR2',
-        });
-        //获取我的报表数据
-        const rptPromise = FetchQueryCustomReportList({
-          current: 1,
-          //SC|收藏的报表;WD|我的报表;GX|共享报表;CJ|我创建的报表;CJR|查询创建人;KJBB|可见报表
-          cxlx: 'WD',
-          pageSize: 3,
-          paging: 1,
-          sort: '',
-          total: -1,
-        });
-        //获取项目跟踪数据
-        const trackingPromise = QueryProjectTracking({
-          current: 1,
-          pageSize: 9,
-          paging: 1,
-          queryType: 'XM',
-          sort: '',
-          total: -1,
-        });
-        //标签
-        const labelPromise = FetchQueryProjectLabel({});
-        //部门
-        const orgPromise = FetchQueryOrganizationInfo({
-          type: 'ZZJG',
-        });
-        //项目情况
-        const prjSitutaionPromise = QueryProjectStatusList({
-          current: 1,
-          pageSize: 9,
+          queryType: 'SY',
           paging: -1,
-          sort: '',
+          current: 1,
+          pageSize: 9999,
           total: -1,
+          sort: '',
           role: ROLE,
-          startYear: year,
-          endYear: year,
+          year,
         });
-
-        const PROMISE = [
-          budgetPromise,
-          prjPromise,
-          todoPromise,
-          sysNoticePromise,
-          overviewPromise1,
-          overviewPromise2,
-          rptPromise,
-          trackingPromise,
-          labelPromise,
-          orgPromise,
-          prjSitutaionPromise,
-        ];
-        if (['二级部门领导', '普通人员'].includes(ROLE)) {
-          //获取流程情况
-          const processPromise = FetchQueryOwnerWorkflow({
-            paging: 1,
-            current: 1,
-            pageSize: 3,
-            total: -1,
-            sort: '',
-          });
-
-          PROMISE.push(processPromise);
-        } else {
-          //队伍建设
-          const teamPromise = QueryMemberOverviewInfo({
-            org: Number(LOGIN_USER_INFO.org),
-            queryType: 'SY',
-            role: ROLE,
-            year,
-          });
-          //供应商情况
-          const supplierPromise = QuerySupplierOverviewInfo({
-            org: Number(LOGIN_USER_INFO.org),
-            queryType: 'SY',
-            paging: -1,
-            current: 1,
-            pageSize: 9999,
-            total: -1,
-            sort: '',
-            role: ROLE,
-            year,
-          });
-          PROMISE.push(teamPromise);
-          PROMISE.push(supplierPromise);
-        }
-        const RESULT = await Promise.all(PROMISE);
-        const [
-          budgetRes,
-          prjRes,
-          todoRes,
-          sysNoticeRes,
-          overviewRes1,
-          overviewRes2,
-          rptRes,
-          trackingRes,
-          labelRes,
-          orgRes,
-          prjSitutaionRes,
-        ] = RESULT;
-
-        const budgetResData = (await budgetRes) || {};
-        const prjResData = (await prjRes) || {};
-        const todoResData = (await todoRes) || {};
-        const sysNoticeResData = (await sysNoticeRes) || {};
-        const overviewResData1 = (await overviewRes1) || {};
-        const overviewResData2 = (await overviewRes2) || {};
-        const rptResData = (await rptRes) || {};
-        const trackingResData = (await trackingRes) || {};
-        const labelResData = (await labelRes) || {};
-        const orgResData = (await orgRes) || {};
-        const prjSituationResData = (await prjSitutaionRes) || {};
-
-        if (budgetResData.success) {
-          setBudgetData(JSON.parse(budgetResData.ysglxx)[0]);
-          setStatisticYearData(p => ({ ...p, dropdown: JSON.parse(budgetResData.ysqs) }));
-        }
-        if (prjResData.success) {
-          let arr = JSON.parse(prjResData.result || '[]'); //项目草稿
-          setPrjInfo(p => [...arr]);
-          setTotal(p => {
-            return {
-              ...p,
-              project: arr.length,
-            };
-          });
-        }
-        if (todoResData.success) {
-          let data = [...todoResData.record];
-          setToDoData(data);
-          setTotal(p => {
-            return {
-              ...p,
-              todo: data.length,
-            };
-          });
-        }
-        if (sysNoticeResData.success) {
-          setNoticeData([...sysNoticeResData.record]);
-        }
-        if (overviewResData1.success && overviewResData2.success) {
-          setOverviewInfo({
-            ...JSON.parse(overviewResData1.result)[0],
-            ...JSON.parse(overviewResData2.result)[0],
-          });
-          // console.log('🚀~ handlePromiseAll ~ OverviewInfo: ', {
-          //   ...JSON.parse(overviewResData1.result)[0],
-          //   ...JSON.parse(overviewResData2.result)[0],
-          // });
-        }
-        if (rptResData.success) {
-          setCusRepDataWD(p => [...JSON.parse(rptResData.result)]);
-          setWDTotal(rptResData.totalrows);
-          setIsLoading(false);
-          setShowExtendsWD(false);
-        }
-        if (trackingResData.success) {
-          const track = JSON.parse(trackingResData.result);
-          setTrackingData(track);
-          setTotal(p => {
-            return {
-              ...p,
-              tracking: trackingResData.totalrows,
-            };
-          });
-        }
-        if (labelResData.success) {
-          let labelTree = TreeUtils.toTreeData(JSON.parse(labelResData.record), {
-            keyName: 'ID',
-            pKeyName: 'FID',
-            titleName: 'BQMC',
-            normalizeTitleName: 'title',
-            normalizeKeyName: 'value',
-          });
-          labelTree = get(labelTree, '[0].children[0].children', []);
-          labelTree.forEach(x => setParentSelectableFalse(x));
-          // console.log('🚀 ~ handlePromiseAll ~ labelTree:', labelTree);
-          setLabelData(labelTree);
-        }
-        if (orgResData.success) {
-          let orgTree = TreeUtils.toTreeData(orgResData.record, {
-            keyName: 'orgId',
-            pKeyName: 'orgFid',
-            titleName: 'orgName',
-            normalizeTitleName: 'title',
-            normalizeKeyName: 'value',
-          });
-          orgTree = [get(orgTree, '[0].children[0].children[0].children[0]', {})];
-          // console.log('🚀 ~ orgTree ~ orgTree:', orgTree);
-          setOrgData(orgTree);
-        }
-        if (prjSituationResData.success) {
-          console.log(
-            '🚀 ~ handlePromiseAll ~ prjSituationResData:',
-            JSON.parse(prjSituationResData.result),
-          );
-          setPrjSituationData({
-            loading: false,
-            data: JSON.parse(prjSituationResData.result),
-            total: prjSituationResData.totalrows,
-          });
-        }
-        if (['二级部门领导', '普通人员'].includes(ROLE)) {
-          const processResData = (await RESULT[RESULT?.length - 1]) || {};
-          if (processResData.success) {
-            setProcessData(p => [...processResData.record]);
-            setTotal(p => {
-              return {
-                ...p,
-                process: processResData.totalrows,
-              };
-            });
-          }
-        } else {
-          const teamResData = (await RESULT[RESULT?.length - 2]) || {};
-          const supplierResData = (await RESULT[RESULT?.length - 1]) || {};
-          if (teamResData.success) {
-            let arr = JSON.parse(teamResData.bmry).map(x => {
-              return {
-                value: Number(x.BMRS),
-                name: x.BMMC,
-              };
-            });
-            setTeamData(p => [...arr]);
-          }
-          if (supplierResData.success) {
-            let obj = {
-              cgje: [],
-              cgsl: [],
-              gysmc: [],
-              item: [],
-            };
-            let maxJe = 100;
-            JSON.parse(supplierResData.gysxx)?.forEach(item => {
-              obj.cgje.push(Number(item.CGJE));
-              obj.cgsl.push(Number(item.CGSL));
-              obj.item.push(item);
-            });
-            maxJe = Math.max(...obj.cgje);
-            JSON.parse(supplierResData.gysxx)?.forEach(item => {
-              obj.gysmc.push({
-                name: item.GYSMC,
-                max: maxJe * 1.1,
-              });
-            });
-            setSupplierData(obj);
-          }
-        }
-
-        e = performance.now();
-        console.log(`Request time: ${e - s} milliseconds`, s, e);
-        setIsSpinning(false);
+        PROMISE.push(teamPromise);
+        PROMISE.push(supplierPromise);
       }
+      const RESULT = await Promise.all(PROMISE);
+      const [
+        budgetRes,
+        prjRes,
+        todoRes,
+        sysNoticeRes,
+        overviewRes1,
+        overviewRes2,
+        rptRes,
+        trackingRes,
+        labelRes,
+        orgRes,
+        prjSitutaionRes,
+      ] = RESULT;
+
+      const budgetResData = (await budgetRes) || {};
+      const prjResData = (await prjRes) || {};
+      const todoResData = (await todoRes) || {};
+      const sysNoticeResData = (await sysNoticeRes) || {};
+      const overviewResData1 = (await overviewRes1) || {};
+      const overviewResData2 = (await overviewRes2) || {};
+      const rptResData = (await rptRes) || {};
+      const trackingResData = (await trackingRes) || {};
+      const labelResData = (await labelRes) || {};
+      const orgResData = (await orgRes) || {};
+      const prjSituationResData = (await prjSitutaionRes) || {};
+
+      if (budgetResData.success) {
+        setBudgetData(JSON.parse(budgetResData.ysglxx)[0]);
+        setStatisticYearData(p => ({ ...p, dropdown: JSON.parse(budgetResData.ysqs) }));
+      }
+      if (prjResData.success) {
+        let arr = JSON.parse(prjResData.result || '[]'); //项目草稿
+        setPrjInfo(p => [...arr]);
+        setTotal(p => {
+          return {
+            ...p,
+            project: arr.length,
+          };
+        });
+      }
+      if (todoResData.success) {
+        let data = [...todoResData.record];
+        setToDoData(data);
+        setTotal(p => {
+          return {
+            ...p,
+            todo: data.length,
+          };
+        });
+      }
+      if (sysNoticeResData.success) {
+        setNoticeData([...sysNoticeResData.record]);
+      }
+      if (overviewResData1.success && overviewResData2.success) {
+        setOverviewInfo({
+          ...JSON.parse(overviewResData1.result)[0],
+          ...JSON.parse(overviewResData2.result)[0],
+        });
+        // console.log('🚀~ handlePromiseAll ~ OverviewInfo: ', {
+        //   ...JSON.parse(overviewResData1.result)[0],
+        //   ...JSON.parse(overviewResData2.result)[0],
+        // });
+      }
+      if (rptResData.success) {
+        setCusRepDataWD(p => [...JSON.parse(rptResData.result)]);
+        setWDTotal(rptResData.totalrows);
+        setIsLoading(false);
+        setShowExtendsWD(false);
+      }
+      if (trackingResData.success) {
+        const track = JSON.parse(trackingResData.result);
+        setTrackingData(track);
+        setTotal(p => {
+          return {
+            ...p,
+            tracking: trackingResData.totalrows,
+          };
+        });
+      }
+      if (labelResData.success) {
+        let labelTree = TreeUtils.toTreeData(JSON.parse(labelResData.record), {
+          keyName: 'ID',
+          pKeyName: 'FID',
+          titleName: 'BQMC',
+          normalizeTitleName: 'title',
+          normalizeKeyName: 'value',
+        });
+        labelTree = get(labelTree, '[0].children[0].children', []);
+        labelTree.forEach(x => setParentSelectableFalse(x));
+        // console.log('🚀 ~ handlePromiseAll ~ labelTree:', labelTree);
+        setLabelData(labelTree);
+      }
+      if (orgResData.success) {
+        let orgTree = TreeUtils.toTreeData(orgResData.record, {
+          keyName: 'orgId',
+          pKeyName: 'orgFid',
+          titleName: 'orgName',
+          normalizeTitleName: 'title',
+          normalizeKeyName: 'value',
+        });
+        console.log('🚀 ~ orgTree ~ orgTree:', orgTree);
+        let orgTreeData = get(orgTree, '[0].children[0].children[0].children', []);
+        if (roleTxt.includes('非IT部门')) {
+          orgTreeData = get(orgTree, '[0].children[0].children', []);
+        }
+        setOrgData(orgTreeData);
+      }
+      if (prjSituationResData.success) {
+        setPrjSituationData({
+          loading: false,
+          data: JSON.parse(prjSituationResData.result),
+          total: prjSituationResData.totalrows,
+        });
+      }
+      if (['二级部门领导', '普通人员'].includes(ROLE)) {
+        const processResData = (await RESULT[RESULT?.length - 1]) || {};
+        if (processResData.success) {
+          setProcessData(p => [...processResData.record]);
+          setTotal(p => {
+            return {
+              ...p,
+              process: processResData.totalrows,
+            };
+          });
+        }
+      } else {
+        const teamResData = (await RESULT[RESULT?.length - 2]) || {};
+        const supplierResData = (await RESULT[RESULT?.length - 1]) || {};
+        if (teamResData.success) {
+          let arr = JSON.parse(teamResData.bmry).map(x => {
+            return {
+              value: Number(x.BMRS),
+              name: x.BMMC,
+            };
+          });
+          setTeamData(p => [...arr]);
+        }
+        if (supplierResData.success) {
+          let obj = {
+            cgje: [],
+            cgsl: [],
+            gysmc: [],
+            item: [],
+          };
+          let maxJe = 100;
+          JSON.parse(supplierResData.gysxx)?.forEach(item => {
+            obj.cgje.push(Number(item.CGJE));
+            obj.cgsl.push(Number(item.CGSL));
+            obj.item.push(item);
+          });
+          maxJe = Math.max(...obj.cgje);
+          JSON.parse(supplierResData.gysxx)?.forEach(item => {
+            obj.gysmc.push({
+              name: item.GYSMC,
+              max: maxJe * 1.1,
+            });
+          });
+          setSupplierData(obj);
+        }
+      }
+
+      e = performance.now();
+      console.log(`Request time: ${e - s} milliseconds`, s, e);
+      setIsSpinning(false);
     } catch (error) {
       console.error('🚀 ~ handlePromiseAll ~ error:', error);
       message.error('个人工作台信息获取失败', 1);
@@ -511,11 +487,6 @@ export default function HomePage(props) {
 
   //统计年份变化
   const handleCurYearChange = (year = moment().year()) => {
-    // getBudgetData(userRole, year);
-    // if (!['二级部门领导', '普通人员'].includes(userRole)) {
-    //   getTeamData(userRole, year);
-    // }
-    // getOverviewInfo(userRole, year);
     handlePromiseAll(year);
   };
 
@@ -933,12 +904,17 @@ export default function HomePage(props) {
               </Fragment>
             ) : (
               <Fragment>
-                <TeamCard teamData={teamData} defaultYear={statisticYearData.currentYear} />
+                <TeamCard
+                  teamData={teamData}
+                  defaultYear={statisticYearData.currentYear}
+                  AUTH={authorities.GRGZT}
+                />
                 {supplierData.item?.length > 1 ? (
                   <SupplierCard
                     supplierData={supplierData}
                     time={moment(overviewInfo?.gysgxsj).format('YYYY-MM-DD')}
                     defaultYear={statisticYearData.currentYear}
+                    AUTH={authorities.GRGZT}
                   />
                 ) : null}
               </Fragment>

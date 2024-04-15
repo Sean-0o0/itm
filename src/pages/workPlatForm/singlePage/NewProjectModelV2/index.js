@@ -491,6 +491,13 @@ class NewProjectModelV2 extends React.Component {
     // 查询人员信息
     await this.fetchQueryMemberInfo();
 
+    const roleTxt =
+      (JSON.parse(this.props.roleData?.testRole || '{}')?.ALLROLE ?? '') +
+      (this.props.roleData?.role ?? ''); //角色信息
+    //非IT部门 默认负责人
+    if (roleTxt?.includes('非IT部门')) {
+      await this.fetchQueryMemberInfoNoIT();
+    }
     // 修改项目时查询项目详细信息
     if (this.state.basicInfo.projectId && this.state.basicInfo.projectId !== -1) {
       await this.fetchQueryProjectDetails({ projectId: this.state.basicInfo.projectId });
@@ -1508,6 +1515,34 @@ class NewProjectModelV2 extends React.Component {
       })
       .catch(error => {
         message.error(!error.success ? error.message : error.note);
+      });
+  }
+
+  // 非IT部门人员 - 查询默认负责人
+  fetchQueryMemberInfoNoIT() {
+    return FetchQueryMemberInfo({ type: 'XMFZR' })
+      .then(result => {
+        const { code = -1, record = '' } = result;
+        if (code > 0) {
+          const result = JSON.parse(record);
+          //默认负责人
+          let jobStaffList = this.state.staffInfo.jobStaffList;
+          let jobStaffName = this.state.staffInfo.jobStaffName;
+          jobStaffList[0] = result.map(x => x.id);
+          jobStaffName[0] = result.map(x => `${x.name}(${x.orgName})`);
+          this.setState({
+            height: 0,
+            staffInfo: {
+              ...this.state.staffInfo,
+              jobStaffList,
+              jobStaffName,
+            },
+          });
+        }
+      })
+      .catch(error => {
+        console.error('默认负责人数据获取失败', error);
+        message.error('默认负责人数据获取失败', 1);
       });
   }
 

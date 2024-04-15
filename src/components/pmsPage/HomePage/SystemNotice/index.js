@@ -88,17 +88,15 @@ export default function SystemNotice(props) {
     });
   };
 
-  if (noticeData.length === 0) return null;
+  if (noticeData.length === 0 || !AUTH.includes('announcementEntry')) return null;
   return (
     <div className="system-notice-card-box">
       <div className="home-card-title-box" style={{ marginBottom: 9 }}>
         <div>系统公告</div>
-        {AUTH.includes('announcementEntry') && (
-          <span onClick={() => setModalVisible(true)}>
-            全部
-            <i className="iconfont icon-right" />
-          </span>
-        )}
+        <span onClick={() => setModalVisible(true)}>
+          全部
+          <i className="iconfont icon-right" />
+        </span>
       </div>
       {/* 获奖荣誉 */}
       <OprModal

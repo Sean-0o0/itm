@@ -5,7 +5,6 @@ import {
   FetchQueryOwnerProjectList,
   QueryIteContractInfoList,
   QueryMemberInfo,
-  QueryUserRole,
   QueryXCContractInfo,
 } from '../../../services/pmsServices';
 import TableBox from './TableBox';
@@ -13,7 +12,7 @@ import { DecryptBase64 } from '../../Common/Encrypt';
 import { FetchQueryOrganizationInfo } from '../../../services/projectManage';
 import { setParentSelectableFalse } from '../../../utils/pmsPublicUtils';
 import IterationContractInfo from './IterationContractInfo';
-import { debounce } from 'lodash';
+import { debounce, get } from 'lodash';
 
 export default connect(({ global }) => ({
   dictionary: global.dictionary,
@@ -224,7 +223,13 @@ export default connect(({ global }) => ({
 
             return treeData;
           }
-          let data = toTreeData(res.record)[0].children[0].children;
+          let orgTree = toTreeData(res.record);
+          console.log('🚀 ~ getJbrData ~ orgTree:', orgTree);
+          let data = get(orgTree, '[0].children[0].children', []);
+          if (roleTxt.includes('非IT部门')) {
+            data = get(orgTree, '[0].children', []);
+            console.log('🚀 ~ getJbrData ~ data:', data);
+          }
           QueryMemberInfo({
             type: roleTxt.includes('非IT部门') ? 'FITBM' : 'XXJS',
           })
@@ -236,65 +241,131 @@ export default connect(({ global }) => ({
                   title: x.name,
                   value: x.id,
                 }));
-                finalData.forEach(item => {
-                  let parentArr = [];
-                  memberArr.forEach(y => {
-                    if (y.orgId === item.value) parentArr.push(y);
-                  });
-                  item.children = [
-                    ...parentArr,
-                    ...(item.children || []).filter(x => {
-                      let childArr = [];
-                      memberArr.forEach(y => {
-                        if (y.orgId === x.value) childArr.push(y);
-                      });
-                      return childArr.length > 0;
-                    }),
-                  ];
-                  if (item.value === '11168') {
-                    item.children?.unshift({
-                      gw: '总经理',
-                      value: '1852',
-                      title: '黄玉锋',
-                      orgId: '11168',
-                      orgName: '信息技术开发部',
-                      xb: '男',
-                      xh: '1',
-                    });
-                  }
-                  item.children?.forEach(x => {
-                    let childArr = [];
-                    memberArr.forEach(y => {
-                      if (y.orgId === x.value) childArr.push(y);
-                    });
-                    x.children = [
-                      ...childArr,
-                      ...(x.children || []).filter(m => {
-                        let childArr2 = [];
-                        memberArr.forEach(n => {
-                          if (n.orgId === m.value) childArr2.push(n);
-                        });
-                        return childArr2.length > 0;
-                      }),
-                    ];
-                  });
-                });
                 if (!roleTxt.includes('非IT部门')) {
-                  finalData = finalData.filter(item => {
+                  finalData.forEach(item => {
                     let parentArr = [];
                     memberArr.forEach(y => {
                       if (y.orgId === item.value) parentArr.push(y);
                     });
-                    return parentArr.length > 0;
+                    item.children = [
+                      ...parentArr,
+                      ...(item.children || []).filter(x => {
+                        let childArr = [];
+                        memberArr.forEach(y => {
+                          if (y.orgId === x.value) childArr.push(y);
+                        });
+                        return childArr.length > 0;
+                      }),
+                    ];
+                    if (item.value === '11168') {
+                      item.children?.unshift({
+                        gw: '总经理',
+                        value: '1852',
+                        title: '黄玉锋',
+                        orgId: '11168',
+                        orgName: '信息技术开发部',
+                        xb: '男',
+                        xh: '1',
+                      });
+                    }
+                    item.children?.forEach(x => {
+                      let childArr = [];
+                      memberArr.forEach(y => {
+                        if (y.orgId === x.value) childArr.push(y);
+                      });
+                      x.children = [
+                        ...childArr,
+                        ...(x.children || []).filter(m => {
+                          let childArr2 = [];
+                          memberArr.forEach(n => {
+                            if (n.orgId === m.value) childArr2.push(n);
+                          });
+                          return childArr2.length > 0;
+                        }),
+                      ];
+                      x.children.forEach(c => {
+                        let cArr = [];
+                        memberArr.forEach(y => {
+                          if (y.orgId === c.value) cArr.push(y);
+                        });
+                        c.children = [
+                          ...cArr,
+                          ...(x.children || []).filter(m => {
+                            let cArr2 = [];
+                            memberArr.forEach(n => {
+                              if (n.orgId === m.value) cArr2.push(n);
+                            });
+                            return cArr2.length > 0;
+                          }),
+                        ];
+                      });
+                    });
                   });
+                } else {
+                  function insertPersonnelIntoDepartments(departmentsData, personnelData) {
+                    // 遍历人员数据
+                    personnelData.forEach(person => {
+                      // 在部门数据中查找匹配的部门
+                      const department = findDepartmentById(departmentsData, person.orgId);
+                      if (department) {
+                        // 如果找到匹配的部门，则将人员数据插入到部门的children中
+                        if (!department.children) {
+                          department.children = [];
+                        }
+                        department.children.unshift(person);
+                      }
+                    });
+
+                    return departmentsData;
+                  }
+
+                  function findDepartmentById(departmentsData, orgId) {
+                    // 遍历部门数据，查找匹配的部门
+                    for (let i = 0; i < departmentsData.length; i++) {
+                      const department = departmentsData[i];
+                      if (department.orgId === orgId) {
+                        return department;
+                      } else if (department.children) {
+                        // 如果部门有子部门，则递归查找子部门
+                        const found = findDepartmentById(department.children, orgId);
+                        if (found) {
+                          return found;
+                        }
+                      }
+                    }
+                    return null;
+                  }
+
+                  // 调用函数插入人员数据到部门中
+                  finalData = insertPersonnelIntoDepartments(finalData, memberArr);
                 }
+                // 递归遍历树，处理没有子节点的元素
+                function removeEmptyChildren(node) {
+                  // 如果节点不存在 children 属性，或者 children 数组长度为 0，则返回 null
+                  if (
+                    node.id === undefined && //人员数据的不算
+                    (!node || !node.children || node.children.length === 0)
+                  ) {
+                    return null;
+                  } else {
+                    // 过滤掉 children 为 undefined 或者数组长度为 0 的节点
+                    node.children = node.children
+                      ?.map(child => removeEmptyChildren(child)) // 递归调用，处理子节点
+                      .filter(Boolean); // 过滤掉为 null 的节点
+                    return node;
+                  }
+                }
+                finalData.forEach(node => removeEmptyChildren(node));
+                finalData.forEach(node => removeEmptyChildren(node));
                 finalData.forEach(node => setParentSelectableFalse(node));
+                console.log('🚀 ~ getJbrData ~ finalData:', finalData);
                 setSltData(p => ({ ...p, jbr: finalData }));
                 setIsSpinning(false);
               }
             })
             .catch(e => {
               message.error('经办人下拉框数据查询失败', 1);
+              console.error('经办人下拉框数据查询失败', e);
               setIsSpinning(false);
             });
         }
@@ -423,7 +494,14 @@ export default connect(({ global }) => ({
           />
         ) : (
           <IterationContractInfo
-            dataProps={{ tableData, filterData, sortInfo, searchData, AUTH: authorities.XCHTXXLB }}
+            dataProps={{
+              tableData,
+              filterData,
+              sortInfo,
+              searchData,
+              AUTH: authorities.XCHTXXLB,
+              roleTxt,
+            }}
             funcProps={{
               setFilterData,
               queryDDHTTableData,

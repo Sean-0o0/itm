@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 import { EncryptBase64 } from '../../../Common/Encrypt';
 
 export default function SupplierCard(props) {
-  const { supplierData = [], time, defaultYear } = props;
+  const { supplierData = [], time, defaultYear, AUTH = [] } = props;
   const radarChartRef = useRef(null);
   const location = useLocation();
   //防抖定时器
@@ -130,24 +130,26 @@ export default function SupplierCard(props) {
     <div className="supplier-card-box">
       <div className="home-card-title-box" style={{ marginBottom: 9 }}>
         供应商情况
-        <span>
-          <Link
-            to={{
-              pathname: `/pms/manage/SupplierSituation/${EncryptBase64(
-                JSON.stringify({
-                  defaultYear,
+        {AUTH.includes('supplierState') && (
+          <span>
+            <Link
+              to={{
+                pathname: `/pms/manage/SupplierSituation/${EncryptBase64(
+                  JSON.stringify({
+                    defaultYear,
+                    routes: [{ name: '个人工作台', pathname: location.pathname }],
+                  }),
+                )}`,
+                state: {
                   routes: [{ name: '个人工作台', pathname: location.pathname }],
-                }),
-              )}`,
-              state: {
-                routes: [{ name: '个人工作台', pathname: location.pathname }],
-              },
-            }}
-          >
-            全部
-            <i className="iconfont icon-right" />
-          </Link>
-        </span>
+                },
+              }}
+            >
+              全部
+              <i className="iconfont icon-right" />
+            </Link>
+          </span>
+        )}
       </div>
       <div style={{ color: '#b7b3b3', fontSize: '12px', marginBottom: '16px', marginLeft: '24px' }}>
         {time + ' 更新'}

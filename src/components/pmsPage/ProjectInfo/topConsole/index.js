@@ -8,10 +8,12 @@ import React, {
 } from 'react';
 import { Select, Button, Input, TreeSelect, Row, Col, Icon, message, DatePicker, Spin } from 'antd';
 import { QueryProjectListPara, QueryProjectListInfo } from '../../../../services/pmsServices';
+import { FetchQueryOrganizationInfo } from '../../../../services/projectManage';
 import TreeUtils from '../../../../utils/treeUtils';
 import moment from 'moment';
 import { setParentSelectableFalse } from '../../../../utils/pmsPublicUtils';
 import * as Lodash from 'lodash';
+import { connect } from 'dva';
 
 const { Option } = Select;
 
@@ -24,6 +26,7 @@ export default forwardRef(function TopConsole(props, ref) {
   const [prjNameData, setPrjNameData] = useState([]); //项目名称
   const [prjMngerData, setPrjMngerData] = useState([]); //项目经理
   const [orgData, setOrgData] = useState([]); //应用部门
+  const [orgData2, setOrgData2] = useState([]); //承接部门
   const { XMLX } = props.dictionary; //
   const [prjTypeData, setPrjTypeData] = useState([]); //项目类型
   //查询的值
@@ -65,6 +68,7 @@ export default forwardRef(function TopConsole(props, ref) {
     setSortInfo,
     prjMnger,
     setPrjMnger,
+    roleTxt = '',
   } = props;
 
   useEffect(() => {
@@ -196,7 +200,7 @@ export default forwardRef(function TopConsole(props, ref) {
         cxlx: 'XMLB',
       });
       if (res?.success) {
-        setBudgetData(p => [...toItemTree(JSON.parse(res.budgetProjectRecord))]);
+        setBudgetData([...toItemTree(JSON.parse(res.budgetProjectRecord))]);
         let labelTree = TreeUtils.toTreeData(JSON.parse(res.labelRecord), {
           keyName: 'ID',
           pKeyName: 'FID',
@@ -204,7 +208,7 @@ export default forwardRef(function TopConsole(props, ref) {
           normalizeTitleName: 'title',
           normalizeKeyName: 'value',
         })[0].children[0];
-        setLabelData(p => [...[labelTree]]);
+        setLabelData([...[labelTree]]);
         let orgTree = TreeUtils.toTreeData(JSON.parse(res.orgRecord), {
           keyName: 'ID',
           pKeyName: 'FID',
@@ -212,12 +216,43 @@ export default forwardRef(function TopConsole(props, ref) {
           normalizeTitleName: 'title',
           normalizeKeyName: 'value',
         })[0].children[0];
-        setOrgData(p => [...[orgTree]]);
-        setPrjMngerData(p => [...JSON.parse(res.projectManagerRecord)]);
+        setOrgData([...[orgTree]]);
+        if (roleTxt.includes('非IT部门')) {
+          const orgRes =
+            (await FetchQueryOrganizationInfo({
+              type: 'FITBM',
+            })) || {};
+          if (orgRes.success) {
+            let orgTree2 = TreeUtils.toTreeData(
+              orgRes.record.map(x => ({
+                ID: x.orgId,
+                FID: x.orgFid,
+                GRADE: x.grade,
+                ORGCODE: x.orgCode,
+                NAME: x.orgName,
+                FDNCODE: x.fdnCode,
+                XH: x.xh,
+              })),
+              {
+                keyName: 'ID',
+                pKeyName: 'FID',
+                titleName: 'NAME',
+                normalizeTitleName: 'title',
+                normalizeKeyName: 'value',
+              },
+            )[0].children[0];
+            console.log('🚀 ~ getFilterData ~ orgTree2:', orgTree2);
+            setOrgData2([...[orgTree2]]);
+          }
+        } else {
+          setOrgData2([...[orgTree]]);
+        }
+
+        setPrjMngerData([...JSON.parse(res.projectManagerRecord)]);
         // if (projectManager) {
         //   setPrjMnger(String(projectManager));
         // }
-        setPrjNameData(p => [...JSON.parse(res.projectRecord)]);
+        setPrjNameData([...JSON.parse(res.projectRecord)]);
         let xmlx = TreeUtils.toTreeData(JSON.parse(res.projectTypeRecord), {
           keyName: 'ID',
           pKeyName: 'FID',
@@ -635,12 +670,23 @@ export default forwardRef(function TopConsole(props, ref) {
             showArrow
             className="item-selector"
             showSearch
-            treeDefaultExpandedKeys={['1', '8857']}
+            treeDefaultExpandedKeys={[
+              '1',
+              '8857',
+              '8867',
+              '13104',
+              '13395',
+              '393',
+              '544',
+              '12459',
+              '357',
+              '11168',
+            ]}
             treeNodeFilterProp="title"
             dropdownMatchSelectWidth={false}
             dropdownStyle={{ width: 272, maxHeight: 300, overflow: 'auto' }}
             placeholder="请选择"
-            treeData={orgData}
+            treeData={orgData2}
             value={undertakingDepartmentObj.data}
             treeDefaultExpandAll
             onChange={(val, label, extra) => {
@@ -686,7 +732,18 @@ export default forwardRef(function TopConsole(props, ref) {
               placeholder="请选择"
               onChange={handleOrgChange}
               value={org}
-              treeDefaultExpandedKeys={['1', '8857']}
+              treeDefaultExpandedKeys={[
+                '1',
+                '8857',
+                '8867',
+                '13104',
+                '13395',
+                '393',
+                '544',
+                '12459',
+                '357',
+                '11168',
+              ]}
               open={orgOpen}
               onDropdownVisibleChange={v => setOrgOpen(v)}
             />

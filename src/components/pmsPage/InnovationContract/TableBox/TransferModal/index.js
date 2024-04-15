@@ -85,7 +85,16 @@ export default Form.create()(function TransferModal(props) {
             })(
               <TreeSelect
                 style={{ width: '100%' }}
-                treeDefaultExpandedKeys={['357', '11168']}
+                treeDefaultExpandedKeys={[
+                  '8867',
+                  '13104',
+                  '13395',
+                  '393',
+                  '544',
+                  '12459',
+                  '357',
+                  '11168',
+                ]}
                 showSearch
                 dropdownStyle={{ maxHeight: 300, overflow: 'auto' }}
                 dropdownClassName="newproject-treeselect"

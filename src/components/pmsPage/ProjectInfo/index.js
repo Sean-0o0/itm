@@ -4,14 +4,19 @@ import TopConsole from './TopConsole';
 import { QueryProjectListInfo, QueryBudgetStatistics } from '../../../services/pmsServices';
 import { message } from 'antd';
 import moment from 'moment';
+import { connect } from 'dva';
 
-export default function ProjectInfo(props) {
+export default connect(({ global }) => ({
+  roleData: global.roleData,
+}))(function ProjectInfo(props) {
   const [tableData, setTableData] = useState([]); //表格数据-项目列表
   const [tableLoading, setTableLoading] = useState(false); //表格加载状态
   const [total, setTotal] = useState(0); //数据总数
   const [curPage, setCurPage] = useState(1); //当前页码
   const [curPageSize, setCurPageSize] = useState(20); //每页数量
-  const { params = {} } = props;
+  const { params = {}, roleData = {} } = props;
+  const roleTxt =
+    (JSON.parse(roleData.testRole || '{}')?.ALLROLE ?? '') + ',' + (roleData.role ?? ''); //角色信息
   const { prjManager, cxlx } = params;
   const topConsoleRef = useRef(null);
   const [queryType, setQueryType] = useState('ALL'); //
@@ -64,11 +69,6 @@ export default function ProjectInfo(props) {
     }
     return () => {};
   }, [isComplete, prjManager, cxlx]);
-
-  useEffect(() => {
-    console.log('filterData', filterData);
-    return () => {};
-  }, [JSON.stringify(filterData)]);
 
   //获取表格数据
   const getTableData = async ({
@@ -132,6 +132,7 @@ export default function ProjectInfo(props) {
         defaultDateRangeRef={defaultDateRangeRef}
         setFilterData={setFilterData}
         setSortInfo={setSortInfo}
+        roleTxt={roleTxt}
       />
       <InfoTable
         tableData={tableData}
@@ -153,4 +154,4 @@ export default function ProjectInfo(props) {
       />
     </div>
   );
-}
+});
