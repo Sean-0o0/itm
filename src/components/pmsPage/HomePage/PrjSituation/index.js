@@ -775,14 +775,10 @@ export default connect(({ global }) => ({
       //逾期几天
       lateDays = moment().diff(moment(String(item.LCBJSSJ)), 'days');
     }
-    //有风险
-    const haveRisk = item.XMFX?.length > 0;
     //终止
     const isEnd = String(item.WJZT) === '5';
     //完结
     const isComplete = String(item.WJZT) === '1';
-    //是否显示红色，逾期
-    const isRed = isLate;
 
     return (
       <Link
@@ -802,7 +798,17 @@ export default connect(({ global }) => ({
           width: itemWidth,
         }}
       >
-        <div className="name-tags-row">
+        <div
+          className="name-tags-row"
+          style={
+            isLate || isEnd
+              ? {
+                  background:
+                    'linear-gradient(0deg, rgba(215, 14, 25, 0) 0%, rgba(215, 14, 25, 0.1) 100%)',
+                }
+              : {}
+          }
+        >
           <div className="prj-name">
             <Popconfirm
               title={item.SFSC === 0 ? '确定收藏？' : '确定取消收藏？'}
@@ -893,25 +899,25 @@ export default connect(({ global }) => ({
           </div>
           <div className="row-middle">
             <Progress
-              strokeColor={isRed ? '#d70e19' : '#3361FF'}
+              strokeColor={isLate ? '#d70e19' : '#3361FF'}
               percent={Number(item.BZJD ?? 0)}
               successPercent={Number(item.SZJD ?? 0)}
               size="small"
               status="active"
               showInfo={false}
               strokeWidth={8}
-              className={isRed ? 'progress-red' : ''}
+              className={isLate ? 'progress-red' : ''}
             />
           </div>
           <div className="row-bottom">
             <span className="prj-percent">
-              <div className="last-week-percent" style={isRed ? { color: '#ffacb0' } : {}}>
+              <div className="last-week-percent" style={isLate ? { color: '#ffacb0' } : {}}>
                 {item.SZJD ?? '-'}%
               </div>
               {Number(item.BZJD ?? 0) !== 0 && (
                 <Fragment>
                   <i className="iconfont icon-rise" />
-                  <div className="cur-week-percent" style={isRed ? { color: '#d70e19' } : {}}>
+                  <div className="cur-week-percent" style={isLate ? { color: '#d70e19' } : {}}>
                     {item.BZJD ?? '-'}%
                   </div>
                 </Fragment>
