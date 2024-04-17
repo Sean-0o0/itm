@@ -931,17 +931,19 @@ export default connect(({ global }) => ({
         <div className="status-row">
           {/* 逾期时显示 */}
           {isLate && (
-            <div className="status-item-late">
-              <div className="late-days">
+            <Fragment>
+              <div className="status-item-red">
                 <i className="iconfont circle-info" />
-                逾期{lateDays}天：
+                逾期
               </div>
-              <div className="late-txt">
-                <Tooltip title={item.SXMC} placement="topLeft">
-                  {item.SXMC}
-                </Tooltip>
-              </div>
-            </div>
+              {item.YQLCB !== undefined && (
+                <div className="status-txt">
+                  <Tooltip title={item.YQLCB} placement="topLeft">
+                    {item.YQLCB}
+                  </Tooltip>
+                </div>
+              )}
+            </Fragment>
           )}
           {/* 未逾期时 */}
           {!isLate && (
