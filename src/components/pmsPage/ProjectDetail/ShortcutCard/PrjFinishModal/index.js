@@ -2,10 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { Button, Table, message, Modal, Spin, Tooltip, Empty } from 'antd';
 import moment from 'moment';
 import { FinishProject, QueryUndoMatters } from '../../../../../services/pmsServices';
+import Decimal from 'decimal.js';
 
 export default function PrjFinishModal(props) {
   const { visible, setVisible, data = {} } = props;
-  const { xmid, xmjd, contrastArr = [], refresh } = data;
+  const { xmid, xmjd, contrastArr = [], refresh, prjBasic = {} } = data;
   const [tableData, setTableData] = useState([]); //未完成事项
   const [isSpinning, setIsSpinning] = useState(false); //加载状态
 
@@ -90,13 +91,18 @@ export default function PrjFinishModal(props) {
   //允许完结
   const allowFinish = () => {
     const paymentFinish =
-      contrastArr.reduce((acc, cur) => (cur.HTJE === cur.YFKJE ? 0 : 1) + acc, 0) === 0;
+      contrastArr.reduce(
+        (acc, cur) =>
+          Decimal(cur.HTJE || 0)
+            .plus(acc)
+            .toNumber(),
+        0,
+      ) === Number(prjBasic.XMFKJE);
     return String(xmjd) === '100' && paymentFinish;
   };
 
   //多合同信息
-  const getHtxxInfoRow = (contrastArr = []) => {
-    const suffix = i => (contrastArr.length > 1 ? '-' + (i + 1) + '：' : '：'); //是否多合同，后缀
+  const getHtxxInfoRow = (contrastArr = [], XMFKJE) => {
     //获取信息块
     const getInfoItem = (label, val, isLink = false) => {
       return (
@@ -108,15 +114,22 @@ export default function PrjFinishModal(props) {
     };
     //金额格式化
     const getAmountFormat = value => {
-      if ([undefined, null, '', ' ', NaN].includes(value)) return '';
+      if ([undefined, null, '', ' ', NaN].includes(value)) return '-';
       return `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
     };
-    return contrastArr.map((x, i) => (
-      <div className="htxx-info-row-box" key={x.ID}>
-        {x.HTJE && getInfoItem('合同金额' + suffix(i), getAmountFormat(x.HTJE) + '元')}
-        {x.YFKJE && getInfoItem('已付款金额' + suffix(i), getAmountFormat(x.YFKJE) + '元')}
+    const HTJE = contrastArr.reduce(
+      (acc, cur) =>
+        Decimal(cur.HTJE || 0)
+          .plus(acc)
+          .toNumber(),
+      0,
+    );
+    return (
+      <div className="htxx-info-row-box">
+        {getInfoItem('合同金额', getAmountFormat(HTJE) + '元')}
+        {getInfoItem('已付款金额', getAmountFormat(XMFKJE || 0) + '元')}
       </div>
-    ));
+    );
   };
 
   //提交数据
@@ -200,7 +213,7 @@ export default function PrjFinishModal(props) {
           {contrastArr.length > 0 && (
             <div className="payment-row">
               <div className="payment-title">付款情况：</div>
-              {getHtxxInfoRow(contrastArr)}
+              {getHtxxInfoRow(contrastArr, prjBasic.XMFKJE)}
             </div>
           )}
         </div>

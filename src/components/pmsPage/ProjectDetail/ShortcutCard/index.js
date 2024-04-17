@@ -680,6 +680,7 @@ export default connect(({ global = {} }) => ({
           xmid,
           xmjd: prjBasic.XMJD,
           contrastArr,
+          prjBasic,
           refresh: handlePrjFinishRefresh,
         }}
       />
