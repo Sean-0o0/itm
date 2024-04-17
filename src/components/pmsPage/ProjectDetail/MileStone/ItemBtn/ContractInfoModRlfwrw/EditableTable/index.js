@@ -106,7 +106,7 @@ const EditableCell = props => {
               style={{ width: '100%' }}
               max={999999999}
               min={0}
-              step={0.01}
+              step={0}
               onBlur={e => {
                 e.persist();
                 save(e);
@@ -209,7 +209,7 @@ const EditableCell = props => {
   };
 
   return (
-    <td {...restProps}>
+    <td {...restProps} title="">
       {editable ? <EditableContext.Consumer>{renderCell}</EditableContext.Consumer> : children}
     </td>
   );

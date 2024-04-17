@@ -107,7 +107,7 @@ const EditableCell = props => {
   };
 
   return (
-    <td {...restProps}>
+    <td {...restProps} title="">
       {editable ? <EditableContext.Consumer>{renderCell}</EditableContext.Consumer> : children}
     </td>
   );

@@ -232,7 +232,7 @@ export default connect(({ global }) => ({
                   style={{ width: '100%' }}
                   max={max}
                   min={0}
-                  step={0.01}
+                  step={0}
                   precision={2}
                   {...componentProps}
                 />,
