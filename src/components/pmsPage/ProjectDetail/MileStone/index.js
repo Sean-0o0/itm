@@ -519,14 +519,24 @@ export default function MileStone(props) {
                   ?.map(x => (
                     <div key={x.ID}>
                       <Tooltip title={x.FXBT} placement="topLeft">
-                        <div className="risk-tag" key={x.ID} onClick={() => handleRisk(x, 'MOD')}>
+                        <div
+                          className="risk-tag"
+                          key={x.ID}
+                          style={isEnd ? { cursor: 'default' } : {}}
+                          onClick={() => (isEnd ? {} : handleRisk(x, 'MOD'))}
+                        >
                           {x.FXBT}
                         </div>
                       </Tooltip>
                     </div>
                   ))}
                 {prjBasic.XMJLID === String(LOGIN_USER_INFO.id) && (
-                  <Button size="small" onClick={() => handleRisk(hLMileStone)}>
+                  <Button
+                    size="small"
+                    onClick={() => handleRisk(hLMileStone)}
+                    style={isEnd ? { borderColor: '#d9d9d9', color: 'rgba(0, 0, 0, 0.25)' } : {}}
+                    disabled={isEnd}
+                  >
                     <span>+</span>添加
                   </Button>
                 )}
